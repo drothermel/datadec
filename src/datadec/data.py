@@ -1,5 +1,4 @@
 import itertools
-import json
 import math
 from pathlib import Path
 
@@ -69,7 +68,12 @@ class DataDecideDefaults:
         return pd.DataFrame(self.model_configs).T.infer_objects()
 
     def make_model_config(self, model_size_str: str, **kwargs):
-        mc = {**consts.MODEL_CONFIG_BASE, "params": model_size_str, "model_size_str": model_size_str, **kwargs}
+        mc = {
+            **consts.MODEL_CONFIG_BASE,
+            "params": model_size_str,
+            "model_size_str": model_size_str,
+            **kwargs,
+        }
         mc["model_size"] = int(self.parse_model_size_str(mc["model_size_str"]))
         mc["batch_size"] = int(self.calc_batch_size(mc["model_size_str"]))
         mc["lr_max"] = self.calc_lr_max(mc["model_size_str"])
@@ -117,7 +121,9 @@ class DataDecideDefaults:
     def calc_batch_size(self, model_size_str: str) -> int:
         assert consts.MAX_SEQ_LEN == 2_048
         model_size = self.parse_model_size_str(model_size_str)
-        batch_size = 160 * (model_size / consts.MODEL_SIZE_NORM_VALUE) ** consts.BS_EXPONENT
+        batch_size = (
+            160 * (model_size / consts.MODEL_SIZE_NORM_VALUE) ** consts.BS_EXPONENT
+        )
         rounding_size = consts.GPUS_PER_NODE * consts.MICROBATCH_SIZE
         batch_size /= rounding_size
         batch_size = round(batch_size)
@@ -375,7 +381,6 @@ class DataDecide:
             (df["params"] == params) & (df["data"] == data) & (df["step"] == step)
         ]
 
-
     def create_full_eval_df(
         self,
         dwn_parsed_df: pd.DataFrame,
@@ -396,7 +401,9 @@ class DataDecide:
             )
             .drop(columns=["tokens_per_step", "compute_per_step"])
         )
-        merged_df = parsing.reorder_df_cols(merged_df, consts.KEY_COLS + ["tokens", "compute"])
+        merged_df = parsing.reorder_df_cols(
+            merged_df, consts.KEY_COLS + ["tokens", "compute"]
+        )
         return merged_df
 
     def create_mean_std_df(

@@ -6,7 +6,9 @@ from datadec.data import prep_base_df
 
 def main():
     """Download and process DataDecide datasets."""
-    parser = argparse.ArgumentParser(description="Download and process DataDecide datasets.")
+    parser = argparse.ArgumentParser(
+        description="Download and process DataDecide datasets."
+    )
     parser.add_argument(
         "--data_dir",
         type=str,
