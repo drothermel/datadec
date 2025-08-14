@@ -2,87 +2,76 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Project Overview
+## Development Setup
 
-`datadec` is a Python library for downloading and processing DataDecide datasets from Hugging Face. The library provides tools for analyzing ML training experiment results across different model sizes, data recipes, and hyperparameters.
-
-## Commands
-
-### Environment Setup
-- `uv sync` - Install/update dependencies
-- `uv run python` - Run Python with proper environment
-
-### Development Scripts
-- `uv run python scripts/download_data.py --data_dir ./data --force_reload` - Download and process DataDecide datasets
-
-### Package Installation
-The package can be installed in development mode:
 ```bash
-uv add -e .
+uv sync                    # Install dependencies
+uv add -e .               # Install in dev mode
+uv run ruff check         # Lint code
+uv run ruff format        # Format code
 ```
 
-## Architecture
+## Architecture Overview
 
-### Core Components
+**Core Modules:**
+- **`data.py`** - Main `DataDecide` class and `get_analysis_df()` method
+- **`paths.py`** - Single source of truth: `paths.dataframes` dict maps names → file paths
+- **`pipeline.py`** - ETL stages with `recompute_from` granular control
+- **`constants.py`** - All hardcoded DataDecide config (~300 lines)
+- **`parsing.py`** - Data transformations (includes the slow metrics expansion)
+- **`model_utils.py`** - Model configs, learning rates, `param_to_numeric()`
+- **`df_utils.py`** - DataFrame utilities, filtering, aggregation
+- **`loader.py`** - Lazy loading and caching
 
-**datadec.data**: Main data processing module
-- `DataDecide` class: Central interface for dataset management and analysis
-- `DataDecidePaths`: File path management for datasets and processed files
-- `DataDecideDefaults`: Configuration constants, model architectures, and data recipe mappings
-- `prep_base_df()`: High-level function to prepare analysis-ready dataframes
+**Data Pipeline Stages:**
+1. `download` - Raw HF datasets
+2. `metrics_expand` - JSON metrics → columns (SLOW: 2-5 min)
+3. `parse` - Clean & standardize
+4. `merge` - Combine perplexity + downstream  
+5. `aggregate` - Stats across seeds
 
-**datadec.model_utils**: Model configuration and learning rate utilities  
-- Model parameter calculations and configuration generation
-- `add_lr_cols()`: Adds learning rate schedule columns to dataframes
-- Learning rate schedule functions for cosine annealing and warmup
+## Key APIs
 
-### Data Pipeline Architecture
+### DataDecide Interface
+```python
+dd = DataDecide(data_dir="./data", recompute_from="metrics_expand")
 
-1. **Raw Data Download**: Downloads perplexity and downstream eval datasets from Hugging Face
-2. **Parsing**: Converts raw evaluation data into structured formats with standardized columns
-3. **Aggregation**: Creates full evaluation datasets by merging perplexity and downstream results
-4. **Statistics**: Generates mean/std datasets across random seeds
+# Main properties (renamed from *_ds/*_df)
+dd.full_eval, dd.mean_eval, dd.model_details, dd.dataset_details
 
-### Key Data Structures
+# New unified loading
+dd.load_dataframe("ppl_raw")  # Any DataFrame by name
+dd.get_analysis_df()          # Analysis-ready with filters/LR cols
 
-- **Model Sizes**: 4M to 1B parameter models with predefined architectures
-- **Data Recipes**: Organized into families (dolma17, c4, fineweb, falcon, dclm, etc.)
-- **Evaluation Tasks**: MMLU, ARC, BoolQ, HellaSwag, and perplexity metrics
-- **Step Mapping**: Converts training steps to tokens and compute for analysis
-
-### Dependencies
-
-Core ML/data libraries:
-- `datasets` - Hugging Face datasets library
-- `pandas` - Data manipulation and analysis
-- `numpy` - Numerical computing
-- `pyarrow` - Efficient data serialization
-- `huggingface_hub` - HF model/dataset access
-
-## File Structure
-
-```
-src/datadec/
-├── __init__.py          # Package initialization
-├── data.py              # Main data processing classes and functions
-├── model_utils.py       # Model configuration and learning rate utilities
-├── df_utils.py          # DataFrame manipulation utilities
-├── data_utils.py        # Dataset-specific utilities
-├── pipeline.py          # ETL processing pipeline
-├── loader.py            # DataFrame loading and caching
-└── paths.py             # File path management
-
-scripts/
-└── download_data.py     # CLI script for dataset download and processing
+# Exploration
+dd.paths.dataframes           # Dict: name → filename  
+dd.paths.available_dataframes # List all options
 ```
 
-## Usage Patterns
+### Path Management
+```python
+# Always use centralized path access
+path = dd.paths.get_path("dwn_metrics_expanded")  # Not individual properties
+```
 
-The typical workflow involves:
+## Available DataFrames
 
-1. **Initialize DataDecide**: `dd = DataDecide(data_dir="./data")`
-2. **Access processed data**: Use properties like `dd.full_eval_ds`, `dd.mean_eval_ds`
-3. **Filter and analyze**: Use helper methods for filtering by model size, data recipe, etc.
-4. **Add features**: Use `datadec.model_utils.add_lr_cols()` to add learning rate schedules
+Access via `dd.load_dataframe(name)`:
+- **Raw:** `ppl_raw`, `dwn_raw`
+- **Intermediate:** `dwn_metrics_expanded` (slow step result), `ppl_parsed`, `dwn_parsed`
+- **Final:** `full_eval`, `mean_eval`, `std_eval`
+- **Analysis:** `full_eval_with_details`, `mean_eval_with_lr`
 
-The library handles caching of processed datasets automatically, with `force_reload` option to refresh data.
+## Code Conventions
+
+- **Path access:** Always `paths.get_path(name)`, never individual properties
+- **Performance:** Use assertions, not exceptions (ML performance requirement)
+- **Type hints:** Required on all functions
+- **Imports:** Absolute imports at top of file
+
+## Performance Notes
+
+- **Bottleneck:** `list_col_to_columns(df, "metrics")` in parsing.py:95 (2-5 min)
+- **Optimization:** Slow step saved as intermediate `dwn_metrics_expanded`
+- **Caching:** DataFrames cached after first load
+- **Granular recompute:** Use `recompute_from="metrics_expand"` to skip download
