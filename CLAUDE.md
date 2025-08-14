@@ -31,10 +31,6 @@ uv add -e .
 - `DataDecideDefaults`: Configuration constants, model architectures, and data recipe mappings
 - `prep_base_df()`: High-level function to prepare analysis-ready dataframes
 
-**datadec.config**: Model configuration utilities
-- `download_config_file()`: Downloads model config.json from Hugging Face repositories
-- `extract_model_architecture_info()`: Extracts standardized architecture metadata
-
 **datadec.features**: Learning rate calculation utilities
 - `add_lr_cols()`: Adds learning rate schedule columns to dataframes
 - Learning rate schedule functions for cosine annealing and warmup
@@ -68,7 +64,6 @@ Core ML/data libraries:
 src/datadec/
 ├── __init__.py          # Package initialization
 ├── data.py              # Main data processing classes and functions
-├── config.py            # Model configuration utilities
 └── features.py          # Learning rate and feature engineering
 
 scripts/
