@@ -78,8 +78,47 @@ def parse_perplexity_dataframe(ppl_df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def expand_downstream_metrics(dwn_df: pd.DataFrame) -> pd.DataFrame:
+    """Expand metrics column in downstream DataFrame (SLOW OPERATION).
+
+    This is the slowest part of downstream parsing (2-5 minutes) as it converts
+    the JSON-like metrics column into separate columns.
+
+    Args:
+        dwn_df: Raw downstream evaluation DataFrame from DataDecide dataset
+
+    Returns:
+        DataFrame with metrics column expanded but not yet aggregated or pivoted
+    """
+    df = dwn_df.copy()
+    df = df.drop(columns=consts.DWN_DROP_COLS)
+    df = list_col_to_columns(df, "metrics")  # THE SLOW STEP
+    df = df.drop(columns=consts.DROP_METRICS)
+    return df
+
+
+def complete_downstream_parsing(metrics_expanded_df: pd.DataFrame) -> pd.DataFrame:
+    """Complete downstream parsing from metrics-expanded DataFrame.
+
+    Takes a DataFrame that already has metrics expanded and completes the
+    remaining parsing steps: MMLU averaging, pivoting, and final formatting.
+
+    Args:
+        metrics_expanded_df: DataFrame with metrics already expanded
+
+    Returns:
+        Fully parsed downstream DataFrame
+    """
+    df = metrics_expanded_df.copy()
+    df = average_mmlu_metrics(df)
+    df = pivot_task_metrics_to_columns(df)
+    df = reorder_df_cols(df, consts.KEY_COLS)
+    df["seed"] = df["seed"].map(consts.SEED_MAP)
+    return df
+
+
 def parse_downstream_dataframe(dwn_df: pd.DataFrame) -> pd.DataFrame:
-    """Parse raw downstream evaluation DataFrame.
+    """Parse raw downstream evaluation DataFrame (full pipeline).
 
     Args:
         dwn_df: Raw downstream evaluation DataFrame from DataDecide dataset
@@ -87,15 +126,8 @@ def parse_downstream_dataframe(dwn_df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         Parsed DataFrame with expanded metrics, averaged MMLU, and pivoted tasks
     """
-    df = dwn_df.copy()
-    df = df.drop(columns=consts.DWN_DROP_COLS)
-    df = list_col_to_columns(df, "metrics")
-    df = df.drop(columns=consts.DROP_METRICS)
-    df = average_mmlu_metrics(df)
-    df = pivot_task_metrics_to_columns(df)
-    df = reorder_df_cols(df, consts.KEY_COLS)
-    df["seed"] = df["seed"].map(consts.SEED_MAP)
-    return df
+    metrics_expanded = expand_downstream_metrics(dwn_df)
+    return complete_downstream_parsing(metrics_expanded)
 
 
 def average_mmlu_metrics(df: pd.DataFrame) -> pd.DataFrame:
@@ -109,11 +141,6 @@ def average_mmlu_metrics(df: pd.DataFrame) -> pd.DataFrame:
     """
     mmlu_tasks = [task for task in df["task"].unique() if "mmlu" in task.lower()]
     mmlu_df = df[df["task"].isin(mmlu_tasks)].drop(columns=["task"])
-    metric_names = [
-        col
-        for col in df.columns
-        if col not in consts.EXCLUDE_COLS and col not in consts.DROP_METRICS
-    ]
     mmlu_avg = mmlu_df.groupby(consts.KEY_COLS).agg("mean").reset_index()
     mmlu_avg["task"] = "mmlu_average"
     return pd.concat([df, mmlu_avg], ignore_index=True)

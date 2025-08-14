@@ -88,3 +88,45 @@ class DataDecidePaths:
     def std_eval_ds_path(self) -> Path:
         """Path to standard deviation evaluation dataset."""
         return self.parquet_path("std_eval")
+
+    # ------------ Intermediate Processing Paths ------------
+    @property
+    def dwn_metrics_expanded_path(self) -> Path:
+        """Path to downstream data after metrics column expansion (slow step)."""
+        return self.parquet_path("dwn_metrics_expanded")
+
+    @property
+    def dwn_mmlu_averaged_path(self) -> Path:
+        """Path to downstream data after MMLU averaging."""
+        return self.parquet_path("dwn_mmlu_averaged")
+
+    @property
+    def dwn_pivoted_path(self) -> Path:
+        """Path to downstream data after task metrics pivoting."""
+        return self.parquet_path("dwn_pivoted")
+
+    @property
+    def ppl_dwn_merged_path(self) -> Path:
+        """Path to merged perplexity and downstream data (before tokens/compute)."""
+        return self.parquet_path("ppl_dwn_merged")
+
+    # ------------ Derived Analysis Paths ------------
+    @property
+    def full_eval_with_details_path(self) -> Path:
+        """Path to full eval merged with model/dataset details."""
+        return self.parquet_path("full_eval_with_details")
+
+    @property
+    def full_eval_with_lr_path(self) -> Path:
+        """Path to full eval with learning rate columns."""
+        return self.parquet_path("full_eval_with_lr")
+
+    @property
+    def mean_eval_with_details_path(self) -> Path:
+        """Path to mean eval merged with model/dataset details."""
+        return self.parquet_path("mean_eval_with_details")
+
+    @property
+    def mean_eval_with_lr_path(self) -> Path:
+        """Path to mean eval with learning rate columns."""
+        return self.parquet_path("mean_eval_with_lr")

@@ -28,6 +28,15 @@ class DataPipeline:
         """
         self.paths = paths
 
+        # Define the processing pipeline stages
+        self.pipeline_stages = [
+            "download",
+            "metrics_expand",
+            "parse",
+            "merge",
+            "aggregate",
+        ]
+
     def download_raw_data(
         self, force_reload: bool = False, verbose: bool = False
     ) -> None:
@@ -79,8 +88,29 @@ class DataPipeline:
             step_to_token_compute_df = parsing.make_step_to_token_compute_df(dwn_df)
             step_to_token_compute_df.to_parquet(self.paths.step_to_token_compute_path)
 
+    def expand_downstream_metrics(
+        self, force_reload: bool = False, verbose: bool = False
+    ) -> None:
+        """Expand downstream metrics column (SLOW STEP - 2-5 minutes).
+
+        This is the slowest part of processing and is saved separately to allow
+        faster recomputation from this intermediate state.
+
+        Args:
+            force_reload: If True, re-expand even if file exists
+            verbose: If True, print progress messages
+        """
+        if not self.paths.dwn_metrics_expanded_path.exists() or force_reload:
+            if verbose:
+                print(
+                    "Expanding downstream metrics column (this may take 2-5 minutes)..."
+                )
+            dwn_df = pd.read_parquet(self.paths.downstream_eval_raw_path)
+            metrics_expanded_df = parsing.expand_downstream_metrics(dwn_df)
+            metrics_expanded_df.to_parquet(self.paths.dwn_metrics_expanded_path)
+
     def parse_data(self, force_reload: bool = False, verbose: bool = False) -> None:
-        """Parse raw evaluation datasets into structured format.
+        """Parse evaluation datasets into structured format.
 
         Converts raw evaluation data into clean, analysis-ready DataFrames
         with standardized column names and data types.
@@ -97,12 +127,12 @@ class DataPipeline:
             ppl_parsed_df = parsing.parse_perplexity_dataframe(ppl_df)
             ppl_parsed_df.to_parquet(self.paths.ppl_eval_parsed_path)
 
-        # Parse downstream data
+        # Complete downstream parsing from expanded metrics
         if not self.paths.downstream_eval_parsed_path.exists() or force_reload:
             if verbose:
-                print("Parsing downstream evaluation data (this may take a while)...")
-            dwn_df = pd.read_parquet(self.paths.downstream_eval_raw_path)
-            dwn_parsed_df = parsing.parse_downstream_dataframe(dwn_df)
+                print("Completing downstream parsing...")
+            metrics_expanded_df = pd.read_parquet(self.paths.dwn_metrics_expanded_path)
+            dwn_parsed_df = parsing.complete_downstream_parsing(metrics_expanded_df)
             dwn_parsed_df.to_parquet(self.paths.downstream_eval_parsed_path)
 
     def create_derived_datasets(
@@ -152,26 +182,61 @@ class DataPipeline:
             mean_eval_ds.to_parquet(self.paths.mean_eval_ds_path)
             std_eval_ds.to_parquet(self.paths.std_eval_ds_path)
 
-    def run(self, force_reload: bool = False, verbose: bool = False) -> None:
-        """Run the complete data processing pipeline.
+    def run(self, recompute_from: str = None, verbose: bool = False) -> None:
+        """Run the data processing pipeline with granular recompute control.
 
-        Executes all pipeline steps in order: download -> extract mappings ->
-        parse -> create derived datasets.
+        Executes pipeline steps based on recompute_from parameter:
+        - None: Use cached files (default)
+        - "download": Re-download everything
+        - "metrics_expand": Re-expand metrics (the slow step)
+        - "parse": Reparse from expanded metrics
+        - "merge": Remerge parsed data
+        - "aggregate": Recalculate means/std
+        - "all": Full recompute (equivalent to force_reload=True)
+
+        Args:
+            recompute_from: Stage to start recomputing from (None for cached)
+            verbose: If True, print progress messages for each step
+        """
+        if verbose:
+            if recompute_from:
+                print(f"Starting DataDecide pipeline from '{recompute_from}'...")
+            else:
+                print("Starting DataDecide pipeline (using cached files)...")
+
+        # Determine force_reload for each stage
+        force_download = recompute_from in ["download", "all"]
+        force_metrics_expand = recompute_from in ["download", "metrics_expand", "all"]
+        force_parse = recompute_from in ["download", "metrics_expand", "parse", "all"]
+        force_merge = recompute_from in [
+            "download",
+            "metrics_expand",
+            "parse",
+            "merge",
+            "all",
+        ]
+
+        # Run pipeline stages
+        self.download_raw_data(force_reload=force_download, verbose=verbose)
+        self.extract_step_mappings(force_reload=force_download, verbose=verbose)
+        self.expand_downstream_metrics(
+            force_reload=force_metrics_expand, verbose=verbose
+        )
+        self.parse_data(force_reload=force_parse, verbose=verbose)
+        self.create_derived_datasets(force_reload=force_merge, verbose=verbose)
+
+        if verbose:
+            print("Pipeline completed successfully!")
+
+    def run_legacy(self, force_reload: bool = False, verbose: bool = False) -> None:
+        """Legacy run method for backward compatibility.
 
         Args:
             force_reload: If True, recreate all files even if they exist
             verbose: If True, print progress messages for each step
         """
-        if verbose:
-            print("Starting DataDecide pipeline...")
-
-        self.download_raw_data(force_reload=force_reload, verbose=verbose)
-        self.extract_step_mappings(force_reload=force_reload, verbose=verbose)
-        self.parse_data(force_reload=force_reload, verbose=verbose)
-        self.create_derived_datasets(force_reload=force_reload, verbose=verbose)
-
-        if verbose:
-            print("Pipeline completed successfully!")
+        recompute_from = "all" if force_reload else None
+        self.run(recompute_from=recompute_from, verbose=verbose)
 
     def _create_full_eval_df(
         self,
