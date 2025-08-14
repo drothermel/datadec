@@ -1,10 +1,12 @@
-import math
-import json
-import re
 import itertools
+import json
+import math
+import re
 from pathlib import Path
+
 import pandas as pd
 from datasets import load_dataset
+
 from . import features as dd_lrs
 
 
@@ -573,12 +575,16 @@ class DataDecide:
         if not self.paths.ppl_eval_raw_path.exists() or force_reload:
             if verbose:
                 print("Downloading raw dfs")
-            ppl_dataset = load_dataset(self.defaults.hf_ds_names["perplexity_eval_ds"], split="train")
+            ppl_dataset = load_dataset(
+                self.defaults.hf_ds_names["perplexity_eval_ds"], split="train"
+            )
             ppl_dataset.to_parquet(self.paths.ppl_eval_raw_path)
 
         self._setup_dfs["ppl_raw_df"] = self.paths.ppl_eval_raw_path
         if not self.paths.downstream_eval_raw_path.exists() or force_reload:
-            dwn_dataset = load_dataset(self.defaults.hf_ds_names["downstream_eval_ds"], split="train")
+            dwn_dataset = load_dataset(
+                self.defaults.hf_ds_names["downstream_eval_ds"], split="train"
+            )
             dwn_dataset.to_parquet(self.paths.downstream_eval_raw_path)
 
         self._setup_dfs["dwn_raw_df"] = self.paths.downstream_eval_raw_path
@@ -771,6 +777,7 @@ def get_data_recipe_family(data_name: str, data_recipe_families: dict) -> str:
             return family
     return "unknown"
 
+
 def param_to_numeric(param_str: str) -> float:
     if param_str.endswith("M"):
         return float(param_str[:-1]) * 1e6
@@ -844,7 +851,7 @@ def prep_base_df(
     base_df = dd.merge_in_ds_and_model_details(base_df)
     if verbose:
         print(
-            f">> Merge in ds and model details shape: {base_d.shape[0]:,} rows x {base_df.shape[1]:,} cols"
+            f">> Merge in ds and model details shape: {base_df.shape[0]:,} rows x {base_df.shape[1]:,} cols"
         )
 
     if add_lr_cols:
