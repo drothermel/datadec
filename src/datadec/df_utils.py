@@ -87,6 +87,46 @@ def set_step_val_to_max_ppl_val(df: pd.DataFrame, step: int = 0) -> pd.DataFrame
     return df
 
 
+def select_by_data_param_combos(
+    df: pd.DataFrame,
+    data_param_combos: list[tuple[str, str]],
+    just_params: bool = False,
+    just_data: bool = False,
+) -> pd.DataFrame:
+    """Filter DataFrame by specific data/parameter combinations.
+
+    This function creates a mask for filtering DataFrames based on combinations
+    of data recipes and model parameters, with options to filter by just one dimension.
+
+    Args:
+        df: DataFrame to filter
+        data_param_combos: List of (data, params) tuples to match
+        just_params: If True, filter only by params (ignore data)
+        just_data: If True, filter only by data (ignore params)
+
+    Returns:
+        Filtered DataFrame containing only rows matching the specified combinations
+
+    Raises:
+        AssertionError: If both just_params and just_data are True
+    """
+    # Create a mask for each specific (data, params) combination
+    mask = pd.Series([False] * len(df), index=df.index)
+
+    for data, params in data_param_combos:
+        if just_params:
+            assert not just_data, "Cannot specify both just_params and just_data"
+            combo_mask = df["params"] == params
+        elif just_data:
+            assert not just_params, "Cannot specify both just_params and just_data"
+            combo_mask = df["data"] == data
+        else:
+            combo_mask = (df["data"] == data) & (df["params"] == params)
+        mask = mask | combo_mask
+
+    return df[mask]
+
+
 def create_mean_std_df(merged_df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """Create mean and standard deviation DataFrames by averaging across seeds.
 

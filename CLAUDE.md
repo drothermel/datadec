@@ -31,7 +31,8 @@ uv add -e .
 - `DataDecideDefaults`: Configuration constants, model architectures, and data recipe mappings
 - `prep_base_df()`: High-level function to prepare analysis-ready dataframes
 
-**datadec.features**: Learning rate calculation utilities
+**datadec.model_utils**: Model configuration and learning rate utilities  
+- Model parameter calculations and configuration generation
 - `add_lr_cols()`: Adds learning rate schedule columns to dataframes
 - Learning rate schedule functions for cosine annealing and warmup
 
@@ -64,7 +65,12 @@ Core ML/data libraries:
 src/datadec/
 ├── __init__.py          # Package initialization
 ├── data.py              # Main data processing classes and functions
-└── features.py          # Learning rate and feature engineering
+├── model_utils.py       # Model configuration and learning rate utilities
+├── df_utils.py          # DataFrame manipulation utilities
+├── data_utils.py        # Dataset-specific utilities
+├── pipeline.py          # ETL processing pipeline
+├── loader.py            # DataFrame loading and caching
+└── paths.py             # File path management
 
 scripts/
 └── download_data.py     # CLI script for dataset download and processing
@@ -77,6 +83,6 @@ The typical workflow involves:
 1. **Initialize DataDecide**: `dd = DataDecide(data_dir="./data")`
 2. **Access processed data**: Use properties like `dd.full_eval_ds`, `dd.mean_eval_ds`
 3. **Filter and analyze**: Use helper methods for filtering by model size, data recipe, etc.
-4. **Add features**: Use `datadec.features.add_lr_cols()` to add learning rate schedules
+4. **Add features**: Use `datadec.model_utils.add_lr_cols()` to add learning rate schedules
 
 The library handles caching of processed datasets automatically, with `force_reload` option to refresh data.

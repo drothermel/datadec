@@ -2,13 +2,11 @@ import itertools
 
 import pandas as pd
 
-from datadec import features as dd_lrs
 from datadec import constants as consts
-from datadec import df_utils
-from datadec import model_utils
+from datadec import data_utils, df_utils, model_utils
+from datadec.loader import DataFrameLoader
 from datadec.paths import DataDecidePaths
 from datadec.pipeline import DataPipeline
-from datadec.loader import DataFrameLoader
 
 
 class DataDecide:
@@ -37,7 +35,7 @@ class DataDecide:
         self.pipeline.run(force_reload=force_reload, verbose=verbose)
 
         # Cache static data that doesn't need lazy loading
-        self._ds_details_df = self._load_ds_details_df()
+        self._ds_details_df = data_utils.load_ds_details_df(self.paths.ds_details_path)
         self._model_details_df = model_utils.get_model_details_df()
         self.loader.cache_dataframe(self._model_details_df, "model_details_df")
 
@@ -170,62 +168,6 @@ class DataDecide:
         """
         self.loader.clear_cache(cache_key)
 
-    def _load_ds_details_df(self) -> pd.DataFrame:
-        """Load and clean the dataset details CSV file."""
-        df = pd.read_csv(self.paths.ds_details_path).rename(columns={"dataset": "data"})
-        # Apply data name corrections
-        df["data"] = (
-            df["data"]
-            .str.replace("Dolma1.7 (no math code)", "Dolma1.7 (no math, code)")
-            .str.replace("DCLM-Baseline (QC 7%", "DCLM-Baseline (QC 7%,")
-        )
-        return df
-
-
-def get_data_recipe_family(data_name: str, data_recipe_families: dict = None) -> str:
-    if data_recipe_families is None:
-        data_recipe_families = consts.DATA_RECIPE_FAMILIES
-    for family, names in data_recipe_families.items():
-        if data_name in names:
-            return family
-    return "unknown"
-
-
-def param_to_numeric(param_str: str) -> float:
-    if param_str.endswith("M"):
-        return float(param_str[:-1]) * 1e6
-    elif param_str.endswith("B"):
-        return float(param_str[:-1]) * 1e9
-    else:
-        # Try to convert directly if it's already numeric
-        try:
-            return float(param_str)
-        except ValueError:
-            raise ValueError(f"Cannot parse parameter string: {param_str}")
-
-
-def select_by_data_param_combos(
-    df: pd.DataFrame,
-    data_param_combos: list[tuple[str, str]],
-    just_params: bool = False,
-    just_data: bool = False,
-):
-    # Create a mask for each specific (data, params) combination
-    mask = pd.Series([False] * len(df), index=df.index)
-
-    for data, params in data_param_combos:
-        if just_params:
-            assert not just_data, "Cannot specify both just_params and just_data"
-            combo_mask = df["params"] == params
-        elif just_data:
-            assert not just_params, "Cannot specify both just_params and just_data"
-            combo_mask = df["data"] == data
-        else:
-            combo_mask = (df["data"] == data) & (df["params"] == params)
-        mask = mask | combo_mask
-
-    return df[mask]
-
 
 def prep_base_df(
     data_dir: str = "./data",
@@ -244,9 +186,11 @@ def prep_base_df(
         )
 
     if min_params is not None:
-        min_params_numeric = param_to_numeric(min_params)
+        min_params_numeric = model_utils.param_to_numeric(min_params)
         base_df = base_df[
-            base_df["params"].apply(lambda x: param_to_numeric(x) >= min_params_numeric)
+            base_df["params"].apply(
+                lambda x: model_utils.param_to_numeric(x) >= min_params_numeric
+            )
         ]
         if verbose:
             print(
@@ -268,7 +212,7 @@ def prep_base_df(
         )
 
     if add_lr_cols:
-        base_df = dd_lrs.add_lr_cols(base_df)
+        base_df = model_utils.add_lr_cols(base_df)
         if verbose:
             print(
                 f">> Add lr cols shape: {base_df.shape[0]:,} rows x {base_df.shape[1]:,} cols"
