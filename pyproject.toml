@@ -1,5 +1,5 @@
 [project]
-name = "datadecide-loader"
+name = "datadec"
 version = "0.1.0"
 description = "A library to download and process DataDecide datasets from Hugging Face."
 readme = "README.md"

@@ -1,7 +1,7 @@
 """Download and process DataDecide datasets."""
 
 import argparse
-from datadecide_loader.data import prep_base_df
+from datadec.data import prep_base_df
 
 
 def main():
