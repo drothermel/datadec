@@ -7,6 +7,7 @@ training parameter calculations, and string parsing related to model sizes.
 import math
 from typing import Dict, Any
 
+import numpy as np
 import pandas as pd
 
 from datadec import constants as consts
@@ -184,3 +185,182 @@ def get_model_details_df() -> pd.DataFrame:
     """
     model_configs = create_all_model_configs()
     return pd.DataFrame(model_configs).T.infer_objects()
+
+
+# Learning Rate Schedule Functions
+
+
+def get_lr_at_step(
+    step: int,
+    lr_warmup_start: float,
+    lr_max: float,
+    lr_final: float,
+    warmup_steps: int,
+    lr_decay_steps: int,
+) -> float:
+    """Get the learning rate at a specific training step.
+
+    Implements warmup followed by cosine annealing schedule.
+
+    Args:
+        step: Current training step
+        lr_warmup_start: Starting learning rate for warmup
+        lr_max: Maximum learning rate reached after warmup
+        lr_final: Final learning rate after decay
+        warmup_steps: Number of warmup steps
+        lr_decay_steps: Number of decay steps
+
+    Returns:
+        Learning rate at the specified step
+    """
+    if step <= warmup_steps:
+        return lr_warmup_start + (lr_max - lr_warmup_start) * step / warmup_steps
+    else:
+        decay_step = min(step - warmup_steps, lr_decay_steps)
+        if decay_step >= lr_decay_steps:
+            return lr_final
+        return lr_final + 0.5 * (lr_max - lr_final) * (
+            1 + np.cos(np.pi * decay_step / lr_decay_steps)
+        )
+
+
+def numerical_cosine_integral(
+    lr_max: float, lr_final: float, lr_decay_steps: int, decay_step: int
+) -> float:
+    """Numerically integrate the cosine annealing schedule.
+
+    Uses trapezoidal rule to compute the area under the cosine annealing curve.
+
+    Args:
+        lr_max: Maximum learning rate
+        lr_final: Final learning rate after decay
+        lr_decay_steps: Total number of decay steps
+        decay_step: Current decay step to integrate up to
+
+    Returns:
+        Cumulative learning rate from numerical integration
+    """
+    if decay_step <= 0:
+        return 0.0
+
+    # Use trapezoidal rule for integration
+    t_values = np.linspace(0, decay_step, int(decay_step) + 1)
+    lr_values = lr_final + 0.5 * (lr_max - lr_final) * (
+        1 + np.cos(np.pi * t_values / lr_decay_steps)
+    )
+
+    # Trapezoidal integration
+    return np.trapz(lr_values, t_values)
+
+
+def calculate_cumulative_lr(
+    step: int,
+    lr_warmup_start: float,
+    lr_max: float,
+    lr_final: float,
+    warmup_steps: int,
+    lr_decay_steps: int,
+) -> float:
+    """Calculate cumulative learning rate up to a given training step.
+
+    Computes the integral of the learning rate schedule from step 0 to the given step,
+    handling both warmup and cosine annealing phases.
+
+    Args:
+        step: Training step to calculate cumulative LR up to
+        lr_warmup_start: Starting learning rate for warmup
+        lr_max: Maximum learning rate reached after warmup
+        lr_final: Final learning rate after decay
+        warmup_steps: Number of warmup steps
+        lr_decay_steps: Number of decay steps
+
+    Returns:
+        Cumulative learning rate from step 0 to the given step
+    """
+    if step <= 0:
+        return 0.0
+
+    cumulative_lr = 0.0
+    if step <= warmup_steps:
+        t = step
+        cumulative_lr = lr_warmup_start * t + (lr_max - lr_warmup_start) * t**2 / (
+            2 * warmup_steps
+        )
+    else:
+        t = warmup_steps
+        warmup_cumulative = lr_warmup_start * t + (lr_max - lr_warmup_start) * t**2 / (
+            2 * warmup_steps
+        )
+        decay_step = min(step - warmup_steps, lr_decay_steps)
+        if decay_step > 0:
+            decay_cumulative = numerical_cosine_integral(
+                lr_max, lr_final, lr_decay_steps, decay_step
+            )
+            cumulative_lr = warmup_cumulative + decay_cumulative
+        else:
+            cumulative_lr = warmup_cumulative
+    return cumulative_lr
+
+
+def add_lr_cols(df: pd.DataFrame) -> pd.DataFrame:
+    """Add learning rate schedule columns to a DataFrame.
+
+    Adds 'lr_at_step' and 'cumulative_lr_at_step' columns based on the learning
+    rate schedule parameters already present in the DataFrame.
+
+    Args:
+        df: DataFrame containing learning rate schedule parameters
+            (lr_warmup_start, lr_max, lr_final, warmup_steps, lr_decay_steps)
+
+    Returns:
+        DataFrame with additional learning rate columns
+    """
+    df = df.copy()
+    df_by_params = (
+        df[
+            [
+                "params",
+                "step",
+                "lr_warmup_start",
+                "lr_max",
+                "lr_final",
+                "warmup_steps",
+                "lr_decay_steps",
+            ]
+        ]
+        .groupby(["params", "step"])
+        .first()
+        .reset_index()
+    )
+    df_by_params["lr_at_step"] = df_by_params.apply(
+        lambda row: get_lr_at_step(
+            row["step"],
+            row["lr_warmup_start"],
+            row["lr_max"],
+            row["lr_final"],
+            row["warmup_steps"],
+            row["lr_decay_steps"],
+        ),
+        axis=1,
+    )
+    df_by_params["cumulative_lr_at_step"] = df_by_params.apply(
+        lambda row: calculate_cumulative_lr(
+            row["step"],
+            row["lr_warmup_start"],
+            row["lr_max"],
+            row["lr_final"],
+            row["warmup_steps"],
+            row["lr_decay_steps"],
+        ),
+        axis=1,
+    )
+    df_by_params = df_by_params[
+        [
+            "params",
+            "step",
+            "lr_at_step",
+            "cumulative_lr_at_step",
+        ]
+    ]
+    df = df.merge(df_by_params, on=["params", "step"], how="left")
+    return df

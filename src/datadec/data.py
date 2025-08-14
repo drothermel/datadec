@@ -2,14 +2,11 @@ import itertools
 
 import pandas as pd
 
-from datadec import features as dd_lrs
 from datadec import constants as consts
-from datadec import df_utils
-from datadec import model_utils
-from datadec import data_utils
+from datadec import data_utils, df_utils, model_utils
+from datadec.loader import DataFrameLoader
 from datadec.paths import DataDecidePaths
 from datadec.pipeline import DataPipeline
-from datadec.loader import DataFrameLoader
 
 
 class DataDecide:
@@ -215,7 +212,7 @@ def prep_base_df(
         )
 
     if add_lr_cols:
-        base_df = dd_lrs.add_lr_cols(base_df)
+        base_df = model_utils.add_lr_cols(base_df)
         if verbose:
             print(
                 f">> Add lr cols shape: {base_df.shape[0]:,} rows x {base_df.shape[1]:,} cols"
