@@ -19,6 +19,14 @@ class DataPipeline:
             "aggregate",
         ]
 
+        self.stage_outputs = {
+            "download": ["ppl_raw", "dwn_raw"],
+            "metrics_expand": ["step_to_token_compute", "dwn_metrics_expanded"],
+            "parse": ["ppl_parsed", "dwn_parsed"],
+            "merge": ["full_eval"],
+            "aggregate": ["mean_eval", "std_eval"],
+        }
+
     def download_raw_data(
         self, force_reload: bool = False, verbose: bool = False
     ) -> None:
@@ -88,9 +96,32 @@ class DataPipeline:
             if verbose:
                 print("Starting DataDecide pipeline from 'all'...")
         elif recompute_from in self.pipeline_stages:
-            start_stage = self.pipeline_stages.index(recompute_from)
-            if verbose:
-                print(f"Starting DataDecide pipeline from '{recompute_from}'...")
+            requested_stage = self.pipeline_stages.index(recompute_from)
+            # Check if earlier stages have missing files
+            earliest_missing = self._find_earliest_missing_stage(0)
+            if earliest_missing < requested_stage:
+                start_stage = earliest_missing
+                missing_stage = self.pipeline_stages[earliest_missing]
+                if verbose:
+                    print(
+                        f"Files from stage '{missing_stage}' are missing, adjusting to start from '{missing_stage}' instead of '{recompute_from}'"
+                    )
+            else:
+                start_stage = requested_stage
+                if verbose:
+                    print(f"Starting DataDecide pipeline from '{recompute_from}'...")
+        elif recompute_from is None:
+            # Auto-detect earliest missing stage
+            start_stage = self._find_earliest_missing_stage(0)
+            if start_stage == len(self.pipeline_stages):
+                if verbose:
+                    print("All pipeline files exist, using cached data...")
+            else:
+                missing_stage = self.pipeline_stages[start_stage]
+                if verbose:
+                    print(
+                        f"Auto-detected missing files from stage '{missing_stage}', starting pipeline from there..."
+                    )
         else:
             if verbose:
                 print("Starting DataDecide pipeline (using cached files)...")
@@ -114,3 +145,22 @@ class DataPipeline:
 
         if verbose:
             print("Pipeline completed successfully!")
+
+    def _verify_stage_files(self, stage_name: str) -> bool:
+        """Check if all output files for a given stage exist."""
+        if stage_name not in self.stage_outputs:
+            return True
+
+        for file_name in self.stage_outputs[stage_name]:
+            file_path = self.paths.get_path(file_name)
+            if not file_path.exists():
+                return False
+        return True
+
+    def _find_earliest_missing_stage(self, from_stage: int = 0) -> int:
+        """Find the index of the first stage with missing output files."""
+        for i in range(from_stage, len(self.pipeline_stages)):
+            stage_name = self.pipeline_stages[i]
+            if not self._verify_stage_files(stage_name):
+                return i
+        return len(self.pipeline_stages)
