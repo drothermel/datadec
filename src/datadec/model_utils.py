@@ -149,6 +149,33 @@ def create_all_model_configs() -> Dict[str, Dict[str, Any]]:
     return model_configs
 
 
+def param_to_numeric(param_str: str) -> float:
+    """Convert parameter string to numeric value.
+
+    Converts model parameter strings like "300M" or "1B" to their numeric
+    float equivalents (e.g., 300000000.0, 1000000000.0).
+
+    Args:
+        param_str: Parameter string with M/B suffix or numeric string
+
+    Returns:
+        Numeric parameter count as float
+
+    Raises:
+        ValueError: If parameter string cannot be parsed
+    """
+    if param_str.endswith("M"):
+        return float(param_str[:-1]) * 1e6
+    elif param_str.endswith("B"):
+        return float(param_str[:-1]) * 1e9
+    else:
+        # Try to convert directly if it's already numeric
+        try:
+            return float(param_str)
+        except ValueError:
+            raise ValueError(f"Cannot parse parameter string: {param_str}")
+
+
 def get_model_details_df() -> pd.DataFrame:
     """Get DataFrame with model configuration details.
 
