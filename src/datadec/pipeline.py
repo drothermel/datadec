@@ -50,22 +50,22 @@ class DataPipeline:
             verbose: If True, print progress messages
         """
         # Download perplexity evaluation dataset
-        if not self.paths.ppl_eval_raw_path.exists() or force_reload:
+        if not self.paths.get_path("ppl_raw").exists() or force_reload:
             if verbose:
                 print("Downloading perplexity evaluation dataset...")
             ppl_dataset = load_dataset(
                 consts.HF_DATASET_NAMES["perplexity_eval_ds"], split="train"
             )
-            ppl_dataset.to_parquet(self.paths.ppl_eval_raw_path)
+            ppl_dataset.to_parquet(self.paths.get_path("ppl_raw"))
 
         # Download downstream evaluation dataset
-        if not self.paths.downstream_eval_raw_path.exists() or force_reload:
+        if not self.paths.get_path("dwn_raw").exists() or force_reload:
             if verbose:
                 print("Downloading downstream evaluation dataset...")
             dwn_dataset = load_dataset(
                 consts.HF_DATASET_NAMES["downstream_eval_ds"], split="train"
             )
-            dwn_dataset.to_parquet(self.paths.downstream_eval_raw_path)
+            dwn_dataset.to_parquet(self.paths.get_path("dwn_raw"))
 
     def extract_step_mappings(
         self, force_reload: bool = False, verbose: bool = False
@@ -79,14 +79,14 @@ class DataPipeline:
             force_reload: If True, recreate even if file exists
             verbose: If True, print progress messages
         """
-        if not self.paths.step_to_token_compute_path.exists() or force_reload:
+        if not self.paths.get_path("step_to_token_compute").exists() or force_reload:
             if verbose:
                 print("Extracting step-to-token and step-to-compute mapping...")
 
             # Load downstream data to extract step mappings
-            dwn_df = pd.read_parquet(self.paths.downstream_eval_raw_path)
+            dwn_df = pd.read_parquet(self.paths.get_path("dwn_raw"))
             step_to_token_compute_df = parsing.make_step_to_token_compute_df(dwn_df)
-            step_to_token_compute_df.to_parquet(self.paths.step_to_token_compute_path)
+            step_to_token_compute_df.to_parquet(self.paths.get_path("step_to_token_compute"))
 
     def expand_downstream_metrics(
         self, force_reload: bool = False, verbose: bool = False
@@ -100,14 +100,14 @@ class DataPipeline:
             force_reload: If True, re-expand even if file exists
             verbose: If True, print progress messages
         """
-        if not self.paths.dwn_metrics_expanded_path.exists() or force_reload:
+        if not self.paths.get_path("dwn_metrics_expanded").exists() or force_reload:
             if verbose:
                 print(
                     "Expanding downstream metrics column (this may take 2-5 minutes)..."
                 )
-            dwn_df = pd.read_parquet(self.paths.downstream_eval_raw_path)
+            dwn_df = pd.read_parquet(self.paths.get_path("dwn_raw"))
             metrics_expanded_df = parsing.expand_downstream_metrics(dwn_df)
-            metrics_expanded_df.to_parquet(self.paths.dwn_metrics_expanded_path)
+            metrics_expanded_df.to_parquet(self.paths.get_path("dwn_metrics_expanded"))
 
     def parse_data(self, force_reload: bool = False, verbose: bool = False) -> None:
         """Parse evaluation datasets into structured format.
@@ -120,20 +120,20 @@ class DataPipeline:
             verbose: If True, print progress messages
         """
         # Parse perplexity data
-        if not self.paths.ppl_eval_parsed_path.exists() or force_reload:
+        if not self.paths.get_path("ppl_parsed").exists() or force_reload:
             if verbose:
                 print("Parsing perplexity evaluation data...")
-            ppl_df = pd.read_parquet(self.paths.ppl_eval_raw_path)
+            ppl_df = pd.read_parquet(self.paths.get_path("ppl_raw"))
             ppl_parsed_df = parsing.parse_perplexity_dataframe(ppl_df)
-            ppl_parsed_df.to_parquet(self.paths.ppl_eval_parsed_path)
+            ppl_parsed_df.to_parquet(self.paths.get_path("ppl_parsed"))
 
         # Complete downstream parsing from expanded metrics
-        if not self.paths.downstream_eval_parsed_path.exists() or force_reload:
+        if not self.paths.get_path("dwn_parsed").exists() or force_reload:
             if verbose:
                 print("Completing downstream parsing...")
-            metrics_expanded_df = pd.read_parquet(self.paths.dwn_metrics_expanded_path)
+            metrics_expanded_df = pd.read_parquet(self.paths.get_path("dwn_metrics_expanded"))
             dwn_parsed_df = parsing.complete_downstream_parsing(metrics_expanded_df)
-            dwn_parsed_df.to_parquet(self.paths.downstream_eval_parsed_path)
+            dwn_parsed_df.to_parquet(self.paths.get_path("dwn_parsed"))
 
     def create_derived_datasets(
         self, force_reload: bool = False, verbose: bool = False
@@ -148,15 +148,15 @@ class DataPipeline:
             verbose: If True, print progress messages
         """
         # Create full evaluation dataset
-        if not self.paths.full_eval_ds_path.exists() or force_reload:
+        if not self.paths.get_path("full_eval").exists() or force_reload:
             if verbose:
                 print("Creating full evaluation dataset...")
 
             # Load parsed data
-            dwn_parsed_df = pd.read_parquet(self.paths.downstream_eval_parsed_path)
-            ppl_parsed_df = pd.read_parquet(self.paths.ppl_eval_parsed_path)
+            dwn_parsed_df = pd.read_parquet(self.paths.get_path("dwn_parsed"))
+            ppl_parsed_df = pd.read_parquet(self.paths.get_path("ppl_parsed"))
             step_to_token_compute_df = pd.read_parquet(
-                self.paths.step_to_token_compute_path
+                self.paths.get_path("step_to_token_compute")
             )
 
             # Create merged dataset
@@ -165,22 +165,22 @@ class DataPipeline:
                 ppl_parsed_df,
                 step_to_token_compute_df,
             )
-            full_eval_ds.to_parquet(self.paths.full_eval_ds_path)
+            full_eval_ds.to_parquet(self.paths.get_path("full_eval"))
 
         # Create mean and standard deviation datasets
         if (
-            not self.paths.mean_eval_ds_path.exists()
-            or not self.paths.std_eval_ds_path.exists()
+            not self.paths.get_path("mean_eval").exists()
+            or not self.paths.get_path("std_eval").exists()
             or force_reload
         ):
             if verbose:
                 print("Creating mean and standard deviation datasets...")
 
-            full_eval_ds = pd.read_parquet(self.paths.full_eval_ds_path)
+            full_eval_ds = pd.read_parquet(self.paths.get_path("full_eval"))
             mean_eval_ds, std_eval_ds = df_utils.create_mean_std_df(full_eval_ds)
 
-            mean_eval_ds.to_parquet(self.paths.mean_eval_ds_path)
-            std_eval_ds.to_parquet(self.paths.std_eval_ds_path)
+            mean_eval_ds.to_parquet(self.paths.get_path("mean_eval"))
+            std_eval_ds.to_parquet(self.paths.get_path("std_eval"))
 
     def run(self, recompute_from: str = None, verbose: bool = False) -> None:
         """Run the data processing pipeline with granular recompute control.

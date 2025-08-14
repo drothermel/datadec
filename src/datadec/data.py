@@ -120,58 +120,19 @@ class DataDecide:
 
     def load_dataframe(self, name: str) -> pd.DataFrame:
         """Load any intermediate or derived DataFrame by name.
-
-        Available DataFrames:
-        - "ppl_raw": Raw perplexity evaluation data
-        - "dwn_raw": Raw downstream evaluation data
-        - "ppl_parsed": Parsed perplexity evaluation data
-        - "dwn_parsed": Parsed downstream evaluation data
-        - "dwn_metrics_expanded": Downstream data after metrics expansion (slow step)
-        - "step_to_token_compute": Step-to-token/compute mapping
-        - "std_eval": Standard deviation evaluation dataset
-        - "full_eval_with_details": Full eval merged with model/dataset details
-        - "mean_eval_with_lr": Mean eval with learning rate columns
-
+        
+        See paths.dataframes for all available DataFrame names.
+        
         Args:
-            name: Name of the DataFrame to load
-
+            name: Name of the DataFrame to load (from paths.available_dataframes)
+            
         Returns:
             Requested DataFrame
-
+            
         Raises:
             ValueError: If DataFrame name is not recognized
         """
-        # Map friendly names to file paths and cache keys
-        dataframe_map = {
-            "ppl_raw": (self.paths.ppl_eval_raw_path, "ppl_raw"),
-            "dwn_raw": (self.paths.downstream_eval_raw_path, "dwn_raw"),
-            "ppl_parsed": (self.paths.ppl_eval_parsed_path, "ppl_parsed"),
-            "dwn_parsed": (self.paths.downstream_eval_parsed_path, "dwn_parsed"),
-            "dwn_metrics_expanded": (
-                self.paths.dwn_metrics_expanded_path,
-                "dwn_metrics_expanded",
-            ),
-            "step_to_token_compute": (
-                self.paths.step_to_token_compute_path,
-                "step_to_token_compute",
-            ),
-            "std_eval": (self.paths.std_eval_ds_path, "std_eval"),
-            "full_eval_with_details": (
-                self.paths.full_eval_with_details_path,
-                "full_eval_with_details",
-            ),
-            "mean_eval_with_lr": (
-                self.paths.mean_eval_with_lr_path,
-                "mean_eval_with_lr",
-            ),
-        }
-
-        if name not in dataframe_map:
-            available = ", ".join(sorted(dataframe_map.keys()))
-            raise ValueError(f"Unknown DataFrame '{name}'. Available: {available}")
-
-        file_path, cache_key = dataframe_map[name]
-        return self.loader.load(file_path, cache_key)
+        return self.loader.load(self.paths.get_path(name), name)
 
     def merge_in_ds_and_model_details(self, input_df: pd.DataFrame) -> pd.DataFrame:
         """Merge dataset and model details into the input DataFrame."""

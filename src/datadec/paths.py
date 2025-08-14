@@ -10,8 +10,8 @@ from pathlib import Path
 class DataDecidePaths:
     """Manages file paths for DataDecide datasets and processed outputs.
 
-    This class centralizes all path construction logic and ensures that
-    necessary directories are created automatically.
+    This class centralizes all path construction logic using a single dictionary
+    that serves as the source of truth for all DataFrame file locations.
     """
 
     def __init__(self, data_dir: str = "./data"):
@@ -23,7 +23,55 @@ class DataDecidePaths:
         self.data_dir = Path(data_dir) / "datadecide"
         self.dataset_dir = self.data_dir / "datasets"
         self.dataset_dir.mkdir(parents=True, exist_ok=True)
+
+        # Single source of truth - all DataFrame paths in one place
+        self.dataframes = {
+            # Raw data
+            "ppl_raw": "ppl_eval",
+            "dwn_raw": "downstream_eval",
+            
+            # Intermediate processing (in order of pipeline execution)
+            "dwn_metrics_expanded": "dwn_metrics_expanded",  # The slow step (2-5 mins)
+            "dwn_mmlu_averaged": "dwn_mmlu_averaged",
+            "dwn_pivoted": "dwn_pivoted", 
+            "ppl_dwn_merged": "ppl_dwn_merged",
+            
+            # Parsed data
+            "ppl_parsed": "ppl_eval_parsed",
+            "dwn_parsed": "downstream_eval_parsed",
+            "step_to_token_compute": "step_to_token_compute",
+            
+            # Final datasets
+            "full_eval": "full_eval",
+            "mean_eval": "mean_eval",
+            "std_eval": "std_eval",
+            
+            # Derived analysis DataFrames
+            "full_eval_with_details": "full_eval_with_details",
+            "full_eval_with_lr": "full_eval_with_lr",
+            "mean_eval_with_details": "mean_eval_with_details",
+            "mean_eval_with_lr": "mean_eval_with_lr",
+        }
+
+        # Special non-parquet paths
         self.ds_details_path = self.data_dir / "dataset_features.csv"
+
+    def get_path(self, name: str) -> Path:
+        """Get path for a DataFrame by name.
+
+        Args:
+            name: Name of the DataFrame (key from self.dataframes)
+
+        Returns:
+            Path to the parquet file for the DataFrame
+
+        Raises:
+            ValueError: If DataFrame name is not recognized
+        """
+        if name not in self.dataframes:
+            available = ", ".join(sorted(self.dataframes.keys()))
+            raise ValueError(f"Unknown dataframe '{name}'. Available: {available}")
+        return self.data_dir / f"{self.dataframes[name]}.parquet"
 
     def parquet_path(self, name: str) -> Path:
         """Get path for a parquet file in the data directory.
@@ -47,86 +95,7 @@ class DataDecidePaths:
         """
         return self.dataset_dir / f"dataset_{max_params_str}.pkl"
 
-    # ------------ DataDecide Raw Paths ------------
     @property
-    def ppl_eval_raw_path(self) -> Path:
-        """Path to raw perplexity evaluation data."""
-        return self.parquet_path("ppl_eval")
-
-    @property
-    def downstream_eval_raw_path(self) -> Path:
-        """Path to raw downstream evaluation data."""
-        return self.parquet_path("downstream_eval")
-
-    # ------------ DataDecide Parsed Paths ------------
-    @property
-    def step_to_token_compute_path(self) -> Path:
-        """Path to step-to-token-compute mapping data."""
-        return self.parquet_path("step_to_token_compute")
-
-    @property
-    def ppl_eval_parsed_path(self) -> Path:
-        """Path to parsed perplexity evaluation data."""
-        return self.parquet_path("ppl_eval_parsed")
-
-    @property
-    def downstream_eval_parsed_path(self) -> Path:
-        """Path to parsed downstream evaluation data."""
-        return self.parquet_path("downstream_eval_parsed")
-
-    @property
-    def full_eval_ds_path(self) -> Path:
-        """Path to full evaluation dataset (merged ppl + downstream)."""
-        return self.parquet_path("full_eval")
-
-    @property
-    def mean_eval_ds_path(self) -> Path:
-        """Path to mean evaluation dataset (averaged across seeds)."""
-        return self.parquet_path("mean_eval")
-
-    @property
-    def std_eval_ds_path(self) -> Path:
-        """Path to standard deviation evaluation dataset."""
-        return self.parquet_path("std_eval")
-
-    # ------------ Intermediate Processing Paths ------------
-    @property
-    def dwn_metrics_expanded_path(self) -> Path:
-        """Path to downstream data after metrics column expansion (slow step)."""
-        return self.parquet_path("dwn_metrics_expanded")
-
-    @property
-    def dwn_mmlu_averaged_path(self) -> Path:
-        """Path to downstream data after MMLU averaging."""
-        return self.parquet_path("dwn_mmlu_averaged")
-
-    @property
-    def dwn_pivoted_path(self) -> Path:
-        """Path to downstream data after task metrics pivoting."""
-        return self.parquet_path("dwn_pivoted")
-
-    @property
-    def ppl_dwn_merged_path(self) -> Path:
-        """Path to merged perplexity and downstream data (before tokens/compute)."""
-        return self.parquet_path("ppl_dwn_merged")
-
-    # ------------ Derived Analysis Paths ------------
-    @property
-    def full_eval_with_details_path(self) -> Path:
-        """Path to full eval merged with model/dataset details."""
-        return self.parquet_path("full_eval_with_details")
-
-    @property
-    def full_eval_with_lr_path(self) -> Path:
-        """Path to full eval with learning rate columns."""
-        return self.parquet_path("full_eval_with_lr")
-
-    @property
-    def mean_eval_with_details_path(self) -> Path:
-        """Path to mean eval merged with model/dataset details."""
-        return self.parquet_path("mean_eval_with_details")
-
-    @property
-    def mean_eval_with_lr_path(self) -> Path:
-        """Path to mean eval with learning rate columns."""
-        return self.parquet_path("mean_eval_with_lr")
+    def available_dataframes(self) -> list[str]:
+        """Get list of all available DataFrame names."""
+        return list(self.dataframes.keys())
