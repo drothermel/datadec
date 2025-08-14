@@ -53,8 +53,9 @@ class DataDecidePaths:
             "mean_eval_with_lr": "mean_eval_with_lr",
         }
 
-        # Special non-parquet paths
-        self.ds_details_path = self.data_dir / "dataset_features.csv"
+        # Special non-parquet paths (static files in package)
+        package_root = Path(__file__).parent
+        self.ds_details_path = package_root / "data" / "dataset_features.csv"
 
     def get_path(self, name: str) -> Path:
         """Get path for a DataFrame by name.

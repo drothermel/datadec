@@ -65,19 +65,24 @@ class DataDecide:
         # Pre-cache full and mean eval DataFrames since they're most commonly accessed
         try:
             # Cache the main datasets
-            self.loader.load(self.paths.full_eval_ds_path, "full_eval")
-            self.loader.load(self.paths.mean_eval_ds_path, "mean_eval")
+            self.loader.load(self.paths.get_path("full_eval"), "full_eval")
+            self.loader.load(self.paths.get_path("mean_eval"), "mean_eval")
 
             # Cache additional derived DataFrames if they exist
-            derived_cache_configs = [
-                ("full_eval_with_details", self.paths.full_eval_with_details_path),
-                ("mean_eval_with_lr", self.paths.mean_eval_with_lr_path),
-                ("std_eval", self.paths.std_eval_ds_path),
+            derived_cache_names = [
+                ("full_eval_with_details", "full_eval_with_details"),
+                ("mean_eval_with_lr", "mean_eval_with_lr"),
+                ("std_eval", "std_eval"),
             ]
 
-            for cache_key, path in derived_cache_configs:
-                if path.exists():
-                    self.loader.load(path, cache_key)
+            for cache_key, df_name in derived_cache_names:
+                try:
+                    path = self.paths.get_path(df_name)
+                    if path.exists():
+                        self.loader.load(path, cache_key)
+                except ValueError:
+                    # DataFrame name not found in paths, skip
+                    continue
 
         except Exception:
             # If caching fails, continue without pre-caching
@@ -99,12 +104,12 @@ class DataDecide:
     @property
     def full_eval(self) -> pd.DataFrame:
         """Full evaluation dataset (merged perplexity + downstream)."""
-        return self.loader.load(self.paths.full_eval_ds_path, "full_eval")
+        return self.loader.load(self.paths.get_path("full_eval"), "full_eval")
 
     @property
     def mean_eval(self) -> pd.DataFrame:
         """Mean evaluation dataset (averaged across seeds)."""
-        return self.loader.load(self.paths.mean_eval_ds_path, "mean_eval")
+        return self.loader.load(self.paths.get_path("mean_eval"), "mean_eval")
 
     @property
     def dataset_details(self) -> pd.DataFrame:

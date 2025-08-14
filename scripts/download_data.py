@@ -146,7 +146,17 @@ def demo_data_exploration(dd: DataDecide) -> None:
     print("\n📊 Dataset statistics:")
     print(f"   • Unique models:         {full_eval['params'].nunique()}")
     print(f"   • Unique data recipes:   {full_eval['data'].nunique()}")
-    print(f"   • Unique tasks:          {full_eval['task'].nunique()}")
+    
+    # Count task columns (tasks are columns, not rows)
+    task_cols = [col for col in full_eval.columns if any(task in col for task in ['mmlu', 'arc', 'hellaswag', 'boolq', 'csqa', 'openbookqa', 'piqa', 'socialiqa', 'winogrande'])]
+    unique_tasks = set()
+    for col in task_cols:
+        for task in ['mmlu', 'arc_challenge', 'arc_easy', 'hellaswag', 'boolq', 'csqa', 'openbookqa', 'piqa', 'socialiqa', 'winogrande']:
+            if task in col:
+                unique_tasks.add(task)
+                break
+    
+    print(f"   • Evaluation tasks:      {len(unique_tasks)} tasks")
     print(f"   • Total training steps:  {full_eval['step'].max():,}")
     print(f"   • Seeds per experiment:  {full_eval['seed'].nunique()}")
 
