@@ -9,14 +9,14 @@ from pathlib import Path
 
 class DataDecidePaths:
     """Manages file paths for DataDecide datasets and processed outputs.
-    
+
     This class centralizes all path construction logic and ensures that
     necessary directories are created automatically.
     """
-    
+
     def __init__(self, data_dir: str = "./data"):
         """Initialize paths with base data directory.
-        
+
         Args:
             data_dir: Base directory for all DataDecide data storage
         """
@@ -27,10 +27,10 @@ class DataDecidePaths:
 
     def parquet_path(self, name: str) -> Path:
         """Get path for a parquet file in the data directory.
-        
+
         Args:
             name: Base name for the parquet file (without extension)
-            
+
         Returns:
             Path to the parquet file
         """
@@ -38,10 +38,10 @@ class DataDecidePaths:
 
     def dataset_path(self, max_params_str: str) -> Path:
         """Get path for a dataset pickle file.
-        
+
         Args:
             max_params_str: Parameter size string (e.g., "1B", "300M")
-            
+
         Returns:
             Path to the dataset pickle file
         """
