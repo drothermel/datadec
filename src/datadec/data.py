@@ -1,13 +1,13 @@
 import itertools
 import json
 import math
-import re
 from pathlib import Path
 
 import pandas as pd
 from datasets import load_dataset
 
-from . import features as dd_lrs
+from datadec import features as dd_lrs
+from datadec import constants as consts
 
 
 class DataDecidePaths:
@@ -58,184 +58,37 @@ class DataDecidePaths:
         return self.parquet_path("std_eval")
 
 
-# Model details are from https://github.com/allenai/OLMo/blob/7094aab0448096f4994cae881edbd629d6c2f3de/scripts/ladder.py#L352
 class DataDecideDefaults:
     def __init__(self):
         self.model_configs = {}
-
-        self.hf_ds_names = {
-            "downstream_eval_ds": "allenai/DataDecide-eval-results",
-            "downstream_instance_ds": "allenai/DataDecide-eval-instances",
-            "perplexity_eval_ds": "allenai/DataDecide-ppl-results",
-        }
-        self._number_unit_re = re.compile(r"^([0-9]+)([a-zA-Z]+)$")
-        self.max_seq_len = 2_048
-        self.model_size_norm_value = 108_000_000
-        self.lr_exponent = -1 / 3
-        self.lr_max_base = 0.0047
-        self.lr_final_ratio = 0.01
-        self.bs_exponent = 2 / 3
-        self.gpus_per_node = 8  # used for bs rounding
-        self.microbatch_size = 4  # used for bs rounding
-        self.model_shapes = {
-            "4M": {"d_model": 64, "n_heads": 8, "n_layers": 8, "mlp_ratio": 8},
-            "6M": {"d_model": 96, "n_heads": 8, "n_layers": 8, "mlp_ratio": 8},
-            "8M": {"d_model": 128, "n_heads": 8, "n_layers": 8, "mlp_ratio": 8},
-            "10M": {"d_model": 144, "n_heads": 8, "n_layers": 8, "mlp_ratio": 8},
-            "14M": {"d_model": 192, "n_heads": 8, "n_layers": 8, "mlp_ratio": 8},
-            "16M": {"d_model": 208, "n_heads": 8, "n_layers": 8, "mlp_ratio": 8},
-            "20M": {"d_model": 192, "n_heads": 8, "n_layers": 16, "mlp_ratio": 8},
-            "60M": {"d_model": 384, "n_heads": 12, "n_layers": 16, "mlp_ratio": 8},
-            "90M": {"d_model": 528, "n_heads": 12, "n_layers": 16, "mlp_ratio": 8},
-            "150M": {"d_model": 768, "n_heads": 12, "n_layers": 12, "mlp_ratio": 8},
-            "300M": {"d_model": 1024, "n_heads": 16, "n_layers": 16, "mlp_ratio": 8},
-            "530M": {"d_model": 1344, "n_heads": 16, "n_layers": 16, "mlp_ratio": 8},
-            "750M": {"d_model": 1536, "n_heads": 16, "n_layers": 16, "mlp_ratio": 8},
-            "1B": {"d_model": 2048, "n_heads": 16, "n_layers": 16, "mlp_ratio": 8},
-        }
-        self.hardcoded_size_mapping = {
-            "4M": 3_744_832,
-            "6M": 6_010_464,
-            "8M": 8_538_240,
-            "10M": 9_900_432,
-            "14M": 14_380_224,
-            "16M": 16_004_560,
-            "20M": 19_101_888,
-            "60M": 57_078_144,
-            "90M": 97_946_640,
-            "150M": 150_000_000,
-            "300M": 300_000_000,
-            "530M": 530_000_000,
-            "750M": 750_000_000,
-            "1B": 1_000_000_000,
-        }
-        self.ppl_name_map = {
-            "eval/wikitext_103-validation/Perplexity": "wikitext_103-valppl",
-            "eval/pile-validation/Perplexity": "pile-valppl",
-            "eval/c4_en-validation/Perplexity": "c4_en-valppl",
-            "eval/m2d2_s2orc-validation/Perplexity": "m2d2_s2orc-valppl",
-            "eval/ice-validation/Perplexity": "ice-valppl",
-            "eval/dolma_wiki-validation/Perplexity": "dolma_wiki-valppl",
-            "eval/dolma_stack-validation/Perplexity": "dolma_stack-valppl",
-            "eval/dolma_reddit-validation/Perplexity": "dolma_reddit-valppl",
-            "eval/dolma_pes2o-validation/Perplexity": "dolma_pes2o-valppl",
-            "eval/dolma_common-crawl-validation/Perplexity": "dolma_common-crawl-valppl",
-            "eval/dolma_books-validation/Perplexity": "dolma_books-valppl",
-        }
-        self.seed_map = {
-            "default": 0,
-            "small aux 2": 1,
-            "small aux 3": 2,
-            "large aux 2": 3,
-            "large aux 3": 4,
-        }
-        self.data_recipe_families = {
-            "dolma17": [
-                "Dolma1.7",
-                "Dolma1.7 (no code)",
-                "Dolma1.7 (no math, code)",
-                "Dolma1.7 (no Reddit)",
-                "Dolma1.7 (no Flan)",
-            ],
-            "dolma16pp": ["Dolma1.6++"],
-            "c4": ["C4"],
-            "fineweb": ["FineWeb-Pro", "FineWeb-Edu"],
-            "falcon": ["Falcon"],
-            "falcon_cc": [
-                "Falcon+CC",
-                "Falcon+CC (QC 10%)",
-                "Falcon+CC (QC 20%)",
-                "Falcon+CC (QC Orig 10%)",
-                "Falcon+CC (QC Tulu 10%)",
-            ],
-            "dclm": [
-                "DCLM-Baseline",
-                "DCLM-Baseline (QC 10%)",
-                "DCLM-Baseline (QC 20%)",
-                "DCLM-Baseline (QC 7%, FW3)",
-                "DCLM-Baseline (QC 7%, FW2)",
-                "DCLM-Baseline (QC FW 3%)",
-                "DCLM-Baseline (QC FW 10%)",
-            ],
-            "mix": [
-                "DCLM-Baseline 25% / Dolma 75%",
-                "DCLM-Baseline 50% / Dolma 50%",
-                "DCLM-Baseline 75% / Dolma 25%",
-            ],
-        }
-        self.all_data_names = self._all_data_names()
-        self.all_param_strs = list(self.model_shapes.keys())
         self.fill_all_model_configs()
 
     @property
     def model_details_df(self):
         return pd.DataFrame(self.model_configs).T.infer_objects()
 
-    def _all_data_names(self) -> list[str]:
-        all_data_names = []
-        for ds_list in self.data_recipe_families.values():
-            all_data_names.extend(ds_list)
-        return all_data_names
-
     def make_model_config(self, model_size_str: str, **kwargs):
-        model_config_base = {
-            # Adding other defaults here
-            "params": model_size_str,
-            "model_size_str": model_size_str,
-            "default_seed": 6198,
-            "length_str": "5xC",
-            "lr_warmup_start": 0.0,
-            # Original values
-            "d_model": 768,
-            "n_heads": 12,
-            "n_layers": 12,
-            "mlp_ratio": 8,
-            "weight_tying": False,
-            "alibi": False,
-            "rope": True,
-            "flash_attention": True,
-            "attention_dropout": 0.0,
-            "attention_layer_norm": False,
-            "include_bias": False,
-            "layer_norm_type": "rms",
-            "layer_norm_with_affine": True,
-            "layer_norm_eps": 1e-6,
-            "bias_for_layer_norm": False,
-            "attention_layer_norm_with_affine": False,
-            "activation_type": "swiglu",
-            "residual_dropout": 0.0,
-            "embedding_dropout": 0.0,
-            "max_sequence_length": 2048,
-            "vocab_size": 50280,
-            "embedding_size": 50304,
-            "eos_token_id": 50279,
-            "pad_token_id": 1,
-            "init_device": "cuda",
-            "init_fn": "normal",
-            "init_std": 0.02,
-            "init_cutoff_factor": 3,
-        }
-        mc = {**model_config_base, **kwargs}
+        mc = {**consts.MODEL_CONFIG_BASE, "params": model_size_str, "model_size_str": model_size_str, **kwargs}
         mc["model_size"] = int(self.parse_model_size_str(mc["model_size_str"]))
         mc["batch_size"] = int(self.calc_batch_size(mc["model_size_str"]))
         mc["lr_max"] = self.calc_lr_max(mc["model_size_str"])
-        mc["lr_final"] = self.lr_final_ratio * mc["lr_max"]
+        mc["lr_final"] = consts.LR_FINAL_RATIO * mc["lr_max"]
         mc["warmup_tokens"] = int(self.calc_warmup_tokens(mc["model_size_str"]))
         mc["total_tokens"] = int(
             self.parse_token_length_str(mc["length_str"], mc["model_size_str"])
         )
         mc["lr_decay_tokens"] = int(mc["total_tokens"] - mc["warmup_tokens"])
-        mc["total_seqs"] = int(round(mc["total_tokens"] / self.max_seq_len))
+        mc["total_seqs"] = int(round(mc["total_tokens"] / consts.MAX_SEQ_LEN))
         mc["total_steps"] = int(
-            math.ceil(mc["total_tokens"] / (mc["batch_size"] * self.max_seq_len))
+            math.ceil(mc["total_tokens"] / (mc["batch_size"] * consts.MAX_SEQ_LEN))
         )
         mc["warmup_perc"] = mc["warmup_tokens"] / mc["total_tokens"]
         mc["warmup_steps"] = int(
-            math.ceil(mc["warmup_tokens"] / (mc["batch_size"] * self.max_seq_len))
+            math.ceil(mc["warmup_tokens"] / (mc["batch_size"] * consts.MAX_SEQ_LEN))
         )
         mc["lr_decay_steps"] = int(mc["total_steps"] - mc["warmup_steps"])
         mc["theoretical_tokens_per_step"] = int(
-            round(self.max_seq_len * mc["batch_size"])
+            round(consts.MAX_SEQ_LEN * mc["batch_size"])
         )
         mc["10_perc_lrdecay_steps"] = int(round(mc["lr_decay_steps"] * 0.1))
         mc["early_window_10p_end_step"] = (
@@ -245,15 +98,15 @@ class DataDecideDefaults:
         return mc
 
     def fill_all_model_configs(self):
-        for param_str, cfg in self.model_shapes.items():
+        for param_str, cfg in consts.MODEL_SHAPES.items():
             self.model_configs[param_str] = self.make_model_config(param_str, **cfg)
 
     def parse_model_size_str(self, size_str: str) -> int:
-        return self.hardcoded_size_mapping[size_str]
+        return consts.HARDCODED_SIZE_MAPPING[size_str]
 
     def parse_token_length_str(self, length_str: str, model_size_str: str) -> int:
         model_size = self.parse_model_size_str(model_size_str)
-        length_in_tokens, length_unit = self._number_unit_re.match(
+        length_in_tokens, length_unit = consts.NUMBER_UNIT_RE.match(
             length_str.strip().upper()
         ).groups()  # type: ignore
         assert length_unit == "XC"
@@ -261,10 +114,10 @@ class DataDecideDefaults:
         return length_in_tokens * 20 * model_size
 
     def calc_batch_size(self, model_size_str: str) -> int:
-        assert self.max_seq_len == 2_048
+        assert consts.MAX_SEQ_LEN == 2_048
         model_size = self.parse_model_size_str(model_size_str)
-        batch_size = 160 * (model_size / self.model_size_norm_value) ** self.bs_exponent
-        rounding_size = self.gpus_per_node * self.microbatch_size
+        batch_size = 160 * (model_size / consts.MODEL_SIZE_NORM_VALUE) ** consts.BS_EXPONENT
+        rounding_size = consts.GPUS_PER_NODE * consts.MICROBATCH_SIZE
         batch_size /= rounding_size
         batch_size = round(batch_size)
         batch_size *= rounding_size
@@ -273,8 +126,8 @@ class DataDecideDefaults:
     def calc_lr_max(self, model_size_str: str) -> float:
         model_size = self.parse_model_size_str(model_size_str)
         return (
-            self.lr_max_base
-            * (model_size / self.model_size_norm_value) ** self.lr_exponent
+            consts.LR_MAX_BASE
+            * (model_size / consts.MODEL_SIZE_NORM_VALUE) ** consts.LR_EXPONENT
         )
 
     def calc_warmup_tokens(self, model_size_str: str) -> int:
@@ -282,146 +135,13 @@ class DataDecideDefaults:
         bs = self.calc_batch_size(model_size_str)
         # model_size / bs = num_warmup_steps
         # (model_size / bs) * max_seq_len = num_warmup_tokens
-        return round(model_size / (bs / self.max_seq_len))
+        return round(model_size / (bs / consts.MAX_SEQ_LEN))
 
 
 class DataDecide:
     def __init__(self, data_dir: str = "./data", force_reload=False, verbose=True):
         self.paths = DataDecidePaths(data_dir)
         self.defaults = DataDecideDefaults()
-        self.dwn_drop_cols = ["chinchilla", "tokens", "compute"]
-        self.ppl_drop_cols = ["__index_level_0__"]
-        self.drop_metrics = [
-            "predicted_index_raw",
-            "predicted_index_per_token",
-            "predicted_index_per_char",
-            "predicted_index_per_byte",
-            "predicted_index_uncond",
-            "logits_per_byte_corr",
-        ]
-        self.key_cols = ["params", "data", "seed", "step"]
-        self.exclude_cols = ["params", "data", "task", "step", "seed"]
-        self.ppl_types = self.defaults.ppl_name_map.values()
-        self.max_step_to_use = {
-            "1B": 67500,
-            "750M": 62500,
-            "530M": 51250,
-            "300M": 45000,
-            "150M": 37500,
-            "90M": 29901,
-            "60M": 29042,
-            "20M": 14584,
-            "16M": 24432,
-            "14M": 21953,
-            "10M": 15117,
-            "8M": 13039,
-            "6M": 9182,
-            "4M": 5725,
-        }
-
-        # Load from dfs
-        self.mmlu_tasks = [
-            "mmlu_abstract_algebra",
-            "mmlu_anatomy",
-            "mmlu_astronomy",
-            "mmlu_average",
-            "mmlu_business_ethics",
-            "mmlu_clinical_knowledge",
-            "mmlu_college_biology",
-            "mmlu_college_chemistry",
-            "mmlu_college_computer_science",
-            "mmlu_college_mathematics",
-            "mmlu_college_medicine",
-            "mmlu_college_physics",
-            "mmlu_computer_security",
-            "mmlu_conceptual_physics",
-            "mmlu_econometrics",
-            "mmlu_electrical_engineering",
-            "mmlu_elementary_mathematics",
-            "mmlu_formal_logic",
-            "mmlu_global_facts",
-            "mmlu_high_school_biology",
-            "mmlu_high_school_chemistry",
-            "mmlu_high_school_computer_science",
-            "mmlu_high_school_european_history",
-            "mmlu_high_school_geography",
-            "mmlu_high_school_government_and_politics",
-            "mmlu_high_school_macroeconomics",
-            "mmlu_high_school_mathematics",
-            "mmlu_high_school_microeconomics",
-            "mmlu_high_school_physics",
-            "mmlu_high_school_psychology",
-            "mmlu_high_school_statistics",
-            "mmlu_high_school_us_history",
-            "mmlu_high_school_world_history",
-            "mmlu_human_aging",
-            "mmlu_human_sexuality",
-            "mmlu_international_law",
-            "mmlu_jurisprudence",
-            "mmlu_logical_fallacies",
-            "mmlu_machine_learning",
-            "mmlu_management",
-            "mmlu_marketing",
-            "mmlu_medical_genetics",
-            "mmlu_miscellaneous",
-            "mmlu_moral_disputes",
-            "mmlu_moral_scenarios",
-            "mmlu_nutrition",
-            "mmlu_philosophy",
-            "mmlu_prehistory",
-            "mmlu_professional_accounting",
-            "mmlu_professional_law",
-            "mmlu_professional_medicine",
-            "mmlu_professional_psychology",
-            "mmlu_public_relations",
-            "mmlu_security_studies",
-            "mmlu_sociology",
-            "mmlu_us_foreign_policy",
-            "mmlu_virology",
-            "mmlu_world_religions",
-        ]
-        self.olmes_tasks = [
-            "mmlu_average",
-            "arc_challenge",
-            "arc_easy",
-            "boolq",
-            "csqa",
-            "hellaswag",
-            "openbookqa",
-            "piqa",
-            "socialiqa",
-            "winogrande",
-        ]  # just the ones we use
-        self.metric_names = [
-            "correct_choice",
-            "acc_raw",
-            "acc_per_token",
-            "acc_per_char",
-            "acc_per_byte",
-            "acc_uncond",
-            "no_answer",
-            "sum_logits_corr",
-            "logits_per_token_corr",
-            "logits_per_char_corr",
-            "bits_per_byte_corr",
-            "correct_prob",
-            "correct_prob_per_token",
-            "correct_prob_per_char",
-            "margin",
-            "margin_per_token",
-            "margin_per_char",
-            "total_prob",
-            "total_prob_per_token",
-            "total_prob_per_char",
-            "uncond_correct_prob",
-            "uncond_correct_prob_per_token",
-            "uncond_correct_prob_per_char",
-            "uncond_total_prob",
-            "norm_correct_prob",
-            "norm_correct_prob_per_token",
-            "norm_correct_prob_per_char",
-            "primary_metric",
-        ]
         self.data_names = []
 
         # Prep for df management
@@ -434,8 +154,8 @@ class DataDecide:
     def all_data_param_combos(self):
         return list(
             itertools.product(
-                self.defaults.all_data_names,
-                self.defaults.all_param_strs,
+                consts.ALL_DATA_NAMES,
+                consts.ALL_PARAM_STRS,
             )
         )
 
@@ -522,7 +242,7 @@ class DataDecide:
 
     def filter_by_max_step_to_use(self, df):
         df = df.copy()
-        df["max_step_to_use"] = df["params"].map(self.max_step_to_use)
+        df["max_step_to_use"] = df["params"].map(consts.MAX_STEP_TO_USE)
         return df[df["step"] <= df["max_step_to_use"]]
 
     def merge_in_ds_and_model_details(self, input_df: pd.DataFrame):
@@ -537,11 +257,11 @@ class DataDecide:
         )
 
     def get_max_ppl_vals(self, df: pd.DataFrame):
-        ppl_cols = self.ppl_name_map.values()
+        ppl_cols = consts.PPL_TYPES
         return df[ppl_cols].max().reset_index()
 
     def set_step_val_to_max_ppl_val(self, df: pd.DataFrame, step: int = 0):
-        ppl_cols = self.ppl_name_map.values()
+        ppl_cols = consts.PPL_TYPES
         max_ppl_vals = self.get_max_ppl_vals(df)
         df = df.copy()
         step_mask = df["step"] == step
@@ -576,14 +296,14 @@ class DataDecide:
             if verbose:
                 print("Downloading raw dfs")
             ppl_dataset = load_dataset(
-                self.defaults.hf_ds_names["perplexity_eval_ds"], split="train"
+                consts.HF_DATASET_NAMES["perplexity_eval_ds"], split="train"
             )
             ppl_dataset.to_parquet(self.paths.ppl_eval_raw_path)
 
         self._setup_dfs["ppl_raw_df"] = self.paths.ppl_eval_raw_path
         if not self.paths.downstream_eval_raw_path.exists() or force_reload:
             dwn_dataset = load_dataset(
-                self.defaults.hf_ds_names["downstream_eval_ds"], split="train"
+                consts.HF_DATASET_NAMES["downstream_eval_ds"], split="train"
             )
             dwn_dataset.to_parquet(self.paths.downstream_eval_raw_path)
 
@@ -658,21 +378,21 @@ class DataDecide:
 
     def parse_ppl_df(self, ppl_df: pd.DataFrame) -> pd.DataFrame:
         df = ppl_df.copy()
-        df = df.drop(columns=self.ppl_drop_cols)
-        df = df.rename(columns=self.defaults.ppl_name_map)
-        df = reorder_df_cols(df, self.key_cols)
-        df["seed"] = df["seed"].map(self.defaults.seed_map)
+        df = df.drop(columns=consts.PPL_DROP_COLS)
+        df = df.rename(columns=consts.PPL_NAME_MAP)
+        df = reorder_df_cols(df, consts.KEY_COLS)
+        df["seed"] = df["seed"].map(consts.SEED_MAP)
         return df
 
     def parse_dwn_df(self, dwn_df: pd.DataFrame) -> pd.DataFrame:
         df = dwn_df.copy()
-        df = df.drop(columns=self.dwn_drop_cols)
+        df = df.drop(columns=consts.DWN_DROP_COLS)
         df = list_col_to_columns(df, "metrics")
-        df = df.drop(columns=self.drop_metrics)
+        df = df.drop(columns=consts.DROP_METRICS)
         df = self.average_mmlu_metrics(df)
         df = self.pivot_task_metrics_rows_to_cols(df)
-        df = reorder_df_cols(df, self.key_cols)
-        df["seed"] = df["seed"].map(self.defaults.seed_map)
+        df = reorder_df_cols(df, consts.KEY_COLS)
+        df["seed"] = df["seed"].map(consts.SEED_MAP)
         return df
 
     def create_full_eval_df(
@@ -695,13 +415,13 @@ class DataDecide:
             )
             .drop(columns=["tokens_per_step", "compute_per_step"])
         )
-        merged_df = reorder_df_cols(merged_df, self.key_cols + ["tokens", "compute"])
+        merged_df = reorder_df_cols(merged_df, consts.KEY_COLS + ["tokens", "compute"])
         return merged_df
 
     def create_mean_std_df(
         self, merged_df: pd.DataFrame
     ) -> tuple[pd.DataFrame, pd.DataFrame]:
-        group_cols_no_seed = [c for c in self.key_cols if c != "seed"]
+        group_cols_no_seed = [c for c in consts.KEY_COLS if c != "seed"]
         mean_df = (
             merged_df.drop(columns=["seed"])
             .groupby(group_cols_no_seed)
@@ -717,25 +437,29 @@ class DataDecide:
         return mean_df, std_df
 
     def average_mmlu_metrics(self, df: pd.DataFrame) -> pd.DataFrame:
-        self.mmlu_tasks = [
+        mmlu_tasks = [
             task for task in df["task"].unique() if "mmlu" in task.lower()
         ]
-        mmlu_df = df[df["task"].isin(self.mmlu_tasks)].drop(columns=["task"])
-        if len(self.metric_names) == 0:
-            self.metric_names = [
-                col
-                for col in df.columns
-                if col not in self.exclude_cols and col not in self.drop_metrics
-            ]
-        mmlu_avg = mmlu_df.groupby(self.key_cols).agg("mean").reset_index()
+        mmlu_df = df[df["task"].isin(mmlu_tasks)].drop(columns=["task"])
+        metric_names = [
+            col
+            for col in df.columns
+            if col not in consts.EXCLUDE_COLS and col not in consts.DROP_METRICS
+        ]
+        mmlu_avg = mmlu_df.groupby(consts.KEY_COLS).agg("mean").reset_index()
         mmlu_avg["task"] = "mmlu_average"
         return pd.concat([df, mmlu_avg], ignore_index=True)
 
     def pivot_task_metrics_rows_to_cols(self, dwn_df: pd.DataFrame) -> pd.DataFrame:
         pivoted_metrics = []
-        for metric_col in self.metric_names:
+        metric_names = [
+            col
+            for col in dwn_df.columns
+            if col not in consts.EXCLUDE_COLS and col not in consts.DROP_METRICS
+        ]
+        for metric_col in metric_names:
             pivoted = dwn_df.pivot_table(
-                index=self.key_cols,
+                index=consts.KEY_COLS,
                 columns="task",
                 values=metric_col,
                 aggfunc="first",
@@ -771,7 +495,9 @@ def reorder_df_cols(df: pd.DataFrame, prefix_order: list[str]) -> pd.DataFrame:
     return df[prefix_order + [col for col in df.columns if col not in prefix_order]]
 
 
-def get_data_recipe_family(data_name: str, data_recipe_families: dict) -> str:
+def get_data_recipe_family(data_name: str, data_recipe_families: dict = None) -> str:
+    if data_recipe_families is None:
+        data_recipe_families = consts.DATA_RECIPE_FAMILIES
     for family, names in data_recipe_families.items():
         if data_name in names:
             return family
