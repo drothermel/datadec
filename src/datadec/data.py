@@ -1,5 +1,4 @@
 import itertools
-import math
 
 import pandas as pd
 from datasets import load_dataset
@@ -9,7 +8,6 @@ from datadec import constants as consts
 from datadec import parsing
 from datadec import model_utils
 from datadec.paths import DataDecidePaths
-
 
 
 class DataDecide:

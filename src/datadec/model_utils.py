@@ -14,18 +14,16 @@ from datadec import constants as consts
 
 def calculate_batch_size(model_size_str: str) -> int:
     """Calculate batch size for a given model size.
-    
+
     Args:
         model_size_str: Model size string (e.g., "1B", "300M")
-        
+
     Returns:
         Calculated batch size for the model
     """
     assert consts.MAX_SEQ_LEN == 2_048
     model_size = parse_model_size_str(model_size_str)
-    batch_size = (
-        160 * (model_size / consts.MODEL_SIZE_NORM_VALUE) ** consts.BS_EXPONENT
-    )
+    batch_size = 160 * (model_size / consts.MODEL_SIZE_NORM_VALUE) ** consts.BS_EXPONENT
     rounding_size = consts.GPUS_PER_NODE * consts.MICROBATCH_SIZE
     batch_size /= rounding_size
     batch_size = round(batch_size)
@@ -35,10 +33,10 @@ def calculate_batch_size(model_size_str: str) -> int:
 
 def calculate_lr_max(model_size_str: str) -> float:
     """Calculate maximum learning rate for a given model size.
-    
+
     Args:
         model_size_str: Model size string (e.g., "1B", "300M")
-        
+
     Returns:
         Maximum learning rate for the model
     """
@@ -51,10 +49,10 @@ def calculate_lr_max(model_size_str: str) -> float:
 
 def calculate_warmup_tokens(model_size_str: str) -> int:
     """Calculate warmup tokens for a given model size.
-    
+
     Args:
         model_size_str: Model size string (e.g., "1B", "300M")
-        
+
     Returns:
         Number of warmup tokens for the model
     """
@@ -67,10 +65,10 @@ def calculate_warmup_tokens(model_size_str: str) -> int:
 
 def parse_model_size_str(size_str: str) -> int:
     """Parse model size string to get parameter count.
-    
+
     Args:
         size_str: Model size string (e.g., "1B", "300M")
-        
+
     Returns:
         Number of parameters as integer
     """
@@ -79,11 +77,11 @@ def parse_model_size_str(size_str: str) -> int:
 
 def parse_token_length_str(length_str: str, model_size_str: str) -> int:
     """Parse token length string to get total tokens.
-    
+
     Args:
         length_str: Length specification (e.g., "5xC")
         model_size_str: Model size string (e.g., "1B", "300M")
-        
+
     Returns:
         Total number of tokens
     """
@@ -98,11 +96,11 @@ def parse_token_length_str(length_str: str, model_size_str: str) -> int:
 
 def create_model_config(model_size_str: str, **kwargs) -> Dict[str, Any]:
     """Create a complete model configuration dictionary.
-    
+
     Args:
         model_size_str: Model size string (e.g., "1B", "300M")
         **kwargs: Additional configuration parameters to override defaults
-        
+
     Returns:
         Complete model configuration dictionary
     """
@@ -134,16 +132,14 @@ def create_model_config(model_size_str: str, **kwargs) -> Dict[str, Any]:
         round(consts.MAX_SEQ_LEN * mc["batch_size"])
     )
     mc["10_perc_lrdecay_steps"] = int(round(mc["lr_decay_steps"] * 0.1))
-    mc["early_window_10p_end_step"] = (
-        mc["warmup_steps"] + mc["10_perc_lrdecay_steps"]
-    )
+    mc["early_window_10p_end_step"] = mc["warmup_steps"] + mc["10_perc_lrdecay_steps"]
     mc["early_window_perc"] = mc["early_window_10p_end_step"] / mc["total_steps"]
     return mc
 
 
 def create_all_model_configs() -> Dict[str, Dict[str, Any]]:
     """Create configuration dictionaries for all model sizes.
-    
+
     Returns:
         Dictionary mapping model size strings to configuration dictionaries
     """
@@ -155,7 +151,7 @@ def create_all_model_configs() -> Dict[str, Dict[str, Any]]:
 
 def get_model_details_df() -> pd.DataFrame:
     """Get DataFrame with model configuration details.
-    
+
     Returns:
         DataFrame with model configurations as rows and config parameters as columns
     """
