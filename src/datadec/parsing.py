@@ -74,20 +74,17 @@ def average_mmlu_metrics(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def pivot_task_metrics_to_columns(dwn_df: pd.DataFrame) -> pd.DataFrame:
+    """Pivot tasks to columns, keeping primary_metric as the main value."""
+    # Use primary_metric as the main metric for each task
     id_vars = [col for col in consts.KEY_COLS if col in dwn_df.columns]
-    value_vars = [col for col in dwn_df.columns if col not in consts.EXCLUDE_COLS]
-
-    df_melted = dwn_df.melt(
-        id_vars=id_vars,
-        value_vars=value_vars,
-        var_name="task_metric",
-        value_name="value",
-    )
-
-    df_pivoted = df_melted.pivot_table(
-        index=id_vars, columns="task_metric", values="value", aggfunc="first"
+    
+    df_pivoted = dwn_df.pivot_table(
+        index=id_vars,
+        columns="task", 
+        values="primary_metric",
+        aggfunc="first"
     ).reset_index()
-
+    
     df_pivoted.columns.name = None
-
+    
     return df_pivoted

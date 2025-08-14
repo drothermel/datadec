@@ -68,4 +68,6 @@ def create_mean_std_df(merged_df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFr
 
 
 def merge_ppl_and_dwn_dfs(ppl_df: pd.DataFrame, dwn_df: pd.DataFrame) -> pd.DataFrame:
-    return pd.concat([ppl_df, dwn_df], ignore_index=True)
+    """Merge perplexity and downstream evaluation dataframes on common keys."""
+    # Merge on the common key columns
+    return pd.merge(ppl_df, dwn_df, on=consts.KEY_COLS, how='outer')
