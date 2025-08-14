@@ -111,54 +111,13 @@ class DataDecide:
         """Model configuration details."""
         return self._model_details_df
 
-    # ------------ DataFrame Manipulation Helpers ------------
-
-    def filter_by_max_step_to_use(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Filter DataFrame by maximum step to use for each parameter size."""
-        return df_utils.filter_by_max_step_to_use(df)
+    # ------------ Utility Methods ------------
 
     def merge_in_ds_and_model_details(self, input_df: pd.DataFrame) -> pd.DataFrame:
         """Merge dataset and model details into the input DataFrame."""
         return df_utils.merge_in_ds_and_model_details(
             input_df, self.ds_details_df, self.model_details_df
         )
-
-    def get_max_ppl_vals(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Get maximum perplexity values across all perplexity columns."""
-        return df_utils.get_max_ppl_vals(df)
-
-    def set_step_val_to_max_ppl_val(
-        self, df: pd.DataFrame, step: int = 0
-    ) -> pd.DataFrame:
-        """Set perplexity values at specific step to maximum values for NaN entries."""
-        return df_utils.set_step_val_to_max_ppl_val(df, step)
-
-    def create_mean_std_df(
-        self, merged_df: pd.DataFrame
-    ) -> tuple[pd.DataFrame, pd.DataFrame]:
-        """Create mean and standard deviation DataFrames by averaging across seeds."""
-        return df_utils.create_mean_std_df(merged_df)
-
-    # ------------ Utility Methods ------------
-
-    def index_dfs(
-        self, df_name: str, params: str, data: str, step: int
-    ) -> pd.DataFrame:
-        """Index into a specific DataFrame by params, data, and step.
-
-        Args:
-            df_name: Name of the DataFrame property to access
-            params: Parameter size string (e.g., "1B")
-            data: Data recipe name
-            step: Training step
-
-        Returns:
-            Filtered DataFrame with matching rows
-        """
-        df = getattr(self, df_name)
-        return df[
-            (df["params"] == params) & (df["data"] == data) & (df["step"] == step)
-        ]
 
     def clear_cache(self, cache_key: str = None) -> None:
         """Clear cached DataFrames.
