@@ -22,7 +22,7 @@ def merge_in_ds_and_model_details(
 
 def get_max_ppl_vals(df: pd.DataFrame) -> pd.DataFrame:
     ppl_cols = [col for col in df.columns if col.endswith("ppl")]
-    
+
     return df.groupby(["params", "data"])[ppl_cols].max().reset_index()
 
 
@@ -46,24 +46,24 @@ def select_by_data_param_combos(
             combo_filter = (df["data"] == data) & (df["params"] == param)
             combined_filter = combined_filter | combo_filter
         return df[combined_filter]
-    
+
     if data_names is None:
         data_names = consts.ALL_DATA_NAMES
     if param_strs is None:
         param_strs = consts.ALL_PARAM_STRS
-    
+
     return df[df["data"].isin(data_names) & df["params"].isin(param_strs)]
 
 
 def create_mean_std_df(merged_df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
     group_cols = ["params", "data", "step"]
-    
+
     numeric_cols = merged_df.select_dtypes(include=["number"]).columns.tolist()
     agg_cols = [col for col in numeric_cols if col not in group_cols]
-    
+
     mean_df = merged_df.groupby(group_cols)[agg_cols].mean().reset_index()
     std_df = merged_df.groupby(group_cols)[agg_cols].std().reset_index()
-    
+
     return mean_df, std_df
 
 

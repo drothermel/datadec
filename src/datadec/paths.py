@@ -12,7 +12,7 @@ class DataDecidePaths:
             "dwn_raw": "downstream_eval",
             "dwn_metrics_expanded": "dwn_metrics_expanded",
             "dwn_mmlu_averaged": "dwn_mmlu_averaged",
-            "dwn_pivoted": "dwn_pivoted", 
+            "dwn_pivoted": "dwn_pivoted",
             "ppl_dwn_merged": "ppl_dwn_merged",
             "ppl_parsed": "ppl_eval_parsed",
             "dwn_parsed": "downstream_eval_parsed",

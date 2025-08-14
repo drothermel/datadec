@@ -91,7 +91,9 @@ class DataDecide:
     ) -> pd.DataFrame:
         base_df = self.full_eval.copy()
         if verbose:
-            print(f">> Initial shape: {base_df.shape[0]:,} rows x {base_df.shape[1]:,} cols")
+            print(
+                f">> Initial shape: {base_df.shape[0]:,} rows x {base_df.shape[1]:,} cols"
+            )
 
         if min_params is not None:
             min_params_numeric = model_utils.param_to_numeric(min_params)
@@ -101,26 +103,36 @@ class DataDecide:
                 )
             ]
             if verbose:
-                print(f">> Above min params {min_params} shape: {base_df.shape[0]:,} rows x {base_df.shape[1]:,} cols")
+                print(
+                    f">> Above min params {min_params} shape: {base_df.shape[0]:,} rows x {base_df.shape[1]:,} cols"
+                )
 
         if filter_by_max_step:
             base_df = self._filter_by_max_step_to_use(base_df)
             if verbose:
-                print(f">> Filter by max step shape: {base_df.shape[0]:,} rows x {base_df.shape[1]:,} cols")
+                print(
+                    f">> Filter by max step shape: {base_df.shape[0]:,} rows x {base_df.shape[1]:,} cols"
+                )
 
         base_df = self.merge_in_ds_and_model_details(base_df)
         if verbose:
-            print(f">> Merge in details shape: {base_df.shape[0]:,} rows x {base_df.shape[1]:,} cols")
+            print(
+                f">> Merge in details shape: {base_df.shape[0]:,} rows x {base_df.shape[1]:,} cols"
+            )
 
         if add_lr_cols:
             base_df = model_utils.add_lr_cols(base_df)
             if verbose:
-                print(f">> Add lr cols shape: {base_df.shape[0]:,} rows x {base_df.shape[1]:,} cols")
+                print(
+                    f">> Add lr cols shape: {base_df.shape[0]:,} rows x {base_df.shape[1]:,} cols"
+                )
 
         if return_means:
             base_df, _ = df_utils.create_mean_std_df(base_df)
             if verbose:
-                print(f">> Create mean std df shape: {base_df.shape[0]:,} rows x {base_df.shape[1]:,} cols")
+                print(
+                    f">> Create mean std df shape: {base_df.shape[0]:,} rows x {base_df.shape[1]:,} cols"
+                )
 
         return base_df
 

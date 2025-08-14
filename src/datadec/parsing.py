@@ -63,32 +63,31 @@ def parse_downstream_dataframe(dwn_df: pd.DataFrame) -> pd.DataFrame:
 
 
 def average_mmlu_metrics(df: pd.DataFrame) -> pd.DataFrame:
-    mmlu_cols = [col for col in df.columns if col.startswith("mmlu_") and col != "mmlu_average"]
-    
+    mmlu_cols = [
+        col for col in df.columns if col.startswith("mmlu_") and col != "mmlu_average"
+    ]
+
     if mmlu_cols:
         df["mmlu_average"] = df[mmlu_cols].mean(axis=1)
-    
+
     return df
 
 
 def pivot_task_metrics_to_columns(dwn_df: pd.DataFrame) -> pd.DataFrame:
     id_vars = [col for col in consts.KEY_COLS if col in dwn_df.columns]
     value_vars = [col for col in dwn_df.columns if col not in consts.EXCLUDE_COLS]
-    
+
     df_melted = dwn_df.melt(
         id_vars=id_vars,
         value_vars=value_vars,
         var_name="task_metric",
-        value_name="value"
+        value_name="value",
     )
-    
+
     df_pivoted = df_melted.pivot_table(
-        index=id_vars,
-        columns="task_metric",
-        values="value",
-        aggfunc="first"
+        index=id_vars, columns="task_metric", values="value", aggfunc="first"
     ).reset_index()
-    
+
     df_pivoted.columns.name = None
-    
+
     return df_pivoted
