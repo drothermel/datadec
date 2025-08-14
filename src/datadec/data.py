@@ -7,100 +7,14 @@ from datasets import load_dataset
 from datadec import features as dd_lrs
 from datadec import constants as consts
 from datadec import parsing
+from datadec import model_utils
 from datadec.paths import DataDecidePaths
 
-
-class DataDecideDefaults:
-    def __init__(self):
-        self.model_configs = {}
-        self.fill_all_model_configs()
-
-    @property
-    def model_details_df(self):
-        return pd.DataFrame(self.model_configs).T.infer_objects()
-
-    def make_model_config(self, model_size_str: str, **kwargs):
-        mc = {
-            **consts.MODEL_CONFIG_BASE,
-            "params": model_size_str,
-            "model_size_str": model_size_str,
-            **kwargs,
-        }
-        mc["model_size"] = int(self.parse_model_size_str(mc["model_size_str"]))
-        mc["batch_size"] = int(self.calc_batch_size(mc["model_size_str"]))
-        mc["lr_max"] = self.calc_lr_max(mc["model_size_str"])
-        mc["lr_final"] = consts.LR_FINAL_RATIO * mc["lr_max"]
-        mc["warmup_tokens"] = int(self.calc_warmup_tokens(mc["model_size_str"]))
-        mc["total_tokens"] = int(
-            self.parse_token_length_str(mc["length_str"], mc["model_size_str"])
-        )
-        mc["lr_decay_tokens"] = int(mc["total_tokens"] - mc["warmup_tokens"])
-        mc["total_seqs"] = int(round(mc["total_tokens"] / consts.MAX_SEQ_LEN))
-        mc["total_steps"] = int(
-            math.ceil(mc["total_tokens"] / (mc["batch_size"] * consts.MAX_SEQ_LEN))
-        )
-        mc["warmup_perc"] = mc["warmup_tokens"] / mc["total_tokens"]
-        mc["warmup_steps"] = int(
-            math.ceil(mc["warmup_tokens"] / (mc["batch_size"] * consts.MAX_SEQ_LEN))
-        )
-        mc["lr_decay_steps"] = int(mc["total_steps"] - mc["warmup_steps"])
-        mc["theoretical_tokens_per_step"] = int(
-            round(consts.MAX_SEQ_LEN * mc["batch_size"])
-        )
-        mc["10_perc_lrdecay_steps"] = int(round(mc["lr_decay_steps"] * 0.1))
-        mc["early_window_10p_end_step"] = (
-            mc["warmup_steps"] + mc["10_perc_lrdecay_steps"]
-        )
-        mc["early_window_perc"] = mc["early_window_10p_end_step"] / mc["total_steps"]
-        return mc
-
-    def fill_all_model_configs(self):
-        for param_str, cfg in consts.MODEL_SHAPES.items():
-            self.model_configs[param_str] = self.make_model_config(param_str, **cfg)
-
-    def parse_model_size_str(self, size_str: str) -> int:
-        return consts.HARDCODED_SIZE_MAPPING[size_str]
-
-    def parse_token_length_str(self, length_str: str, model_size_str: str) -> int:
-        model_size = self.parse_model_size_str(model_size_str)
-        length_in_tokens, length_unit = consts.NUMBER_UNIT_RE.match(
-            length_str.strip().upper()
-        ).groups()  # type: ignore
-        assert length_unit == "XC"
-        length_in_tokens = int(length_in_tokens)
-        return length_in_tokens * 20 * model_size
-
-    def calc_batch_size(self, model_size_str: str) -> int:
-        assert consts.MAX_SEQ_LEN == 2_048
-        model_size = self.parse_model_size_str(model_size_str)
-        batch_size = (
-            160 * (model_size / consts.MODEL_SIZE_NORM_VALUE) ** consts.BS_EXPONENT
-        )
-        rounding_size = consts.GPUS_PER_NODE * consts.MICROBATCH_SIZE
-        batch_size /= rounding_size
-        batch_size = round(batch_size)
-        batch_size *= rounding_size
-        return batch_size
-
-    def calc_lr_max(self, model_size_str: str) -> float:
-        model_size = self.parse_model_size_str(model_size_str)
-        return (
-            consts.LR_MAX_BASE
-            * (model_size / consts.MODEL_SIZE_NORM_VALUE) ** consts.LR_EXPONENT
-        )
-
-    def calc_warmup_tokens(self, model_size_str: str) -> int:
-        model_size = self.parse_model_size_str(model_size_str)
-        bs = self.calc_batch_size(model_size_str)
-        # model_size / bs = num_warmup_steps
-        # (model_size / bs) * max_seq_len = num_warmup_tokens
-        return round(model_size / (bs / consts.MAX_SEQ_LEN))
 
 
 class DataDecide:
     def __init__(self, data_dir: str = "./data", force_reload=False, verbose=True):
         self.paths = DataDecidePaths(data_dir)
-        self.defaults = DataDecideDefaults()
         self.data_names = []
 
         # Prep for df management
@@ -195,7 +109,7 @@ class DataDecide:
 
     @property
     def model_details_df(self):
-        return self.defaults.model_details_df
+        return self._loaded_dfs["model_details_df"]
 
     # ------------ Dataframe Manipulation Helpers ------------
 
@@ -316,7 +230,7 @@ class DataDecide:
         self._setup_dfs["std_eval_ds"] = self.paths.std_eval_ds_path
         self._setup_dfs["model_details_df"] = None
         self._loaded_dfs = {
-            "model_details_df": self.defaults.model_details_df,
+            "model_details_df": model_utils.get_model_details_df(),
         }
         print(">> Finished setting up DataDecide dataframes.")
 
