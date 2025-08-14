@@ -9,13 +9,16 @@ A Python library for downloading and processing DataDecide datasets from Hugging
 git clone <repository-url>
 cd datadec
 uv sync && uv add -e .
+
+# Demo all features
+uv run python scripts/download_data.py
 ```
 
 ```python
 from datadec import DataDecide
 
 # Initialize and process data
-dd = DataDecide(data_dir="./data")
+dd = DataDecide(data_dir="./test_data")
 
 # Access datasets
 full_eval = dd.full_eval      # Full evaluation results
@@ -50,6 +53,9 @@ Access via `dd.load_dataframe(name)`:
 - **Processed:** `full_eval`, `mean_eval`, `std_eval`
 - **Intermediate:** `dwn_metrics_expanded`, `ppl_parsed`, `dwn_parsed`
 
+**Static Resources:**
+- Dataset metadata: `src/datadec/data/dataset_features.csv` (bundled with package)
+
 ## Key Features
 
 - **Model sizes:** 4M to 1B parameters
@@ -58,8 +64,29 @@ Access via `dd.load_dataframe(name)`:
 - **Learning rate schedules:** Warmup + cosine annealing
 - **Granular recomputation:** Restart from any pipeline stage
 
+## Demo Script
+
+The comprehensive demo script showcases all library features:
+
+```bash
+# Basic demo with cached data (fast)
+uv run python scripts/download_data.py
+
+# Full pipeline from scratch (~2 minutes)  
+uv run python scripts/download_data.py --recompute_from all
+
+# Filter to specific model sizes
+uv run python scripts/download_data.py --min_params 300M --model_size 1B
+
+# Interactive exploration mode
+uv run python scripts/download_data.py --explore --data_recipe "Dolma1.7"
+
+# See all options
+uv run python scripts/download_data.py --help
+```
+
 ## Performance
 
 - **Slow step:** Metrics expansion (2-5 min) saved as intermediate file
-- **Caching:** DataFrames cached in memory after first load
+- **Caching:** DataFrames cached in memory after first load  
 - **Recomputation:** Use `recompute_from="metrics_expand"` to skip download
