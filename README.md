@@ -24,8 +24,8 @@ dd = DataDecide(data_dir="./test_data")
 full_eval = dd.full_eval      # Full evaluation results
 mean_eval = dd.mean_eval      # Averaged across seeds
 
-# Get analysis-ready DataFrame
-analysis_df = dd.get_analysis_df(min_params="10M", add_lr_cols=True)
+# Get filtered analysis DataFrame
+analysis_df = dd.get_filtered_df(min_params="10M")
 
 # Load intermediate data
 raw_data = dd.load_dataframe("ppl_raw")

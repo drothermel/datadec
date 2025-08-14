@@ -14,7 +14,7 @@ uv run ruff format        # Format code
 ## Architecture Overview
 
 **Core Modules:**
-- **`data.py`** - Main `DataDecide` class and `get_analysis_df()` method
+- **`data.py`** - Main `DataDecide` class and `get_filtered_df()` method
 - **`paths.py`** - Single source of truth: `paths.dataframes` dict maps names → file paths
 - **`pipeline.py`** - ETL stages with `recompute_from` granular control
 - **`constants.py`** - All hardcoded DataDecide config (~300 lines)
@@ -41,7 +41,7 @@ dd.full_eval, dd.mean_eval, dd.model_details, dd.dataset_details
 
 # New unified loading
 dd.load_dataframe("ppl_raw")  # Any DataFrame by name
-dd.get_analysis_df()          # Analysis-ready with filters/LR cols
+dd.get_filtered_df()          # Filtered analysis data
 
 # Exploration
 dd.paths.dataframes           # Dict: name → filename  

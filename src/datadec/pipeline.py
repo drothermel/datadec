@@ -16,6 +16,7 @@ class DataPipeline:
             "metrics_expand",
             "parse",
             "merge",
+            "enrich",
             "aggregate",
         ]
 
@@ -23,7 +24,8 @@ class DataPipeline:
             "download": ["ppl_raw", "dwn_raw"],
             "metrics_expand": ["step_to_token_compute", "dwn_metrics_expanded"],
             "parse": ["ppl_parsed", "dwn_parsed"],
-            "merge": ["full_eval"],
+            "merge": ["full_eval_raw"],
+            "enrich": ["full_eval"],
             "aggregate": ["mean_eval", "std_eval"],
         }
 
@@ -74,13 +76,42 @@ class DataPipeline:
 
     def merge_datasets(self, verbose: bool = False) -> None:
         if verbose:
-            print("Creating full evaluation dataset...")
+            print("Merging perplexity and downstream datasets...")
         ppl_df = pd.read_parquet(self.paths.get_path("ppl_parsed"))
         dwn_df = pd.read_parquet(self.paths.get_path("dwn_parsed"))
 
-        full_eval_df = df_utils.merge_ppl_and_dwn_dfs(ppl_df, dwn_df)
-        full_eval_df = parsing.reorder_df_cols(full_eval_df, consts.KEY_COLS)
-        full_eval_df.to_parquet(self.paths.get_path("full_eval"))
+        full_eval_raw = df_utils.merge_ppl_and_dwn_dfs(ppl_df, dwn_df)
+        full_eval_raw = parsing.reorder_df_cols(full_eval_raw, consts.KEY_COLS)
+        full_eval_raw.to_parquet(self.paths.get_path("full_eval_raw"))
+
+    def enrich_dataset(self, verbose: bool = False) -> None:
+        if verbose:
+            print("Creating full evaluation dataset with enrichments...")
+        
+        # Load raw merged data
+        df = pd.read_parquet(self.paths.get_path("full_eval_raw"))
+        
+        # Add MMLU average
+        df = df_utils.add_mmlu_average(df)
+        
+        # Load and merge dataset details
+        from datadec import data_utils
+        dataset_details = data_utils.load_ds_details_df(self.paths.ds_details_path)
+        df = df.merge(dataset_details, on="data", how="left")
+        
+        # Load and merge model details  
+        from datadec import model_utils
+        model_details = model_utils.get_model_details_df()
+        df = df.merge(model_details, on="params", how="left")
+        
+        # Add step-specific learning rate columns
+        df = model_utils.add_lr_cols(df)
+        
+        # Reorder columns (KEY_COLS first)
+        df = parsing.reorder_df_cols(df, consts.KEY_COLS)
+        
+        # Save as final full_eval
+        df.to_parquet(self.paths.get_path("full_eval"))
 
     def create_aggregated_datasets(self, verbose: bool = False) -> None:
         if verbose:
@@ -142,6 +173,9 @@ class DataPipeline:
             self.merge_datasets(verbose=verbose)
 
         if start_stage <= 4:
+            self.enrich_dataset(verbose=verbose)
+
+        if start_stage <= 5:
             self.create_aggregated_datasets(verbose=verbose)
 
         if verbose:

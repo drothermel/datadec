@@ -216,9 +216,6 @@ def add_lr_cols(df: pd.DataFrame) -> pd.DataFrame:
 
             lr_data.append(
                 {
-                    "lr_warmup_start": config.get("lr_warmup_start", 0.0),
-                    "lr_max": config["lr_max"],
-                    "lr_final": config["lr_final"],
                     "lr_at_step": lr_at_step,
                     "cumulative_lr": cumulative_lr,
                 }
@@ -226,9 +223,6 @@ def add_lr_cols(df: pd.DataFrame) -> pd.DataFrame:
         else:
             lr_data.append(
                 {
-                    "lr_warmup_start": np.nan,
-                    "lr_max": np.nan,
-                    "lr_final": np.nan,
                     "lr_at_step": np.nan,
                     "cumulative_lr": np.nan,
                 }

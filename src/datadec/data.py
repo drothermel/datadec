@@ -88,10 +88,9 @@ class DataDecide:
             input_df, self.dataset_details, self.model_details
         )
 
-    def get_analysis_df(
+    def get_filtered_df(
         self,
         filter_by_max_step: bool = True,
-        add_lr_cols: bool = True,
         return_means: bool = True,
         min_params: str = "10M",
         verbose: bool = False,
@@ -119,19 +118,6 @@ class DataDecide:
             if verbose:
                 print(
                     f">> Filter by max step shape: {base_df.shape[0]:,} rows x {base_df.shape[1]:,} cols"
-                )
-
-        base_df = self.merge_in_ds_and_model_details(base_df)
-        if verbose:
-            print(
-                f">> Merge in details shape: {base_df.shape[0]:,} rows x {base_df.shape[1]:,} cols"
-            )
-
-        if add_lr_cols:
-            base_df = model_utils.add_lr_cols(base_df)
-            if verbose:
-                print(
-                    f">> Add lr cols shape: {base_df.shape[0]:,} rows x {base_df.shape[1]:,} cols"
                 )
 
         if return_means:

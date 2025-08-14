@@ -25,21 +25,11 @@ def show_available_dataframes(dd: DataDecide) -> None:
     # Group dataframes by category
     categories = {
         "Raw Data": ["ppl_raw", "dwn_raw"],
-        "Intermediate Processing": [
-            "dwn_metrics_expanded",
-            "dwn_mmlu_averaged",
-            "dwn_pivoted",
-            "ppl_dwn_merged",
-            "step_to_token_compute",
-        ],
+        "Metrics Expansion": ["dwn_metrics_expanded", "step_to_token_compute"],
         "Parsed Data": ["ppl_parsed", "dwn_parsed"],
-        "Final Datasets": ["full_eval", "mean_eval", "std_eval"],
-        "Analysis-Ready": [
-            "full_eval_with_details",
-            "full_eval_with_lr",
-            "mean_eval_with_details",
-            "mean_eval_with_lr",
-        ],
+        "Merged Data": ["full_eval_raw"],
+        "Enriched Data": ["full_eval"],
+        "Aggregated Data": ["mean_eval", "std_eval"],
     }
 
     for category, dataframes in categories.items():
@@ -74,19 +64,72 @@ def demo_basic_access(dd: DataDecide) -> None:
         f"   • Dataset details:       {dd.dataset_details.shape[0]:>8,} rows × {dd.dataset_details.shape[1]:>3} cols"
     )
 
-    print("\n📋 Sample of full evaluation data:")
-    print(dd.full_eval.head(3))
+    print("\n📋 Sample of enriched full evaluation data:")
+    # Show enriched columns in sample
+    full_eval = dd.full_eval
+    enriched_cols = ['params', 'data', 'step']
+    if 'mmlu_average' in full_eval.columns:
+        enriched_cols.append('mmlu_average')
+    if 'total_tokens_billions' in full_eval.columns:
+        enriched_cols.append('total_tokens_billions')
+    if 'lr_at_step' in full_eval.columns:
+        enriched_cols.append('lr_at_step')
+    
+    sample_data = full_eval[enriched_cols].head(3)
+    print(sample_data)
+
+
+def demo_enriched_features(dd: DataDecide) -> None:
+    """Demonstrate new enriched full_eval features."""
+    print_section_header("Enriched Dataset Features")
+    
+    full_eval = dd.full_eval
+    print("🎯 New enrichments automatically included in full_eval:")
+    
+    # Check for MMLU average
+    has_mmlu = 'mmlu_average' in full_eval.columns
+    print(f"   • MMLU Average: {'✅' if has_mmlu else '❌'}")
+    if has_mmlu:
+        non_null_mmlu = full_eval['mmlu_average'].notna().sum()
+        print(f"     → {non_null_mmlu:,} rows with MMLU data")
+    
+    # Check for dataset details
+    dataset_cols = [c for c in full_eval.columns if any(x in c for x in ['pct_', 'total_tokens', 'quality_filter', 'duplicate_rate'])]
+    print(f"   • Dataset Details: {len(dataset_cols)} columns")
+    if dataset_cols:
+        print(f"     → {', '.join(dataset_cols[:3])}{'...' if len(dataset_cols) > 3 else ''}")
+    
+    # Check for learning rate columns
+    lr_cols = [c for c in full_eval.columns if 'lr_' in c]
+    print(f"   • Learning Rate Columns: {len(lr_cols)} columns")
+    if lr_cols:
+        print(f"     → {', '.join(lr_cols[:3])}{'...' if len(lr_cols) > 3 else ''}")
+    
+    # Check for model details
+    model_cols = [c for c in full_eval.columns if any(x in c for x in ['d_model', 'n_layers', 'n_heads', 'vocab_size'])]
+    print(f"   • Model Architecture: {len(model_cols)} columns")
+    
+    print(f"\n📊 Total enriched columns: {full_eval.shape[1]} (was ~81 before enrichment)")
+    
+    # Show comparison between raw merge and enriched
+    if 'full_eval_raw' in dd.paths.available_dataframes:
+        try:
+            raw_eval = dd.load_dataframe('full_eval_raw')
+            print(f"   • Raw merge had: {raw_eval.shape[1]} columns")
+            print(f"   • Enrichment added: {full_eval.shape[1] - raw_eval.shape[1]} columns")
+        except:
+            pass
 
 
 def demo_analysis_features(dd: DataDecide, min_params: str = "10M") -> None:
     """Demonstrate analysis-ready DataFrame generation."""
     print_section_header(f"Analysis Features (≥{min_params} parameters)")
 
-    print("🧪 Testing get_analysis_df() with different configurations...")
+    print("🧪 Testing get_filtered_df() with different configurations...")
 
     # Demo 1: Basic analysis DataFrame
     start_time = time.time()
-    analysis_df = dd.get_analysis_df(min_params=min_params, verbose=True)
+    analysis_df = dd.get_filtered_df(min_params=min_params, verbose=True)
     elapsed = time.time() - start_time
     print(f"✅ Analysis DataFrame generated in {elapsed:.2f}s")
     print(
@@ -95,7 +138,7 @@ def demo_analysis_features(dd: DataDecide, min_params: str = "10M") -> None:
 
     # Demo 2: Full data (no averaging)
     print("\n🔄 Comparing mean vs full data:")
-    full_data = dd.get_analysis_df(min_params=min_params, return_means=False)
+    full_data = dd.get_filtered_df(min_params=min_params, return_means=False)
     print(f"   • With averaging across seeds: {analysis_df.shape[0]:,} rows")
     print(f"   • Without averaging (full):    {full_data.shape[0]:,} rows")
 
@@ -199,7 +242,7 @@ def demo_filtering_options(
     print_section_header("Filtering Demo")
 
     # Start with analysis DataFrame
-    base_df = dd.get_analysis_df(min_params="4M", return_means=False)
+    base_df = dd.get_filtered_df(min_params="4M", return_means=False)
     print(f"🔧 Starting with {base_df.shape[0]:,} rows")
 
     if model_size:
@@ -232,7 +275,7 @@ def demo_explore_mode(dd: DataDecide) -> None:
     print("   4. Examine specific tasks")
 
     print("\n💡 Example queries you can run:")
-    print("   • dd.get_analysis_df(min_params='300M')")
+    print("   • dd.get_filtered_df(min_params='300M')")
     print("   • dd.load_dataframe('ppl_raw')")
     print("   • dd.full_eval[dd.full_eval['params'] == '1B']")
     print("   • dd.model_details")
@@ -265,7 +308,7 @@ Examples:
     parser.add_argument(
         "--recompute_from",
         type=str,
-        choices=["download", "metrics_expand", "parse", "merge", "aggregate", "all"],
+        choices=["download", "metrics_expand", "parse", "merge", "enrich", "aggregate", "all"],
         default=None,
         help="Stage to start recomputing from. Use 'all' to force complete reprocessing.",
     )
@@ -324,6 +367,7 @@ Examples:
     # Run demonstrations
     show_available_dataframes(dd)
     demo_basic_access(dd)
+    demo_enriched_features(dd)
     demo_analysis_features(dd, min_params=args.min_params)
     demo_data_exploration(dd)
 
@@ -336,7 +380,8 @@ Examples:
     print_section_header("Setup Complete!")
     print("🎉 DataDecide is ready for analysis!")
     print(f"   • Access your data: dd = DataDecide('{args.data_dir}')")
-    print("   • Quick analysis: dd.get_analysis_df()")
+    print("   • Enriched full dataset: dd.full_eval (includes MMLU avg, details, LR)")
+    print("   • Quick filtering: dd.get_filtered_df()")
     print("   • Available DataFrames: dd.paths.available_dataframes")
     print()
 

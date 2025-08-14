@@ -71,3 +71,12 @@ def merge_ppl_and_dwn_dfs(ppl_df: pd.DataFrame, dwn_df: pd.DataFrame) -> pd.Data
     """Merge perplexity and downstream evaluation dataframes on common keys."""
     # Merge on the common key columns
     return pd.merge(ppl_df, dwn_df, on=consts.KEY_COLS, how='outer')
+
+
+def add_mmlu_average(df: pd.DataFrame) -> pd.DataFrame:
+    """Add mmlu_average column by averaging all MMLU subtask columns."""
+    mmlu_cols = [col for col in df.columns if col.startswith("mmlu_") and col != "mmlu_average"]
+    if mmlu_cols:
+        df = df.copy()
+        df["mmlu_average"] = df[mmlu_cols].mean(axis=1)
+    return df

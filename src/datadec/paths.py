@@ -17,6 +17,7 @@ class DataDecidePaths:
             "ppl_parsed": "ppl_eval_parsed",
             "dwn_parsed": "downstream_eval_parsed",
             "step_to_token_compute": "step_to_token_compute",
+            "full_eval_raw": "full_eval_raw",
             "full_eval": "full_eval",
             "mean_eval": "mean_eval",
             "std_eval": "std_eval",
