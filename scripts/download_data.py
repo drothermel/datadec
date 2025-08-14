@@ -259,7 +259,7 @@ Examples:
     parser.add_argument(
         "--data_dir",
         type=str,
-        default="./data",
+        default="./test_data",
         help="Directory to store the downloaded and processed data.",
     )
     parser.add_argument(

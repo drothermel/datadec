@@ -29,14 +29,14 @@ class DataPipeline:
             if verbose:
                 print("Downloading perplexity evaluation dataset...")
             ppl_ds = load_dataset(consts.HF_DATASET_NAMES["perplexity_eval_ds"])
-            ppl_df = ppl_ds["validation"].to_pandas()
+            ppl_df = ppl_ds["train"].to_pandas()
             ppl_df.to_parquet(ppl_path)
 
         if force_reload or not dwn_path.exists():
             if verbose:
                 print("Downloading downstream evaluation dataset...")
             dwn_ds = load_dataset(consts.HF_DATASET_NAMES["downstream_eval_ds"])
-            dwn_df = dwn_ds["validation"].to_pandas()
+            dwn_df = dwn_ds["train"].to_pandas()
             dwn_df.to_parquet(dwn_path)
 
     def extract_step_token_compute_mapping(self, verbose: bool = False) -> None:

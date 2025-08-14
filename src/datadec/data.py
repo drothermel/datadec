@@ -34,8 +34,15 @@ class DataDecide:
             print(">> Finished setting up DataDecide.")
 
     def _cache_derived_dataframes(self):
-        self.loader.load(self.paths.get_path("full_eval"), "full_eval")
-        self.loader.load(self.paths.get_path("mean_eval"), "mean_eval")
+        core_dataframes = [
+            ("full_eval", "full_eval"),
+            ("mean_eval", "mean_eval"),
+        ]
+        
+        for cache_key, df_name in core_dataframes:
+            path = self.paths.get_path(df_name)
+            if path.exists():
+                self.loader.load(path, cache_key)
 
         derived_cache_names = [
             ("full_eval_with_details", "full_eval_with_details"),
