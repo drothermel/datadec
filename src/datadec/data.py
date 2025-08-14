@@ -8,54 +8,8 @@ from datasets import load_dataset
 from datadec import features as dd_lrs
 from datadec import constants as consts
 from datadec import parsing
+from datadec.paths import DataDecidePaths
 
-
-class DataDecidePaths:
-    def __init__(self, data_dir: str = "./data"):
-        self.data_dir = Path(data_dir) / "datadecide"
-        self.dataset_dir = self.data_dir / "datasets"
-        self.dataset_dir.mkdir(parents=True, exist_ok=True)
-        self.ds_details_path = self.data_dir / "dataset_features.csv"
-
-    def parquet_path(self, name: str) -> Path:
-        return self.data_dir / f"{name}.parquet"
-
-    def dataset_path(self, max_params_str: str) -> Path:
-        return self.dataset_dir / f"dataset_{max_params_str}.pkl"
-
-    # ------------ DataDecide Raw Paths ------------
-    @property
-    def ppl_eval_raw_path(self) -> Path:
-        return self.parquet_path("ppl_eval")
-
-    @property
-    def downstream_eval_raw_path(self) -> Path:
-        return self.parquet_path("downstream_eval")
-
-    # ------------ DataDecide Parsed Paths ------------
-    @property
-    def step_to_token_compute_path(self) -> Path:
-        return self.parquet_path("step_to_token_compute")
-
-    @property
-    def ppl_eval_parsed_path(self) -> Path:
-        return self.parquet_path("ppl_eval_parsed")
-
-    @property
-    def downstream_eval_parsed_path(self) -> Path:
-        return self.parquet_path("downstream_eval_parsed")
-
-    @property
-    def full_eval_ds_path(self) -> Path:
-        return self.parquet_path("full_eval")
-
-    @property
-    def mean_eval_ds_path(self) -> Path:
-        return self.parquet_path("mean_eval")
-
-    @property
-    def std_eval_ds_path(self) -> Path:
-        return self.parquet_path("std_eval")
 
 
 class DataDecideDefaults:
