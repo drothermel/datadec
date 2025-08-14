@@ -79,6 +79,7 @@ class DataPipeline:
         dwn_df = pd.read_parquet(self.paths.get_path("dwn_parsed"))
 
         full_eval_df = df_utils.merge_ppl_and_dwn_dfs(ppl_df, dwn_df)
+        full_eval_df = parsing.reorder_df_cols(full_eval_df, consts.KEY_COLS)
         full_eval_df.to_parquet(self.paths.get_path("full_eval"))
 
     def create_aggregated_datasets(self, verbose: bool = False) -> None:
