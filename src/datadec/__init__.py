@@ -5,6 +5,6 @@ import warnings
 # Suppress urllib3 LibreSSL warning on macOS
 warnings.filterwarnings("ignore", message="urllib3 v2 only supports OpenSSL")
 
-from datadec.data import DataDecide, prep_base_df
+from datadec.data import DataDecide
 
-__all__ = ["DataDecide", "prep_base_df"]
+__all__ = ["DataDecide"]

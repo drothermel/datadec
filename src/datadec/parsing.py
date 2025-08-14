@@ -1,10 +1,3 @@
-"""Data parsing and transformation functions for DataDecide datasets.
-
-This module contains all functions for parsing and transforming raw DataDecide datasets
-into analysis-ready formats, including perplexity data, downstream evaluation data,
-and various data manipulation utilities.
-"""
-
 import json
 from typing import List
 
@@ -14,161 +7,88 @@ from datadec import constants as consts
 
 
 def list_col_to_columns(orig_df: pd.DataFrame, col_name: str) -> pd.DataFrame:
-    """Convert a column containing list/dict strings to separate columns.
-
-    Args:
-        orig_df: DataFrame with a column containing JSON-like strings
-        col_name: Name of the column to expand
-
-    Returns:
-        DataFrame with the specified column expanded into separate columns
-    """
-    json_data = orig_df[col_name].str.replace("'", '"')  # Single to double quotes
+    json_data = orig_df[col_name].str.replace("'", '"')
     df = pd.json_normalize(json_data.apply(json.loads))
     df = pd.concat([orig_df.drop(col_name, axis=1), df], axis=1)
     return df
 
 
 def reorder_df_cols(df: pd.DataFrame, prefix_order: List[str]) -> pd.DataFrame:
-    """Reorder DataFrame columns with specified columns first.
-
-    Args:
-        df: DataFrame to reorder
-        prefix_order: List of column names to place at the beginning
-
-    Returns:
-        DataFrame with reordered columns
-    """
     df = df.copy()
     return df[prefix_order + [col for col in df.columns if col not in prefix_order]]
 
 
 def make_step_to_token_compute_df(dwn_df: pd.DataFrame) -> pd.DataFrame:
-    """Create mapping from training steps to tokens and compute.
-
-    Args:
-        dwn_df: Downstream evaluation DataFrame with params, step, tokens, compute columns
-
-    Returns:
-        DataFrame with params, tokens_per_step, compute_per_step columns
-    """
-    assert all(
-        [col in dwn_df.columns for col in ["params", "step", "tokens", "compute"]]
-    )
-    step_map = dwn_df[dwn_df["step"] > 0].copy()
-    step_map["tokens_per_step"] = step_map["tokens"] / step_map["step"]
-    step_map["compute_per_step"] = step_map["compute"] / step_map["step"]
-    return step_map[["params", "tokens_per_step", "compute_per_step"]].drop_duplicates()
+    step_data = dwn_df[["params", "step", "tokens", "compute"]].drop_duplicates()
+    step_data = step_data.reset_index(drop=True)
+    return step_data
 
 
 def parse_perplexity_dataframe(ppl_df: pd.DataFrame) -> pd.DataFrame:
-    """Parse raw perplexity evaluation DataFrame.
-
-    Args:
-        ppl_df: Raw perplexity DataFrame from DataDecide dataset
-
-    Returns:
-        Parsed DataFrame with renamed columns and mapped seeds
-    """
     df = ppl_df.copy()
-    df = df.drop(columns=consts.PPL_DROP_COLS)
-    df = df.rename(columns=consts.PPL_NAME_MAP)
-    df = reorder_df_cols(df, consts.KEY_COLS)
+
     df["seed"] = df["seed"].map(consts.SEED_MAP)
+
+    for old_name, new_name in consts.PPL_NAME_MAP.items():
+        if old_name in df.columns:
+            df = df.rename(columns={old_name: new_name})
+
+    df = df.drop(columns=consts.PPL_DROP_COLS, errors="ignore")
     return df
 
 
 def expand_downstream_metrics(dwn_df: pd.DataFrame) -> pd.DataFrame:
-    """Expand metrics column in downstream DataFrame (SLOW OPERATION).
-
-    This is the slowest part of downstream parsing (2-5 minutes) as it converts
-    the JSON-like metrics column into separate columns.
-
-    Args:
-        dwn_df: Raw downstream evaluation DataFrame from DataDecide dataset
-
-    Returns:
-        DataFrame with metrics column expanded but not yet aggregated or pivoted
-    """
-    df = dwn_df.copy()
-    df = df.drop(columns=consts.DWN_DROP_COLS)
-    df = list_col_to_columns(df, "metrics")  # THE SLOW STEP
-    df = df.drop(columns=consts.DROP_METRICS)
+    print("Expanding downstream metrics column (this may take 2-5 minutes)...")
+    df = list_col_to_columns(dwn_df, "metrics")
     return df
 
 
 def complete_downstream_parsing(metrics_expanded_df: pd.DataFrame) -> pd.DataFrame:
-    """Complete downstream parsing from metrics-expanded DataFrame.
-
-    Takes a DataFrame that already has metrics expanded and completes the
-    remaining parsing steps: MMLU averaging, pivoting, and final formatting.
-
-    Args:
-        metrics_expanded_df: DataFrame with metrics already expanded
-
-    Returns:
-        Fully parsed downstream DataFrame
-    """
     df = metrics_expanded_df.copy()
+
+    df["seed"] = df["seed"].map(consts.SEED_MAP)
+
+    df = df.drop(columns=consts.DROP_METRICS, errors="ignore")
+    df = df.drop(columns=consts.DWN_DROP_COLS, errors="ignore")
+
     df = average_mmlu_metrics(df)
     df = pivot_task_metrics_to_columns(df)
-    df = reorder_df_cols(df, consts.KEY_COLS)
-    df["seed"] = df["seed"].map(consts.SEED_MAP)
+
     return df
 
 
 def parse_downstream_dataframe(dwn_df: pd.DataFrame) -> pd.DataFrame:
-    """Parse raw downstream evaluation DataFrame (full pipeline).
-
-    Args:
-        dwn_df: Raw downstream evaluation DataFrame from DataDecide dataset
-
-    Returns:
-        Parsed DataFrame with expanded metrics, averaged MMLU, and pivoted tasks
-    """
     metrics_expanded = expand_downstream_metrics(dwn_df)
     return complete_downstream_parsing(metrics_expanded)
 
 
 def average_mmlu_metrics(df: pd.DataFrame) -> pd.DataFrame:
-    """Calculate average MMLU metrics and add as a new task.
-
-    Args:
-        df: DataFrame with task-level evaluation metrics
-
-    Returns:
-        DataFrame with added mmlu_average task containing averaged metrics
-    """
-    mmlu_tasks = [task for task in df["task"].unique() if "mmlu" in task.lower()]
-    mmlu_df = df[df["task"].isin(mmlu_tasks)].drop(columns=["task"])
-    mmlu_avg = mmlu_df.groupby(consts.KEY_COLS).agg("mean").reset_index()
-    mmlu_avg["task"] = "mmlu_average"
-    return pd.concat([df, mmlu_avg], ignore_index=True)
+    mmlu_cols = [col for col in df.columns if col.startswith("mmlu_") and col != "mmlu_average"]
+    
+    if mmlu_cols:
+        df["mmlu_average"] = df[mmlu_cols].mean(axis=1)
+    
+    return df
 
 
 def pivot_task_metrics_to_columns(dwn_df: pd.DataFrame) -> pd.DataFrame:
-    """Pivot task metrics from rows to columns.
-
-    Args:
-        dwn_df: DataFrame with tasks in rows and metrics as columns
-
-    Returns:
-        DataFrame with task-metric combinations as columns
-    """
-    pivoted_metrics = []
-    metric_names = [
-        col
-        for col in dwn_df.columns
-        if col not in consts.EXCLUDE_COLS and col not in consts.DROP_METRICS
-    ]
-    for metric_col in metric_names:
-        pivoted = dwn_df.pivot_table(
-            index=consts.KEY_COLS,
-            columns="task",
-            values=metric_col,
-            aggfunc="first",
-        )
-        pivoted.columns = [f"{task}_{metric_col}" for task in pivoted.columns]
-        pivoted_metrics.append(pivoted)
-    new_dwn_df = pd.concat(pivoted_metrics, axis=1).reset_index()
-    return new_dwn_df
+    id_vars = [col for col in consts.KEY_COLS if col in dwn_df.columns]
+    value_vars = [col for col in dwn_df.columns if col not in consts.EXCLUDE_COLS]
+    
+    df_melted = dwn_df.melt(
+        id_vars=id_vars,
+        value_vars=value_vars,
+        var_name="task_metric",
+        value_name="value"
+    )
+    
+    df_pivoted = df_melted.pivot_table(
+        index=id_vars,
+        columns="task_metric",
+        values="value",
+        aggfunc="first"
+    ).reset_index()
+    
+    df_pivoted.columns.name = None
+    
+    return df_pivoted

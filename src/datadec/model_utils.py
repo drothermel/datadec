@@ -1,9 +1,3 @@
-"""Model configuration and calculation utilities for DataDecide.
-
-This module contains utility functions for model configuration generation,
-training parameter calculations, and string parsing related to model sizes.
-"""
-
 import math
 from typing import Dict, Any
 
@@ -14,353 +8,232 @@ from datadec import constants as consts
 
 
 def calculate_batch_size(model_size_str: str) -> int:
-    """Calculate batch size for a given model size.
-
-    Args:
-        model_size_str: Model size string (e.g., "1B", "300M")
-
-    Returns:
-        Calculated batch size for the model
-    """
-    assert consts.MAX_SEQ_LEN == 2_048
     model_size = parse_model_size_str(model_size_str)
-    batch_size = 160 * (model_size / consts.MODEL_SIZE_NORM_VALUE) ** consts.BS_EXPONENT
-    rounding_size = consts.GPUS_PER_NODE * consts.MICROBATCH_SIZE
-    batch_size /= rounding_size
-    batch_size = round(batch_size)
-    batch_size *= rounding_size
-    return batch_size
+    
+    raw_batch_size = (
+        consts.MODEL_SIZE_NORM_VALUE / model_size
+    ) ** consts.BS_EXPONENT
+    
+    rounded_batch_size = round(raw_batch_size / 64) * 64
+    
+    samples_per_node = rounded_batch_size / consts.GPUS_PER_NODE
+    samples_per_node = max(samples_per_node, consts.MICROBATCH_SIZE)
+    
+    return int(samples_per_node * consts.GPUS_PER_NODE)
 
 
 def calculate_lr_max(model_size_str: str) -> float:
-    """Calculate maximum learning rate for a given model size.
-
-    Args:
-        model_size_str: Model size string (e.g., "1B", "300M")
-
-    Returns:
-        Maximum learning rate for the model
-    """
     model_size = parse_model_size_str(model_size_str)
-    return (
-        consts.LR_MAX_BASE
-        * (model_size / consts.MODEL_SIZE_NORM_VALUE) ** consts.LR_EXPONENT
-    )
+    
+    lr_max = consts.LR_MAX_BASE * (
+        model_size / consts.MODEL_SIZE_NORM_VALUE
+    ) ** consts.LR_EXPONENT
+    
+    return lr_max
 
 
 def calculate_warmup_tokens(model_size_str: str) -> int:
-    """Calculate warmup tokens for a given model size.
-
-    Args:
-        model_size_str: Model size string (e.g., "1B", "300M")
-
-    Returns:
-        Number of warmup tokens for the model
-    """
     model_size = parse_model_size_str(model_size_str)
-    bs = calculate_batch_size(model_size_str)
-    # model_size / bs = num_warmup_steps
-    # (model_size / bs) * max_seq_len = num_warmup_tokens
-    return round(model_size / (bs / consts.MAX_SEQ_LEN))
+    
+    warmup_tokens = int(375e6 * (model_size / 108_000_000) ** (1 / 3))
+    
+    return warmup_tokens
 
 
 def parse_model_size_str(size_str: str) -> int:
-    """Parse model size string to get parameter count.
-
-    Args:
-        size_str: Model size string (e.g., "1B", "300M")
-
-    Returns:
-        Number of parameters as integer
-    """
-    return consts.HARDCODED_SIZE_MAPPING[size_str]
+    if size_str in consts.HARDCODED_SIZE_MAPPING:
+        return consts.HARDCODED_SIZE_MAPPING[size_str]
+    
+    match = consts.NUMBER_UNIT_RE.match(size_str)
+    number, unit = int(match.group(1)), match.group(2).upper()
+    
+    unit_multiplier = {"K": 1e3, "M": 1e6, "B": 1e9, "T": 1e12}
+    return int(number * unit_multiplier[unit])
 
 
 def parse_token_length_str(length_str: str, model_size_str: str) -> int:
-    """Parse token length string to get total tokens.
-
-    Args:
-        length_str: Length specification (e.g., "5xC")
-        model_size_str: Model size string (e.g., "1B", "300M")
-
-    Returns:
-        Total number of tokens
-    """
-    model_size = parse_model_size_str(model_size_str)
-    length_in_tokens, length_unit = consts.NUMBER_UNIT_RE.match(
-        length_str.strip().upper()
-    ).groups()  # type: ignore
-    assert length_unit == "XC"
-    length_in_tokens = int(length_in_tokens)
-    return length_in_tokens * 20 * model_size
+    if length_str == "5xC":
+        model_size = parse_model_size_str(model_size_str)
+        return 5 * model_size
+    
+    match = consts.NUMBER_UNIT_RE.match(length_str)
+    number, unit = int(match.group(1)), match.group(2).upper()
+    
+    unit_multiplier = {"K": 1e3, "M": 1e6, "B": 1e9, "T": 1e12}
+    return int(number * unit_multiplier[unit])
 
 
 def create_model_config(model_size_str: str, **kwargs) -> Dict[str, Any]:
-    """Create a complete model configuration dictionary.
-
-    Args:
-        model_size_str: Model size string (e.g., "1B", "300M")
-        **kwargs: Additional configuration parameters to override defaults
-
-    Returns:
-        Complete model configuration dictionary
-    """
-    mc = {
-        **consts.MODEL_CONFIG_BASE,
-        "params": model_size_str,
-        "model_size_str": model_size_str,
-        **kwargs,
-    }
-    mc["model_size"] = int(parse_model_size_str(mc["model_size_str"]))
-    mc["batch_size"] = int(calculate_batch_size(mc["model_size_str"]))
-    mc["lr_max"] = calculate_lr_max(mc["model_size_str"])
-    mc["lr_final"] = consts.LR_FINAL_RATIO * mc["lr_max"]
-    mc["warmup_tokens"] = int(calculate_warmup_tokens(mc["model_size_str"]))
-    mc["total_tokens"] = int(
-        parse_token_length_str(mc["length_str"], mc["model_size_str"])
+    config = consts.MODEL_CONFIG_BASE.copy()
+    
+    if model_size_str in consts.MODEL_SHAPES:
+        config.update(consts.MODEL_SHAPES[model_size_str])
+    
+    config["lr_max"] = calculate_lr_max(model_size_str)
+    config["batch_size"] = calculate_batch_size(model_size_str)
+    config["warmup_tokens"] = calculate_warmup_tokens(model_size_str)
+    
+    config["tokens"] = parse_token_length_str(config["length_str"], model_size_str)
+    config["lr_final"] = config["lr_max"] * consts.LR_FINAL_RATIO
+    config["lr_warmup_steps"] = int(
+        config["warmup_tokens"] / (config["batch_size"] * consts.MAX_SEQ_LEN)
     )
-    mc["lr_decay_tokens"] = int(mc["total_tokens"] - mc["warmup_tokens"])
-    mc["total_seqs"] = int(round(mc["total_tokens"] / consts.MAX_SEQ_LEN))
-    mc["total_steps"] = int(
-        math.ceil(mc["total_tokens"] / (mc["batch_size"] * consts.MAX_SEQ_LEN))
-    )
-    mc["warmup_perc"] = mc["warmup_tokens"] / mc["total_tokens"]
-    mc["warmup_steps"] = int(
-        math.ceil(mc["warmup_tokens"] / (mc["batch_size"] * consts.MAX_SEQ_LEN))
-    )
-    mc["lr_decay_steps"] = int(mc["total_steps"] - mc["warmup_steps"])
-    mc["theoretical_tokens_per_step"] = int(
-        round(consts.MAX_SEQ_LEN * mc["batch_size"])
-    )
-    mc["10_perc_lrdecay_steps"] = int(round(mc["lr_decay_steps"] * 0.1))
-    mc["early_window_10p_end_step"] = mc["warmup_steps"] + mc["10_perc_lrdecay_steps"]
-    mc["early_window_perc"] = mc["early_window_10p_end_step"] / mc["total_steps"]
-    return mc
+    
+    config.update(kwargs)
+    return config
 
 
 def create_all_model_configs() -> Dict[str, Dict[str, Any]]:
-    """Create configuration dictionaries for all model sizes.
-
-    Returns:
-        Dictionary mapping model size strings to configuration dictionaries
-    """
-    model_configs = {}
-    for param_str, cfg in consts.MODEL_SHAPES.items():
-        model_configs[param_str] = create_model_config(param_str, **cfg)
-    return model_configs
+    return {
+        model_size: create_model_config(model_size)
+        for model_size in consts.MODEL_SHAPES.keys()
+    }
 
 
 def param_to_numeric(param_str: str) -> float:
-    """Convert parameter string to numeric value.
-
-    Converts model parameter strings like "300M" or "1B" to their numeric
-    float equivalents (e.g., 300000000.0, 1000000000.0).
-
-    Args:
-        param_str: Parameter string with M/B suffix or numeric string
-
-    Returns:
-        Numeric parameter count as float
-
-    Raises:
-        ValueError: If parameter string cannot be parsed
-    """
-    if param_str.endswith("M"):
-        return float(param_str[:-1]) * 1e6
-    elif param_str.endswith("B"):
-        return float(param_str[:-1]) * 1e9
-    else:
-        # Try to convert directly if it's already numeric
-        try:
-            return float(param_str)
-        except ValueError:
-            raise ValueError(f"Cannot parse parameter string: {param_str}")
+    if isinstance(param_str, (int, float)):
+        return float(param_str)
+    
+    param_str = str(param_str).upper()
+    
+    if param_str in consts.HARDCODED_SIZE_MAPPING:
+        return float(consts.HARDCODED_SIZE_MAPPING[param_str])
+    
+    match = consts.NUMBER_UNIT_RE.match(param_str)
+    number = float(match.group(1))
+    unit = match.group(2)
+    
+    multipliers = {"K": 1e3, "M": 1e6, "B": 1e9, "T": 1e12}
+    return number * multipliers.get(unit, 1)
 
 
 def get_model_details_df() -> pd.DataFrame:
-    """Get DataFrame with model configuration details.
-
-    Returns:
-        DataFrame with model configurations as rows and config parameters as columns
-    """
-    model_configs = create_all_model_configs()
-    return pd.DataFrame(model_configs).T.infer_objects()
-
-
-# Learning Rate Schedule Functions
+    configs = create_all_model_configs()
+    return pd.DataFrame.from_dict(configs, orient="index").reset_index().rename(
+        columns={"index": "params"}
+    )
 
 
 def get_lr_at_step(
     step: int,
-    lr_warmup_start: float,
+    lr_warmup_steps: int,
     lr_max: float,
     lr_final: float,
-    warmup_steps: int,
-    lr_decay_steps: int,
+    total_steps: int,
 ) -> float:
-    """Get the learning rate at a specific training step.
-
-    Implements warmup followed by cosine annealing schedule.
-
-    Args:
-        step: Current training step
-        lr_warmup_start: Starting learning rate for warmup
-        lr_max: Maximum learning rate reached after warmup
-        lr_final: Final learning rate after decay
-        warmup_steps: Number of warmup steps
-        lr_decay_steps: Number of decay steps
-
-    Returns:
-        Learning rate at the specified step
-    """
-    if step <= warmup_steps:
-        return lr_warmup_start + (lr_max - lr_warmup_start) * step / warmup_steps
-    else:
-        decay_step = min(step - warmup_steps, lr_decay_steps)
-        if decay_step >= lr_decay_steps:
-            return lr_final
-        return lr_final + 0.5 * (lr_max - lr_final) * (
-            1 + np.cos(np.pi * decay_step / lr_decay_steps)
-        )
+    if step <= lr_warmup_steps:
+        return lr_max * step / lr_warmup_steps
+    
+    cosine_progress = (step - lr_warmup_steps) / (total_steps - lr_warmup_steps)
+    cosine_progress = min(cosine_progress, 1.0)
+    
+    cosine_factor = 0.5 * (1 + math.cos(math.pi * cosine_progress))
+    return lr_final + (lr_max - lr_final) * cosine_factor
 
 
 def numerical_cosine_integral(
-    lr_max: float, lr_final: float, lr_decay_steps: int, decay_step: int
+    lr_warmup_steps: int,
+    lr_max: float,
+    lr_final: float,
+    total_steps: int,
+    num_points: int = 10000,
 ) -> float:
-    """Numerically integrate the cosine annealing schedule.
-
-    Uses trapezoidal rule to compute the area under the cosine annealing curve.
-
-    Args:
-        lr_max: Maximum learning rate
-        lr_final: Final learning rate after decay
-        lr_decay_steps: Total number of decay steps
-        decay_step: Current decay step to integrate up to
-
-    Returns:
-        Cumulative learning rate from numerical integration
-    """
-    if decay_step <= 0:
-        return 0.0
-
-    # Use trapezoidal rule for integration
-    t_values = np.linspace(0, decay_step, int(decay_step) + 1)
-    lr_values = lr_final + 0.5 * (lr_max - lr_final) * (
-        1 + np.cos(np.pi * t_values / lr_decay_steps)
-    )
-
-    # Trapezoidal integration
-    return np.trapz(lr_values, t_values)
+    steps = np.linspace(lr_warmup_steps, total_steps, num_points)
+    
+    cosine_progress = (steps - lr_warmup_steps) / (total_steps - lr_warmup_steps)
+    cosine_factor = 0.5 * (1 + np.cos(np.pi * cosine_progress))
+    lr_values = lr_final + (lr_max - lr_final) * cosine_factor
+    
+    return float(np.trapz(lr_values, steps))
 
 
 def calculate_cumulative_lr(
     step: int,
-    lr_warmup_start: float,
+    lr_warmup_steps: int,
     lr_max: float,
     lr_final: float,
-    warmup_steps: int,
-    lr_decay_steps: int,
+    total_steps: int,
 ) -> float:
-    """Calculate cumulative learning rate up to a given training step.
-
-    Computes the integral of the learning rate schedule from step 0 to the given step,
-    handling both warmup and cosine annealing phases.
-
-    Args:
-        step: Training step to calculate cumulative LR up to
-        lr_warmup_start: Starting learning rate for warmup
-        lr_max: Maximum learning rate reached after warmup
-        lr_final: Final learning rate after decay
-        warmup_steps: Number of warmup steps
-        lr_decay_steps: Number of decay steps
-
-    Returns:
-        Cumulative learning rate from step 0 to the given step
-    """
-    if step <= 0:
-        return 0.0
-
-    cumulative_lr = 0.0
-    if step <= warmup_steps:
-        t = step
-        cumulative_lr = lr_warmup_start * t + (lr_max - lr_warmup_start) * t**2 / (
-            2 * warmup_steps
-        )
-    else:
-        t = warmup_steps
-        warmup_cumulative = lr_warmup_start * t + (lr_max - lr_warmup_start) * t**2 / (
-            2 * warmup_steps
-        )
-        decay_step = min(step - warmup_steps, lr_decay_steps)
-        if decay_step > 0:
-            decay_cumulative = numerical_cosine_integral(
-                lr_max, lr_final, lr_decay_steps, decay_step
-            )
-            cumulative_lr = warmup_cumulative + decay_cumulative
-        else:
-            cumulative_lr = warmup_cumulative
-    return cumulative_lr
+    if step <= lr_warmup_steps:
+        return 0.5 * lr_max * step**2 / lr_warmup_steps
+    
+    warmup_area = 0.5 * lr_max * lr_warmup_steps
+    
+    cosine_start = lr_warmup_steps
+    cosine_end = min(step, total_steps)
+    cosine_length = cosine_end - cosine_start
+    
+    if cosine_length <= 0:
+        return warmup_area
+    
+    total_cosine_length = total_steps - lr_warmup_steps
+    
+    progress_end = cosine_length / total_cosine_length
+    
+    linear_component = lr_final * cosine_length
+    
+    cosine_component = (
+        (lr_max - lr_final)
+        * total_cosine_length
+        / math.pi
+        * (math.sin(math.pi * progress_end))
+    )
+    
+    cosine_area = linear_component + cosine_component
+    
+    return warmup_area + cosine_area
 
 
 def add_lr_cols(df: pd.DataFrame) -> pd.DataFrame:
-    """Add learning rate schedule columns to a DataFrame.
-
-    Adds 'lr_at_step' and 'cumulative_lr_at_step' columns based on the learning
-    rate schedule parameters already present in the DataFrame.
-
-    Args:
-        df: DataFrame containing learning rate schedule parameters
-            (lr_warmup_start, lr_max, lr_final, warmup_steps, lr_decay_steps)
-
-    Returns:
-        DataFrame with additional learning rate columns
-    """
-    df = df.copy()
-    df_by_params = (
-        df[
-            [
-                "params",
-                "step",
-                "lr_warmup_start",
-                "lr_max",
-                "lr_final",
-                "warmup_steps",
-                "lr_decay_steps",
-            ]
-        ]
-        .groupby(["params", "step"])
-        .first()
-        .reset_index()
-    )
-    df_by_params["lr_at_step"] = df_by_params.apply(
-        lambda row: get_lr_at_step(
-            row["step"],
-            row["lr_warmup_start"],
-            row["lr_max"],
-            row["lr_final"],
-            row["warmup_steps"],
-            row["lr_decay_steps"],
-        ),
-        axis=1,
-    )
-    df_by_params["cumulative_lr_at_step"] = df_by_params.apply(
-        lambda row: calculate_cumulative_lr(
-            row["step"],
-            row["lr_warmup_start"],
-            row["lr_max"],
-            row["lr_final"],
-            row["warmup_steps"],
-            row["lr_decay_steps"],
-        ),
-        axis=1,
-    )
-    df_by_params = df_by_params[
-        [
-            "params",
-            "step",
-            "lr_at_step",
-            "cumulative_lr_at_step",
-        ]
-    ]
-    df = df.merge(df_by_params, on=["params", "step"], how="left")
-    return df
+    result = df.copy()
+    
+    model_configs = create_all_model_configs()
+    
+    lr_data = []
+    for _, row in result.iterrows():
+        params = row["params"]
+        step = row["step"]
+        
+        if params in model_configs:
+            config = model_configs[params]
+            
+            lr_at_step = get_lr_at_step(
+                step,
+                config["lr_warmup_steps"],
+                config["lr_max"],
+                config["lr_final"],
+                config["tokens"] // (config["batch_size"] * consts.MAX_SEQ_LEN),
+            )
+            
+            cumulative_lr = calculate_cumulative_lr(
+                step,
+                config["lr_warmup_steps"],
+                config["lr_max"],
+                config["lr_final"],
+                config["tokens"] // (config["batch_size"] * consts.MAX_SEQ_LEN),
+            )
+            
+            lr_data.append(
+                {
+                    "lr_warmup_start": config.get("lr_warmup_start", 0.0),
+                    "lr_max": config["lr_max"],
+                    "lr_final": config["lr_final"],
+                    "lr_at_step": lr_at_step,
+                    "cumulative_lr": cumulative_lr,
+                }
+            )
+        else:
+            lr_data.append(
+                {
+                    "lr_warmup_start": np.nan,
+                    "lr_max": np.nan,
+                    "lr_final": np.nan,
+                    "lr_at_step": np.nan,
+                    "cumulative_lr": np.nan,
+                }
+            )
+    
+    lr_df = pd.DataFrame(lr_data)
+    result = pd.concat([result, lr_df], axis=1)
+    
+    return result

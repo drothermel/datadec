@@ -1,17 +1,8 @@
-"""Constants and configuration data for the DataDecide library.
-
-This module contains all hardcoded DataDecide-specific data including model configurations,
-dataset mappings, task lists, and other constants that were previously embedded in the data module.
-"""
-
 import re
 from typing import Dict, List, Any
 
-# Regex pattern for parsing model size strings
 NUMBER_UNIT_RE = re.compile(r"^([0-9]+)([a-zA-Z]+)$")
 
-# Model architecture configurations
-# Model details are from https://github.com/allenai/OLMo/blob/7094aab0448096f4994cae881edbd629d6c2f3de/scripts/ladder.py#L352
 MODEL_SHAPES: Dict[str, Dict[str, int]] = {
     "4M": {"d_model": 64, "n_heads": 8, "n_layers": 8, "mlp_ratio": 8},
     "6M": {"d_model": 96, "n_heads": 8, "n_layers": 8, "mlp_ratio": 8},
@@ -29,7 +20,6 @@ MODEL_SHAPES: Dict[str, Dict[str, int]] = {
     "1B": {"d_model": 2048, "n_heads": 16, "n_layers": 16, "mlp_ratio": 8},
 }
 
-# Hardcoded model size mappings (parameter count)
 HARDCODED_SIZE_MAPPING: Dict[str, int] = {
     "4M": 3_744_832,
     "6M": 6_010_464,
@@ -47,14 +37,12 @@ HARDCODED_SIZE_MAPPING: Dict[str, int] = {
     "1B": 1_000_000_000,
 }
 
-# Hugging Face dataset names
 HF_DATASET_NAMES: Dict[str, str] = {
     "downstream_eval_ds": "allenai/DataDecide-eval-results",
     "downstream_instance_ds": "allenai/DataDecide-eval-instances",
     "perplexity_eval_ds": "allenai/DataDecide-ppl-results",
 }
 
-# Perplexity metric name mappings
 PPL_NAME_MAP: Dict[str, str] = {
     "eval/wikitext_103-validation/Perplexity": "wikitext_103-valppl",
     "eval/pile-validation/Perplexity": "pile-valppl",
@@ -69,7 +57,6 @@ PPL_NAME_MAP: Dict[str, str] = {
     "eval/dolma_books-validation/Perplexity": "dolma_books-valppl",
 }
 
-# Seed mappings
 SEED_MAP: Dict[str, int] = {
     "default": 0,
     "small aux 2": 1,
@@ -78,7 +65,6 @@ SEED_MAP: Dict[str, int] = {
     "large aux 3": 4,
 }
 
-# Data recipe families
 DATA_RECIPE_FAMILIES: Dict[str, List[str]] = {
     "dolma17": [
         "Dolma1.7",
@@ -114,7 +100,6 @@ DATA_RECIPE_FAMILIES: Dict[str, List[str]] = {
     ],
 }
 
-# Task lists for evaluation
 MMLU_TASKS: List[str] = [
     "mmlu_abstract_algebra",
     "mmlu_anatomy",
@@ -220,7 +205,6 @@ METRIC_NAMES: List[str] = [
     "primary_metric",
 ]
 
-# Maximum training steps to use per model size
 MAX_STEP_TO_USE: Dict[str, int] = {
     "1B": 67500,
     "750M": 62500,
@@ -238,22 +222,19 @@ MAX_STEP_TO_USE: Dict[str, int] = {
     "4M": 5725,
 }
 
-# Numeric constants for calculations
 MAX_SEQ_LEN: int = 2_048
 MODEL_SIZE_NORM_VALUE: int = 108_000_000
 LR_EXPONENT: float = -1 / 3
 LR_MAX_BASE: float = 0.0047
 LR_FINAL_RATIO: float = 0.01
 BS_EXPONENT: float = 2 / 3
-GPUS_PER_NODE: int = 8  # used for batch size rounding
-MICROBATCH_SIZE: int = 4  # used for batch size rounding
+GPUS_PER_NODE: int = 8
+MICROBATCH_SIZE: int = 4
 
-# Model configuration base template
 MODEL_CONFIG_BASE: Dict[str, Any] = {
     "default_seed": 6198,
     "length_str": "5xC",
     "lr_warmup_start": 0.0,
-    # Architecture defaults
     "d_model": 768,
     "n_heads": 12,
     "n_layers": 12,
@@ -284,7 +265,6 @@ MODEL_CONFIG_BASE: Dict[str, Any] = {
     "init_cutoff_factor": 3,
 }
 
-# Column lists for data processing
 DROP_METRICS: List[str] = [
     "predicted_index_raw",
     "predicted_index_per_token",
@@ -299,7 +279,6 @@ EXCLUDE_COLS: List[str] = ["params", "data", "task", "step", "seed"]
 DWN_DROP_COLS: List[str] = ["chinchilla", "tokens", "compute"]
 PPL_DROP_COLS: List[str] = ["__index_level_0__"]
 
-# Derived constants
 ALL_DATA_NAMES: List[str] = [
     name for family in DATA_RECIPE_FAMILIES.values() for name in family
 ]
