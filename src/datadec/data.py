@@ -8,6 +8,7 @@ from datasets import load_dataset
 
 from datadec import features as dd_lrs
 from datadec import constants as consts
+from datadec import parsing
 
 
 class DataDecidePaths:
@@ -314,7 +315,7 @@ class DataDecide:
             if verbose:
                 print("Extracting step-to-token and step-to-compute mapping")
             dwn_df = pd.read_parquet(self._setup_dfs["dwn_raw_df"])
-            step_to_token_compute_df = make_step_to_token_compute_df(dwn_df)
+            step_to_token_compute_df = parsing.make_step_to_token_compute_df(dwn_df)
             step_to_token_compute_df.to_parquet(self.paths.step_to_token_compute_path)
         self._setup_dfs["step_to_token_compute_df"] = (
             self.paths.step_to_token_compute_path
@@ -323,14 +324,14 @@ class DataDecide:
         # Step 3: Parse eval dfs
         if not self.paths.ppl_eval_parsed_path.exists() or force_reload:
             ppl_df = pd.read_parquet(self._setup_dfs["ppl_raw_df"])
-            ppl_parsed_df = self.parse_ppl_df(ppl_df)
+            ppl_parsed_df = parsing.parse_perplexity_dataframe(ppl_df)
             ppl_parsed_df.to_parquet(self.paths.ppl_eval_parsed_path)
         self._setup_dfs["ppl_parsed_df"] = self.paths.ppl_eval_parsed_path
         if not self.paths.downstream_eval_parsed_path.exists() or force_reload:
             if verbose:
                 print("Parsing eval dfs, this may take a while...")
             dwn_df = pd.read_parquet(self._setup_dfs["dwn_raw_df"])
-            dwn_parsed_df = self.parse_dwn_df(dwn_df)
+            dwn_parsed_df = parsing.parse_downstream_dataframe(dwn_df)
             dwn_parsed_df.to_parquet(self.paths.downstream_eval_parsed_path)
         self._setup_dfs["dwn_parsed_df"] = self.paths.downstream_eval_parsed_path
 
@@ -374,26 +375,6 @@ class DataDecide:
             (df["params"] == params) & (df["data"] == data) & (df["step"] == step)
         ]
 
-    # ------------ Parsing Helpers ------------
-
-    def parse_ppl_df(self, ppl_df: pd.DataFrame) -> pd.DataFrame:
-        df = ppl_df.copy()
-        df = df.drop(columns=consts.PPL_DROP_COLS)
-        df = df.rename(columns=consts.PPL_NAME_MAP)
-        df = reorder_df_cols(df, consts.KEY_COLS)
-        df["seed"] = df["seed"].map(consts.SEED_MAP)
-        return df
-
-    def parse_dwn_df(self, dwn_df: pd.DataFrame) -> pd.DataFrame:
-        df = dwn_df.copy()
-        df = df.drop(columns=consts.DWN_DROP_COLS)
-        df = list_col_to_columns(df, "metrics")
-        df = df.drop(columns=consts.DROP_METRICS)
-        df = self.average_mmlu_metrics(df)
-        df = self.pivot_task_metrics_rows_to_cols(df)
-        df = reorder_df_cols(df, consts.KEY_COLS)
-        df["seed"] = df["seed"].map(consts.SEED_MAP)
-        return df
 
     def create_full_eval_df(
         self,
@@ -415,7 +396,7 @@ class DataDecide:
             )
             .drop(columns=["tokens_per_step", "compute_per_step"])
         )
-        merged_df = reorder_df_cols(merged_df, consts.KEY_COLS + ["tokens", "compute"])
+        merged_df = parsing.reorder_df_cols(merged_df, consts.KEY_COLS + ["tokens", "compute"])
         return merged_df
 
     def create_mean_std_df(
@@ -435,64 +416,6 @@ class DataDecide:
             .reset_index()
         )
         return mean_df, std_df
-
-    def average_mmlu_metrics(self, df: pd.DataFrame) -> pd.DataFrame:
-        mmlu_tasks = [
-            task for task in df["task"].unique() if "mmlu" in task.lower()
-        ]
-        mmlu_df = df[df["task"].isin(mmlu_tasks)].drop(columns=["task"])
-        metric_names = [
-            col
-            for col in df.columns
-            if col not in consts.EXCLUDE_COLS and col not in consts.DROP_METRICS
-        ]
-        mmlu_avg = mmlu_df.groupby(consts.KEY_COLS).agg("mean").reset_index()
-        mmlu_avg["task"] = "mmlu_average"
-        return pd.concat([df, mmlu_avg], ignore_index=True)
-
-    def pivot_task_metrics_rows_to_cols(self, dwn_df: pd.DataFrame) -> pd.DataFrame:
-        pivoted_metrics = []
-        metric_names = [
-            col
-            for col in dwn_df.columns
-            if col not in consts.EXCLUDE_COLS and col not in consts.DROP_METRICS
-        ]
-        for metric_col in metric_names:
-            pivoted = dwn_df.pivot_table(
-                index=consts.KEY_COLS,
-                columns="task",
-                values=metric_col,
-                aggfunc="first",
-            )
-            pivoted.columns = [f"{task}_{metric_col}" for task in pivoted.columns]
-            pivoted_metrics.append(pivoted)
-        new_dwn_df = pd.concat(pivoted_metrics, axis=1).reset_index()
-        return new_dwn_df
-
-
-# ------------ Parsing Functions ------------
-def make_step_to_token_compute_df(dwn_df: pd.DataFrame) -> pd.DataFrame:
-    assert all(
-        [col in dwn_df.columns for col in ["params", "step", "tokens", "compute"]]
-    )
-    step_map = dwn_df[dwn_df["step"] > 0].copy()
-    step_map["tokens_per_step"] = step_map["tokens"] / step_map["step"]
-    step_map["compute_per_step"] = step_map["compute"] / step_map["step"]
-    return step_map[["params", "tokens_per_step", "compute_per_step"]].drop_duplicates()
-
-
-def list_col_to_columns(orig_df: pd.DataFrame, col_name: str) -> pd.DataFrame:
-    json_data = orig_df[col_name].str.replace("'", '"')  # Single to double quotes
-    df = pd.json_normalize(json_data.apply(json.loads))
-    df = pd.concat([orig_df.drop(col_name, axis=1), df], axis=1)
-    # df = pd.json_normalize(orig_df[col_name].apply(ast.literal_eval))
-    # df = pd.concat([orig_df.drop(col_name, axis=1), df], axis=1)
-    return df
-
-
-def reorder_df_cols(df: pd.DataFrame, prefix_order: list[str]) -> pd.DataFrame:
-    df = df.copy()
-    return df[prefix_order + [col for col in df.columns if col not in prefix_order]]
 
 
 def get_data_recipe_family(data_name: str, data_recipe_families: dict = None) -> str:
