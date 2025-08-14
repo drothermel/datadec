@@ -1,9 +1,3 @@
-"""Data processing pipeline for DataDecide datasets.
-
-This module contains the DataPipeline class which handles the complete ETL process
-for downloading, parsing, and creating derived datasets from DataDecide data.
-"""
-
 import pandas as pd
 from datasets import load_dataset
 
@@ -14,21 +8,9 @@ from datadec.paths import DataDecidePaths
 
 
 class DataPipeline:
-    """Handles the ETL pipeline for DataDecide datasets.
-
-    This class manages the complete data processing workflow from downloading
-    raw datasets to creating analysis-ready derived datasets.
-    """
-
     def __init__(self, paths: DataDecidePaths):
-        """Initialize the pipeline with path management.
-
-        Args:
-            paths: DataDecidePaths instance for managing file locations
-        """
         self.paths = paths
 
-        # Define the processing pipeline stages
         self.pipeline_stages = [
             "download",
             "metrics_expand",
@@ -40,241 +22,95 @@ class DataPipeline:
     def download_raw_data(
         self, force_reload: bool = False, verbose: bool = False
     ) -> None:
-        """Download raw datasets from HuggingFace.
+        ppl_path = self.paths.get_path("ppl_raw")
+        dwn_path = self.paths.get_path("dwn_raw")
 
-        Downloads perplexity and downstream evaluation datasets and saves them
-        as parquet files for further processing.
-
-        Args:
-            force_reload: If True, re-download even if files exist
-            verbose: If True, print progress messages
-        """
-        # Download perplexity evaluation dataset
-        if not self.paths.get_path("ppl_raw").exists() or force_reload:
+        if force_reload or not ppl_path.exists():
             if verbose:
                 print("Downloading perplexity evaluation dataset...")
-            ppl_dataset = load_dataset(
-                consts.HF_DATASET_NAMES["perplexity_eval_ds"], split="train"
-            )
-            ppl_dataset.to_parquet(self.paths.get_path("ppl_raw"))
+            ppl_ds = load_dataset(consts.HF_DATASET_NAMES["perplexity_eval_ds"])
+            ppl_df = ppl_ds["train"].to_pandas()
+            ppl_df.to_parquet(ppl_path)
 
-        # Download downstream evaluation dataset
-        if not self.paths.get_path("dwn_raw").exists() or force_reload:
+        if force_reload or not dwn_path.exists():
             if verbose:
                 print("Downloading downstream evaluation dataset...")
-            dwn_dataset = load_dataset(
-                consts.HF_DATASET_NAMES["downstream_eval_ds"], split="train"
-            )
-            dwn_dataset.to_parquet(self.paths.get_path("dwn_raw"))
+            dwn_ds = load_dataset(consts.HF_DATASET_NAMES["downstream_eval_ds"])
+            dwn_df = dwn_ds["train"].to_pandas()
+            dwn_df.to_parquet(dwn_path)
 
-    def extract_step_mappings(
-        self, force_reload: bool = False, verbose: bool = False
-    ) -> None:
-        """Extract step-to-token and step-to-compute mappings.
+    def extract_step_token_compute_mapping(self, verbose: bool = False) -> None:
+        dwn_df = pd.read_parquet(self.paths.get_path("dwn_raw"))
+        step_data = parsing.make_step_to_token_compute_df(dwn_df)
+        step_data.to_parquet(self.paths.get_path("step_to_token_compute"))
+        if verbose:
+            print("Extracting step-to-token and step-to-compute mapping...")
 
-        Creates a mapping DataFrame that converts training steps to tokens
-        and compute for each model parameter configuration.
+    def expand_metrics_column(self, verbose: bool = False) -> None:
+        dwn_df = pd.read_parquet(self.paths.get_path("dwn_raw"))
+        expanded_df = parsing.expand_downstream_metrics(dwn_df)
+        expanded_df.to_parquet(self.paths.get_path("dwn_metrics_expanded"))
 
-        Args:
-            force_reload: If True, recreate even if file exists
-            verbose: If True, print progress messages
-        """
-        if not self.paths.get_path("step_to_token_compute").exists() or force_reload:
-            if verbose:
-                print("Extracting step-to-token and step-to-compute mapping...")
+    def parse_datasets(self, verbose: bool = False) -> None:
+        if verbose:
+            print("Parsing perplexity evaluation data...")
+        ppl_df = pd.read_parquet(self.paths.get_path("ppl_raw"))
+        ppl_parsed = parsing.parse_perplexity_dataframe(ppl_df)
+        ppl_parsed.to_parquet(self.paths.get_path("ppl_parsed"))
 
-            # Load downstream data to extract step mappings
-            dwn_df = pd.read_parquet(self.paths.get_path("dwn_raw"))
-            step_to_token_compute_df = parsing.make_step_to_token_compute_df(dwn_df)
-            step_to_token_compute_df.to_parquet(self.paths.get_path("step_to_token_compute"))
+        if verbose:
+            print("Completing downstream parsing...")
+        dwn_expanded = pd.read_parquet(self.paths.get_path("dwn_metrics_expanded"))
+        dwn_parsed = parsing.complete_downstream_parsing(dwn_expanded)
+        dwn_parsed.to_parquet(self.paths.get_path("dwn_parsed"))
 
-    def expand_downstream_metrics(
-        self, force_reload: bool = False, verbose: bool = False
-    ) -> None:
-        """Expand downstream metrics column (SLOW STEP - 2-5 minutes).
+    def merge_datasets(self, verbose: bool = False) -> None:
+        if verbose:
+            print("Creating full evaluation dataset...")
+        ppl_df = pd.read_parquet(self.paths.get_path("ppl_parsed"))
+        dwn_df = pd.read_parquet(self.paths.get_path("dwn_parsed"))
 
-        This is the slowest part of processing and is saved separately to allow
-        faster recomputation from this intermediate state.
+        full_eval_df = df_utils.merge_ppl_and_dwn_dfs(ppl_df, dwn_df)
+        full_eval_df.to_parquet(self.paths.get_path("full_eval"))
 
-        Args:
-            force_reload: If True, re-expand even if file exists
-            verbose: If True, print progress messages
-        """
-        if not self.paths.get_path("dwn_metrics_expanded").exists() or force_reload:
-            if verbose:
-                print(
-                    "Expanding downstream metrics column (this may take 2-5 minutes)..."
-                )
-            dwn_df = pd.read_parquet(self.paths.get_path("dwn_raw"))
-            metrics_expanded_df = parsing.expand_downstream_metrics(dwn_df)
-            metrics_expanded_df.to_parquet(self.paths.get_path("dwn_metrics_expanded"))
+    def create_aggregated_datasets(self, verbose: bool = False) -> None:
+        if verbose:
+            print("Creating mean and standard deviation datasets...")
+        full_eval_df = pd.read_parquet(self.paths.get_path("full_eval"))
 
-    def parse_data(self, force_reload: bool = False, verbose: bool = False) -> None:
-        """Parse evaluation datasets into structured format.
-
-        Converts raw evaluation data into clean, analysis-ready DataFrames
-        with standardized column names and data types.
-
-        Args:
-            force_reload: If True, reparse even if files exist
-            verbose: If True, print progress messages
-        """
-        # Parse perplexity data
-        if not self.paths.get_path("ppl_parsed").exists() or force_reload:
-            if verbose:
-                print("Parsing perplexity evaluation data...")
-            ppl_df = pd.read_parquet(self.paths.get_path("ppl_raw"))
-            ppl_parsed_df = parsing.parse_perplexity_dataframe(ppl_df)
-            ppl_parsed_df.to_parquet(self.paths.get_path("ppl_parsed"))
-
-        # Complete downstream parsing from expanded metrics
-        if not self.paths.get_path("dwn_parsed").exists() or force_reload:
-            if verbose:
-                print("Completing downstream parsing...")
-            metrics_expanded_df = pd.read_parquet(self.paths.get_path("dwn_metrics_expanded"))
-            dwn_parsed_df = parsing.complete_downstream_parsing(metrics_expanded_df)
-            dwn_parsed_df.to_parquet(self.paths.get_path("dwn_parsed"))
-
-    def create_derived_datasets(
-        self, force_reload: bool = False, verbose: bool = False
-    ) -> None:
-        """Create derived datasets by merging and aggregating parsed data.
-
-        Creates the full evaluation dataset by merging perplexity and downstream
-        results, then generates mean and standard deviation datasets.
-
-        Args:
-            force_reload: If True, recreate even if files exist
-            verbose: If True, print progress messages
-        """
-        # Create full evaluation dataset
-        if not self.paths.get_path("full_eval").exists() or force_reload:
-            if verbose:
-                print("Creating full evaluation dataset...")
-
-            # Load parsed data
-            dwn_parsed_df = pd.read_parquet(self.paths.get_path("dwn_parsed"))
-            ppl_parsed_df = pd.read_parquet(self.paths.get_path("ppl_parsed"))
-            step_to_token_compute_df = pd.read_parquet(
-                self.paths.get_path("step_to_token_compute")
-            )
-
-            # Create merged dataset
-            full_eval_ds = self._create_full_eval_df(
-                dwn_parsed_df,
-                ppl_parsed_df,
-                step_to_token_compute_df,
-            )
-            full_eval_ds.to_parquet(self.paths.get_path("full_eval"))
-
-        # Create mean and standard deviation datasets
-        if (
-            not self.paths.get_path("mean_eval").exists()
-            or not self.paths.get_path("std_eval").exists()
-            or force_reload
-        ):
-            if verbose:
-                print("Creating mean and standard deviation datasets...")
-
-            full_eval_ds = pd.read_parquet(self.paths.get_path("full_eval"))
-            mean_eval_ds, std_eval_ds = df_utils.create_mean_std_df(full_eval_ds)
-
-            mean_eval_ds.to_parquet(self.paths.get_path("mean_eval"))
-            std_eval_ds.to_parquet(self.paths.get_path("std_eval"))
+        mean_df, std_df = df_utils.create_mean_std_df(full_eval_df)
+        mean_df.to_parquet(self.paths.get_path("mean_eval"))
+        std_df.to_parquet(self.paths.get_path("std_eval"))
 
     def run(self, recompute_from: str = None, verbose: bool = False) -> None:
-        """Run the data processing pipeline with granular recompute control.
-
-        Executes pipeline steps based on recompute_from parameter:
-        - None: Use cached files (default)
-        - "download": Re-download everything
-        - "metrics_expand": Re-expand metrics (the slow step)
-        - "parse": Reparse from expanded metrics
-        - "merge": Remerge parsed data
-        - "aggregate": Recalculate means/std
-        - "all": Full recompute (equivalent to force_reload=True)
-
-        Args:
-            recompute_from: Stage to start recomputing from (None for cached)
-            verbose: If True, print progress messages for each step
-        """
-        if verbose:
-            if recompute_from:
+        if recompute_from == "all":
+            start_stage = 0
+            if verbose:
+                print("Starting DataDecide pipeline from 'all'...")
+        elif recompute_from in self.pipeline_stages:
+            start_stage = self.pipeline_stages.index(recompute_from)
+            if verbose:
                 print(f"Starting DataDecide pipeline from '{recompute_from}'...")
-            else:
+        else:
+            if verbose:
                 print("Starting DataDecide pipeline (using cached files)...")
+            start_stage = len(self.pipeline_stages)
 
-        # Determine force_reload for each stage
-        force_download = recompute_from in ["download", "all"]
-        force_metrics_expand = recompute_from in ["download", "metrics_expand", "all"]
-        force_parse = recompute_from in ["download", "metrics_expand", "parse", "all"]
-        force_merge = recompute_from in [
-            "download",
-            "metrics_expand",
-            "parse",
-            "merge",
-            "all",
-        ]
+        if start_stage <= 0:
+            self.download_raw_data(force_reload=True, verbose=verbose)
 
-        # Run pipeline stages
-        self.download_raw_data(force_reload=force_download, verbose=verbose)
-        self.extract_step_mappings(force_reload=force_download, verbose=verbose)
-        self.expand_downstream_metrics(
-            force_reload=force_metrics_expand, verbose=verbose
-        )
-        self.parse_data(force_reload=force_parse, verbose=verbose)
-        self.create_derived_datasets(force_reload=force_merge, verbose=verbose)
+        if start_stage <= 1:
+            self.extract_step_token_compute_mapping(verbose=verbose)
+            self.expand_metrics_column(verbose=verbose)
+
+        if start_stage <= 2:
+            self.parse_datasets(verbose=verbose)
+
+        if start_stage <= 3:
+            self.merge_datasets(verbose=verbose)
+
+        if start_stage <= 4:
+            self.create_aggregated_datasets(verbose=verbose)
 
         if verbose:
             print("Pipeline completed successfully!")
-
-    def run_legacy(self, force_reload: bool = False, verbose: bool = False) -> None:
-        """Legacy run method for backward compatibility.
-
-        Args:
-            force_reload: If True, recreate all files even if they exist
-            verbose: If True, print progress messages for each step
-        """
-        recompute_from = "all" if force_reload else None
-        self.run(recompute_from=recompute_from, verbose=verbose)
-
-    def _create_full_eval_df(
-        self,
-        dwn_parsed_df: pd.DataFrame,
-        ppl_parsed_df: pd.DataFrame,
-        step_to_token_compute_df: pd.DataFrame,
-    ) -> pd.DataFrame:
-        """Create the full evaluation dataset by merging all data sources.
-
-        Args:
-            dwn_parsed_df: Parsed downstream evaluation data
-            ppl_parsed_df: Parsed perplexity evaluation data
-            step_to_token_compute_df: Step-to-token/compute mapping data
-
-        Returns:
-            Merged DataFrame with all evaluation metrics and metadata
-        """
-        # Merge downstream and perplexity data
-        merged_df = dwn_parsed_df.merge(
-            ppl_parsed_df,
-            on=["params", "data", "seed", "step"],
-            how="outer",
-            suffixes=["_dwn", "_ppl"],
-        )
-
-        # Add token and compute columns
-        merged_df = (
-            merged_df.merge(step_to_token_compute_df, on="params", how="left")
-            .assign(
-                tokens=lambda x: x["step"] * x["tokens_per_step"],
-                compute=lambda x: x["step"] * x["compute_per_step"],
-            )
-            .drop(columns=["tokens_per_step", "compute_per_step"])
-        )
-
-        # Reorder columns for better organization
-        merged_df = parsing.reorder_df_cols(
-            merged_df, consts.KEY_COLS + ["tokens", "compute"]
-        )
-
-        return merged_df
