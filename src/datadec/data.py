@@ -38,7 +38,7 @@ class DataDecide:
             ("full_eval", "full_eval"),
             ("mean_eval", "mean_eval"),
         ]
-        
+
         for cache_key, df_name in core_dataframes:
             path = self.paths.get_path(df_name)
             if path.exists():
