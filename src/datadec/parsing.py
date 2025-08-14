@@ -15,11 +15,11 @@ from datadec import constants as consts
 
 def list_col_to_columns(orig_df: pd.DataFrame, col_name: str) -> pd.DataFrame:
     """Convert a column containing list/dict strings to separate columns.
-    
+
     Args:
         orig_df: DataFrame with a column containing JSON-like strings
         col_name: Name of the column to expand
-        
+
     Returns:
         DataFrame with the specified column expanded into separate columns
     """
@@ -31,11 +31,11 @@ def list_col_to_columns(orig_df: pd.DataFrame, col_name: str) -> pd.DataFrame:
 
 def reorder_df_cols(df: pd.DataFrame, prefix_order: List[str]) -> pd.DataFrame:
     """Reorder DataFrame columns with specified columns first.
-    
+
     Args:
         df: DataFrame to reorder
         prefix_order: List of column names to place at the beginning
-        
+
     Returns:
         DataFrame with reordered columns
     """
@@ -45,10 +45,10 @@ def reorder_df_cols(df: pd.DataFrame, prefix_order: List[str]) -> pd.DataFrame:
 
 def make_step_to_token_compute_df(dwn_df: pd.DataFrame) -> pd.DataFrame:
     """Create mapping from training steps to tokens and compute.
-    
+
     Args:
         dwn_df: Downstream evaluation DataFrame with params, step, tokens, compute columns
-        
+
     Returns:
         DataFrame with params, tokens_per_step, compute_per_step columns
     """
@@ -63,10 +63,10 @@ def make_step_to_token_compute_df(dwn_df: pd.DataFrame) -> pd.DataFrame:
 
 def parse_perplexity_dataframe(ppl_df: pd.DataFrame) -> pd.DataFrame:
     """Parse raw perplexity evaluation DataFrame.
-    
+
     Args:
         ppl_df: Raw perplexity DataFrame from DataDecide dataset
-        
+
     Returns:
         Parsed DataFrame with renamed columns and mapped seeds
     """
@@ -80,10 +80,10 @@ def parse_perplexity_dataframe(ppl_df: pd.DataFrame) -> pd.DataFrame:
 
 def parse_downstream_dataframe(dwn_df: pd.DataFrame) -> pd.DataFrame:
     """Parse raw downstream evaluation DataFrame.
-    
+
     Args:
         dwn_df: Raw downstream evaluation DataFrame from DataDecide dataset
-        
+
     Returns:
         Parsed DataFrame with expanded metrics, averaged MMLU, and pivoted tasks
     """
@@ -100,16 +100,14 @@ def parse_downstream_dataframe(dwn_df: pd.DataFrame) -> pd.DataFrame:
 
 def average_mmlu_metrics(df: pd.DataFrame) -> pd.DataFrame:
     """Calculate average MMLU metrics and add as a new task.
-    
+
     Args:
         df: DataFrame with task-level evaluation metrics
-        
+
     Returns:
         DataFrame with added mmlu_average task containing averaged metrics
     """
-    mmlu_tasks = [
-        task for task in df["task"].unique() if "mmlu" in task.lower()
-    ]
+    mmlu_tasks = [task for task in df["task"].unique() if "mmlu" in task.lower()]
     mmlu_df = df[df["task"].isin(mmlu_tasks)].drop(columns=["task"])
     metric_names = [
         col
@@ -123,10 +121,10 @@ def average_mmlu_metrics(df: pd.DataFrame) -> pd.DataFrame:
 
 def pivot_task_metrics_to_columns(dwn_df: pd.DataFrame) -> pd.DataFrame:
     """Pivot task metrics from rows to columns.
-    
+
     Args:
         dwn_df: DataFrame with tasks in rows and metrics as columns
-        
+
     Returns:
         DataFrame with task-metric combinations as columns
     """

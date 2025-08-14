@@ -50,7 +50,7 @@ HARDCODED_SIZE_MAPPING: Dict[str, int] = {
 # Hugging Face dataset names
 HF_DATASET_NAMES: Dict[str, str] = {
     "downstream_eval_ds": "allenai/DataDecide-eval-results",
-    "downstream_instance_ds": "allenai/DataDecide-eval-instances", 
+    "downstream_instance_ds": "allenai/DataDecide-eval-instances",
     "perplexity_eval_ds": "allenai/DataDecide-ppl-results",
 }
 
@@ -117,7 +117,7 @@ DATA_RECIPE_FAMILIES: Dict[str, List[str]] = {
 # Task lists for evaluation
 MMLU_TASKS: List[str] = [
     "mmlu_abstract_algebra",
-    "mmlu_anatomy", 
+    "mmlu_anatomy",
     "mmlu_astronomy",
     "mmlu_average",
     "mmlu_business_ethics",
@@ -300,6 +300,8 @@ DWN_DROP_COLS: List[str] = ["chinchilla", "tokens", "compute"]
 PPL_DROP_COLS: List[str] = ["__index_level_0__"]
 
 # Derived constants
-ALL_DATA_NAMES: List[str] = [name for family in DATA_RECIPE_FAMILIES.values() for name in family]
+ALL_DATA_NAMES: List[str] = [
+    name for family in DATA_RECIPE_FAMILIES.values() for name in family
+]
 ALL_PARAM_STRS: List[str] = list(MODEL_SHAPES.keys())
 PPL_TYPES: List[str] = list(PPL_NAME_MAP.values())
