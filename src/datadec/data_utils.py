@@ -17,7 +17,7 @@ def get_data_recipe_family(
     return "unknown"
 
 
-def load_ds_details_df(ds_details_path) -> pd.DataFrame:
+def get_data_recipe_details_df(ds_details_path) -> pd.DataFrame:
     df = pd.read_csv(ds_details_path).rename(columns={"dataset": "data"})
 
     df["data"] = (

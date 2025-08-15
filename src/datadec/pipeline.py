@@ -1,116 +1,94 @@
+from pathlib import Path
+from typing import Optional
+
 import pandas as pd
 from datasets import load_dataset
 
 from datadec import constants as consts
-from datadec import parsing
-from datadec import df_utils
+from datadec import data_utils, df_utils, model_utils, parsing
 from datadec.paths import DataDecidePaths
+
+
+def download_dataset(
+    path: Path,
+    repo_id: str,
+    split: str,
+) -> None:
+    raw_df = load_dataset(repo_id, split=split)
+    raw_df.to_parquet(path)
+
+
+def verbose_print(msg: str, verbose: bool = False) -> None:
+    if verbose:
+        print(f">> {msg}")
 
 
 class DataPipeline:
     def __init__(self, paths: DataDecidePaths):
         self.paths = paths
-
-        self.pipeline_stages = [
-            "download",
-            "metrics_expand",
-            "parse",
-            "merge",
-            "enrich",
-            "aggregate",
-        ]
+        self.pipeline_stage_fxns = {
+            "download": self.download_raw_data,
+            "metrics_expand": self.expand_dwn_metrics_column,
+            "parse": self.parse_datasets,
+            "merge": self.merge_datasets,
+            "enrich": self.enrich_dataset,
+            "aggregate": self.create_aggregated_datasets,
+        }
 
         self.stage_outputs = {
             "download": ["ppl_raw", "dwn_raw"],
-            "metrics_expand": ["step_to_token_compute", "dwn_metrics_expanded"],
+            "metrics_expand": ["dwn_metrics_expanded"],
             "parse": ["ppl_parsed", "dwn_parsed"],
             "merge": ["full_eval_raw"],
             "enrich": ["full_eval"],
             "aggregate": ["mean_eval", "std_eval"],
         }
 
-    def download_raw_data(
-        self, force_reload: bool = False, verbose: bool = False
-    ) -> None:
-        ppl_path = self.paths.get_path("ppl_raw")
-        dwn_path = self.paths.get_path("dwn_raw")
+    def download_raw_data(self, verbose: bool = False) -> None:
+        for raw_metric_type in ["ppl", "dwn"]:
+            verbose_print(f"Downloading {raw_metric_type} raw data", verbose)
+            download_dataset(
+                path=self.paths.get_path(f"{raw_metric_type}_raw"),
+                repo_id=consts.HF_DATASET_NAMES[f"{raw_metric_type}_eval_ds"],
+                split=consts.HF_DATASET_SPLIT,
+            )
 
-        if force_reload or not ppl_path.exists():
-            if verbose:
-                print("Downloading perplexity evaluation dataset...")
-            ppl_ds = load_dataset(consts.HF_DATASET_NAMES["perplexity_eval_ds"])
-            ppl_df = ppl_ds["train"].to_pandas()
-            ppl_df.to_parquet(ppl_path)
-
-        if force_reload or not dwn_path.exists():
-            if verbose:
-                print("Downloading downstream evaluation dataset...")
-            dwn_ds = load_dataset(consts.HF_DATASET_NAMES["downstream_eval_ds"])
-            dwn_df = dwn_ds["train"].to_pandas()
-            dwn_df.to_parquet(dwn_path)
-
-    def extract_step_token_compute_mapping(self, verbose: bool = False) -> None:
+    def expand_dwn_metrics_column(self, verbose: bool = False) -> None:
+        verbose_print("Expanding downstream metrics column", verbose)
         dwn_df = pd.read_parquet(self.paths.get_path("dwn_raw"))
-        step_data = parsing.make_step_to_token_compute_df(dwn_df)
-        step_data.to_parquet(self.paths.get_path("step_to_token_compute"))
-        if verbose:
-            print("Extracting step-to-token and step-to-compute mapping...")
-
-    def expand_metrics_column(self, verbose: bool = False) -> None:
-        dwn_df = pd.read_parquet(self.paths.get_path("dwn_raw"))
-        expanded_df = parsing.expand_downstream_metrics(dwn_df)
+        expanded_df = parsing.list_col_to_columns(dwn_df, "metrics")
         expanded_df.to_parquet(self.paths.get_path("dwn_metrics_expanded"))
 
     def parse_datasets(self, verbose: bool = False) -> None:
-        if verbose:
-            print("Parsing perplexity evaluation data...")
-        ppl_df = pd.read_parquet(self.paths.get_path("ppl_raw"))
-        ppl_parsed = parsing.parse_perplexity_dataframe(ppl_df)
-        ppl_parsed.to_parquet(self.paths.get_path("ppl_parsed"))
-
-        if verbose:
-            print("Completing downstream parsing...")
+        verbose_print("Downstream DF Parsing", verbose)
         dwn_expanded = pd.read_parquet(self.paths.get_path("dwn_metrics_expanded"))
-        dwn_parsed = parsing.complete_downstream_parsing(dwn_expanded)
+        dwn_parsed = parsing.parse_downstream_expanded_df(dwn_expanded)
         dwn_parsed.to_parquet(self.paths.get_path("dwn_parsed"))
 
+        verbose_print("Perplexity DF Parsing", verbose)
+        ppl_df = pd.read_parquet(self.paths.get_path("ppl_raw"))
+        ppl_parsed = parsing.parse_perplexity_df(ppl_df)
+        ppl_parsed.to_parquet(self.paths.get_path("ppl_parsed"))
+
     def merge_datasets(self, verbose: bool = False) -> None:
-        if verbose:
-            print("Merging perplexity and downstream datasets...")
+        verbose_print("Merging ppl, dwn, dataset and model detail dfs", verbose)
         ppl_df = pd.read_parquet(self.paths.get_path("ppl_parsed"))
         dwn_df = pd.read_parquet(self.paths.get_path("dwn_parsed"))
+        dataset_details_df = data_utils.get_data_recipe_details_df(
+            self.paths.ds_details_csv_path
+        )
+        model_details_df = model_utils.get_model_details_df()
 
-        full_eval_raw = df_utils.merge_ppl_and_dwn_dfs(ppl_df, dwn_df)
-        full_eval_raw = parsing.reorder_df_cols(full_eval_raw, consts.KEY_COLS)
+        # Merge all dfs and save
+        full_eval_raw = parsing.merge_all_dfs(
+            ppl_df, dwn_df, dataset_details_df, model_details_df
+        )
         full_eval_raw.to_parquet(self.paths.get_path("full_eval_raw"))
 
     def enrich_dataset(self, verbose: bool = False) -> None:
-        if verbose:
-            print("Creating full evaluation dataset with enrichments...")
-        
-        # Load raw merged data
+        verbose_print("Begin dataset enrichment", verbose)
         df = pd.read_parquet(self.paths.get_path("full_eval_raw"))
-        
-        # Add MMLU average
-        df = df_utils.add_mmlu_average(df)
-        
-        # Load and merge dataset details
-        from datadec import data_utils
-        dataset_details = data_utils.load_ds_details_df(self.paths.ds_details_path)
-        df = df.merge(dataset_details, on="data", how="left")
-        
-        # Load and merge model details  
-        from datadec import model_utils
-        model_details = model_utils.get_model_details_df()
-        df = df.merge(model_details, on="params", how="left")
-        
-        # Add step-specific learning rate columns
         df = model_utils.add_lr_cols(df)
-        
-        # Reorder columns (KEY_COLS first)
-        df = parsing.reorder_df_cols(df, consts.KEY_COLS)
-        
-        # Save as final full_eval
         df.to_parquet(self.paths.get_path("full_eval"))
 
     def create_aggregated_datasets(self, verbose: bool = False) -> None:
@@ -122,80 +100,12 @@ class DataPipeline:
         mean_df.to_parquet(self.paths.get_path("mean_eval"))
         std_df.to_parquet(self.paths.get_path("std_eval"))
 
-    def run(self, recompute_from: str = None, verbose: bool = False) -> None:
-        if recompute_from == "all":
-            start_stage = 0
-            if verbose:
-                print("Starting DataDecide pipeline from 'all'...")
-        elif recompute_from in self.pipeline_stages:
-            requested_stage = self.pipeline_stages.index(recompute_from)
-            # Check if earlier stages have missing files
-            earliest_missing = self._find_earliest_missing_stage(0)
-            if earliest_missing < requested_stage:
-                start_stage = earliest_missing
-                missing_stage = self.pipeline_stages[earliest_missing]
-                if verbose:
-                    print(
-                        f"Files from stage '{missing_stage}' are missing, adjusting to start from '{missing_stage}' instead of '{recompute_from}'"
-                    )
-            else:
-                start_stage = requested_stage
-                if verbose:
-                    print(f"Starting DataDecide pipeline from '{recompute_from}'...")
-        elif recompute_from is None:
-            # Auto-detect earliest missing stage
-            start_stage = self._find_earliest_missing_stage(0)
-            if start_stage == len(self.pipeline_stages):
-                if verbose:
-                    print("All pipeline files exist, using cached data...")
-            else:
-                missing_stage = self.pipeline_stages[start_stage]
-                if verbose:
-                    print(
-                        f"Auto-detected missing files from stage '{missing_stage}', starting pipeline from there..."
-                    )
-        else:
-            if verbose:
-                print("Starting DataDecide pipeline (using cached files)...")
-            start_stage = len(self.pipeline_stages)
-
-        if start_stage <= 0:
-            self.download_raw_data(force_reload=True, verbose=verbose)
-
-        if start_stage <= 1:
-            self.extract_step_token_compute_mapping(verbose=verbose)
-            self.expand_metrics_column(verbose=verbose)
-
-        if start_stage <= 2:
-            self.parse_datasets(verbose=verbose)
-
-        if start_stage <= 3:
-            self.merge_datasets(verbose=verbose)
-
-        if start_stage <= 4:
-            self.enrich_dataset(verbose=verbose)
-
-        if start_stage <= 5:
-            self.create_aggregated_datasets(verbose=verbose)
-
-        if verbose:
-            print("Pipeline completed successfully!")
-
-    def _verify_stage_files(self, stage_name: str) -> bool:
-        """Check if all output files for a given stage exist."""
-        if stage_name not in self.stage_outputs:
-            return True
-
-        for file_name in self.stage_outputs[stage_name]:
-            file_path = self.paths.get_path(file_name)
-            if not file_path.exists():
-                return False
-        return True
-
-    def _find_earliest_missing_stage(self, from_stage: int = 0) -> int:
-        """Find the index of the first stage with missing output files."""
-        for i in range(from_stage, len(self.pipeline_stages)):
-            stage_name = self.pipeline_stages[i]
-            if not self._verify_stage_files(stage_name):
-                return i
-        return len(self.pipeline_stages)
+    def run(self, recompute_from: Optional[str] = None, verbose: bool = False) -> None:
+        recompute_from = "download" if recompute_from == "all" else recompute_from
+        for stage_name, stage_fxn in self.pipeline_stage_fxns.items():
+            expected_output_exists = [
+                self.paths.get_path(out).exists()
+                for out in self.stage_outputs[stage_name]
+            ]
+            if not all(expected_output_exists) or recompute_from in [stage_name, None]:
+                stage_fxn(verbose=verbose)
