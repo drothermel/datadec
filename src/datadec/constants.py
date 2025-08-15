@@ -1,7 +1,41 @@
 import re
-from typing import Dict, List, Any
+from typing import Any, Dict, List
 
-NUMBER_UNIT_RE = re.compile(r"^([0-9]+)([a-zA-Z]+)$")
+MODEL_DETAILS_DF_NAME = "model_details"
+DATASET_DETAILS_DF_NAME = "dataset_details"
+
+
+# --------- Model Architecture Details ---------
+
+# This is the list of sizes we're using
+ALL_MODEL_SIZE_STRS: List[str] = [
+    "4M",
+    "6M",
+    "8M",
+    "10M",
+    "14M",
+    "16M",
+    "20M",
+    "60M",
+    "90M",
+    "150M",
+    "300M",
+    "530M",
+    "750M",
+    "1B",
+]
+
+# Below here is mostly taken directly from the OLMO Ladder Code
+MAX_SEQ_LEN: int = 2_048
+TOKEN_LEN_XC_MULTIPLIER: int = 20
+MODEL_SIZE_NORM_VALUE: int = 108_000_000
+LR_EXPONENT: float = -1 / 3
+LR_MAX_BASE: float = 0.0047
+LR_FINAL_RATIO: float = 0.01
+BS_COEFFICIENT: int = 160
+BS_EXPONENT: float = 2 / 3
+GPUS_PER_NODE: int = 8
+MICROBATCH_SIZE: int = 4
 
 MODEL_SHAPES: Dict[str, Dict[str, int]] = {
     "4M": {"d_model": 64, "n_heads": 8, "n_layers": 8, "mlp_ratio": 8},
@@ -37,33 +71,72 @@ HARDCODED_SIZE_MAPPING: Dict[str, int] = {
     "1B": 1_000_000_000,
 }
 
+# Selected by me based on a combo of the max consistent step in the dfs
+# and the hpms listed in the appendix of the paper
+MAX_STEP_TO_USE: Dict[str, int] = {
+    "1B": 67500,
+    "750M": 62500,
+    "530M": 51250,
+    "300M": 45000,
+    "150M": 37500,
+    "90M": 29901,
+    "60M": 29042,
+    "20M": 14584,
+    "16M": 24432,
+    "14M": 21953,
+    "10M": 15117,
+    "8M": 13039,
+    "6M": 9182,
+    "4M": 5725,
+}
+
+
+MODEL_CONFIG_BASE: Dict[str, Any] = {
+    "default_seed": 6198,
+    "length_str": "5xC",
+    "lr_warmup_start": 0.0,
+    "d_model": 768,
+    "n_heads": 12,
+    "n_layers": 12,
+    "mlp_ratio": 8,
+    "weight_tying": False,
+    "alibi": False,
+    "rope": True,
+    "flash_attention": True,
+    "attention_dropout": 0.0,
+    "attention_layer_norm": False,
+    "include_bias": False,
+    "layer_norm_type": "rms",
+    "layer_norm_with_affine": True,
+    "layer_norm_eps": 1e-6,
+    "bias_for_layer_norm": False,
+    "attention_layer_norm_with_affine": False,
+    "activation_type": "swiglu",
+    "residual_dropout": 0.0,
+    "embedding_dropout": 0.0,
+    "max_sequence_length": 2048,
+    "vocab_size": 50280,
+    "embedding_size": 50304,
+    "eos_token_id": 50279,
+    "pad_token_id": 1,
+    "init_device": "cuda",
+    "init_fn": "normal",
+    "init_std": 0.02,
+    "init_cutoff_factor": 3,
+}
+
+# Used to parse any numeric strings
+NUMBER_UNIT_RE = re.compile(r"^([0-9]+)([a-zA-Z]+)$")
+
+# --------- Huggingface Dataset Info ---------
 HF_DATASET_NAMES: Dict[str, str] = {
-    "downstream_eval_ds": "allenai/DataDecide-eval-results",
-    "downstream_instance_ds": "allenai/DataDecide-eval-instances",
-    "perplexity_eval_ds": "allenai/DataDecide-ppl-results",
+    "ppl_eval_ds": "allenai/DataDecide-ppl-results",
+    "dwn_eval_ds": "allenai/DataDecide-eval-results",
+    "dwn_instance_ds": "allenai/DataDecide-eval-instances",
 }
+HF_DATASET_SPLIT: str = "train"
 
-PPL_NAME_MAP: Dict[str, str] = {
-    "eval/wikitext_103-validation/Perplexity": "wikitext_103-valppl",
-    "eval/pile-validation/Perplexity": "pile-valppl",
-    "eval/c4_en-validation/Perplexity": "c4_en-valppl",
-    "eval/m2d2_s2orc-validation/Perplexity": "m2d2_s2orc-valppl",
-    "eval/ice-validation/Perplexity": "ice-valppl",
-    "eval/dolma_wiki-validation/Perplexity": "dolma_wiki-valppl",
-    "eval/dolma_stack-validation/Perplexity": "dolma_stack-valppl",
-    "eval/dolma_reddit-validation/Perplexity": "dolma_reddit-valppl",
-    "eval/dolma_pes2o-validation/Perplexity": "dolma_pes2o-valppl",
-    "eval/dolma_common-crawl-validation/Perplexity": "dolma_common-crawl-valppl",
-    "eval/dolma_books-validation/Perplexity": "dolma_books-valppl",
-}
-
-SEED_MAP: Dict[str, int] = {
-    "default": 0,
-    "small aux 2": 1,
-    "small aux 3": 2,
-    "large aux 2": 3,
-    "large aux 3": 4,
-}
+# --------- Data Recipe Consts ---------
 
 DATA_RECIPE_FAMILIES: Dict[str, List[str]] = {
     "dolma17": [
@@ -99,6 +172,36 @@ DATA_RECIPE_FAMILIES: Dict[str, List[str]] = {
         "DCLM-Baseline 75% / Dolma 25%",
     ],
 }
+
+ALL_DATA_NAMES: List[str] = [
+    name for family in DATA_RECIPE_FAMILIES.values() for name in family
+]
+
+# --------- Seed and Metric Consts ---------
+
+SEED_MAP: Dict[str, int] = {
+    "default": 0,
+    "small aux 2": 1,
+    "small aux 3": 2,
+    "large aux 2": 3,
+    "large aux 3": 4,
+}
+
+PPL_NAME_MAP: Dict[str, str] = {
+    "eval/wikitext_103-validation/Perplexity": "wikitext_103-valppl",
+    "eval/pile-validation/Perplexity": "pile-valppl",
+    "eval/c4_en-validation/Perplexity": "c4_en-valppl",
+    "eval/m2d2_s2orc-validation/Perplexity": "m2d2_s2orc-valppl",
+    "eval/ice-validation/Perplexity": "ice-valppl",
+    "eval/dolma_wiki-validation/Perplexity": "dolma_wiki-valppl",
+    "eval/dolma_stack-validation/Perplexity": "dolma_stack-valppl",
+    "eval/dolma_reddit-validation/Perplexity": "dolma_reddit-valppl",
+    "eval/dolma_pes2o-validation/Perplexity": "dolma_pes2o-valppl",
+    "eval/dolma_common-crawl-validation/Perplexity": "dolma_common-crawl-valppl",
+    "eval/dolma_books-validation/Perplexity": "dolma_books-valppl",
+}
+PPL_TYPES: List[str] = list(PPL_NAME_MAP.values())
+
 
 MMLU_TASKS: List[str] = [
     "mmlu_abstract_algebra",
@@ -205,66 +308,9 @@ METRIC_NAMES: List[str] = [
     "primary_metric",
 ]
 
-MAX_STEP_TO_USE: Dict[str, int] = {
-    "1B": 67500,
-    "750M": 62500,
-    "530M": 51250,
-    "300M": 45000,
-    "150M": 37500,
-    "90M": 29901,
-    "60M": 29042,
-    "20M": 14584,
-    "16M": 24432,
-    "14M": 21953,
-    "10M": 15117,
-    "8M": 13039,
-    "6M": 9182,
-    "4M": 5725,
-}
+# --------- Proj Specific Consts ---------
 
-MAX_SEQ_LEN: int = 2_048
-MODEL_SIZE_NORM_VALUE: int = 108_000_000
-LR_EXPONENT: float = -1 / 3
-LR_MAX_BASE: float = 0.0047
-LR_FINAL_RATIO: float = 0.01
-BS_EXPONENT: float = 2 / 3
-GPUS_PER_NODE: int = 8
-MICROBATCH_SIZE: int = 4
-
-MODEL_CONFIG_BASE: Dict[str, Any] = {
-    "default_seed": 6198,
-    "length_str": "5xC",
-    "lr_warmup_start": 0.0,
-    "d_model": 768,
-    "n_heads": 12,
-    "n_layers": 12,
-    "mlp_ratio": 8,
-    "weight_tying": False,
-    "alibi": False,
-    "rope": True,
-    "flash_attention": True,
-    "attention_dropout": 0.0,
-    "attention_layer_norm": False,
-    "include_bias": False,
-    "layer_norm_type": "rms",
-    "layer_norm_with_affine": True,
-    "layer_norm_eps": 1e-6,
-    "bias_for_layer_norm": False,
-    "attention_layer_norm_with_affine": False,
-    "activation_type": "swiglu",
-    "residual_dropout": 0.0,
-    "embedding_dropout": 0.0,
-    "max_sequence_length": 2048,
-    "vocab_size": 50280,
-    "embedding_size": 50304,
-    "eos_token_id": 50279,
-    "pad_token_id": 1,
-    "init_device": "cuda",
-    "init_fn": "normal",
-    "init_std": 0.02,
-    "init_cutoff_factor": 3,
-}
-
+# Mainly for parsing into a standard df format
 DROP_METRICS: List[str] = [
     "predicted_index_raw",
     "predicted_index_per_token",
@@ -274,13 +320,27 @@ DROP_METRICS: List[str] = [
     "logits_per_byte_corr",
 ]
 
+PARAM_NUMERIC_COL = "params_numeric"
 KEY_COLS: List[str] = ["params", "data", "seed", "step"]
-EXCLUDE_COLS: List[str] = ["params", "data", "task", "step", "seed"]
+STEP_TOK_COMP_COLS: List[str] = ["params", "step", "tokens", "compute"]
 DWN_DROP_COLS: List[str] = ["chinchilla", "tokens", "compute"]
 PPL_DROP_COLS: List[str] = ["__index_level_0__"]
-
-ALL_DATA_NAMES: List[str] = [
-    name for family in DATA_RECIPE_FAMILIES.values() for name in family
+FINAL_PREFIX_COLS: List[str] = KEY_COLS + [
+    "tokens",
+    "compute",
+    "total_steps",
+    "warmup_steps",
+    "lr_max",
+    "batch_size",
 ]
-ALL_PARAM_STRS: List[str] = list(MODEL_SHAPES.keys())
-PPL_TYPES: List[str] = list(PPL_NAME_MAP.values())
+
+LR_INPUT_COLS: List[str] = [
+    "step",
+    "lr_warmup_start",
+    "lr_max",
+    "lr_final",
+    "warmup_steps",
+    "lr_decay_steps",
+]
+LR_OUTPUT_COLS: List[str] = ["lr_at_step", "cumulative_lr"]
+PREFIX_COLS_WITH_LR: List[str] = FINAL_PREFIX_COLS + LR_OUTPUT_COLS
