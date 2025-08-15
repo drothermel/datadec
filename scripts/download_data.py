@@ -67,14 +67,14 @@ def demo_basic_access(dd: DataDecide) -> None:
     print("\n📋 Sample of enriched full evaluation data:")
     # Show enriched columns in sample
     full_eval = dd.full_eval
-    enriched_cols = ['params', 'data', 'step']
-    if 'mmlu_average' in full_eval.columns:
-        enriched_cols.append('mmlu_average')
-    if 'total_tokens_billions' in full_eval.columns:
-        enriched_cols.append('total_tokens_billions')
-    if 'lr_at_step' in full_eval.columns:
-        enriched_cols.append('lr_at_step')
-    
+    enriched_cols = ["params", "data", "step"]
+    if "mmlu_average" in full_eval.columns:
+        enriched_cols.append("mmlu_average")
+    if "total_tokens_billions" in full_eval.columns:
+        enriched_cols.append("total_tokens_billions")
+    if "lr_at_step" in full_eval.columns:
+        enriched_cols.append("lr_at_step")
+
     sample_data = full_eval[enriched_cols].head(3)
     print(sample_data)
 
@@ -82,43 +82,56 @@ def demo_basic_access(dd: DataDecide) -> None:
 def demo_enriched_features(dd: DataDecide) -> None:
     """Demonstrate new enriched full_eval features."""
     print_section_header("Enriched Dataset Features")
-    
+
     full_eval = dd.full_eval
     print("🎯 New enrichments automatically included in full_eval:")
-    
+
     # Check for MMLU average
-    has_mmlu = 'mmlu_average' in full_eval.columns
+    has_mmlu = "mmlu_average" in full_eval.columns
     print(f"   • MMLU Average: {'✅' if has_mmlu else '❌'}")
     if has_mmlu:
-        non_null_mmlu = full_eval['mmlu_average'].notna().sum()
+        non_null_mmlu = full_eval["mmlu_average"].notna().sum()
         print(f"     → {non_null_mmlu:,} rows with MMLU data")
-    
+
     # Check for dataset details
-    dataset_cols = [c for c in full_eval.columns if any(x in c for x in ['pct_', 'total_tokens', 'quality_filter', 'duplicate_rate'])]
+    dataset_cols = [
+        c
+        for c in full_eval.columns
+        if any(
+            x in c for x in ["pct_", "total_tokens", "quality_filter", "duplicate_rate"]
+        )
+    ]
     print(f"   • Dataset Details: {len(dataset_cols)} columns")
     if dataset_cols:
-        print(f"     → {', '.join(dataset_cols[:3])}{'...' if len(dataset_cols) > 3 else ''}")
-    
+        print(
+            f"     → {', '.join(dataset_cols[:3])}{'...' if len(dataset_cols) > 3 else ''}"
+        )
+
     # Check for learning rate columns
-    lr_cols = [c for c in full_eval.columns if 'lr_' in c]
+    lr_cols = [c for c in full_eval.columns if "lr_" in c]
     print(f"   • Learning Rate Columns: {len(lr_cols)} columns")
     if lr_cols:
         print(f"     → {', '.join(lr_cols[:3])}{'...' if len(lr_cols) > 3 else ''}")
-    
+
     # Check for model details
-    model_cols = [c for c in full_eval.columns if any(x in c for x in ['d_model', 'n_layers', 'n_heads', 'vocab_size'])]
+    model_cols = [
+        c
+        for c in full_eval.columns
+        if any(x in c for x in ["d_model", "n_layers", "n_heads", "vocab_size"])
+    ]
     print(f"   • Model Architecture: {len(model_cols)} columns")
-    
-    print(f"\n📊 Total enriched columns: {full_eval.shape[1]} (was ~81 before enrichment)")
-    
+
+    print(
+        f"\n📊 Total enriched columns: {full_eval.shape[1]} (was ~81 before enrichment)"
+    )
+
     # Show comparison between raw merge and enriched
-    if 'full_eval_raw' in dd.paths.available_dataframes:
-        try:
-            raw_eval = dd.load_dataframe('full_eval_raw')
-            print(f"   • Raw merge had: {raw_eval.shape[1]} columns")
-            print(f"   • Enrichment added: {full_eval.shape[1] - raw_eval.shape[1]} columns")
-        except:
-            pass
+    if "full_eval_raw" in dd.paths.available_dataframes:
+        raw_eval = dd.load_dataframe("full_eval_raw")
+        print(f"   • Raw merge had: {raw_eval.shape[1]} columns")
+        print(
+            f"   • Enrichment added: {full_eval.shape[1] - raw_eval.shape[1]} columns"
+        )
 
 
 def demo_analysis_features(dd: DataDecide, min_params: str = "10M") -> None:
@@ -308,7 +321,15 @@ Examples:
     parser.add_argument(
         "--recompute_from",
         type=str,
-        choices=["download", "metrics_expand", "parse", "merge", "enrich", "aggregate", "all"],
+        choices=[
+            "download",
+            "metrics_expand",
+            "parse",
+            "merge",
+            "enrich",
+            "aggregate",
+            "all",
+        ],
         default=None,
         help="Stage to start recomputing from. Use 'all' to force complete reprocessing.",
     )
