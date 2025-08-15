@@ -1,6 +1,6 @@
-import json
 from typing import List, Optional
 
+import orjson
 import pandas as pd
 
 from datadec import constants as consts
@@ -22,9 +22,8 @@ def map_seed_col_to_int(df: pd.DataFrame) -> pd.DataFrame:
 
 def make_step_to_token_compute_df(dwn_df: pd.DataFrame) -> pd.DataFrame:
     assert all([c in dwn_df.columns for c in consts.STEP_TOK_COMP_COLS])
-    base_map = dwn_df[dwn_df["step"] > 0][consts.STEP_TOK_COMP_COLS]
-    base_map = base_map.drop_duplicates()
-    step_map = base_map[["params"]]
+    base_map = dwn_df[consts.STEP_TOK_COMP_COLS].groupby("params").max().reset_index()
+    step_map = base_map[["params"]].copy()
     step_map["tokens_per_step"] = base_map["tokens"] / base_map["step"]
     step_map["compute_per_step"] = base_map["compute"] / base_map["step"]
     return step_map
@@ -56,9 +55,12 @@ def make_and_merge_step_to_token_compute_df(
 
 
 def list_col_to_columns(orig_df: pd.DataFrame, col_name: str) -> pd.DataFrame:
-    json_data = orig_df[col_name].str.replace("'", '"')
-    df = pd.json_normalize(json_data.apply(json.loads))
-    df = pd.concat([orig_df.drop(col_name, axis=1), df], axis=1)
+    df = orig_df.copy()
+    json_data = df[col_name].str.replace("'", '"')
+    parsed_data = [orjson.loads(item) for item in json_data]
+    json_data_df = pd.json_normalize(parsed_data)
+
+    df = pd.concat([df.drop(col_name, axis=1), json_data_df], axis=1)
     return df
 
 
@@ -68,7 +70,7 @@ def average_mmlu_metrics(df: pd.DataFrame) -> pd.DataFrame:
         and "mmlu_average" not in df.columns
         and "mmlu_average_correct_prob" not in df.columns
     )
-    mmlu_df = df[df["task"].isin(consts.MMLU_TASKS)]
+    mmlu_df = df[df["task"].isin(consts.MMLU_TASKS)].drop(columns=["task"])
     mmlu_avg = mmlu_df.groupby(consts.KEY_COLS).agg("mean").reset_index()
     mmlu_avg["task"] = "mmlu_average"
     return pd.concat([df, mmlu_avg], ignore_index=True)
@@ -112,21 +114,23 @@ def parse_perplexity_df(ppl_df_raw: pd.DataFrame) -> pd.DataFrame:
 
 # --------- Merge Helpers ---------
 def merge_all_dfs(
-    ppl_df: pd.DataFrame,
-    dwn_df: pd.DataFrame,
+    dwn_raw_df: pd.DataFrame,
+    ppl_parsed_df: pd.DataFrame,
+    dwn_parsed_df: pd.DataFrame,
+    dataset_details_df: Optional[pd.DataFrame] = None,
+    model_details_df: Optional[pd.DataFrame] = None,
     add_token_compute: bool = True,
-    dataset_details: Optional[pd.DataFrame] = None,
-    model_details: Optional[pd.DataFrame] = None,
 ) -> pd.DataFrame:
-    df = pd.merge(ppl_df, dwn_df, on=consts.KEY_COLS, how="outer")
+    df = pd.merge(ppl_parsed_df, dwn_parsed_df, on=consts.KEY_COLS, how="outer")
+
     if add_token_compute:
-        df = make_and_merge_step_to_token_compute_df(dwn_df, df)
+        df = make_and_merge_step_to_token_compute_df(dwn_raw_df, df)
 
-    if dataset_details is not None:
-        df = df.merge(dataset_details, on="data", how="left")
+    if dataset_details_df is not None:
+        df = df.merge(dataset_details_df, on="data", how="left")
 
-    if model_details is not None:
-        df = df.merge(model_details, on="params", how="left")
+    if model_details_df is not None:
+        df = df.merge(model_details_df, on="params", how="left")
 
     return reorder_df_cols(df, prefix_order=consts.FINAL_PREFIX_COLS)
 

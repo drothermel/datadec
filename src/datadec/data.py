@@ -29,9 +29,8 @@ class DataDecide:
         )
         self.loader.set_name(
             consts.DATASET_DETAILS_DF_NAME,
-            data_utils.load_ds_details_df(self.paths.ds_details_path),
+            data_utils.get_data_recipe_details_df(self.paths.ds_details_csv_path),
         )
-
         verbose_print("Finished setting up DataDecide.", verbose)
 
     @property

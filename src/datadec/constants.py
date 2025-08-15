@@ -343,3 +343,4 @@ LR_INPUT_COLS: List[str] = [
     "lr_decay_steps",
 ]
 LR_OUTPUT_COLS: List[str] = ["lr_at_step", "cumulative_lr"]
+PREFIX_COLS_WITH_LR: List[str] = FINAL_PREFIX_COLS + LR_OUTPUT_COLS
