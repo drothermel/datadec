@@ -1,92 +1,55 @@
 # DataDecide
 
-A Python library for downloading and processing DataDecide datasets from Hugging Face. Provides tools for analyzing ML training experiment results across different model sizes, data recipes, and hyperparameters.
+DataDecide is a Python library for downloading, processing, and analyzing machine learning experiment data, specifically focusing on language model evaluation results.
 
-## Quick Start
+## Features
+
+-   **Data Pipeline:** A multi-stage pipeline that downloads raw data from Hugging Face, processes it, and enriches it with additional details.
+-   **Easy Data Access:** A simple interface to load and access various dataframes, including raw data, parsed data, and aggregated results.
+-   **Flexible Filtering:** Methods to easily filter and index the data based on model parameters, datasets, and other criteria.
+
+## Getting Started
+
+### Installation
+
+To install the necessary dependencies, run:
 
 ```bash
-# Install
-git clone <repository-url>
-cd datadec
-uv sync && uv add -e .
-
-# Demo all features
-uv run python scripts/download_data.py
+uv sync
+source .venv/bin/activate
 ```
+
+### Usage
+
+The main entry point to the library is the `DataDecide` class. Here's a simple example of how to use it:
 
 ```python
 from datadec import DataDecide
 
-# Initialize and process data
-dd = DataDecide(data_dir="./test_data")
+# Initialize the DataDecide class, which will run the data processing pipeline
+dd = DataDecide(data_dir="./data")
 
-# Access datasets
-full_eval = dd.full_eval      # Full evaluation results
-mean_eval = dd.mean_eval      # Averaged across seeds
+# Access the full evaluation dataframe
+full_eval_df = dd.full_eval
 
-# Get filtered analysis DataFrame
-analysis_df = dd.get_filtered_df(min_params="10M")
+# Example of easy indexing
+indexed_df = dd.easy_index_df(
+    df_name="full_eval",
+    data="C4",
+    params="10M",
+    seed=0,
+)
 
-# Load intermediate data
-raw_data = dd.load_dataframe("ppl_raw")
+print(indexed_df.head())
 ```
 
-## Architecture
+The `notebooks/explore_data.py` file provides a more detailed example of how to use the library.
 
-**Core Components:**
-- **`DataDecide`** - Main interface for dataset access and analysis
-- **`DataDecidePaths`** - Centralized path management (see `paths.dataframes` dict)
-- **`DataPipeline`** - ETL processing with granular recomputation
-- **`DataFrameLoader`** - Lazy loading and caching
+## Data
 
-**Data Pipeline:**
-1. **Download** - Raw datasets from Hugging Face
-2. **Metrics Expansion** - Expand JSON metrics (slow: 2-5 min)
-3. **Parsing** - Clean and standardize formats
-4. **Merging** - Combine perplexity + downstream evaluations
-5. **Aggregation** - Statistics across random seeds
+This library uses the following Hugging Face datasets:
 
-## Available Data
+-   [allenai/DataDecide-ppl-results](https://huggingface.co/datasets/allenai/DataDecide-ppl-results): Perplexity evaluation results.
+-   [allenai/DataDecide-eval-results](https://huggingface.co/datasets/allenai/DataDecide-eval-results): Downstream task evaluation results.
 
-Access via `dd.load_dataframe(name)`:
-- **Raw:** `ppl_raw`, `dwn_raw`
-- **Processed:** `full_eval`, `mean_eval`, `std_eval`
-- **Intermediate:** `dwn_metrics_expanded`, `ppl_parsed`, `dwn_parsed`
-
-**Static Resources:**
-- Dataset metadata: `src/datadec/data/dataset_features.csv` (bundled with package)
-
-## Key Features
-
-- **Model sizes:** 4M to 1B parameters
-- **Data recipes:** dolma17, c4, fineweb, falcon, dclm, etc.
-- **Evaluation tasks:** MMLU, ARC, BoolQ, HellaSwag, perplexity
-- **Learning rate schedules:** Warmup + cosine annealing
-- **Granular recomputation:** Restart from any pipeline stage
-
-## Demo Script
-
-The comprehensive demo script showcases all library features:
-
-```bash
-# Basic demo with cached data (fast)
-uv run python scripts/download_data.py
-
-# Full pipeline from scratch (~2 minutes)  
-uv run python scripts/download_data.py --recompute_from all
-
-# Filter to specific model sizes
-uv run python scripts/download_data.py --min_params 300M --model_size 1B
-
-# Interactive exploration mode
-uv run python scripts/download_data.py --explore --data_recipe "Dolma1.7"
-
-# See all options
-uv run python scripts/download_data.py --help
-```
-
-## Performance
-
-- **Slow step:** Metrics expansion (2-5 min) saved as intermediate file
-- **Caching:** DataFrames cached in memory after first load  
-- **Recomputation:** Use `recompute_from="metrics_expand"` to skip download
+The data processing pipeline downloads these datasets and stores them in the `data_dir` specified during the `DataDecide` initialization.  Then does some filtering, parsing, merging, and pulling in external information about hpms and other training settings.
