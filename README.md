@@ -15,7 +15,8 @@ DataDecide is a Python library for downloading, processing, and analyzing machin
 To install the necessary dependencies, run:
 
 ```bash
-pip install -r requirements.txt
+uv sync
+source .venv/bin/activate
 ```
 
 ### Usage
@@ -51,4 +52,4 @@ This library uses the following Hugging Face datasets:
 -   [allenai/DataDecide-ppl-results](https://huggingface.co/datasets/allenai/DataDecide-ppl-results): Perplexity evaluation results.
 -   [allenai/DataDecide-eval-results](https://huggingface.co/datasets/allenai/DataDecide-eval-results): Downstream task evaluation results.
 
-The data processing pipeline downloads these datasets and stores them in the `data_dir` specified during the `DataDecide` initialization.
+The data processing pipeline downloads these datasets and stores them in the `data_dir` specified during the `DataDecide` initialization.  Then does some filtering, parsing, merging, and pulling in external information about hpms and other training settings.
