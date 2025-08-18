@@ -154,22 +154,26 @@ def plot_model_comparison(
     metrics: List[str],
     x_col: str = "tokens",
     line_col: str = "params",
+    style_col: Optional[str] = None,  # NEW: Optional line style encoding
+    subplot_col: str = "data",  # What creates subplots (when used)
     params_filter: Optional[List] = None,
-    data_filter: Optional[List] = None,
+    subplot_filter: Optional[List] = None,  # Filter for subplot values
     figsize: Optional[Tuple[int, int]] = None,
     log_scale: bool = True,
     **kwargs
 ) -> Tuple[plt.Figure, FigureManager]:
     """
-    Plot multiple metrics for model comparison.
+    Plot multiple metrics for model comparison, with each metric in its own subplot.
     
     Args:
         df: DataFrame containing the data
         metrics: List of metric columns to plot
         x_col: Column for x-axis
-        line_col: Column that creates different colored lines
+        line_col: Column that creates different colored lines (hue)
+        style_col: Optional column for line style encoding
+        subplot_col: Column that determines subplot filtering when used
         params_filter: Filter to specific param values
-        data_filter: Filter to specific data recipes
+        subplot_filter: Filter to specific values (e.g., data recipes)
         figsize: Figure size tuple
         log_scale: Use log/log scale for both x and y axes
         **kwargs: Additional arguments passed to dr_plotter.line()
@@ -177,14 +181,25 @@ def plot_model_comparison(
     Returns:
         Tuple of (figure, FigureManager)
     """
-    # Filter data
+    # Apply same filtering logic as plot_scaling_curves
     plot_df = df.copy()
     
+    # Apply filters based on column names, not parameter names
     if params_filter is not None:
-        plot_df = plot_df[plot_df[line_col].isin(params_filter)]
+        # params_filter should apply to whichever column contains "params" values
+        if "params" in line_col:
+            plot_df = plot_df[plot_df[line_col].isin(params_filter)]
+        elif style_col and "params" in style_col:
+            plot_df = plot_df[plot_df[style_col].isin(params_filter)]
+        elif "params" in subplot_col:
+            plot_df = plot_df[plot_df[subplot_col].isin(params_filter)]
     
-    if data_filter is not None:
-        plot_df = plot_df[plot_df["data"].isin(data_filter)]
+    if subplot_filter is not None:
+        # subplot_filter should apply to whichever column contains "data" values
+        if "data" in line_col:
+            plot_df = plot_df[plot_df[line_col].isin(subplot_filter)]
+        elif "data" in subplot_col:
+            plot_df = plot_df[plot_df[subplot_col].isin(subplot_filter)]
     
     # Calculate grid layout
     n_metrics = len(metrics)
@@ -204,14 +219,37 @@ def plot_model_comparison(
         row = i // ncols
         col = i % ncols
         
+        # Filter data for this specific metric (remove NaN values)
+        key_columns = [x_col, metric, line_col]
+        if style_col:
+            key_columns.append(style_col)
+        if subplot_col and subplot_col not in key_columns:
+            key_columns.append(subplot_col)
+        available_columns = [c for c in key_columns if c in plot_df.columns]
+        metric_data = plot_df[available_columns].dropna()
+        
+        if len(metric_data) == 0:
+            continue
+        
+        # Sort data by params column for consistent ordering (whether in line_col or style_col)
+        if style_col and "params" in style_col:
+            # If params is in style_col, sort by that
+            params_values = _sort_params_values(metric_data[style_col].unique())
+            metric_data = metric_data.set_index(style_col).loc[params_values].reset_index()
+        elif "params" in line_col:
+            # If params is in line_col, sort by that
+            line_values = _sort_params_values(metric_data[line_col].unique())
+            metric_data = metric_data.set_index(line_col).loc[line_values].reset_index()
+            
         # Use FigureManager's line method for color coordination
         fm.line(
             row=row,
             col=col,
-            data=plot_df,
+            data=metric_data,
             x=x_col,
             y=metric,
             hue=line_col,
+            style=style_col,
             title=metric,
             **kwargs
         )

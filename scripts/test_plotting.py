@@ -124,9 +124,10 @@ def main():
                 df,
                 metrics=available_metrics,
                 x_col="tokens",
-                line_col="params",
+                line_col="data",        # Data recipes as different colors (hue)
+                style_col="params",     # Model sizes as different line styles
                 params_filter=test_params,
-                data_filter=test_data
+                subplot_filter=test_data
             )
             fig4.savefig(plots_dir / "config4_multi_metric.png", dpi=150, bbox_inches="tight")
             print("✓ Saved config4_multi_metric.png")
