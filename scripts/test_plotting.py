@@ -15,6 +15,7 @@ sys.path.insert(0, str(repo_root / "src"))
 
 from datadec import DataDecide
 from datadec.plotting import ScalingPlotBuilder, ModelComparisonBuilder
+from datadec.model_utils import param_to_numeric
 
 
 def fix_sharey_labels(builder, fm):
@@ -479,7 +480,8 @@ def main():
     # Configuration 5: Single data recipe, more params
     print("\n=== Configuration 5: Single data recipe, more params ===")
     try:
-        all_params = sorted(df["params"].unique())[:5]  # Take first 5 params
+        # Use the same test_params as other configurations, but sorted numerically
+        all_params = sorted(test_params, key=param_to_numeric)
         single_data = [test_data[0]] if test_data else [sorted(df["data"].unique())[0]]
 
         # Example using from_datadecide constructor if we had a DataDecide instance
