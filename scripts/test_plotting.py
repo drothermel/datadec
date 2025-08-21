@@ -691,6 +691,123 @@ def main():
     except Exception as e:
         print(f"✗ Error in config 5: {e}")
 
+    # Configuration 6: Stack Config 1 (pile-valppl) and Config 3 (mmlu) - params as lines, data as subplots
+    print("\n=== Configuration 6: Stacked - pile-valppl + mmlu, params as lines ===")
+    try:
+        # Sort the DataFrame for consistent ordering
+        data_order_map = {data_val: i for i, data_val in enumerate(test_data)}
+        df_sorted_config6 = df.copy()
+        df_sorted_config6["_temp_data_order"] = df_sorted_config6["data"].map(
+            data_order_map
+        )
+        df_sorted_config6 = df_sorted_config6.sort_values("_temp_data_order").drop(
+            columns=["_temp_data_order"]
+        )
+
+        # Create a 2-row plot: top row = pile-valppl, bottom row = mmlu
+        config6_metrics = ["pile-valppl", "mmlu_average_correct_prob"]
+
+        builder6 = (
+            ModelComparisonBuilder(df_sorted_config6, config6_metrics)
+            .with_params(test_params)
+            .with_data(test_data)
+            .configure(
+                x_col="tokens",
+                line_col="params",  # Parameters as different colors (like Config 1)
+                subplot_col="data",  # Data values as subplots
+                style_col=None,  # No line styles needed
+                title_prefix="Config 6: Stacked Metrics",
+                stacked_subplots=True,  # Enable stacked mode
+                figsize=(len(test_data) * 5, 10),  # Wider and taller figure
+                log_scale=True,
+                sharey=False,  # Don't share y-axis (different metrics)
+                multi_color_sequence=[
+                    "darkred",
+                    "lightcoral",
+                    "plum",
+                    "lightblue",
+                    "darkblue",
+                ],  # Same 5-color progression
+                color_range_min=0.0,
+                color_range_max=1.0,
+            )
+        )
+        fig6, fm6 = builder6.build()
+        add_unified_legend_below(builder6, fm6)
+
+        fig6.savefig(
+            plots_dir / "config6_stacked_params_lines.png", dpi=150, bbox_inches="tight"
+        )
+        print("✓ Saved config6_stacked_params_lines.png")
+    except Exception as e:
+        print(f"✗ Error in config 6: {e}")
+
+    # Configuration 7: Stack Config 2 style (data as lines, params as subplots) for both metrics
+    print("\n=== Configuration 7: Stacked - pile-valppl + mmlu, data as lines ===")
+    try:
+        # Define reduced data list for Config 7 (skip 50/50 recipe)
+        config7_data = [
+            "Dolma1.7",
+            "DCLM-Baseline 25% / Dolma 75%",
+            # Skip: "DCLM-Baseline 50% / Dolma 50%",
+            "DCLM-Baseline 75% / Dolma 25%",
+            "DCLM-Baseline",
+        ]
+        
+        # Sort the DataFrame for consistent ordering using config7_data
+        data_order_map = {data_val: i for i, data_val in enumerate(config7_data)}
+        df_sorted_config7 = df.copy()
+        df_sorted_config7["_temp_data_order"] = df_sorted_config7["data"].map(
+            data_order_map
+        )
+        df_sorted_config7 = df_sorted_config7.sort_values("_temp_data_order").drop(
+            columns=["_temp_data_order"]
+        )
+
+        # Create a 2-row plot: top row = pile-valppl, bottom row = mmlu
+        config7_metrics = ["pile-valppl", "mmlu_average_correct_prob"]
+        config7_params = [
+            "20M",
+            "60M", 
+            "90M",
+            "300M",
+            "1B",
+        ]
+        builder7 = (
+            ModelComparisonBuilder(df_sorted_config7, config7_metrics)
+            .with_params(config7_params)
+            .with_data(config7_data)
+            .configure(
+                x_col="tokens",
+                line_col="data",  # Data recipes as different colors (like Config 2)
+                subplot_col="params",  # Params as subplots
+                style_col=None,  # No line styles needed
+                title_prefix="Config 7: Stacked Metrics",
+                stacked_subplots=True,  # Enable stacked mode
+                figsize=(len(config7_params) * 5, 10),  # Wider and taller figure
+                log_scale=True,
+                sharey=False,  # Don't share y-axis (different metrics)
+                sharex_per_row=True,  # Share x-axis range across each row
+                multi_color_sequence=[
+                    "darkred",
+                    "lightcoral", 
+                    "lightblue",
+                    "darkblue",
+                ],  # 4-color progression (skip plum since no 50/50 recipe)
+                color_range_min=0.0,
+                color_range_max=1.0,
+            )
+        )
+        fig7, fm7 = builder7.build()
+        add_unified_legend_below(builder7, fm7)
+
+        fig7.savefig(
+            plots_dir / "config7_stacked_data_lines.png", dpi=150, bbox_inches="tight"
+        )
+        print("✓ Saved config7_stacked_data_lines.png")
+    except Exception as e:
+        print(f"✗ Error in config 7: {e}")
+
     print(f"\nPlotting test complete! Check plots in: {plots_dir}")
     print("Use your image viewer to inspect the generated plots.")
 
