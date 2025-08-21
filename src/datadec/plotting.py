@@ -117,15 +117,16 @@ def plot_scaling_curves(
             # Reorder data to match sorted line values
             subplot_data = subplot_data.set_index(line_col).loc[line_values].reset_index()
             
-        # Use FigureManager's line method for automatic color coordination!
-        fm.line(
+        # Use FigureManager's plot method for automatic color coordination!
+        fm.plot(
+            "line",
             row=row,
             col=col,
             data=subplot_data,
             x=x_col,
             y=y_col,
-            hue=line_col,
-            style=style_col,
+            hue_by=line_col,
+            style_by=style_col,
             title=f"{subplot_col}={subplot_val}",
             **kwargs
         )
@@ -241,15 +242,16 @@ def plot_model_comparison(
             line_values = _sort_params_values(metric_data[line_col].unique())
             metric_data = metric_data.set_index(line_col).loc[line_values].reset_index()
             
-        # Use FigureManager's line method for color coordination
-        fm.line(
+        # Use FigureManager's plot method for color coordination
+        fm.plot(
+            "line",
             row=row,
             col=col,
             data=metric_data,
             x=x_col,
             y=metric,
-            hue=line_col,
-            style=style_col,
+            hue_by=line_col,
+            style_by=style_col,
             title=metric,
             **kwargs
         )
