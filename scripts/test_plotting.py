@@ -7,6 +7,7 @@ Creates various configurations of scaling curve plots to validate the implementa
 import sys
 import os
 from pathlib import Path
+import matplotlib.pyplot as plt
 
 # Add src to path so we can import datadec
 repo_root = Path(__file__).parent.parent
@@ -34,6 +35,62 @@ def fix_sharey_labels(builder, fm):
                 ax = fm.get_axes(row=row, col=col)
                 if ax and ax.get_visible():
                     ax.set_ylabel("")
+
+
+def add_unified_legend_below(builder, fm, adjust_layout=True):
+    """
+    Create a unified legend below all subplots, removing individual subplot legends.
+    
+    Args:
+        builder: The plot builder instance (to access config)
+        fm: The FigureManager instance (to access figure and axes)
+        adjust_layout: Whether to adjust subplot layout to make room for legend
+    """
+    ncols = builder.config.get('ncols', 1)
+    nrows = 1  # Assuming single row layouts for now
+    
+    # Collect all unique legend handles and labels from subplots
+    all_handles = []
+    all_labels = []
+    seen_labels = set()  # Track unique labels to avoid duplicates
+    
+    for row in range(nrows):
+        for col in range(ncols):
+            ax = fm.get_axes(row=row, col=col)
+            if ax and ax.get_visible():
+                # Get legend handles and labels from this subplot
+                handles, labels = ax.get_legend_handles_labels()
+                
+                # Add unique labels only (avoid duplicates across subplots)
+                for handle, label in zip(handles, labels):
+                    if label not in seen_labels:
+                        all_handles.append(handle)
+                        all_labels.append(label)
+                        seen_labels.add(label)
+                
+                # Remove individual subplot legend
+                legend = ax.get_legend()
+                if legend:
+                    legend.remove()
+    
+    # Create unified legend below subplots if we have any labels
+    if all_handles and all_labels:
+        # Optionally adjust layout to make room for legend
+        if adjust_layout:
+            # Shrink subplots slightly to make room for legend below
+            plt.subplots_adjust(bottom=0.15)
+        
+        # Create figure-level legend below all subplots
+        fm.fig.legend(
+            all_handles, 
+            all_labels,
+            loc='upper center',           # Legend anchor point
+            bbox_to_anchor=(0.5, 0.02),  # Position below subplots
+            ncol=len(all_labels),         # Horizontal layout
+            frameon=True,                 # Show legend frame
+            fancybox=True,               # Rounded corners
+            shadow=True                  # Drop shadow
+        )
 
 def main():
     # Load data
@@ -96,6 +153,7 @@ def main():
         )
         fig1, fm1 = builder1.build()
         fix_sharey_labels(builder1, fm1)
+        add_unified_legend_below(builder1, fm1)
         
         fig1.savefig(plots_dir / "config1_params_lines_data_subplots.png", dpi=150, bbox_inches="tight")
         print("✓ Saved config1_params_lines_data_subplots.png")
@@ -121,6 +179,7 @@ def main():
             ))
         fig2, fm2 = builder2.build()
         fix_sharey_labels(builder2, fm2)
+        add_unified_legend_below(builder2, fm2)
         
         fig2.savefig(plots_dir / "config2_data_lines_params_subplots.png", dpi=150, bbox_inches="tight")
         print("✓ Saved config2_data_lines_params_subplots.png")
@@ -142,6 +201,7 @@ def main():
             ))
         fig3, fm3 = builder3.build()
         fix_sharey_labels(builder3, fm3)
+        add_unified_legend_below(builder3, fm3)
         
         fig3.savefig(plots_dir / "config3_mmlu_metric.png", dpi=150, bbox_inches="tight")
         print("✓ Saved config3_mmlu_metric.png")
@@ -158,7 +218,7 @@ def main():
         
         if available_metrics:
             # Using ModelComparisonBuilder
-            fig4, fm4 = (ModelComparisonBuilder(df, available_metrics)
+            builder4 = (ModelComparisonBuilder(df, available_metrics)
                 .with_params(test_params)
                 .with_data(test_data)
                 .configure(
@@ -168,8 +228,11 @@ def main():
                     ncols=2,  # Single row with 2 columns (for 2 metrics)
                     figsize=(10, 5),  # Wider figure for single row
                     sharey=False  # Don't share y-axis (different metrics have different scales)
-                )
-                .build())
+                ))
+            fig4, fm4 = builder4.build()
+            
+            # Note: No sharey fix needed since sharey=False
+            add_unified_legend_below(builder4, fm4)
             
             fig4.savefig(plots_dir / "config4_multi_metric.png", dpi=150, bbox_inches="tight")
             print("✓ Saved config4_multi_metric.png")
