@@ -114,6 +114,73 @@ class ModelComparisonBuilder(BasePlotBuilder):
                 metric_data = self._sort_data_for_consistency(metric_data, self.config['style_col'])
             metric_data = self._sort_data_for_consistency(metric_data, self.config['line_col'])
             
+            # Apply sequential styling before plotting (only on first iteration to avoid resetting)
+            if i == 0:  # Only set up cycles once for the entire figure
+                # Use sequential colormap if specified and line_col is params
+                if (self.config.get('colormap') and 
+                    self.config['line_col'] == 'params'):
+                    
+                    # Get unique parameter values for color mapping
+                    hue_values = self.plot_df[self.config['line_col']].unique().tolist()
+                    color_map = self._generate_sequential_colors(
+                        hue_values, 
+                        self.config['colormap'],
+                        color_range_min=self.config.get('color_range_min', 0.1),
+                        color_range_max=self.config.get('color_range_max', 1.0)
+                    )
+                    
+                    # Override the FigureManager's shared style cycles with our sequential colors
+                    import itertools
+                    from datadec.model_utils import param_to_numeric
+                    
+                    # Sort parameter values numerically to ensure proper progression
+                    sorted_params = sorted(hue_values, key=param_to_numeric)
+                    color_values = [color_map[val] for val in sorted_params]
+                    
+                    # Override the shared style cycles that the StyleEngine uses
+                    if not hasattr(self.fm, '_shared_style_cycles') or self.fm._shared_style_cycles is None:
+                        # Initialize if not already done
+                        self.fm._get_shared_style_cycles()
+                    
+                    # Ensure _shared_style_cycles is properly initialized
+                    if self.fm._shared_style_cycles is None:
+                        self.fm._shared_style_cycles = {}
+                    
+                    # Replace the color cycle with our sequential colors
+                    self.fm._shared_style_cycles['color'] = itertools.cycle(color_values)
+                
+                # Use sequential line styles if specified and style_col is params
+                if (self.config.get('linestyle_sequence') and 
+                    self.config.get('style_col') == 'params'):
+                    
+                    # Get unique parameter values for line style mapping
+                    style_values = self.plot_df[self.config['style_col']].unique().tolist()
+                    linestyle_map = self._generate_sequential_linestyles(
+                        style_values,
+                        linestyle_sequence=self.config.get('linestyle_sequence')
+                    )
+                    
+                    # Override the FigureManager's line style cycle  
+                    import itertools
+                    from datadec.model_utils import param_to_numeric
+                    
+                    # Ensure shared style cycles are initialized 
+                    if not hasattr(self.fm, '_shared_style_cycles') or self.fm._shared_style_cycles is None:
+                        self.fm._get_shared_style_cycles()
+                    if self.fm._shared_style_cycles is None:
+                        self.fm._shared_style_cycles = {}
+                    
+                    sorted_styles = sorted(style_values, key=param_to_numeric)
+                    linestyle_values = [linestyle_map[val] for val in sorted_styles]
+                    
+                    # Override both shared cycles and theme to ensure StyleEngine uses our sequence
+                    self.fm._shared_style_cycles['linestyle'] = itertools.cycle(linestyle_values)
+                    
+                    # Also override the BASE_THEME's linestyle_cycle that StyleEngine uses
+                    from dr_plotter.theme import BASE_THEME
+                    BASE_THEME.styles['linestyle_cycle'] = itertools.cycle(linestyle_values)
+                    
+            
             # Use FigureManager's plot method for color coordination
             self.fm.plot(
                 'line',

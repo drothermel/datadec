@@ -51,10 +51,8 @@ def add_unified_legend_below(builder, fm, adjust_layout=True, legend_ncol=None):
     nrows = 1  # Assuming single row layouts for now
 
     # Collect all unique legend handles and labels from subplots
-    all_handles = []
-    all_labels = []
-    seen_labels = set()  # Track unique labels to avoid duplicates
-
+    handle_map = {}  # Map from label to handle
+    
     for row in range(nrows):
         for col in range(ncols):
             ax = fm.get_axes(row=row, col=col)
@@ -62,17 +60,37 @@ def add_unified_legend_below(builder, fm, adjust_layout=True, legend_ncol=None):
                 # Get legend handles and labels from this subplot
                 handles, labels = ax.get_legend_handles_labels()
 
-                # Add unique labels only (avoid duplicates across subplots)
+                # Store unique labels with their handles
                 for handle, label in zip(handles, labels):
-                    if label not in seen_labels:
-                        all_handles.append(handle)
-                        all_labels.append(label)
-                        seen_labels.add(label)
+                    if label not in handle_map:
+                        handle_map[label] = handle
 
                 # Remove individual subplot legend
                 legend = ax.get_legend()
                 if legend:
                     legend.remove()
+    
+    # Order the labels according to the builder's configuration
+    line_col = builder.config.get('line_col')
+    all_labels = []
+    all_handles = []
+    
+    # Determine the ordering based on which column is the line_col and available filters
+    if line_col == 'params' and builder.config.get('params_filter'):
+        # Use params_filter order
+        ordered_values = builder.config['params_filter']
+    elif line_col == 'data' and builder.config.get('subplot_filter'):
+        # Use subplot_filter order (from with_data method)
+        ordered_values = builder.config['subplot_filter']
+    else:
+        # Fallback to the order they appear in handle_map
+        ordered_values = list(handle_map.keys())
+    
+    # Build the ordered lists based on the configuration order
+    for value in ordered_values:
+        if value in handle_map:
+            all_labels.append(value)
+            all_handles.append(handle_map[value])
 
     # Create unified legend below subplots if we have any labels
     if all_handles and all_labels:
@@ -107,12 +125,20 @@ def add_unified_legend_below(builder, fm, adjust_layout=True, legend_ncol=None):
         )
 
 
-def add_grouped_legends_below(builder, fm, adjust_layout=True, line_col_ncol=None, style_col_ncol=None, 
-                            legend_spacing=0.1, legend_y_pos=0.02, bottom_margin=None):
+def add_grouped_legends_below(
+    builder,
+    fm,
+    adjust_layout=True,
+    line_col_ncol=None,
+    style_col_ncol=None,
+    legend_spacing=0.1,
+    legend_y_pos=0.02,
+    bottom_margin=None,
+):
     """
-    Create two separate legends below subplots - one for colors (line_col) 
+    Create two separate legends below subplots - one for colors (line_col)
     and one for line styles (style_col), positioned side by side.
-    
+
     Args:
         builder: The plot builder instance (to access config)
         fm: The FigureManager instance (to access figure and axes)
@@ -125,15 +151,15 @@ def add_grouped_legends_below(builder, fm, adjust_layout=True, line_col_ncol=Non
     """
     ncols = builder.config.get("ncols", 1)
     nrows = 1  # Assuming single row layouts for now
-    
+
     # Get column mappings from builder config
     line_col = builder.config.get("line_col", "params")  # Controls colors
     style_col = builder.config.get("style_col", "data")  # Controls line styles
-    
+
     # Collect all handles and labels from subplots to analyze
     all_handles = []
     all_labels = []
-    
+
     for row in range(nrows):
         for col in range(ncols):
             ax = fm.get_axes(row=row, col=col)
@@ -142,48 +168,48 @@ def add_grouped_legends_below(builder, fm, adjust_layout=True, line_col_ncol=Non
                 handles, labels = ax.get_legend_handles_labels()
                 all_handles.extend(handles)
                 all_labels.extend(labels)
-                
+
                 # Remove individual subplot legend
                 legend = ax.get_legend()
                 if legend:
                     legend.remove()
-    
+
     if not all_handles or not all_labels:
         return
-    
+
     # Extract unique values for each grouping
     # Parse labels to extract the grouping values
     # Labels are typically in format like "data_value, params_value"
     line_col_values = set()
     style_col_values = set()
     handle_map = {}  # Map (line_col_val, style_col_val) -> handle
-    
+
     for handle, label in zip(all_handles, all_labels):
         # Parse label to extract values and remove key prefixes
         # Labels from dr_plotter are typically like "data=DCLM-Baseline, params=10M"
-        parts = [part.strip() for part in label.split(',')]
+        parts = [part.strip() for part in label.split(",")]
         if len(parts) == 2:
             # Extract values by removing the key= prefix
-            part1_clean = parts[0].split('=')[-1] if '=' in parts[0] else parts[0]
-            part2_clean = parts[1].split('=')[-1] if '=' in parts[1] else parts[1]
-            
+            part1_clean = parts[0].split("=")[-1] if "=" in parts[0] else parts[0]
+            part2_clean = parts[1].split("=")[-1] if "=" in parts[1] else parts[1]
+
             if line_col == "data":
                 line_col_val, style_col_val = part1_clean, part2_clean
             else:  # line_col == "params"
                 style_col_val, line_col_val = part1_clean, part2_clean
-            
+
             line_col_values.add(line_col_val)
             style_col_values.add(style_col_val)
             handle_map[(line_col_val, style_col_val)] = handle
-    
-    # Sort for consistent ordering
-    sorted_line_col_values = sorted(line_col_values)
-    sorted_style_col_values = sorted(style_col_values)
-    
+
+    # Convert to lists for consistent ordering
+    sorted_line_col_values = list(line_col_values)
+    sorted_style_col_values = list(style_col_values)
+
     # Create custom Line2D elements for each group
     line_col_handles = []
     line_col_labels = []
-    
+
     # For line_col group (colors), use first available style_col to get color
     first_style_val = sorted_style_col_values[0] if sorted_style_col_values else ""
     for line_val in sorted_line_col_values:
@@ -193,21 +219,20 @@ def add_grouped_legends_below(builder, fm, adjust_layout=True, line_col_ncol=Non
             if l_val == line_val:
                 sample_handle = handle
                 break
-        
+
         if sample_handle:
             # Create Line2D with same color, but standard line style
-            custom_handle = Line2D([0], [0], 
-                                 color=sample_handle.get_color(),
-                                 linewidth=2,
-                                 linestyle='-')
+            custom_handle = Line2D(
+                [0], [0], color=sample_handle.get_color(), linewidth=2, linestyle="-"
+            )
             line_col_handles.append(custom_handle)
             # Use clean value without key prefix
             line_col_labels.append(line_val)
-    
+
     # For style_col group (line styles), use first available line_col to get style
     style_col_handles = []
     style_col_labels = []
-    
+
     first_line_val = sorted_line_col_values[0] if sorted_line_col_values else ""
     for style_val in sorted_style_col_values:
         # Find a handle that has this style_col value to extract its line style
@@ -216,39 +241,54 @@ def add_grouped_legends_below(builder, fm, adjust_layout=True, line_col_ncol=Non
             if s_val == style_val:
                 sample_handle = handle
                 break
-        
+
         if sample_handle:
             # Create Line2D with same line style, but black color for clarity
-            custom_handle = Line2D([0], [0],
-                                 color='black',
-                                 linewidth=2,
-                                 linestyle=sample_handle.get_linestyle())
+            custom_handle = Line2D(
+                [0],
+                [0],
+                color="black",
+                linewidth=2,
+                linestyle=sample_handle.get_linestyle(),
+            )
             style_col_handles.append(custom_handle)
             # Use clean value without key prefix
             style_col_labels.append(style_val)
-    
+
     # Calculate number of columns for each legend
-    line_col_cols = line_col_ncol if line_col_ncol is not None else len(line_col_handles)
-    style_col_cols = style_col_ncol if style_col_ncol is not None else len(style_col_handles)
-    
+    line_col_cols = (
+        line_col_ncol if line_col_ncol is not None else len(line_col_handles)
+    )
+    style_col_cols = (
+        style_col_ncol if style_col_ncol is not None else len(style_col_handles)
+    )
+
     # Calculate required rows for each legend
-    line_col_rows = (len(line_col_handles) + line_col_cols - 1) // line_col_cols if line_col_handles else 0
-    style_col_rows = (len(style_col_handles) + style_col_cols - 1) // style_col_cols if style_col_handles else 0
+    line_col_rows = (
+        (len(line_col_handles) + line_col_cols - 1) // line_col_cols
+        if line_col_handles
+        else 0
+    )
+    style_col_rows = (
+        (len(style_col_handles) + style_col_cols - 1) // style_col_cols
+        if style_col_handles
+        else 0
+    )
     max_legend_rows = max(line_col_rows, style_col_rows)
-    
+
     # Calculate adaptive positioning for centered legends with edge-based spacing
     center_x = 0.5  # Center of figure
-    
+
     # Estimate legend width (approximate, since we can't measure before creation)
     # Assume each legend takes about 0.15-0.2 of figure width
     estimated_legend_width = 0.18
-    
+
     # Position legends so their edges are separated by legend_spacing
     # Left legend: right edge at (center - spacing/2)
     # Right legend: left edge at (center + spacing/2)
     left_legend_x = center_x - (legend_spacing / 2) - (estimated_legend_width / 2)
     right_legend_x = center_x + (legend_spacing / 2) + (estimated_legend_width / 2)
-    
+
     # Adjust bottom margin based on maximum legend rows
     if adjust_layout:
         if bottom_margin is not None:
@@ -258,7 +298,7 @@ def add_grouped_legends_below(builder, fm, adjust_layout=True, line_col_ncol=Non
             # Calculate based on legend rows, but more compact
             calculated_margin = 0.08 + (max_legend_rows - 1) * 0.03  # Reduced padding
         plt.subplots_adjust(bottom=calculated_margin)
-    
+
     # Create first legend (line_col group) - positioned left of center
     if line_col_handles:
         legend1 = fm.fig.legend(
@@ -270,11 +310,11 @@ def add_grouped_legends_below(builder, fm, adjust_layout=True, line_col_ncol=Non
             frameon=True,
             fancybox=True,
             shadow=True,
-            title=line_col.title()  # e.g., "Data" or "Params"
+            title=line_col.title(),  # e.g., "Data" or "Params"
         )
         # Add first legend as artist to preserve it
         fm.fig.add_artist(legend1)
-    
+
     # Create second legend (style_col group) - positioned right of center
     if style_col_handles:
         legend2 = fm.fig.legend(
@@ -286,7 +326,7 @@ def add_grouped_legends_below(builder, fm, adjust_layout=True, line_col_ncol=Non
             frameon=True,
             fancybox=True,
             shadow=True,
-            title=style_col.title()  # e.g., "Data" or "Params"
+            title=style_col.title(),  # e.g., "Data" or "Params"
         )
 
 
@@ -336,7 +376,7 @@ def main():
     test_data = [
         "Dolma1.7",
         "DCLM-Baseline 25% / Dolma 75%",
-        "DCLM-Baseline 50% / Dolma 50%",
+        # "DCLM-Baseline 50% / Dolma 50%",
         "DCLM-Baseline 75% / Dolma 25%",
         "DCLM-Baseline",
     ]
@@ -360,6 +400,8 @@ def main():
             ncols=5,  # Single row with 5 columns
             figsize=(25, 5),  # Wider figure for single row
             sharey=True,  # Share y-axis across subplots
+            two_color_start="lightblue",  # Light blue for small models
+            two_color_end="darkblue",  # Dark blue for large models
         )
         fig1, fm1 = builder1.build()
         fix_sharey_labels(builder1, fm1)
@@ -377,9 +419,21 @@ def main():
     # Configuration 2: data as lines, params as subplots (swapped)
     print("\n=== Configuration 2: data as lines, params as subplots ===")
     try:
+        # Sort the DataFrame by data column according to test_data order before plotting
+        # Create a mapping of data values to their position in test_data list
+        data_order_map = {data_val: i for i, data_val in enumerate(test_data)}
+        
+        # Add a temporary sort column and sort the DataFrame
+        df_sorted = df.copy()
+        df_sorted['_temp_data_order'] = df_sorted['data'].map(data_order_map)
+        df_sorted = df_sorted.sort_values('_temp_data_order').drop(columns=['_temp_data_order'])
+        
+        print(f"Data order in test_data: {test_data}")
+        print(f"Data order after sorting DataFrame: {df_sorted['data'].unique().tolist()}")
+        
         # More concise builder usage
         builder2 = (
-            ScalingPlotBuilder(df)
+            ScalingPlotBuilder(df_sorted)  # Use sorted DataFrame
             .with_params(test_params)
             .with_data(test_data)
             .configure(
@@ -391,6 +445,8 @@ def main():
                 ncols=4,  # Single row with 4 columns (for 4 params)
                 figsize=(20, 5),  # Wider figure for single row
                 sharey=True,  # Share y-axis across subplots
+                two_color_start="lightblue",  # Light blue for data recipes
+                two_color_end="darkblue",  # Dark red for data recipes
             )
         )
         fig2, fm2 = builder2.build()
@@ -453,6 +509,12 @@ def main():
                     ncols=2,  # Single row with 2 columns (for 2 metrics)
                     figsize=(10, 5),  # Wider figure for single row
                     sharey=False,  # Don't share y-axis (different metrics have different scales)
+                    linestyle_sequence=[
+                        "-",
+                        "--",
+                        "-.",
+                        ":",
+                    ],  # Solid to dotted progression
                 )
             )
             fig4, fm4 = builder4.build()
@@ -461,11 +523,13 @@ def main():
             # Use grouped legends to separate data (colors) from params (line styles)
             # Use single column for each legend with minimal spacing and compact layout
             add_grouped_legends_below(
-                builder4, fm4, 
-                line_col_ncol=1, style_col_ncol=1,
+                builder4,
+                fm4,
+                line_col_ncol=1,
+                style_col_ncol=1,
                 legend_spacing=0.02,  # Minimal spacing between legend edges
-                legend_y_pos=0.01,    # Lower position 
-                bottom_margin=0.12    # Compact bottom margin
+                legend_y_pos=0.01,  # Lower position
+                bottom_margin=0.12,  # Compact bottom margin
             )
 
             fig4.savefig(
@@ -494,6 +558,9 @@ def main():
             .configure(
                 title_prefix="Config 5",
                 ncols=1,  # Single column (1 data recipe = 1 subplot)
+                colormap="Purples",  # Use single-color purple progression for model size
+                color_range_min=0.2,  # Start from 30% of colormap (more visible)
+                color_range_max=1.0,  # End at 90% of colormap (not too dark)
             )
             .build()
         )

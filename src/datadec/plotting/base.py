@@ -5,6 +5,8 @@ Base class for all plot builders with common functionality.
 from typing import Optional, List, Tuple, Dict, Any
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
+from matplotlib.colors import LinearSegmentedColormap
 import numpy as np
 
 try:
@@ -198,6 +200,110 @@ class BasePlotBuilder:
             ax = self.fm.get_axes(row, col)
             ax.set_visible(False)
     
+    def _generate_sequential_colors(self, hue_values: List[str], colormap: str = 'plasma', 
+                                  color_range_min: float = 0.1, color_range_max: float = 1.0,
+                                  two_color_start: str = None, two_color_end: str = None,
+                                  is_params: bool = False) -> Dict[str, str]:
+        """
+        Generate colors from a sequential colormap based on parameter values.
+        
+        Args:
+            hue_values: List of parameter values (e.g., ['10M', '20M', '60M', '90M'])
+            colormap: Name of matplotlib colormap (e.g., 'plasma', 'viridis', 'inferno', 'magma')
+            color_range_min: Minimum value in colormap range (0.0=lightest, 1.0=darkest)
+            color_range_max: Maximum value in colormap range (0.0=lightest, 1.0=darkest)
+            two_color_start: Starting color for two-color colormap (overrides colormap if provided)
+            two_color_end: Ending color for two-color colormap (overrides colormap if provided)
+            
+        Returns:
+            Dictionary mapping parameter values to hex colors
+        """        
+        # Handle sorting based on whether these are parameters or other values
+        if is_params:
+            # For parameters, use numeric sorting
+            from datadec.model_utils import param_to_numeric
+            numeric_values = [(val, param_to_numeric(val)) for val in hue_values]
+            numeric_values.sort(key=lambda x: x[1])  # Sort by numeric value
+        else:
+            # For non-parameters (like data recipes), preserve input order
+            numeric_values = [(val, i) for i, val in enumerate(hue_values)]
+            # No sorting - keep the intentional input order
+        
+        # Get colormap (either built-in or custom two-color)
+        if two_color_start is not None and two_color_end is not None:
+            # Create custom two-color colormap
+            cmap = self._create_two_color_colormap(two_color_start, two_color_end, 'custom_two_color')
+        else:
+            # Use built-in colormap
+            cmap = plt.cm.get_cmap(colormap)
+            
+        min_val = min(x[1] for x in numeric_values)
+        max_val = max(x[1] for x in numeric_values)
+        
+        # Handle edge case where all values are the same
+        if min_val == max_val:
+            color = cmap((color_range_min + color_range_max) / 2)
+            return {val: mcolors.to_hex(color) for val, _ in numeric_values}
+        
+        # Generate colors based on normalized values
+        # Map to configurable color range instead of full [0.0, 1.0] range
+        color_map = {}
+        color_range_span = color_range_max - color_range_min
+        for val, numeric in numeric_values:
+            # Normalize to [color_range_min, color_range_max] range
+            normalized = color_range_min + color_range_span * (numeric - min_val) / (max_val - min_val)
+            color = cmap(normalized)
+            color_map[val] = mcolors.to_hex(color)
+        
+        return color_map
+
+    def _create_two_color_colormap(self, start_color: str, end_color: str, name: str = 'custom') -> LinearSegmentedColormap:
+        """
+        Create a two-color sequential colormap.
+        
+        Args:
+            start_color: Starting color (for smallest values) - can be hex, name, or RGB
+            end_color: Ending color (for largest values) - can be hex, name, or RGB  
+            name: Name for the colormap
+            
+        Returns:
+            LinearSegmentedColormap object
+        """
+        colors = [start_color, end_color]
+        return LinearSegmentedColormap.from_list(name, colors)
+
+    def _generate_sequential_linestyles(self, style_values: List[str], 
+                                      linestyle_sequence: List[str] = None) -> Dict[str, str]:
+        """
+        Generate line styles from a sequence based on parameter values.
+        
+        Args:
+            style_values: List of parameter values (e.g., ['10M', '20M', '60M', '90M'])
+            linestyle_sequence: List of line styles in order from most solid to least solid
+                              Default: ['-', '--', '-.', ':'] (solid to dotted)
+            
+        Returns:
+            Dictionary mapping parameter values to line styles
+        """
+        from datadec.model_utils import param_to_numeric
+        
+        # Default line style sequence from most solid to least solid
+        if linestyle_sequence is None:
+            linestyle_sequence = ['-', '--', '-.', ':']  # solid, dashed, dashdot, dotted
+        
+        # Convert to numeric values and sort
+        numeric_values = [(val, param_to_numeric(val)) for val in style_values]
+        numeric_values.sort(key=lambda x: x[1])  # Sort by numeric value
+        
+        # Map values to line styles
+        style_map = {}
+        for i, (val, numeric) in enumerate(numeric_values):
+            # Cycle through line styles if we have more values than styles
+            style_index = i % len(linestyle_sequence)
+            style_map[val] = linestyle_sequence[style_index]
+        
+        return style_map
+
     def _sort_data_for_consistency(self, subset: pd.DataFrame, sort_col: str) -> pd.DataFrame:
         """
         Sort data by params values if the column contains params for consistent legend ordering.
