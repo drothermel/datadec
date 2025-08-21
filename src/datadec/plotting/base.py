@@ -237,21 +237,21 @@ class BasePlotBuilder:
             # Use built-in colormap
             cmap = plt.cm.get_cmap(colormap)
             
-        min_val = min(x[1] for x in numeric_values)
-        max_val = max(x[1] for x in numeric_values)
+        # Generate colors based on index position for evenly spaced colors
+        # This ensures linear spacing regardless of underlying numeric values
+        color_map = {}
+        color_range_span = color_range_max - color_range_min
+        n_values = len(numeric_values)
         
-        # Handle edge case where all values are the same
-        if min_val == max_val:
+        # Handle edge case where there's only one value
+        if n_values == 1:
             color = cmap((color_range_min + color_range_max) / 2)
             return {val: mcolors.to_hex(color) for val, _ in numeric_values}
         
-        # Generate colors based on normalized values
-        # Map to configurable color range instead of full [0.0, 1.0] range
-        color_map = {}
-        color_range_span = color_range_max - color_range_min
-        for val, numeric in numeric_values:
+        for i, (val, numeric) in enumerate(numeric_values):
+            # Use index position for linear spacing: 0, 1, 2, ... n-1
             # Normalize to [color_range_min, color_range_max] range
-            normalized = color_range_min + color_range_span * (numeric - min_val) / (max_val - min_val)
+            normalized = color_range_min + color_range_span * i / (n_values - 1)
             color = cmap(normalized)
             color_map[val] = mcolors.to_hex(color)
         

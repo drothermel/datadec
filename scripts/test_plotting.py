@@ -52,7 +52,7 @@ def add_unified_legend_below(builder, fm, adjust_layout=True, legend_ncol=None):
 
     # Collect all unique legend handles and labels from subplots
     handle_map = {}  # Map from label to handle
-    
+
     for row in range(nrows):
         for col in range(ncols):
             ax = fm.get_axes(row=row, col=col)
@@ -69,23 +69,23 @@ def add_unified_legend_below(builder, fm, adjust_layout=True, legend_ncol=None):
                 legend = ax.get_legend()
                 if legend:
                     legend.remove()
-    
+
     # Order the labels according to the builder's configuration
-    line_col = builder.config.get('line_col')
+    line_col = builder.config.get("line_col")
     all_labels = []
     all_handles = []
-    
+
     # Determine the ordering based on which column is the line_col and available filters
-    if line_col == 'params' and builder.config.get('params_filter'):
+    if line_col == "params" and builder.config.get("params_filter"):
         # Use params_filter order
-        ordered_values = builder.config['params_filter']
-    elif line_col == 'data' and builder.config.get('subplot_filter'):
+        ordered_values = builder.config["params_filter"]
+    elif line_col == "data" and builder.config.get("subplot_filter"):
         # Use subplot_filter order (from with_data method)
-        ordered_values = builder.config['subplot_filter']
+        ordered_values = builder.config["subplot_filter"]
     else:
         # Fallback to the order they appear in handle_map
         ordered_values = list(handle_map.keys())
-    
+
     # Build the ordered lists based on the configuration order
     for value in ordered_values:
         if value in handle_map:
@@ -380,8 +380,10 @@ def main():
         "DCLM-Baseline 75% / Dolma 25%",
         "DCLM-Baseline",
     ]
-    
-    print(f"Using {len(test_params)} params and {len(test_data)} data recipes for dynamic ncols")
+
+    print(
+        f"Using {len(test_params)} params and {len(test_data)} data recipes for dynamic ncols"
+    )
 
     # Configuration 1: params as lines, data as subplots (your main use case)
     print("\n=== Configuration 1: params as lines, data as subplots ===")
@@ -402,8 +404,10 @@ def main():
             ncols=len(test_data),  # Single row matching number of data subplots
             figsize=(len(test_data) * 5, 5),  # Wider figure for single row
             sharey=True,  # Share y-axis across subplots
-            two_color_start="lightblue",  # Light blue for small models
-            two_color_end="darkblue",  # Dark blue for large models
+            two_color_start="red",  # Light blue for small models
+            two_color_end="lightblue",  # Dark blue for large models
+            color_range_min=0.3,
+            color_range_max=1.0,
         )
         fig1, fm1 = builder1.build()
         fix_sharey_labels(builder1, fm1)
@@ -424,15 +428,19 @@ def main():
         # Sort the DataFrame by data column according to test_data order before plotting
         # Create a mapping of data values to their position in test_data list
         data_order_map = {data_val: i for i, data_val in enumerate(test_data)}
-        
+
         # Add a temporary sort column and sort the DataFrame
         df_sorted = df.copy()
-        df_sorted['_temp_data_order'] = df_sorted['data'].map(data_order_map)
-        df_sorted = df_sorted.sort_values('_temp_data_order').drop(columns=['_temp_data_order'])
-        
+        df_sorted["_temp_data_order"] = df_sorted["data"].map(data_order_map)
+        df_sorted = df_sorted.sort_values("_temp_data_order").drop(
+            columns=["_temp_data_order"]
+        )
+
         print(f"Data order in test_data: {test_data}")
-        print(f"Data order after sorting DataFrame: {df_sorted['data'].unique().tolist()}")
-        
+        print(
+            f"Data order after sorting DataFrame: {df_sorted['data'].unique().tolist()}"
+        )
+
         # More concise builder usage
         builder2 = (
             ScalingPlotBuilder(df_sorted)  # Use sorted DataFrame
@@ -449,6 +457,8 @@ def main():
                 sharey=True,  # Share y-axis across subplots
                 two_color_start="lightblue",  # Light blue for data recipes
                 two_color_end="darkblue",  # Dark red for data recipes
+                color_range_min=0.1,  # Start from 30% of colormap (more visible)
+                color_range_max=1.0,  # End at 90% of colormap (not too dark)
             )
         )
         fig2, fm2 = builder2.build()
@@ -477,6 +487,10 @@ def main():
                 title_prefix="Config 3",
                 ncols=len(test_data),  # Single row matching number of data subplots
                 sharey=True,  # Share y-axis for this metric comparison
+                two_color_start="lightblue",  # Light blue for small models (same as Config 1)
+                two_color_end="darkblue",  # Dark blue for large models (same as Config 1)
+                color_range_min=0.1,  # Start from 30% of colormap (more visible)
+                color_range_max=1.0,  # End at 90% of colormap (not too dark)
             )
         )
         fig3, fm3 = builder3.build()
@@ -561,7 +575,7 @@ def main():
                 title_prefix="Config 5",
                 ncols=1,  # Single column (1 data recipe = 1 subplot)
                 colormap="Purples",  # Use single-color purple progression for model size
-                color_range_min=0.2,  # Start from 30% of colormap (more visible)
+                color_range_min=0.1,  # Start from 30% of colormap (more visible)
                 color_range_max=1.0,  # End at 90% of colormap (not too dark)
             )
             .build()
