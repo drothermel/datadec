@@ -13,8 +13,27 @@ repo_root = Path(__file__).parent.parent
 sys.path.insert(0, str(repo_root / "src"))
 
 from datadec import DataDecide
-from datadec.plotting import plot_scaling_curves, plot_model_comparison
+from datadec.plotting import ScalingPlotBuilder, ModelComparisonBuilder
 import datadec.constants as consts
+
+
+def fix_sharey_labels(builder, fm):
+    """
+    Fix y-axis labels for shared y-axis plots by removing redundant labels.
+    
+    Args:
+        builder: The plot builder instance (to access config)
+        fm: The FigureManager instance (to access axes)
+    """
+    if builder.config.get('sharey'):
+        ncols = builder.config['ncols']
+        nrows = 1  # Assuming single row layouts for now
+        
+        for row in range(nrows):
+            for col in range(1, ncols):  # Skip leftmost (col=0)
+                ax = fm.get_axes(row=row, col=col)
+                if ax and ax.get_visible():
+                    ax.set_ylabel("")
 
 def main():
     # Load data
@@ -60,16 +79,24 @@ def main():
     # Configuration 1: params as lines, data as subplots (your main use case)
     print("\n=== Configuration 1: params as lines, data as subplots ===")
     try:
-        fig1, fm1 = plot_scaling_curves(
-            df,
+        # Using the new builder pattern
+        builder1 = ScalingPlotBuilder(df)
+        builder1.clean_data(key_columns=available_key_columns)  # Data already cleaned above, but showing pattern
+        builder1.with_params(test_params)
+        builder1.with_data(test_data)
+        builder1.configure(
             x_col="tokens",
-            y_col="pile-valppl", 
+            y_col="pile-valppl",
             line_col="params",
             subplot_col="data",
-            params_filter=test_params,
-            subplot_filter=test_data,
-            title_prefix="Config 1"
+            title_prefix="Config 1",
+            ncols=5,  # Single row with 5 columns
+            figsize=(25, 5),  # Wider figure for single row
+            sharey=True  # Share y-axis across subplots
         )
+        fig1, fm1 = builder1.build()
+        fix_sharey_labels(builder1, fm1)
+        
         fig1.savefig(plots_dir / "config1_params_lines_data_subplots.png", dpi=150, bbox_inches="tight")
         print("✓ Saved config1_params_lines_data_subplots.png")
     except Exception as e:
@@ -78,16 +105,23 @@ def main():
     # Configuration 2: data as lines, params as subplots (swapped)
     print("\n=== Configuration 2: data as lines, params as subplots ===")
     try:
-        fig2, fm2 = plot_scaling_curves(
-            df,
-            x_col="tokens",
-            y_col="pile-valppl",
-            line_col="data", 
-            subplot_col="params",
-            params_filter=test_params,
-            subplot_filter=test_data,
-            title_prefix="Config 2"
-        )
+        # More concise builder usage
+        builder2 = (ScalingPlotBuilder(df)
+            .with_params(test_params)
+            .with_data(test_data)
+            .configure(
+                x_col="tokens",
+                y_col="pile-valppl",
+                line_col="data",
+                subplot_col="params",
+                title_prefix="Config 2",
+                ncols=4,  # Single row with 4 columns (for 4 params)
+                figsize=(20, 5),  # Wider figure for single row
+                sharey=True  # Share y-axis across subplots
+            ))
+        fig2, fm2 = builder2.build()
+        fix_sharey_labels(builder2, fm2)
+        
         fig2.savefig(plots_dir / "config2_data_lines_params_subplots.png", dpi=150, bbox_inches="tight")
         print("✓ Saved config2_data_lines_params_subplots.png")
     except Exception as e:
@@ -96,16 +130,19 @@ def main():
     # Configuration 3: Different metric (MMLU instead of perplexity)
     print("\n=== Configuration 3: MMLU metric ===")
     try:
-        fig3, fm3 = plot_scaling_curves(
-            df,
-            x_col="tokens",
-            y_col="mmlu_average_correct_prob",
-            line_col="params",
-            subplot_col="data", 
-            params_filter=test_params,
-            subplot_filter=test_data,
-            title_prefix="Config 3"
-        )
+        # Another concise example showing different metric
+        builder3 = (ScalingPlotBuilder(df)
+            .with_params(test_params)
+            .with_data(test_data)
+            .configure(
+                y_col="mmlu_average_correct_prob",
+                title_prefix="Config 3",
+                ncols=5,  # Single row with 5 columns
+                sharey=True  # Share y-axis for this metric comparison
+            ))
+        fig3, fm3 = builder3.build()
+        fix_sharey_labels(builder3, fm3)
+        
         fig3.savefig(plots_dir / "config3_mmlu_metric.png", dpi=150, bbox_inches="tight")
         print("✓ Saved config3_mmlu_metric.png")
     except Exception as e:
@@ -120,15 +157,20 @@ def main():
         print(f"Available metrics: {available_metrics}")
         
         if available_metrics:
-            fig4, fm4 = plot_model_comparison(
-                df,
-                metrics=available_metrics,
-                x_col="tokens",
-                line_col="data",        # Data recipes as different colors (hue)
-                style_col="params",     # Model sizes as different line styles
-                params_filter=test_params,
-                subplot_filter=test_data
-            )
+            # Using ModelComparisonBuilder
+            fig4, fm4 = (ModelComparisonBuilder(df, available_metrics)
+                .with_params(test_params)
+                .with_data(test_data)
+                .configure(
+                    x_col="tokens",
+                    line_col="data",      # Data recipes as different colors (hue)
+                    style_col="params",    # Model sizes as different line styles
+                    ncols=2,  # Single row with 2 columns (for 2 metrics)
+                    figsize=(10, 5),  # Wider figure for single row
+                    sharey=False  # Don't share y-axis (different metrics have different scales)
+                )
+                .build())
+            
             fig4.savefig(plots_dir / "config4_multi_metric.png", dpi=150, bbox_inches="tight")
             print("✓ Saved config4_multi_metric.png")
         else:
@@ -142,16 +184,18 @@ def main():
         all_params = sorted(df['params'].unique())[:5]  # Take first 5 params
         single_data = [test_data[0]] if test_data else [sorted(df['data'].unique())[0]]
         
-        fig5, fm5 = plot_scaling_curves(
-            df,
-            x_col="tokens",
-            y_col="pile-valppl",
-            line_col="params",
-            subplot_col="data",
-            params_filter=all_params,
-            subplot_filter=single_data,
-            title_prefix="Config 5"
-        )
+        # Example using from_datadecide constructor if we had a DataDecide instance
+        # builder5 = ScalingPlotBuilder.from_datadecide(dd, 'mean_eval', verbose=True)
+        
+        fig5, fm5 = (ScalingPlotBuilder(df)
+            .with_params(all_params)
+            .with_data(single_data)
+            .configure(
+                title_prefix="Config 5",
+                ncols=1  # Single column (1 data recipe = 1 subplot)
+            )
+            .build())
+        
         fig5.savefig(plots_dir / "config5_single_data_more_params.png", dpi=150, bbox_inches="tight")
         print("✓ Saved config5_single_data_more_params.png")
     except Exception as e:
