@@ -146,9 +146,13 @@ class BasePlotBuilder:
         """
         subplot_values = self.plot_df[subplot_col].unique()
         
-        # Sort params values if needed
+        # Sort values based on column type and available filters
         if 'params' in subplot_col:
             subplot_values = _sort_params_values(subplot_values)
+        elif subplot_col == 'data' and self.config.get('subplot_filter'):
+            # For data subplots, use the filter order if available (from with_data method)
+            filter_order = self.config['subplot_filter']
+            subplot_values = [val for val in filter_order if val in subplot_values]
         else:
             subplot_values = sorted(subplot_values)
         
@@ -203,6 +207,7 @@ class BasePlotBuilder:
     def _generate_sequential_colors(self, hue_values: List[str], colormap: str = 'plasma', 
                                   color_range_min: float = 0.1, color_range_max: float = 1.0,
                                   two_color_start: str = None, two_color_end: str = None,
+                                  multi_color_sequence: List[str] = None,
                                   is_params: bool = False) -> Dict[str, str]:
         """
         Generate colors from a sequential colormap based on parameter values.
@@ -214,6 +219,7 @@ class BasePlotBuilder:
             color_range_max: Maximum value in colormap range (0.0=lightest, 1.0=darkest)
             two_color_start: Starting color for two-color colormap (overrides colormap if provided)
             two_color_end: Ending color for two-color colormap (overrides colormap if provided)
+            multi_color_sequence: List of colors for multi-color progression (overrides other options)
             
         Returns:
             Dictionary mapping parameter values to hex colors
@@ -229,8 +235,11 @@ class BasePlotBuilder:
             numeric_values = [(val, i) for i, val in enumerate(hue_values)]
             # No sorting - keep the intentional input order
         
-        # Get colormap (either built-in or custom two-color)
-        if two_color_start is not None and two_color_end is not None:
+        # Get colormap (priority: multi-color > two-color > built-in)
+        if multi_color_sequence is not None and len(multi_color_sequence) >= 2:
+            # Create custom multi-color colormap
+            cmap = self._create_multi_color_colormap(multi_color_sequence, 'custom_multi_color')
+        elif two_color_start is not None and two_color_end is not None:
             # Create custom two-color colormap
             cmap = self._create_two_color_colormap(two_color_start, two_color_end, 'custom_two_color')
         else:
@@ -253,7 +262,8 @@ class BasePlotBuilder:
             # Normalize to [color_range_min, color_range_max] range
             normalized = color_range_min + color_range_span * i / (n_values - 1)
             color = cmap(normalized)
-            color_map[val] = mcolors.to_hex(color)
+            color_hex = mcolors.to_hex(color)
+            color_map[val] = color_hex
         
         return color_map
 
@@ -270,6 +280,19 @@ class BasePlotBuilder:
             LinearSegmentedColormap object
         """
         colors = [start_color, end_color]
+        return LinearSegmentedColormap.from_list(name, colors)
+    
+    def _create_multi_color_colormap(self, colors: List[str], name: str = 'custom_multi') -> LinearSegmentedColormap:
+        """
+        Create a multi-color sequential colormap with custom color progression.
+        
+        Args:
+            colors: List of colors in progression order (e.g., ['darkred', 'lightcoral', 'lightblue', 'darkblue'])
+            name: Name for the colormap
+            
+        Returns:
+            LinearSegmentedColormap object
+        """
         return LinearSegmentedColormap.from_list(name, colors)
 
     def _generate_sequential_linestyles(self, style_values: List[str], 

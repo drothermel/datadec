@@ -98,7 +98,8 @@ class ScalingPlotBuilder(BasePlotBuilder):
             
             # Use sequential colormap if specified  
             if (self.config.get('colormap') or 
-                (self.config.get('two_color_start') and self.config.get('two_color_end'))):
+                (self.config.get('two_color_start') and self.config.get('two_color_end')) or
+                self.config.get('multi_color_sequence')):
                 
                 # Get unique values for this subplot, preserving original filter order if available
                 hue_values = subset[self.config['line_col']].unique().tolist()
@@ -119,6 +120,7 @@ class ScalingPlotBuilder(BasePlotBuilder):
                     color_range_max=self.config.get('color_range_max', 1.0),
                     two_color_start=self.config.get('two_color_start'),
                     two_color_end=self.config.get('two_color_end'),
+                    multi_color_sequence=self.config.get('multi_color_sequence'),
                     is_params=(self.config['line_col'] == 'params')
                 )
                 

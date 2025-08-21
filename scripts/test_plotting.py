@@ -376,7 +376,7 @@ def main():
     test_data = [
         "Dolma1.7",
         "DCLM-Baseline 25% / Dolma 75%",
-        # "DCLM-Baseline 50% / Dolma 50%",
+        "DCLM-Baseline 50% / Dolma 50%",
         "DCLM-Baseline 75% / Dolma 25%",
         "DCLM-Baseline",
     ]
@@ -404,9 +404,8 @@ def main():
             ncols=len(test_data),  # Single row matching number of data subplots
             figsize=(len(test_data) * 5, 5),  # Wider figure for single row
             sharey=True,  # Share y-axis across subplots
-            two_color_start="red",  # Light blue for small models
-            two_color_end="lightblue",  # Dark blue for large models
-            color_range_min=0.3,
+            multi_color_sequence=["darkred", "lightcoral", "plum", "lightblue", "darkblue"],  # 5-color progression
+            color_range_min=0.0,  # Use full range for 5-color progression
             color_range_max=1.0,
         )
         fig1, fm1 = builder1.build()
@@ -455,10 +454,9 @@ def main():
                 ncols=len(test_params),  # Single row matching number of param subplots
                 figsize=(len(test_params) * 5, 5),  # Wider figure for single row
                 sharey=True,  # Share y-axis across subplots
-                two_color_start="lightblue",  # Light blue for data recipes
-                two_color_end="darkblue",  # Dark red for data recipes
-                color_range_min=0.1,  # Start from 30% of colormap (more visible)
-                color_range_max=1.0,  # End at 90% of colormap (not too dark)
+                multi_color_sequence=["darkred", "lightcoral", "plum", "lightblue", "darkblue"],  # Same 5-color progression as Config 1
+                color_range_min=0.0,  # Use full range for 5-color progression
+                color_range_max=1.0,
             )
         )
         fig2, fm2 = builder2.build()
@@ -477,9 +475,20 @@ def main():
     # Configuration 3: Different metric (MMLU instead of perplexity)
     print("\n=== Configuration 3: MMLU metric ===")
     try:
+        # Sort the DataFrame by data column according to test_data order before plotting (same as Config 2)
+        # Create a mapping of data values to their position in test_data list
+        data_order_map = {data_val: i for i, data_val in enumerate(test_data)}
+        
+        # Add a temporary sort column and sort the DataFrame
+        df_sorted_config3 = df.copy()
+        df_sorted_config3["_temp_data_order"] = df_sorted_config3["data"].map(data_order_map)
+        df_sorted_config3 = df_sorted_config3.sort_values("_temp_data_order").drop(
+            columns=["_temp_data_order"]
+        )
+        
         # Another concise example showing different metric
         builder3 = (
-            ScalingPlotBuilder(df)
+            ScalingPlotBuilder(df_sorted_config3)  # Use sorted DataFrame
             .with_params(test_params)
             .with_data(test_data)
             .configure(
@@ -487,10 +496,9 @@ def main():
                 title_prefix="Config 3",
                 ncols=len(test_data),  # Single row matching number of data subplots
                 sharey=True,  # Share y-axis for this metric comparison
-                two_color_start="lightblue",  # Light blue for small models (same as Config 1)
-                two_color_end="darkblue",  # Dark blue for large models (same as Config 1)
-                color_range_min=0.1,  # Start from 30% of colormap (more visible)
-                color_range_max=1.0,  # End at 90% of colormap (not too dark)
+                multi_color_sequence=["darkred", "lightcoral", "plum", "lightblue", "darkblue"],  # Same 5-color progression as Config 1
+                color_range_min=0.0,  # Use full range for 5-color progression
+                color_range_max=1.0,
             )
         )
         fig3, fm3 = builder3.build()
@@ -525,12 +533,13 @@ def main():
                     ncols=2,  # Single row with 2 columns (for 2 metrics)
                     figsize=(10, 5),  # Wider figure for single row
                     sharey=False,  # Don't share y-axis (different metrics have different scales)
+                    multi_color_sequence=["darkred", "lightcoral", "plum", "lightblue", "darkblue"],  # Same 5-color progression for data recipes
                     linestyle_sequence=[
                         "-",
                         "--",
                         "-.",
                         ":",
-                    ],  # Solid to dotted progression
+                    ],  # Solid to dotted progression for model sizes
                 )
             )
             fig4, fm4 = builder4.build()
