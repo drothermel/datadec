@@ -116,26 +116,46 @@ class ModelComparisonBuilder(BasePlotBuilder):
             
             # Apply sequential styling before plotting (only on first iteration to avoid resetting)
             if i == 0:  # Only set up cycles once for the entire figure
-                # Use sequential colormap if specified and line_col is params
-                if (self.config.get('colormap') and 
-                    self.config['line_col'] == 'params'):
+                # Use sequential colormap if specified  
+                if (self.config.get('colormap') or 
+                    (self.config.get('two_color_start') and self.config.get('two_color_end')) or
+                    self.config.get('multi_color_sequence')):
                     
-                    # Get unique parameter values for color mapping
+                    # Get unique values for this line_col, preserving original filter order if available
                     hue_values = self.plot_df[self.config['line_col']].unique().tolist()
+                    
+                    # Preserve original filter order if this column has a filter applied
+                    if self.config['line_col'] == 'params' and self.config.get('params_filter'):
+                        # For params as line_col, use params_filter order
+                        original_order = self.config['params_filter']
+                        hue_values = [val for val in original_order if val in hue_values]
+                    elif self.config['line_col'] == 'data' and self.config.get('subplot_filter'):
+                        # For data as line_col, use subplot_filter order (from with_data)
+                        original_order = self.config['subplot_filter'] 
+                        hue_values = [val for val in original_order if val in hue_values]
+                        
                     color_map = self._generate_sequential_colors(
                         hue_values, 
-                        self.config['colormap'],
+                        self.config.get('colormap', 'plasma'),
                         color_range_min=self.config.get('color_range_min', 0.1),
-                        color_range_max=self.config.get('color_range_max', 1.0)
+                        color_range_max=self.config.get('color_range_max', 1.0),
+                        two_color_start=self.config.get('two_color_start'),
+                        two_color_end=self.config.get('two_color_end'),
+                        multi_color_sequence=self.config.get('multi_color_sequence'),
+                        is_params=(self.config['line_col'] == 'params')
                     )
                     
                     # Override the FigureManager's shared style cycles with our sequential colors
                     import itertools
                     from datadec.model_utils import param_to_numeric
                     
-                    # Sort parameter values numerically to ensure proper progression
-                    sorted_params = sorted(hue_values, key=param_to_numeric)
-                    color_values = [color_map[val] for val in sorted_params]
+                    # Sort values to ensure proper progression (preserve order for non-params)
+                    if self.config['line_col'] == 'params':
+                        sorted_values = sorted(hue_values, key=param_to_numeric)
+                    else:
+                        # For non-parameters, preserve the input order (intentional data recipe quality order)
+                        sorted_values = hue_values
+                    color_values = [color_map[val] for val in sorted_values]
                     
                     # Override the shared style cycles that the StyleEngine uses
                     if not hasattr(self.fm, '_shared_style_cycles') or self.fm._shared_style_cycles is None:

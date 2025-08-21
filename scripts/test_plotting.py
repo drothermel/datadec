@@ -202,9 +202,59 @@ def add_grouped_legends_below(
             style_col_values.add(style_col_val)
             handle_map[(line_col_val, style_col_val)] = handle
 
-    # Convert to lists for consistent ordering
-    sorted_line_col_values = list(line_col_values)
-    sorted_style_col_values = list(style_col_values)
+    # Order the values according to the builder's configuration
+    # For line_col values
+    if line_col == "params" and builder.config.get("params_filter"):
+        # Use params_filter order
+        ordered_line_col_values = builder.config["params_filter"]
+        sorted_line_col_values = [
+            val for val in ordered_line_col_values if val in line_col_values
+        ]
+    elif line_col == "data" and builder.config.get("subplot_filter"):
+        # Use subplot_filter order (from with_data method)
+        ordered_line_col_values = builder.config["subplot_filter"]
+        sorted_line_col_values = [
+            val for val in ordered_line_col_values if val in line_col_values
+        ]
+    else:
+        # Fallback: Check if we're in Config 4 context (title contains "Multi-metric")
+        # and use the correct Config 4 data order
+        if (
+            hasattr(builder, "config")
+            and builder.config.get("title_prefix") == "Model Comparison"
+            and line_col == "data"
+        ):
+            # Use Config 4 data order specifically
+            config4_data_order = [
+                "Dolma1.7",
+                "DCLM-Baseline 25% / Dolma 75%",
+                "DCLM-Baseline 75% / Dolma 25%",
+                "DCLM-Baseline",
+            ]
+            sorted_line_col_values = [
+                val for val in config4_data_order if val in line_col_values
+            ]
+        else:
+            # Default fallback to the order they appear
+            sorted_line_col_values = list(line_col_values)
+
+    # For style_col values
+    style_col = builder.config.get("style_col")
+    if style_col == "params" and builder.config.get("params_filter"):
+        # Use params_filter order
+        ordered_style_col_values = builder.config["params_filter"]
+        sorted_style_col_values = [
+            val for val in ordered_style_col_values if val in style_col_values
+        ]
+    elif style_col == "data" and builder.config.get("subplot_filter"):
+        # Use subplot_filter order (from with_data method)
+        ordered_style_col_values = builder.config["subplot_filter"]
+        sorted_style_col_values = [
+            val for val in ordered_style_col_values if val in style_col_values
+        ]
+    else:
+        # Fallback to the order they appear
+        sorted_style_col_values = list(style_col_values)
 
     # Create custom Line2D elements for each group
     line_col_handles = []
@@ -404,7 +454,13 @@ def main():
             ncols=len(test_data),  # Single row matching number of data subplots
             figsize=(len(test_data) * 5, 5),  # Wider figure for single row
             sharey=True,  # Share y-axis across subplots
-            multi_color_sequence=["darkred", "lightcoral", "plum", "lightblue", "darkblue"],  # 5-color progression
+            multi_color_sequence=[
+                "darkred",
+                "lightcoral",
+                "plum",
+                "lightblue",
+                "darkblue",
+            ],  # 5-color progression
             color_range_min=0.0,  # Use full range for 5-color progression
             color_range_max=1.0,
         )
@@ -454,7 +510,13 @@ def main():
                 ncols=len(test_params),  # Single row matching number of param subplots
                 figsize=(len(test_params) * 5, 5),  # Wider figure for single row
                 sharey=True,  # Share y-axis across subplots
-                multi_color_sequence=["darkred", "lightcoral", "plum", "lightblue", "darkblue"],  # Same 5-color progression as Config 1
+                multi_color_sequence=[
+                    "darkred",
+                    "lightcoral",
+                    "plum",
+                    "lightblue",
+                    "darkblue",
+                ],  # Same 5-color progression as Config 1
                 color_range_min=0.0,  # Use full range for 5-color progression
                 color_range_max=1.0,
             )
@@ -478,14 +540,16 @@ def main():
         # Sort the DataFrame by data column according to test_data order before plotting (same as Config 2)
         # Create a mapping of data values to their position in test_data list
         data_order_map = {data_val: i for i, data_val in enumerate(test_data)}
-        
+
         # Add a temporary sort column and sort the DataFrame
         df_sorted_config3 = df.copy()
-        df_sorted_config3["_temp_data_order"] = df_sorted_config3["data"].map(data_order_map)
+        df_sorted_config3["_temp_data_order"] = df_sorted_config3["data"].map(
+            data_order_map
+        )
         df_sorted_config3 = df_sorted_config3.sort_values("_temp_data_order").drop(
             columns=["_temp_data_order"]
         )
-        
+
         # Another concise example showing different metric
         builder3 = (
             ScalingPlotBuilder(df_sorted_config3)  # Use sorted DataFrame
@@ -496,7 +560,13 @@ def main():
                 title_prefix="Config 3",
                 ncols=len(test_data),  # Single row matching number of data subplots
                 sharey=True,  # Share y-axis for this metric comparison
-                multi_color_sequence=["darkred", "lightcoral", "plum", "lightblue", "darkblue"],  # Same 5-color progression as Config 1
+                multi_color_sequence=[
+                    "darkred",
+                    "lightcoral",
+                    "plum",
+                    "lightblue",
+                    "darkblue",
+                ],  # Same 5-color progression as Config 1
                 color_range_min=0.0,  # Use full range for 5-color progression
                 color_range_max=1.0,
             )
@@ -520,12 +590,39 @@ def main():
         available_metrics = [m for m in test_metrics if m in df.columns]
         print(f"Available metrics: {available_metrics}")
 
+        # Create reduced lists for Config 4
+        config4_params = ["20M", "90M", "530M"]
+        config4_data = [
+            "Dolma1.7",
+            "DCLM-Baseline 25% / Dolma 75%",
+            # Drop: "DCLM-Baseline 50% / Dolma 50%",
+            "DCLM-Baseline 75% / Dolma 25%",
+            "DCLM-Baseline",
+        ]
+        config4_colors = ["darkred", "lightcoral", "lightblue", "darkblue"]  # Drop plum
+        config4_linestyles = ["-", "--", ":"]  # Drop dash-dot
+
         if available_metrics:
+            # Sort the DataFrame by data column according to config4_data order before plotting (same as Configs 2 and 3)
+            # Create a mapping of data values to their position in config4_data list
+            data_order_map = {data_val: i for i, data_val in enumerate(config4_data)}
+
+            # Add a temporary sort column and sort the DataFrame
+            df_sorted_config4 = df.copy()
+            df_sorted_config4["_temp_data_order"] = df_sorted_config4["data"].map(
+                data_order_map
+            )
+            df_sorted_config4 = df_sorted_config4.sort_values("_temp_data_order").drop(
+                columns=["_temp_data_order"]
+            )
+
             # Using ModelComparisonBuilder
             builder4 = (
-                ModelComparisonBuilder(df, available_metrics)
-                .with_params(test_params)
-                .with_data(test_data)
+                ModelComparisonBuilder(
+                    df_sorted_config4, available_metrics
+                )  # Use sorted DataFrame
+                .with_params(config4_params)
+                .with_data(config4_data)
                 .configure(
                     x_col="tokens",
                     line_col="data",  # Data recipes as different colors (hue)
@@ -533,13 +630,8 @@ def main():
                     ncols=2,  # Single row with 2 columns (for 2 metrics)
                     figsize=(10, 5),  # Wider figure for single row
                     sharey=False,  # Don't share y-axis (different metrics have different scales)
-                    multi_color_sequence=["darkred", "lightcoral", "plum", "lightblue", "darkblue"],  # Same 5-color progression for data recipes
-                    linestyle_sequence=[
-                        "-",
-                        "--",
-                        "-.",
-                        ":",
-                    ],  # Solid to dotted progression for model sizes
+                    multi_color_sequence=config4_colors,  # 4-color progression for data recipes (no plum)
+                    linestyle_sequence=config4_linestyles,  # 3 line styles for model sizes (no dash-dot)
                 )
             )
             fig4, fm4 = builder4.build()
