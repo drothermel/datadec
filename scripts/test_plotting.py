@@ -380,6 +380,8 @@ def main():
         "DCLM-Baseline 75% / Dolma 25%",
         "DCLM-Baseline",
     ]
+    
+    print(f"Using {len(test_params)} params and {len(test_data)} data recipes for dynamic ncols")
 
     # Configuration 1: params as lines, data as subplots (your main use case)
     print("\n=== Configuration 1: params as lines, data as subplots ===")
@@ -397,8 +399,8 @@ def main():
             line_col="params",
             subplot_col="data",
             title_prefix="Config 1",
-            ncols=5,  # Single row with 5 columns
-            figsize=(25, 5),  # Wider figure for single row
+            ncols=len(test_data),  # Single row matching number of data subplots
+            figsize=(len(test_data) * 5, 5),  # Wider figure for single row
             sharey=True,  # Share y-axis across subplots
             two_color_start="lightblue",  # Light blue for small models
             two_color_end="darkblue",  # Dark blue for large models
@@ -442,8 +444,8 @@ def main():
                 line_col="data",
                 subplot_col="params",
                 title_prefix="Config 2",
-                ncols=4,  # Single row with 4 columns (for 4 params)
-                figsize=(20, 5),  # Wider figure for single row
+                ncols=len(test_params),  # Single row matching number of param subplots
+                figsize=(len(test_params) * 5, 5),  # Wider figure for single row
                 sharey=True,  # Share y-axis across subplots
                 two_color_start="lightblue",  # Light blue for data recipes
                 two_color_end="darkblue",  # Dark red for data recipes
@@ -473,7 +475,7 @@ def main():
             .configure(
                 y_col="mmlu_average_correct_prob",
                 title_prefix="Config 3",
-                ncols=5,  # Single row with 5 columns
+                ncols=len(test_data),  # Single row matching number of data subplots
                 sharey=True,  # Share y-axis for this metric comparison
             )
         )
