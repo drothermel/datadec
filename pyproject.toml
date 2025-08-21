@@ -30,4 +30,4 @@ cache-dir = ".ruff_cache"
 exclude = ["outputs/*", "notebooks/*"]
 
 [tool.uv.sources]
-dr-plotter = { path = "../dr_plotter", editable = true }
+dr-plotter = { git = "https://github.com/drothermel/dr_plotter" }
