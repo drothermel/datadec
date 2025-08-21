@@ -31,3 +31,8 @@ exclude = ["outputs/*", "notebooks/*"]
 
 [tool.uv.sources]
 dr-plotter = { git = "https://github.com/drothermel/dr_plotter" }
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.1",
+]
