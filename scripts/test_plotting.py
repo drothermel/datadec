@@ -7,6 +7,7 @@ Creates various configurations of scaling curve plots to validate the implementa
 import sys
 from pathlib import Path
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 
 # Add src to path so we can import datadec
 repo_root = Path(__file__).parent.parent
@@ -102,6 +103,189 @@ def add_unified_legend_below(builder, fm, adjust_layout=True, legend_ncol=None):
             frameon=True,  # Show legend frame
             fancybox=True,  # Rounded corners
             shadow=True,  # Drop shadow
+        )
+
+
+def add_grouped_legends_below(builder, fm, adjust_layout=True, line_col_ncol=None, style_col_ncol=None, 
+                            legend_spacing=0.1, legend_y_pos=0.02, bottom_margin=None):
+    """
+    Create two separate legends below subplots - one for colors (line_col) 
+    and one for line styles (style_col), positioned side by side.
+    
+    Args:
+        builder: The plot builder instance (to access config)
+        fm: The FigureManager instance (to access figure and axes)
+        adjust_layout: Whether to adjust subplot layout to make room for legends
+        line_col_ncol: Number of columns for line_col legend. If None, uses single row
+        style_col_ncol: Number of columns for style_col legend. If None, uses single row
+        legend_spacing: Horizontal spacing between legend edges (0.0-1.0)
+        legend_y_pos: Vertical position of legends (0.0=bottom, 1.0=top)
+        bottom_margin: Manual bottom margin override. If None, calculates automatically
+    """
+    ncols = builder.config.get("ncols", 1)
+    nrows = 1  # Assuming single row layouts for now
+    
+    # Get column mappings from builder config
+    line_col = builder.config.get("line_col", "params")  # Controls colors
+    style_col = builder.config.get("style_col", "data")  # Controls line styles
+    
+    # Collect all handles and labels from subplots to analyze
+    all_handles = []
+    all_labels = []
+    
+    for row in range(nrows):
+        for col in range(ncols):
+            ax = fm.get_axes(row=row, col=col)
+            if ax and ax.get_visible():
+                # Get legend handles and labels from this subplot
+                handles, labels = ax.get_legend_handles_labels()
+                all_handles.extend(handles)
+                all_labels.extend(labels)
+                
+                # Remove individual subplot legend
+                legend = ax.get_legend()
+                if legend:
+                    legend.remove()
+    
+    if not all_handles or not all_labels:
+        return
+    
+    # Extract unique values for each grouping
+    # Parse labels to extract the grouping values
+    # Labels are typically in format like "data_value, params_value"
+    line_col_values = set()
+    style_col_values = set()
+    handle_map = {}  # Map (line_col_val, style_col_val) -> handle
+    
+    for handle, label in zip(all_handles, all_labels):
+        # Parse label to extract values and remove key prefixes
+        # Labels from dr_plotter are typically like "data=DCLM-Baseline, params=10M"
+        parts = [part.strip() for part in label.split(',')]
+        if len(parts) == 2:
+            # Extract values by removing the key= prefix
+            part1_clean = parts[0].split('=')[-1] if '=' in parts[0] else parts[0]
+            part2_clean = parts[1].split('=')[-1] if '=' in parts[1] else parts[1]
+            
+            if line_col == "data":
+                line_col_val, style_col_val = part1_clean, part2_clean
+            else:  # line_col == "params"
+                style_col_val, line_col_val = part1_clean, part2_clean
+            
+            line_col_values.add(line_col_val)
+            style_col_values.add(style_col_val)
+            handle_map[(line_col_val, style_col_val)] = handle
+    
+    # Sort for consistent ordering
+    sorted_line_col_values = sorted(line_col_values)
+    sorted_style_col_values = sorted(style_col_values)
+    
+    # Create custom Line2D elements for each group
+    line_col_handles = []
+    line_col_labels = []
+    
+    # For line_col group (colors), use first available style_col to get color
+    first_style_val = sorted_style_col_values[0] if sorted_style_col_values else ""
+    for line_val in sorted_line_col_values:
+        # Find a handle that has this line_col value to extract its color
+        sample_handle = None
+        for (l_val, s_val), handle in handle_map.items():
+            if l_val == line_val:
+                sample_handle = handle
+                break
+        
+        if sample_handle:
+            # Create Line2D with same color, but standard line style
+            custom_handle = Line2D([0], [0], 
+                                 color=sample_handle.get_color(),
+                                 linewidth=2,
+                                 linestyle='-')
+            line_col_handles.append(custom_handle)
+            # Use clean value without key prefix
+            line_col_labels.append(line_val)
+    
+    # For style_col group (line styles), use first available line_col to get style
+    style_col_handles = []
+    style_col_labels = []
+    
+    first_line_val = sorted_line_col_values[0] if sorted_line_col_values else ""
+    for style_val in sorted_style_col_values:
+        # Find a handle that has this style_col value to extract its line style
+        sample_handle = None
+        for (l_val, s_val), handle in handle_map.items():
+            if s_val == style_val:
+                sample_handle = handle
+                break
+        
+        if sample_handle:
+            # Create Line2D with same line style, but black color for clarity
+            custom_handle = Line2D([0], [0],
+                                 color='black',
+                                 linewidth=2,
+                                 linestyle=sample_handle.get_linestyle())
+            style_col_handles.append(custom_handle)
+            # Use clean value without key prefix
+            style_col_labels.append(style_val)
+    
+    # Calculate number of columns for each legend
+    line_col_cols = line_col_ncol if line_col_ncol is not None else len(line_col_handles)
+    style_col_cols = style_col_ncol if style_col_ncol is not None else len(style_col_handles)
+    
+    # Calculate required rows for each legend
+    line_col_rows = (len(line_col_handles) + line_col_cols - 1) // line_col_cols if line_col_handles else 0
+    style_col_rows = (len(style_col_handles) + style_col_cols - 1) // style_col_cols if style_col_handles else 0
+    max_legend_rows = max(line_col_rows, style_col_rows)
+    
+    # Calculate adaptive positioning for centered legends with edge-based spacing
+    center_x = 0.5  # Center of figure
+    
+    # Estimate legend width (approximate, since we can't measure before creation)
+    # Assume each legend takes about 0.15-0.2 of figure width
+    estimated_legend_width = 0.18
+    
+    # Position legends so their edges are separated by legend_spacing
+    # Left legend: right edge at (center - spacing/2)
+    # Right legend: left edge at (center + spacing/2)
+    left_legend_x = center_x - (legend_spacing / 2) - (estimated_legend_width / 2)
+    right_legend_x = center_x + (legend_spacing / 2) + (estimated_legend_width / 2)
+    
+    # Adjust bottom margin based on maximum legend rows
+    if adjust_layout:
+        if bottom_margin is not None:
+            # Use manual override
+            calculated_margin = bottom_margin
+        else:
+            # Calculate based on legend rows, but more compact
+            calculated_margin = 0.08 + (max_legend_rows - 1) * 0.03  # Reduced padding
+        plt.subplots_adjust(bottom=calculated_margin)
+    
+    # Create first legend (line_col group) - positioned left of center
+    if line_col_handles:
+        legend1 = fm.fig.legend(
+            line_col_handles,
+            line_col_labels,
+            loc="upper center",
+            bbox_to_anchor=(left_legend_x, legend_y_pos),  # Adaptive left position
+            ncol=line_col_cols,  # Configurable columns
+            frameon=True,
+            fancybox=True,
+            shadow=True,
+            title=line_col.title()  # e.g., "Data" or "Params"
+        )
+        # Add first legend as artist to preserve it
+        fm.fig.add_artist(legend1)
+    
+    # Create second legend (style_col group) - positioned right of center
+    if style_col_handles:
+        legend2 = fm.fig.legend(
+            style_col_handles,
+            style_col_labels,
+            loc="upper center",
+            bbox_to_anchor=(right_legend_x, legend_y_pos),  # Adaptive right position
+            ncol=style_col_cols,  # Configurable columns
+            frameon=True,
+            fancybox=True,
+            shadow=True,
+            title=style_col.title()  # e.g., "Data" or "Params"
         )
 
 
@@ -273,8 +457,15 @@ def main():
             fig4, fm4 = builder4.build()
 
             # Note: No sharey fix needed since sharey=False
-            # Use 4 columns for legend to prevent it from being too wide
-            add_unified_legend_below(builder4, fm4, legend_ncol=5)
+            # Use grouped legends to separate data (colors) from params (line styles)
+            # Use single column for each legend with minimal spacing and compact layout
+            add_grouped_legends_below(
+                builder4, fm4, 
+                line_col_ncol=1, style_col_ncol=1,
+                legend_spacing=0.02,  # Minimal spacing between legend edges
+                legend_y_pos=0.01,    # Lower position 
+                bottom_margin=0.12    # Compact bottom margin
+            )
 
             fig4.savefig(
                 plots_dir / "config4_multi_metric.png", dpi=150, bbox_inches="tight"
