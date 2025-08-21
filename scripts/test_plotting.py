@@ -753,7 +753,7 @@ def main():
             "DCLM-Baseline 75% / Dolma 25%",
             "DCLM-Baseline",
         ]
-        
+
         # Sort the DataFrame for consistent ordering using config7_data
         data_order_map = {data_val: i for i, data_val in enumerate(config7_data)}
         df_sorted_config7 = df.copy()
@@ -768,7 +768,7 @@ def main():
         config7_metrics = ["pile-valppl", "mmlu_average_correct_prob"]
         config7_params = [
             "20M",
-            "60M", 
+            "60M",
             "90M",
             "300M",
             "1B",
@@ -790,7 +790,7 @@ def main():
                 sharex_per_row=True,  # Share x-axis range across each row
                 multi_color_sequence=[
                     "darkred",
-                    "lightcoral", 
+                    "lightcoral",
                     "lightblue",
                     "darkblue",
                 ],  # 4-color progression (skip plum since no 50/50 recipe)

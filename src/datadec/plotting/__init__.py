@@ -12,11 +12,10 @@ from .base import BasePlotBuilder
 
 __all__ = [
     # Builders (recommended)
-    'ScalingPlotBuilder',
-    'ModelComparisonBuilder',
-    'BasePlotBuilder',
-    
+    "ScalingPlotBuilder",
+    "ModelComparisonBuilder",
+    "BasePlotBuilder",
     # Convenience functions (backward compatibility)
-    'plot_scaling_curves',
-    'plot_model_comparison',
+    "plot_scaling_curves",
+    "plot_model_comparison",
 ]
