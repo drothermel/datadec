@@ -7,6 +7,7 @@ DataDecide is a Python library for downloading, processing, and analyzing machin
 -   **Data Pipeline:** A multi-stage pipeline that downloads raw data from Hugging Face, processes it, and enriches it with additional details.
 -   **Easy Data Access:** A simple interface to load and access various dataframes, including raw data, parsed data, and aggregated results.
 -   **Flexible Filtering:** Methods to easily filter and index the data based on model parameters, datasets, and other criteria.
+-   **Native Plotting:** Production-ready scaling analysis plots using dr_plotter integration.
 
 ## Getting Started
 
@@ -43,6 +44,17 @@ indexed_df = dd.easy_index_df(
 print(indexed_df.head())
 ```
 
+### Plotting
+
+Generate scaling analysis plots using the native dr_plotter integration:
+
+```python
+# Run the production plotting system
+python scripts/plot_scaling_analysis.py
+
+# Generates 7 different plot configurations in plots/test_plotting/
+```
+
 The `notebooks/explore_data.py` file provides a more detailed example of how to use the library.
 
 ## Data
@@ -53,3 +65,21 @@ This library uses the following Hugging Face datasets:
 -   [allenai/DataDecide-eval-results](https://huggingface.co/datasets/allenai/DataDecide-eval-results): Downstream task evaluation results.
 
 The data processing pipeline downloads these datasets and stores them in the `data_dir` specified during the `DataDecide` initialization.  Then does some filtering, parsing, merging, and pulling in external information about hpms and other training settings.
+
+## Project Structure
+
+```
+├── src/datadec/           # Main library code
+├── scripts/               # Utilities and analysis scripts
+│   ├── plot_scaling_analysis.py  # Production plotting system
+│   └── legacy_deprecated/ # Archived legacy code
+├── docs/                  # Documentation and reports
+│   ├── processes/         # Templates and guides
+│   └── reports/          # Project documentation
+├── plots/                 # Generated visualizations
+└── notebooks/            # Analysis notebooks
+```
+
+## Development
+
+See `docs/processes/reporting_guide.md` for project documentation standards and `CLAUDE.md` for development setup.

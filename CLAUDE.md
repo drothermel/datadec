@@ -30,6 +30,10 @@ uv run ruff format        # Format code
 4. `merge` - Combine perplexity + downstream  
 5. `aggregate` - Stats across seeds
 
+**Plotting System:**
+- **Production:** `scripts/plot_scaling_analysis.py` - Native dr_plotter implementation
+- **Archive:** `scripts/legacy_deprecated/` - Legacy system (broken, do not use)
+
 ## Key APIs
 
 ### DataDecide Interface
@@ -46,6 +50,16 @@ dd.get_filtered_df()          # Filtered analysis data
 # Exploration
 dd.paths.dataframes           # Dict: name → filename  
 dd.paths.available_dataframes # List all options
+```
+
+### Native Plotting (Production System)
+```python
+# Use native dr_plotter patterns - NOT custom wrapper functions
+with FigureManager(legend_strategy="figure_below") as fm:
+    fm.plot("line", 0, i, subset, x="tokens", y="metric", hue_by="params")
+
+# Run production plotting system
+python scripts/plot_scaling_analysis.py
 ```
 
 ### Path Management
@@ -68,6 +82,21 @@ Access via `dd.load_dataframe(name)`:
 - **Performance:** Use assertions, not exceptions (ML performance requirement)
 - **Type hints:** Required on all functions
 - **Imports:** Absolute imports at top of file
+- **Plotting:** Use native dr_plotter, NOT custom wrapper functions
+
+## Working Principles
+
+### For Implementation Agents
+- **Systematic validation:** Test basic patterns before complex ones
+- **Evidence-based decisions:** Quantify benefits before committing to changes
+- **Quality standards:** Maintain production-ready code throughout
+- **Documentation:** Create lab notebooks and strategic reports (see `docs/processes/reporting_guide.md`)
+- **Native over custom:** Use library capabilities before building wrappers
+
+### Project Documentation
+- **Lab notebooks:** Technical reference with file:line references, bugs, discoveries
+- **Strategic reports:** Decision context, lessons learned, reusable patterns
+- **Templates:** Available in `docs/processes/` for consistent reporting
 
 ## Performance Notes
 
@@ -75,3 +104,10 @@ Access via `dd.load_dataframe(name)`:
 - **Optimization:** Slow step saved as intermediate `dwn_metrics_expanded`
 - **Caching:** DataFrames cached after first load
 - **Granular recompute:** Use `recompute_from="metrics_expand"` to skip download
+
+## Migration History
+
+- **2025-08-25:** Successfully migrated from custom plotting wrappers to native dr_plotter
+  - 40-92% code reduction across all plotting patterns
+  - Enhanced reliability and visual quality
+  - See `docs/reports/2025-08-25_dr_plotter_migration/` for complete documentation
