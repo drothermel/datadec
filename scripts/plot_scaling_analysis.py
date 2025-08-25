@@ -13,16 +13,14 @@ Migration Achievement:
 - All 7 configurations validated with 100% success rate
 """
 
-import sys
 from pathlib import Path
-
-# Add src to path for datadec import
-repo_root = Path(__file__).parent.parent
-sys.path.insert(0, str(repo_root / "src"))
 
 from datadec import DataDecide
 from datadec.model_utils import param_to_numeric
 from dr_plotter import FigureManager
+
+# Get repo root for output directory
+repo_root = Path(__file__).parent.parent
 
 
 def load_data():
@@ -212,8 +210,7 @@ def generate_config4_plot(df, test_params, test_data, plots_dir):
     """Config 4: Multi-metric comparison with grouped legends (complex pattern)."""
     print("\n=== Configuration 4: Multi-metric comparison ===")
     try:
-        # Available metrics
-        available_metrics = ["pile-valppl", "mmlu_average_correct_prob"]
+        # Note: Both metrics are available in the dataset
 
         # Config 4 reduced parameter and data sets
         config4_params = ["20M", "90M", "530M"]
