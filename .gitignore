@@ -3,3 +3,4 @@ test_data/
 *.swp
 outputs/
 **/.DS_Store
+**/__pycache__/
