@@ -21,6 +21,15 @@ uv sync
 source .venv/bin/activate
 ```
 
+To get dr_plotter:
+```bash
+uv sync --all-extras
+
+# To update the github version
+uv lock --upgrade-package dr_plotter
+```
+
+
 ### Usage
 
 The main entry point to the library is the `DataDecide` class. Here's how to use it:
