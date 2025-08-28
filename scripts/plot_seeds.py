@@ -7,8 +7,8 @@ from dr_plotter.figure_config import FigureConfig
 from dr_plotter.legend_manager import LegendConfig, LegendStrategy
 
 from datadec import DataDecide
-from datadec.constants import ALL_DATA_NAMES, ALL_MODEL_SIZE_STRS, PPL_TYPES
-from datadec.model_utils import param_to_numeric
+from datadec.constants import PPL_TYPES
+from datadec.script_utils import select_params, select_data
 
 
 def load_data():
@@ -18,21 +18,23 @@ def load_data():
 
 
 def process_params(param):
+    """Process parameter input using script utilities."""
     if param is None:
-        return sorted(ALL_MODEL_SIZE_STRS, key=param_to_numeric)
+        return select_params("all")  # All params, properly sorted
     elif isinstance(param, list):
-        return sorted(param, key=param_to_numeric)
+        return select_params(param)  # Validate and sort
     else:
-        return [param]
+        return select_params([param])  # Single param as list
 
 
 def process_recipes(recipe):
+    """Process recipe input using script utilities."""
     if recipe is None:
-        return ALL_DATA_NAMES
+        return select_data("all")  # All data recipes
     elif isinstance(recipe, list):
-        return recipe
+        return select_data(recipe)  # Validate list
     else:
-        return [recipe]
+        return select_data([recipe])  # Single recipe as list
 
 
 def plot_seeds(df, num_cols, metrics, recipe=None, param=None):
@@ -159,7 +161,9 @@ def plot_overlay(df, metrics, num_cols, recipe=None, param=None, save_dir=None):
 
 def main():
     df = load_data()
-    recipes = ["C4", "DCLM-Baseline", "Dolma1.7", "FineWeb-Edu"]
+    # Use script utilities for validation and selection
+    recipes = select_data(["C4", "DCLM-Baseline", "Dolma1.7", "FineWeb-Edu"])
+    params = select_params(["90M", "150M", "300M"])
 
     for recipe in recipes:
         print(f"Generating plot for recipe: {recipe}")
@@ -168,7 +172,7 @@ def main():
             PPL_TYPES,
             num_cols=3,
             recipe=recipe,
-            param=["90M", "150M", "300M"],
+            param=params,
             save_dir="/Users/daniellerothermel/drotherm/repos/datadec/outputs/plots",
         )
 
