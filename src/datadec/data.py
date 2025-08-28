@@ -55,7 +55,7 @@ class DataDecide:
 
     def get_filtered_df(
         self,
-        filter_by_max_step: bool = True,
+        filter_types: List[str] = ["max_steps"],
         return_means: bool = True,
         min_params: str = "10M",
         verbose: bool = False,
@@ -69,9 +69,22 @@ class DataDecide:
             base_df = base_df[base_df[consts.PARAM_NUMERIC_COL] >= min_params]
             df_utils.print_shape(base_df, f"Above min params {min_params}", verbose)
 
-        if filter_by_max_step:
-            base_df = df_utils.filter_by_max_step_to_use(base_df)
-            df_utils.print_shape(base_df, "LEQ to max step", verbose)
+        # Apply filters based on filter_types
+        for filter_type in filter_types:
+            if filter_type == "max_steps":
+                base_df = df_utils.filter_by_max_step_to_use(base_df)
+                df_utils.print_shape(base_df, "LEQ to max step", verbose)
+            elif filter_type == "ppl":
+                base_df = df_utils.filter_ppl_rows(base_df)
+                df_utils.print_shape(base_df, "Non-NaN perplexity", verbose)
+            elif filter_type == "olmes":
+                base_df = df_utils.filter_olmes_rows(base_df)
+                df_utils.print_shape(base_df, "Non-NaN OLMES", verbose)
+            else:
+                available_types = ["max_steps", "ppl", "olmes"]
+                raise ValueError(
+                    f"Unknown filter_type '{filter_type}'. Available: {available_types}"
+                )
 
         if return_means:
             base_df, _ = df_utils.create_mean_std_df(base_df)
