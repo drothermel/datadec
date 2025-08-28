@@ -6,7 +6,8 @@ DataDecide is a Python library for downloading, processing, and analyzing machin
 
 -   **Data Pipeline:** A multi-stage pipeline that downloads raw data from Hugging Face, processes it, and enriches it with additional details.
 -   **Easy Data Access:** A simple interface to load and access various dataframes, including raw data, parsed data, and aggregated results.
--   **Flexible Filtering:** Methods to easily filter and index the data based on model parameters, datasets, and other criteria.
+-   **Advanced Filtering:** Multiple filter types including perplexity (`ppl`), OLMES metrics (`olmes`), and training steps (`max_steps`) with composable combinations.
+-   **Scripting Utilities:** Powerful parameter and data selection with `"all"` keyword, exclusion lists, and intelligent validation for reproducible analysis scripts.
 -   **Native Plotting:** Production-ready scaling analysis plots using dr_plotter integration.
 
 ## Getting Started
@@ -22,7 +23,9 @@ source .venv/bin/activate
 
 ### Usage
 
-The main entry point to the library is the `DataDecide` class. Here's a simple example of how to use it:
+The main entry point to the library is the `DataDecide` class. Here's how to use it:
+
+#### Basic Usage
 
 ```python
 from datadec import DataDecide
@@ -42,6 +45,41 @@ indexed_df = dd.easy_index_df(
 )
 
 print(indexed_df.head())
+```
+
+#### Advanced Filtering
+
+```python
+# Filter data with multiple criteria
+filtered_df = dd.get_filtered_df(
+    filter_types=["ppl", "max_steps"],  # Remove NaN perplexity + apply step limits
+    min_params="150M",                  # Only models 150M and larger
+    verbose=True                        # Show filtering progress
+)
+
+# Filter by specific combinations only
+olmes_only_df = dd.get_filtered_df(
+    filter_types=["olmes"],            # Keep only rows with OLMES metrics
+    return_means=False                 # Get individual seed results
+)
+```
+
+#### Scripting Utilities
+
+```python
+from datadec.script_utils import select_params, select_data
+
+# Flexible parameter selection
+params = select_params(["150M", "1B"])                    # Specific models
+all_params = select_params()                               # All available (sorted)  
+large_models = select_params("all", exclude=["4M", "6M"]) # All except smallest
+
+# Data recipe selection  
+data_recipes = select_data(["C4", "Dolma1.7"])           # Specific datasets
+limited_data = select_data("all", exclude=["C4"])         # All except C4
+
+print(f"Selected {len(params)} models: {params}")
+print(f"Selected {len(data_recipes)} datasets: {data_recipes}")
 ```
 
 ### Plotting
@@ -70,6 +108,10 @@ The data processing pipeline downloads these datasets and stores them in the `da
 
 ```
 ├── src/datadec/           # Main library code
+│   ├── data.py           # Main DataDecide class
+│   ├── df_utils.py       # DataFrame utilities and filtering
+│   ├── script_utils.py   # Parameter/data selection utilities
+│   └── ...              # Pipeline, parsing, constants, etc.
 ├── scripts/               # Utilities and analysis scripts
 │   ├── plot_scaling_analysis.py  # Production plotting system
 │   └── legacy_deprecated/ # Archived legacy code
