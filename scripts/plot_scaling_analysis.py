@@ -17,6 +17,7 @@ from pathlib import Path
 
 from datadec import DataDecide
 from datadec.model_utils import param_to_numeric
+from datadec.script_utils import select_params, select_data
 from dr_plotter import FigureManager
 
 # Get repo root for output directory
@@ -59,15 +60,17 @@ def load_data():
         f"After NaN filtering: {df.shape} (removed {initial_shape[0] - df.shape[0]} rows)"
     )
 
-    # Standard test parameters and data values
-    test_params = ["10M", "20M", "60M", "90M"]
-    test_data = [
-        "Dolma1.7",
-        "DCLM-Baseline 25% / Dolma 75%",
-        "DCLM-Baseline 50% / Dolma 50%",
-        "DCLM-Baseline 75% / Dolma 25%",
-        "DCLM-Baseline",
-    ]
+    # Standard test parameters and data values using script utilities
+    test_params = select_params(["10M", "20M", "60M", "90M"])
+    test_data = select_data(
+        [
+            "Dolma1.7",
+            "DCLM-Baseline 25% / Dolma 75%",
+            "DCLM-Baseline 50% / Dolma 50%",
+            "DCLM-Baseline 75% / Dolma 25%",
+            "DCLM-Baseline",
+        ]
+    )
 
     print(f"Using {len(test_params)} params and {len(test_data)} data recipes")
 
@@ -213,13 +216,15 @@ def generate_config4_plot(df, test_params, test_data, plots_dir):
         # Note: Both metrics are available in the dataset
 
         # Config 4 reduced parameter and data sets
-        config4_params = ["20M", "90M", "530M"]
-        config4_data = [
-            "Dolma1.7",
-            "DCLM-Baseline 25% / Dolma 75%",
-            "DCLM-Baseline 75% / Dolma 25%",
-            "DCLM-Baseline",
-        ]
+        config4_params = select_params(["20M", "90M", "530M"])
+        config4_data = select_data(
+            [
+                "Dolma1.7",
+                "DCLM-Baseline 25% / Dolma 75%",
+                "DCLM-Baseline 75% / Dolma 25%",
+                "DCLM-Baseline",
+            ]
+        )
 
         # Filter to Config 4 subsets
         df_config4 = df[
@@ -337,7 +342,7 @@ def generate_config6_plot(df, test_params, test_data, plots_dir):
         metric_titles = ["Pile Validation Perplexity", "MMLU Average Accuracy"]
 
         # Config 6 uses enhanced params set
-        config6_params = ["20M", "60M", "90M", "300M", "1B"]
+        config6_params = select_params(["20M", "60M", "90M", "300M", "1B"])
 
         with FigureManager(
             rows=2,
@@ -392,14 +397,16 @@ def generate_config7_plot(df, test_params, test_data, plots_dir):
         metric_titles = ["Pile Validation Perplexity", "MMLU Average Accuracy"]
 
         # Config 7 uses enhanced params set and reduced data (skip 50/50 recipe)
-        config7_params = ["20M", "60M", "90M", "300M", "1B"]
-        config7_data = [
-            "Dolma1.7",
-            "DCLM-Baseline 25% / Dolma 75%",
-            # Skip: "DCLM-Baseline 50% / Dolma 50%",
-            "DCLM-Baseline 75% / Dolma 25%",
-            "DCLM-Baseline",
-        ]
+        config7_params = select_params(["20M", "60M", "90M", "300M", "1B"])
+        config7_data = select_data(
+            [
+                "Dolma1.7",
+                "DCLM-Baseline 25% / Dolma 75%",
+                # Skip: "DCLM-Baseline 50% / Dolma 50%",
+                "DCLM-Baseline 75% / Dolma 25%",
+                "DCLM-Baseline",
+            ]
+        )
 
         with FigureManager(
             rows=2,
