@@ -2,6 +2,9 @@
 """
 Scaling Analysis Plotting: Native dr_plotter Implementation
 
+Requires dr_plotter integration:
+    uv add "datadec[plotting]"
+
 Generates comprehensive scaling curve analysis across 7 different configurations
 using native dr_plotter functionality. This script replaces the legacy test_plotting.py
 system with dramatically simplified, more reliable native dr_plotter implementations.
@@ -18,7 +21,10 @@ from pathlib import Path
 from datadec import DataDecide
 from datadec.model_utils import param_to_numeric
 from datadec.script_utils import select_params, select_data
-from dr_plotter import FigureManager
+from datadec.plotting_utils import safe_import_plotting
+
+# Import plotting components
+FigureManager, _, _ = safe_import_plotting()
 
 # Get repo root for output directory
 repo_root = Path(__file__).parent.parent
