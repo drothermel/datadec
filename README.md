@@ -71,7 +71,7 @@ from datadec.script_utils import select_params, select_data
 
 # Flexible parameter selection
 params = select_params(["150M", "1B"])                    # Specific models
-all_params = select_params()                               # All available (sorted)  
+all_params = select_params("all")                          # All available (sorted)  
 large_models = select_params("all", exclude=["4M", "6M"]) # All except smallest
 
 # Data recipe selection  
