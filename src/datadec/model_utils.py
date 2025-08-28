@@ -86,15 +86,8 @@ def calc_total_seqs_from_tokens(total_tokens: int) -> int:
 
 
 def create_model_config(model_size_str: str, **kwargs) -> Dict[str, Any]:
-    assert all(
-        [
-            model_size_str in strs
-            for strs in [
-                consts.MODEL_SHAPES.keys(),
-                consts.HARDCODED_SIZE_MAPPING.keys(),
-                consts.MAX_STEP_TO_USE.keys(),
-            ]
-        ]
+    assert model_size_str in consts.ALL_MODEL_SIZE_STRS, (
+        f"Unknown model size '{model_size_str}'. Available: {consts.ALL_MODEL_SIZE_STRS}"
     )
     config = consts.MODEL_CONFIG_BASE.copy()
     config.update(consts.MODEL_SHAPES[model_size_str])

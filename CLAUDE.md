@@ -45,7 +45,8 @@ dd.full_eval, dd.mean_eval, dd.model_details, dd.dataset_details
 
 # New unified loading
 dd.load_dataframe("ppl_raw")  # Any DataFrame by name
-dd.get_filtered_df()          # Filtered analysis data
+dd.get_filtered_df()          # Filtered analysis data (default: max_steps filter)
+dd.get_filtered_df(filter_types=["ppl", "max_steps"])  # Multiple filters
 
 # Exploration
 dd.paths.dataframes           # Dict: name → filename  

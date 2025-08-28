@@ -15,6 +15,42 @@ def filter_by_max_step_to_use(df: pd.DataFrame) -> pd.DataFrame:
     return df[df["step"] <= max_step_filter]
 
 
+def filter_ppl_rows(df: pd.DataFrame) -> pd.DataFrame:
+    """Filter out rows where all perplexity columns have NaN values."""
+    ppl_columns = [col for col in df.columns if col in consts.PPL_TYPES]
+    assert len(ppl_columns) > 0, (
+        f"No perplexity columns found in dataframe. Expected: {consts.PPL_TYPES}"
+    )
+
+    initial_count = len(df)
+    filtered_df = df.dropna(subset=ppl_columns, how="all")
+    removed_count = initial_count - len(filtered_df)
+
+    if removed_count > 0:
+        print(f"Filtered out {removed_count} rows with all NaN perplexity values")
+
+    return filtered_df
+
+
+def filter_olmes_rows(df: pd.DataFrame) -> pd.DataFrame:
+    """Filter out rows where all OLMES metric columns have NaN values."""
+    olmes_columns = [
+        col for col in df.columns if any(task in col for task in consts.OLMES_TASKS)
+    ]
+    assert len(olmes_columns) > 0, (
+        f"No OLMES metric columns found in dataframe. Expected tasks: {consts.OLMES_TASKS}"
+    )
+
+    initial_count = len(df)
+    filtered_df = df.dropna(subset=olmes_columns, how="all")
+    removed_count = initial_count - len(filtered_df)
+
+    if removed_count > 0:
+        print(f"Filtered out {removed_count} rows with all NaN OLMES metric values")
+
+    return filtered_df
+
+
 def select_by_data_param_combos(
     df: pd.DataFrame,
     data_names: Optional[Union[str, List[str]]] = None,
