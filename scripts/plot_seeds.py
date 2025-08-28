@@ -1,14 +1,24 @@
+"""
+Plot Seeds Analysis Script
+
+Requires dr_plotter integration:
+    uv add "datadec[plotting]"
+
+Generates overlay plots showing perplexity metrics across different seeds.
+"""
+
 import math
 from pathlib import Path
 
 import matplotlib.pyplot as plt
-from dr_plotter import FigureManager
-from dr_plotter.figure_config import FigureConfig
-from dr_plotter.legend_manager import LegendConfig, LegendStrategy
 
 from datadec import DataDecide
 from datadec.constants import PPL_TYPES
 from datadec.script_utils import select_params, select_data
+from datadec.plotting_utils import safe_import_plotting
+
+# Import plotting components at module level
+FigureManager, FigureConfig, (LegendConfig, LegendStrategy) = safe_import_plotting()
 
 
 def load_data():
