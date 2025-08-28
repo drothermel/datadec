@@ -713,7 +713,7 @@ wheels = [
 [[package]]
 name = "dr-plotter"
 version = "0.1.0"
-source = { git = "https://github.com/drothermel/dr_plotter.git#9fc89582dd2cf40e5c3957360a2872d78bd7ce45" }
+source = { git = "https://github.com/drothermel/dr_plotter.git#6fe7f581564bca57832944cc2b54dc2dfa86bc49" }
 dependencies = [
     { name = "matplotlib", version = "3.9.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "matplotlib", version = "3.10.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
