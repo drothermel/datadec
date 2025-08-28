@@ -598,7 +598,6 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "datasets" },
-    { name = "dr-plotter" },
     { name = "huggingface-hub" },
     { name = "ipykernel" },
     { name = "matplotlib", version = "3.9.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
@@ -611,6 +610,11 @@ dependencies = [
     { name = "pyarrow" },
 ]
 
+[package.optional-dependencies]
+plotting = [
+    { name = "dr-plotter" },
+]
+
 [package.dev-dependencies]
 dev = [
     { name = "pytest" },
@@ -619,7 +623,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "datasets", specifier = ">=4.0.0" },
-    { name = "dr-plotter", editable = "../dr_plotter" },
+    { name = "dr-plotter", marker = "extra == 'plotting'", git = "https://github.com/drothermel/dr_plotter.git" },
     { name = "huggingface-hub" },
     { name = "ipykernel", specifier = ">=6.30.1" },
     { name = "matplotlib", specifier = ">=3.9.4" },
@@ -628,6 +632,7 @@ requires-dist = [
     { name = "pandas", specifier = ">=2.3.1" },
     { name = "pyarrow", specifier = ">=21.0.0" },
 ]
+provides-extras = ["plotting"]
 
 [package.metadata.requires-dev]
 dev = [{ name = "pytest", specifier = ">=8.4.1" }]
@@ -708,7 +713,7 @@ wheels = [
 [[package]]
 name = "dr-plotter"
 version = "0.1.0"
-source = { editable = "../dr_plotter" }
+source = { git = "https://github.com/drothermel/dr_plotter.git#9fc89582dd2cf40e5c3957360a2872d78bd7ce45" }
 dependencies = [
     { name = "matplotlib", version = "3.9.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "matplotlib", version = "3.10.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
@@ -725,21 +730,6 @@ dependencies = [
     { name = "scipy", version = "1.16.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "seaborn" },
 ]
-
-[package.metadata]
-requires-dist = [
-    { name = "matplotlib", specifier = ">=3.9.4" },
-    { name = "numpy", specifier = ">=2.0.2" },
-    { name = "pandas", specifier = ">=2.3.1" },
-    { name = "pyarrow", specifier = ">=21.0.0" },
-    { name = "pydantic", specifier = ">=2.11.7" },
-    { name = "scikit-learn", specifier = ">=1.6.1" },
-    { name = "scipy", specifier = ">=1.13.1" },
-    { name = "seaborn", specifier = ">=0.13.2" },
-]
-
-[package.metadata.requires-dev]
-dev = [{ name = "pytest", specifier = ">=8.4.1" }]
 
 [[package]]
 name = "exceptiongroup"
