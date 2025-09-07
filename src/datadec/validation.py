@@ -64,3 +64,17 @@ def _validated_select(
         valid_options=valid_options,
         exclude=exclude,
     )
+
+
+def determine_filter_types(metrics: List[str]) -> List[str]:
+    filter_types = ["max_steps"]
+
+    ppl_metrics_filtered = [m for m in metrics if m in consts.PPL_TYPES]
+    olmes_metrics_filtered = [m for m in metrics if m not in consts.PPL_TYPES]
+
+    if ppl_metrics_filtered and not olmes_metrics_filtered:
+        filter_types.append("ppl")
+    elif olmes_metrics_filtered and not ppl_metrics_filtered:
+        filter_types.append("olmes")
+
+    return filter_types

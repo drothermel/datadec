@@ -276,3 +276,69 @@ class DataDecide:
             name="data recipe",
             exclude=exclude,
         )
+
+    def melt_for_plotting(
+        self,
+        df: pd.DataFrame,
+        metrics: Optional[List[str]] = None,
+        include_seeds: bool = True,
+        drop_na: bool = True,
+    ) -> pd.DataFrame:
+        if metrics is None:
+            metrics = [col for col in df.columns if col in consts.ALL_KNOWN_METRICS]
+
+        id_cols = (
+            ID_COLUMNS
+            if include_seeds
+            else [col for col in ID_COLUMNS if col != "seed"]
+        )
+        available_id_cols = [col for col in id_cols if col in df.columns]
+
+        melted_df = df.melt(
+            id_vars=available_id_cols,
+            value_vars=metrics,
+            var_name="metric",
+            value_name="value",
+        )
+
+        if drop_na:
+            melted_df = melted_df.dropna(subset=["value"])
+
+        return melted_df
+
+    def prepare_plot_data(
+        self,
+        params: Optional[Union[str, List[str]]] = None,
+        data: Optional[Union[str, List[str]]] = None,
+        metrics: Optional[List[str]] = None,
+        aggregate_seeds: bool = False,
+        input_df: Optional[pd.DataFrame] = None,
+        auto_filter: bool = True,
+        verbose: bool = False,
+        **select_subset_kwargs,
+    ) -> pd.DataFrame:
+        base_df = input_df if input_df is not None else self.full_eval
+
+        if auto_filter and metrics:
+            filter_types = validation.determine_filter_types(metrics)
+            df = self.filter_data_quality(
+                base_df, filter_types=filter_types, verbose=verbose
+            )
+        else:
+            df = base_df.copy()
+
+        df = self.select_subset(
+            df,
+            params=params,
+            data=data,
+            metrics=metrics,
+            verbose=verbose,
+            **select_subset_kwargs,
+        )
+
+        if aggregate_seeds:
+            df = self.aggregate_results(df, by_seeds=True, verbose=verbose)
+
+        return self.melt_for_plotting(
+            df, metrics=metrics, include_seeds=not aggregate_seeds
+        )
