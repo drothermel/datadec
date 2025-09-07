@@ -14,7 +14,7 @@ def test_get_filtered_df_backward_compatibility(dd_instance):
 
 def test_easy_index_df_backward_compatibility(dd_instance):
     """Test that easy_index_df works exactly as before (backward compatibility)."""
-    result = dd_instance.easy_index_df(data="C4", seed=0)
+    result = dd_instance.easy_index_df(data="C4", seeds=0)
 
     assert isinstance(result, pd.DataFrame)
     assert len(result) > 0
@@ -127,7 +127,7 @@ def test_method_parameter_compatibility(dd_instance, sample_real_data):
     result3 = dd_instance.easy_index_df(
         input_df=sample_real_data,
         data=["C4", "DCLM-Baseline"],
-        seed=[0, 1],
+        seeds=[0, 1],
         keep_cols=["params", "data", "seed", "step"],
     )
 

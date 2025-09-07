@@ -84,7 +84,7 @@ class DataDecide:
         df_name: str = "full_eval",
         data: Optional[Union[str, List[str]]] = None,
         params: Optional[Union[str, List[str]]] = None,
-        seed: Optional[Union[int, List[int]]] = None,
+        seeds: Optional[Union[int, List[int]]] = None,
         step: Optional[Union[int, List[int]]] = None,
         data_param_combos: Optional[List[Tuple[str, str]]] = None,
         keep_cols: Optional[List[str]] = None,
@@ -105,7 +105,7 @@ class DataDecide:
             base_df,
             data=data,
             params=params,
-            seeds=seed,
+            seeds=seeds,
             data_param_combos=data_param_combos,
             columns=keep_cols,
         )
