@@ -1,22 +1,4 @@
 import pandas as pd
-import pytest
-
-from datadec.data import DataDecide
-
-
-@pytest.fixture
-def sample_real_data(dd_instance):
-    """Get a small subset of real DataDecide data for testing."""
-    full_data = dd_instance.full_eval
-    # Get a small subset that includes multiple seeds for the same params/data/step combo
-    subset = full_data.head(200)
-    return subset
-
-
-@pytest.fixture(scope="session")
-def dd_instance():
-    """Create a DataDecide instance for testing using the default data directory."""
-    return DataDecide(data_dir="./data")
 
 
 def test_aggregate_results_by_seeds_mean_only(dd_instance, sample_real_data):

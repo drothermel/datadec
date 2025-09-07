@@ -138,3 +138,34 @@ class DataDecide:
             return mean_df, std_df
 
         return mean_df
+
+    def filter_data_quality(
+        self,
+        input_df: pd.DataFrame,
+        filter_types: List[str] = ["max_steps"],
+        verbose: bool = False,
+    ) -> pd.DataFrame:
+        df = input_df.copy()
+        df_utils.print_shape(df, "Initial", verbose)
+
+        if len(df) == 0:
+            df_utils.print_shape(df, "Empty DataFrame, no filtering", verbose)
+            return df
+
+        for filter_type in filter_types:
+            if filter_type == "max_steps":
+                df = df_utils.filter_by_max_step_to_use(df)
+                df_utils.print_shape(df, "LEQ to max step", verbose)
+            elif filter_type == "ppl":
+                df = df_utils.filter_ppl_rows(df)
+                df_utils.print_shape(df, "Non-NaN perplexity", verbose)
+            elif filter_type == "olmes":
+                df = df_utils.filter_olmes_rows(df)
+                df_utils.print_shape(df, "Non-NaN OLMES", verbose)
+            else:
+                available_types = ["max_steps", "ppl", "olmes"]
+                raise ValueError(
+                    f"Unknown filter_type '{filter_type}'. Available: {available_types}"
+                )
+
+        return df
