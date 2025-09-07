@@ -4,10 +4,14 @@ from typing import List, Optional, Tuple, Union
 import pandas as pd
 
 from datadec import constants as consts
-from datadec import data_utils, df_utils, model_utils
+from datadec import data_utils, df_utils, model_utils, validation
 from datadec.loader import DataFrameLoader
 from datadec.paths import DataDecidePaths
 from datadec.pipeline import DataPipeline, verbose_print
+
+FILTER_TYPES = ["max_steps", "ppl", "olmes"]
+METRIC_TYPES = ["ppl", "olmes"]
+ID_COLUMNS = ["params", "data", "seed", "step", "tokens"]
 
 
 class DataDecide:
@@ -61,21 +65,13 @@ class DataDecide:
         min_params: str = "10M",
         verbose: bool = False,
     ) -> pd.DataFrame:
-        # Use input_df if provided, otherwise default to full_eval
         base_df = input_df if input_df is not None else self.full_eval
-
-        # Apply quality filters using compositional utility
         df = self.filter_data_quality(
             base_df, filter_types=filter_types, verbose=verbose
         )
-
-        # Apply parameter threshold filtering using compositional utility
         df = self.select_subset(df, min_params=min_params, verbose=verbose)
-
-        # Apply aggregation if requested using compositional utility
         if return_means:
             df = self.aggregate_results(df, by_seeds=True, verbose=verbose)
-
         return df
 
     def easy_index_df(
@@ -89,18 +85,10 @@ class DataDecide:
         data_param_combos: Optional[List[Tuple[str, str]]] = None,
         keep_cols: Optional[List[str]] = None,
     ) -> pd.DataFrame:
-        # Use input_df if provided, otherwise load by name
-        if input_df is not None:
-            base_df = input_df
-        else:
-            base_df = self.load_dataframe(df_name)
-
-        # Handle exact step matching (select_subset uses ranges, but easy_index_df uses exact values)
+        base_df = input_df if input_df is not None else self.load_dataframe(df_name)
         if step is not None:
             step_list = step if isinstance(step, list) else [step]
             base_df = base_df[base_df["step"].isin(step_list)]
-
-        # Use compositional utility for most filtering
         return self.select_subset(
             base_df,
             data=data,
@@ -117,24 +105,17 @@ class DataDecide:
         return_std: bool = False,
         verbose: bool = False,
     ) -> Union[pd.DataFrame, Tuple[pd.DataFrame, pd.DataFrame]]:
-        if not by_seeds:
-            df_utils.print_shape(input_df, "No aggregation", verbose)
-            return input_df
-
-        if len(input_df) == 0:
-            df_utils.print_shape(input_df, "Empty DataFrame, no aggregation", verbose)
+        if len(input_df) == 0 or not by_seeds:
+            df_utils.print_shape(input_df, "Empty DataFrame or no aggregation", verbose)
             if return_std:
                 return input_df.copy(), input_df.copy()
             return input_df.copy()
-
         df_utils.print_shape(input_df, "Before aggregation", verbose)
         mean_df, std_df = df_utils.create_mean_std_df(input_df)
         df_utils.print_shape(mean_df, "After aggregation (means)", verbose)
-
         if return_std:
             df_utils.print_shape(std_df, "After aggregation (stds)", verbose)
             return mean_df, std_df
-
         return mean_df
 
     def filter_data_quality(
@@ -143,9 +124,9 @@ class DataDecide:
         filter_types: List[str] = ["max_steps"],
         verbose: bool = False,
     ) -> pd.DataFrame:
+        assert all(filter_type in FILTER_TYPES for filter_type in filter_types)
         df = input_df.copy()
         df_utils.print_shape(df, "Initial", verbose)
-
         if len(df) == 0:
             df_utils.print_shape(df, "Empty DataFrame, no filtering", verbose)
             return df
@@ -160,12 +141,6 @@ class DataDecide:
             elif filter_type == "olmes":
                 df = df_utils.filter_olmes_rows(df)
                 df_utils.print_shape(df, "Non-NaN OLMES", verbose)
-            else:
-                available_types = ["max_steps", "ppl", "olmes"]
-                raise ValueError(
-                    f"Unknown filter_type '{filter_type}'. Available: {available_types}"
-                )
-
         return df
 
     def select_subset(
@@ -187,16 +162,15 @@ class DataDecide:
     ) -> pd.DataFrame:
         df = input_df.copy()
         df_utils.print_shape(df, "Initial subset selection", verbose)
-
         if len(df) == 0:
             df_utils.print_shape(df, "Empty DataFrame, no selection", verbose)
             return df
 
-        # Data/param combination selection (from easy_index_df)
+        data = data if data is None else validation.select_data(data)
+        params = params if params is None else validation.select_params(params)
         df = df_utils.select_by_data_param_combos(df, data, params, data_param_combos)
         df_utils.print_shape(df, "After data/param selection", verbose)
 
-        # Parameter threshold filtering (from get_filtered_df)
         if min_params is not None:
             min_params_numeric = (
                 model_utils.param_to_numeric(min_params)
@@ -215,14 +189,11 @@ class DataDecide:
             df = df[df[consts.PARAM_NUMERIC_COL] <= max_params_numeric]
             df_utils.print_shape(df, f"Below max params {max_params}", verbose)
 
-        # Seed selection (from easy_index_df)
         if seeds is not None:
-            if not isinstance(seeds, list):
-                seeds = [seeds]
+            seeds = seeds if isinstance(seeds, list) else [seeds]
             df = df[df["seed"].isin(seeds)]
             df_utils.print_shape(df, f"Seeds {seeds}", verbose)
 
-        # Step range selection (enhanced from easy_index_df)
         if step_lims is not None:
             min_step, max_step = step_lims
             if min_step is not None:
@@ -231,7 +202,6 @@ class DataDecide:
                 df = df[df["step"] <= max_step]
             df_utils.print_shape(df, f"Step range {step_lims}", verbose)
 
-        # Token range selection (new functionality)
         if token_lims is not None:
             min_tokens, max_tokens = token_lims
             if min_tokens is not None:
@@ -240,7 +210,6 @@ class DataDecide:
                 df = df[df["tokens"] <= max_tokens]
             df_utils.print_shape(df, f"Token range {token_lims}", verbose)
 
-        # Column selection (new functionality)
         if columns or metrics or metric_type:
             selected_columns = self._build_column_list(
                 df, columns, metrics, metric_type, include_id_columns
@@ -260,57 +229,32 @@ class DataDecide:
         metric_type: Optional[str],
         include_id_columns: bool,
     ) -> List[str]:
-        selected_columns = []
+        assert metric_type is None or metric_type in METRIC_TYPES, (
+            f"Unknown metric_type '{metric_type}'. Available: {METRIC_TYPES}"
+        )
+        selected_columns = set()
 
-        # Always include ID columns if requested
         if include_id_columns:
-            id_columns = ["params", "data", "seed", "step", "tokens"]
-            for col in id_columns:
-                if col in df.columns:
-                    selected_columns.append(col)
+            selected_columns.update(col for col in ID_COLUMNS if col in df.columns)
 
-        # Add explicitly specified columns
         if columns:
-            for col in columns:
-                if col in df.columns and col not in selected_columns:
-                    selected_columns.append(col)
+            selected_columns.update(col for col in columns if col in df.columns)
 
-        # Add metric-type specific columns
-        if metric_type:
-            if metric_type == "ppl":
-                ppl_columns = [col for col in df.columns if col in consts.PPL_TYPES]
-                selected_columns.extend(
-                    [col for col in ppl_columns if col not in selected_columns]
-                )
-            elif metric_type == "olmes":
-                olmes_columns = [
-                    col
-                    for col in df.columns
-                    if any(task in col for task in consts.OLMES_TASKS)
-                ]
-                selected_columns.extend(
-                    [col for col in olmes_columns if col not in selected_columns]
-                )
-            else:
-                available_types = ["ppl", "olmes"]
-                raise ValueError(
-                    f"Unknown metric_type '{metric_type}'. Available: {available_types}"
-                )
-
-        # Add explicitly named metrics (with validation)
+        if metric_type and metric_type == "ppl":
+            selected_columns.update(
+                col for col in consts.PPL_TYPES if col in df.columns
+            )
+        elif metric_type and metric_type == "olmes":
+            selected_columns.update(
+                col for col in consts.OLMES_TASKS if col in df.columns
+            )
         if metrics:
-            for metric in metrics:
-                if metric not in consts.ALL_KNOWN_METRICS:
-                    raise ValueError(
-                        f"Unknown metric '{metric}'. "
-                        f"Use metric_type='ppl' or metric_type='olmes' for bulk selection, "
-                        f"or see consts.ALL_KNOWN_METRICS for valid metric names."
-                    )
-                if metric in df.columns and metric not in selected_columns:
-                    selected_columns.append(metric)
-
-        # If no columns were selected, return all columns
+            assert all(metric in consts.ALL_KNOWN_METRICS for metric in metrics), (
+                f"Unknown metrics: {metrics}. Available: {consts.ALL_KNOWN_METRICS}"
+            )
+            selected_columns.update(
+                metric for metric in metrics if metric in df.columns
+            )
         if not selected_columns:
-            selected_columns = df.columns.tolist()
-
-        return selected_columns
+            selected_columns = list(df.columns)
+        return list(selected_columns)

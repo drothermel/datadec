@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Tuple
 
 import pandas as pd
 
@@ -53,14 +53,12 @@ def filter_olmes_rows(df: pd.DataFrame) -> pd.DataFrame:
 
 def select_by_data_param_combos(
     df: pd.DataFrame,
-    data: Optional[Union[str, List[str]]] = None,
-    params: Optional[Union[str, List[str]]] = None,
+    data: Optional[List[str]] = None,
+    params: Optional[List[str]] = None,
     data_param_combos: Optional[List[Tuple[str, str]]] = None,
 ) -> pd.DataFrame:
-    data = consts.ALL_DATA_NAMES if data is None else data
-    data = [data] if isinstance(data, str) else data
-    params = consts.ALL_MODEL_SIZE_STRS if params is None else params
-    params = [params] if isinstance(params, str) else params
+    data = data or consts.ALL_DATA_NAMES
+    params = params or consts.ALL_MODEL_SIZE_STRS
 
     if data_param_combos:
         combined_filter = pd.Series([False] * len(df), index=df.index)
