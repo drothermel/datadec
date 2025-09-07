@@ -8,6 +8,7 @@ def check_plotting_available() -> bool:
     """Check if dr_plotter is available and provide helpful error."""
     try:
         import dr_plotter  # noqa: F401
+
         return True
     except ImportError:
         raise ImportError(
@@ -22,6 +23,7 @@ def safe_import_plotting() -> Tuple[Any, Any, Any]:
     from dr_plotter import FigureManager
     from dr_plotter.figure_config import FigureConfig
     from dr_plotter.legend_manager import LegendConfig, LegendStrategy
+
     return FigureManager, FigureConfig, (LegendConfig, LegendStrategy)
 
 
