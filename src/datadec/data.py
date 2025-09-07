@@ -164,8 +164,8 @@ class DataDecide:
             df_utils.print_shape(df, "Empty DataFrame, no selection", verbose)
             return df
 
-        data = data if data is None else validation.select_data(data)
-        params = params if params is None else validation.select_params(params)
+        data = data if data is None else self.select_data(data)
+        params = params if params is None else self.select_params(params)
         df = df_utils.select_by_data_param_combos(df, data, params, data_param_combos)
         df_utils.print_shape(df, "After data/param selection", verbose)
 
@@ -252,3 +252,27 @@ class DataDecide:
         if not selected_columns:
             selected_columns = list(df.columns)
         return list(selected_columns)
+
+    def select_params(
+        self,
+        params: Union[str, List[str]] = "all",
+        exclude: Optional[List[str]] = None,
+    ) -> List[str]:
+        return validation._validated_select(
+            choices=params,
+            valid_options=consts.ALL_MODEL_SIZE_STRS,
+            name="parameter size",
+            exclude=exclude,
+        )
+
+    def select_data(
+        self,
+        data: Union[str, List[str]] = "all",
+        exclude: Optional[List[str]] = None,
+    ) -> List[str]:
+        return validation._validated_select(
+            choices=data,
+            valid_options=consts.ALL_DATA_NAMES,
+            name="data recipe",
+            exclude=exclude,
+        )
