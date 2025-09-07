@@ -55,45 +55,32 @@ class DataDecide:
 
     def get_filtered_df(
         self,
+        input_df: Optional[pd.DataFrame] = None,
         filter_types: List[str] = ["max_steps"],
         return_means: bool = True,
         min_params: str = "10M",
         verbose: bool = False,
     ) -> pd.DataFrame:
-        base_df = self.full_eval.copy()
-        df_utils.print_shape(base_df, "Initial", verbose)
+        # Use input_df if provided, otherwise default to full_eval
+        base_df = input_df if input_df is not None else self.full_eval
 
-        if min_params is not None:
-            if isinstance(min_params, str):
-                min_params = model_utils.param_to_numeric(min_params)
-            base_df = base_df[base_df[consts.PARAM_NUMERIC_COL] >= min_params]
-            df_utils.print_shape(base_df, f"Above min params {min_params}", verbose)
+        # Apply quality filters using compositional utility
+        df = self.filter_data_quality(
+            base_df, filter_types=filter_types, verbose=verbose
+        )
 
-        # Apply filters based on filter_types
-        for filter_type in filter_types:
-            if filter_type == "max_steps":
-                base_df = df_utils.filter_by_max_step_to_use(base_df)
-                df_utils.print_shape(base_df, "LEQ to max step", verbose)
-            elif filter_type == "ppl":
-                base_df = df_utils.filter_ppl_rows(base_df)
-                df_utils.print_shape(base_df, "Non-NaN perplexity", verbose)
-            elif filter_type == "olmes":
-                base_df = df_utils.filter_olmes_rows(base_df)
-                df_utils.print_shape(base_df, "Non-NaN OLMES", verbose)
-            else:
-                available_types = ["max_steps", "ppl", "olmes"]
-                raise ValueError(
-                    f"Unknown filter_type '{filter_type}'. Available: {available_types}"
-                )
+        # Apply parameter threshold filtering using compositional utility
+        df = self.select_subset(df, min_params=min_params, verbose=verbose)
 
+        # Apply aggregation if requested using compositional utility
         if return_means:
-            base_df, _ = df_utils.create_mean_std_df(base_df)
-            df_utils.print_shape(base_df, "Mean df", verbose)
+            df = self.aggregate_results(df, by_seeds=True, verbose=verbose)
 
-        return base_df
+        return df
 
     def easy_index_df(
         self,
+        input_df: Optional[pd.DataFrame] = None,
         df_name: str = "full_eval",
         data: Optional[Union[str, List[str]]] = None,
         params: Optional[Union[str, List[str]]] = None,
@@ -102,15 +89,26 @@ class DataDecide:
         data_param_combos: Optional[List[Tuple[str, str]]] = None,
         keep_cols: Optional[List[str]] = None,
     ) -> pd.DataFrame:
-        df = self.load_dataframe(df_name)
-        df = df_utils.select_by_data_param_combos(df, data, params, data_param_combos)
-        if seed is not None:
-            df = df[df["seed"].isin(seed if isinstance(seed, list) else [seed])]
+        # Use input_df if provided, otherwise load by name
+        if input_df is not None:
+            base_df = input_df
+        else:
+            base_df = self.load_dataframe(df_name)
+
+        # Handle exact step matching (select_subset uses ranges, but easy_index_df uses exact values)
         if step is not None:
-            df = df[df["step"].isin(step if isinstance(step, list) else [step])]
-        if keep_cols is not None:
-            df = df[keep_cols]
-        return df
+            step_list = step if isinstance(step, list) else [step]
+            base_df = base_df[base_df["step"].isin(step_list)]
+
+        # Use compositional utility for most filtering
+        return self.select_subset(
+            base_df,
+            data=data,
+            params=params,
+            seeds=seed,
+            data_param_combos=data_param_combos,
+            columns=keep_cols,
+        )
 
     def aggregate_results(
         self,
@@ -200,18 +198,20 @@ class DataDecide:
 
         # Parameter threshold filtering (from get_filtered_df)
         if min_params is not None:
-            if isinstance(min_params, str):
-                min_params_numeric = model_utils.param_to_numeric(min_params)
-            else:
-                min_params_numeric = min_params
+            min_params_numeric = (
+                model_utils.param_to_numeric(min_params)
+                if isinstance(min_params, str)
+                else min_params
+            )
             df = df[df[consts.PARAM_NUMERIC_COL] >= min_params_numeric]
             df_utils.print_shape(df, f"Above min params {min_params}", verbose)
 
         if max_params is not None:
-            if isinstance(max_params, str):
-                max_params_numeric = model_utils.param_to_numeric(max_params)
-            else:
-                max_params_numeric = max_params
+            max_params_numeric = (
+                model_utils.param_to_numeric(max_params)
+                if isinstance(max_params, str)
+                else max_params
+            )
             df = df[df[consts.PARAM_NUMERIC_COL] <= max_params_numeric]
             df_utils.print_shape(df, f"Below max params {max_params}", verbose)
 
