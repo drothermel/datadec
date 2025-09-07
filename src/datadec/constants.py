@@ -1,5 +1,6 @@
 import re
-from typing import Any, Dict, List
+from itertools import product
+from typing import Any, Dict, List, Set
 
 MODEL_DETAILS_DF_NAME = "model_details"
 DATASET_DETAILS_DF_NAME = "dataset_details"
@@ -319,6 +320,11 @@ DROP_METRICS: List[str] = [
     "predicted_index_uncond",
     "logits_per_byte_corr",
 ]
+
+# All known metrics (PPL + cross product of OLMES tasks and metric types)
+ALL_KNOWN_METRICS: Set[str] = set(PPL_TYPES) | {
+    f"{task}_{metric_type}" for task, metric_type in product(OLMES_TASKS, METRIC_NAMES)
+}
 
 PARAM_NUMERIC_COL = "params_numeric"
 KEY_COLS: List[str] = ["params", "data", "seed", "step"]

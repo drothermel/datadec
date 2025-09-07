@@ -53,22 +53,22 @@ def filter_olmes_rows(df: pd.DataFrame) -> pd.DataFrame:
 
 def select_by_data_param_combos(
     df: pd.DataFrame,
-    data_names: Optional[Union[str, List[str]]] = None,
-    param_strs: Optional[Union[str, List[str]]] = None,
+    data: Optional[Union[str, List[str]]] = None,
+    params: Optional[Union[str, List[str]]] = None,
     data_param_combos: Optional[List[Tuple[str, str]]] = None,
 ) -> pd.DataFrame:
-    data_names = consts.ALL_DATA_NAMES if data_names is None else data_names
-    data_names = [data_names] if isinstance(data_names, str) else data_names
-    param_strs = consts.ALL_PARAM_STRS if param_strs is None else param_strs
-    param_strs = [param_strs] if isinstance(param_strs, str) else param_strs
+    data = consts.ALL_DATA_NAMES if data is None else data
+    data = [data] if isinstance(data, str) else data
+    params = consts.ALL_MODEL_SIZE_STRS if params is None else params
+    params = [params] if isinstance(params, str) else params
 
     if data_param_combos:
         combined_filter = pd.Series([False] * len(df), index=df.index)
-        for data, param in data_param_combos:
-            combo_filter = (df["data"] == data) & (df["params"] == param)
+        for data_name, param_name in data_param_combos:
+            combo_filter = (df["data"] == data_name) & (df["params"] == param_name)
             combined_filter = combined_filter | combo_filter
         return df[combined_filter]
-    return df[df["data"].isin(data_names) & df["params"].isin(param_strs)]
+    return df[df["data"].isin(data) & df["params"].isin(params)]
 
 
 def create_mean_std_df(merged_df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
