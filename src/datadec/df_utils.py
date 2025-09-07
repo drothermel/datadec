@@ -73,9 +73,10 @@ def select_by_data_param_combos(
 
 def create_mean_std_df(merged_df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
     group_cols = ["params", "data", "step"]
+    exclude_cols = group_cols + ["seed"]  # Exclude seed from aggregation
 
     numeric_cols = merged_df.select_dtypes(include=["number"]).columns.tolist()
-    agg_cols = [col for col in numeric_cols if col not in group_cols]
+    agg_cols = [col for col in numeric_cols if col not in exclude_cols]
 
     mean_df = merged_df.groupby(group_cols)[agg_cols].mean().reset_index()
     std_df = merged_df.groupby(group_cols)[agg_cols].std().reset_index()

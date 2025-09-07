@@ -111,3 +111,30 @@ class DataDecide:
         if keep_cols is not None:
             df = df[keep_cols]
         return df
+
+    def aggregate_results(
+        self,
+        input_df: pd.DataFrame,
+        by_seeds: bool = True,
+        return_std: bool = False,
+        verbose: bool = False,
+    ) -> Union[pd.DataFrame, Tuple[pd.DataFrame, pd.DataFrame]]:
+        if not by_seeds:
+            df_utils.print_shape(input_df, "No aggregation", verbose)
+            return input_df
+
+        if len(input_df) == 0:
+            df_utils.print_shape(input_df, "Empty DataFrame, no aggregation", verbose)
+            if return_std:
+                return input_df.copy(), input_df.copy()
+            return input_df.copy()
+
+        df_utils.print_shape(input_df, "Before aggregation", verbose)
+        mean_df, std_df = df_utils.create_mean_std_df(input_df)
+        df_utils.print_shape(mean_df, "After aggregation (means)", verbose)
+
+        if return_std:
+            df_utils.print_shape(std_df, "After aggregation (stds)", verbose)
+            return mean_df, std_df
+
+        return mean_df
