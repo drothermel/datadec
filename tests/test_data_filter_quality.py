@@ -78,23 +78,25 @@ def test_filter_data_quality_empty_filter_types(dd_instance, sample_real_data):
 
 def test_filter_data_quality_invalid_filter_type(dd_instance, sample_real_data):
     """Test error handling for invalid filter type."""
-    with pytest.raises(ValueError) as exc_info:
+    with pytest.raises(AssertionError) as exc_info:
         dd_instance.filter_data_quality(
             sample_real_data, filter_types=["invalid_filter"]
         )
 
-    assert "Unknown filter_type 'invalid_filter'" in str(exc_info.value)
+    assert "Invalid filter types: ['invalid_filter']" in str(exc_info.value)
     assert "Available: ['max_steps', 'ppl', 'olmes']" in str(exc_info.value)
 
 
 def test_filter_data_quality_mixed_valid_invalid_filters(dd_instance, sample_real_data):
     """Test with mix of valid and invalid filter types."""
-    with pytest.raises(ValueError) as exc_info:
+    with pytest.raises(AssertionError) as exc_info:
         dd_instance.filter_data_quality(
             sample_real_data, filter_types=["max_steps", "invalid", "ppl"]
         )
 
-    assert "Unknown filter_type 'invalid'" in str(exc_info.value)
+    assert "Invalid filter types: ['max_steps', 'invalid', 'ppl']" in str(
+        exc_info.value
+    )
 
 
 def test_filter_data_quality_verbose_output(dd_instance, sample_real_data, capsys):

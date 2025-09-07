@@ -9,8 +9,6 @@ from datadec.loader import DataFrameLoader
 from datadec.paths import DataDecidePaths
 from datadec.pipeline import DataPipeline, verbose_print
 
-FILTER_TYPES = ["max_steps", "ppl", "olmes"]
-METRIC_TYPES = ["ppl", "olmes"]
 ID_COLUMNS = ["params", "data", "seed", "step", "tokens"]
 
 
@@ -124,7 +122,7 @@ class DataDecide:
         filter_types: List[str] = ["max_steps"],
         verbose: bool = False,
     ) -> pd.DataFrame:
-        assert all(filter_type in FILTER_TYPES for filter_type in filter_types)
+        validation.validate_filter_types(filter_types)
         df = input_df.copy()
         df_utils.print_shape(df, "Initial", verbose)
         if len(df) == 0:
@@ -229,9 +227,7 @@ class DataDecide:
         metric_type: Optional[str],
         include_id_columns: bool,
     ) -> List[str]:
-        assert metric_type is None or metric_type in METRIC_TYPES, (
-            f"Unknown metric_type '{metric_type}'. Available: {METRIC_TYPES}"
-        )
+        validation.validate_metric_type(metric_type)
         selected_columns = set()
 
         if include_id_columns:
@@ -249,9 +245,7 @@ class DataDecide:
                 col for col in consts.OLMES_TASKS if col in df.columns
             )
         if metrics:
-            assert all(metric in consts.ALL_KNOWN_METRICS for metric in metrics), (
-                f"Unknown metrics: {metrics}. Available: {consts.ALL_KNOWN_METRICS}"
-            )
+            validation.validate_metrics(metrics)
             selected_columns.update(
                 metric for metric in metrics if metric in df.columns
             )

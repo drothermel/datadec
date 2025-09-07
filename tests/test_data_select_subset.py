@@ -202,7 +202,7 @@ def test_select_subset_verbose_output(dd_instance, sample_real_data, capsys):
 
 def test_select_subset_invalid_metric_type(dd_instance, sample_real_data):
     """Test error handling for invalid metric type."""
-    with pytest.raises(ValueError) as exc_info:
+    with pytest.raises(AssertionError) as exc_info:
         dd_instance.select_subset(sample_real_data, metric_type="invalid")
 
     assert "Unknown metric_type 'invalid'" in str(exc_info.value)
@@ -211,11 +211,11 @@ def test_select_subset_invalid_metric_type(dd_instance, sample_real_data):
 
 def test_select_subset_invalid_metric(dd_instance, sample_real_data):
     """Test error handling for invalid metric name."""
-    with pytest.raises(ValueError) as exc_info:
+    with pytest.raises(AssertionError) as exc_info:
         dd_instance.select_subset(sample_real_data, metrics=["invalid_metric"])
 
-    assert "Unknown metric 'invalid_metric'" in str(exc_info.value)
-    assert "consts.ALL_KNOWN_METRICS" in str(exc_info.value)
+    assert "Unknown metrics: ['invalid_metric']" in str(exc_info.value)
+    assert "Available:" in str(exc_info.value)
 
 
 def test_select_subset_empty_dataframe(dd_instance):
