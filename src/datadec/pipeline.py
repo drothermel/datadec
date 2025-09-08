@@ -33,6 +33,7 @@ class DataPipeline:
             "merge": self.merge_datasets,
             "enrich": self.enrich_dataset,
             "aggregate": self.create_aggregated_datasets,
+            "plotting_prep": self.create_plotting_datasets,
         }
 
         self.stage_outputs = {
@@ -42,6 +43,7 @@ class DataPipeline:
             "merge": ["full_eval_raw"],
             "enrich": ["full_eval"],
             "aggregate": ["mean_eval", "std_eval"],
+            "plotting_prep": ["full_eval_melted", "mean_eval_melted"],
         }
 
     def usage_info(self) -> None:
@@ -122,6 +124,29 @@ class DataPipeline:
         std_df_path = self.paths.get_path("std_eval")
         std_df.to_parquet(std_df_path)
         verbose_print(f"Wrote to {std_df_path}", verbose)
+
+    def create_plotting_datasets(self, verbose: bool = False) -> None:
+        verbose_print("Creating precomputed plotting datasets", verbose)
+
+        # Load source datasets
+        full_eval_df = pd.read_parquet(self.paths.get_path("full_eval"))
+        mean_eval_df = pd.read_parquet(self.paths.get_path("mean_eval"))
+
+        # Create melted versions for plotting (all metrics, individual seeds)
+        full_eval_melted = df_utils.melt_for_plotting(
+            full_eval_df, include_seeds=True, drop_na=True
+        )
+        full_eval_melted_path = self.paths.get_path("full_eval_melted")
+        full_eval_melted.to_parquet(full_eval_melted_path)
+        verbose_print(f"Wrote to {full_eval_melted_path}", verbose)
+
+        # Create melted versions for plotting (all metrics, aggregated seeds)
+        mean_eval_melted = df_utils.melt_for_plotting(
+            mean_eval_df, include_seeds=False, drop_na=True
+        )
+        mean_eval_melted_path = self.paths.get_path("mean_eval_melted")
+        mean_eval_melted.to_parquet(mean_eval_melted_path)
+        verbose_print(f"Wrote to {mean_eval_melted_path}", verbose)
 
     def run(self, recompute_from: Optional[str] = None, verbose: bool = False) -> None:
         recompute_from = "download" if recompute_from == "all" else recompute_from

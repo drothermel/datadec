@@ -52,6 +52,14 @@ class DataDecide:
     def mean_eval(self) -> pd.DataFrame:
         return self.loader.load_name("mean_eval")
 
+    @property
+    def full_eval_melted(self) -> pd.DataFrame:
+        return self.loader.load_name("full_eval_melted")
+
+    @property
+    def mean_eval_melted(self) -> pd.DataFrame:
+        return self.loader.load_name("mean_eval_melted")
+
     def load_dataframe(self, name: str) -> pd.DataFrame:
         return self.loader.load_name(name)
 
@@ -284,27 +292,13 @@ class DataDecide:
         include_seeds: bool = True,
         drop_na: bool = True,
     ) -> pd.DataFrame:
-        if metrics is None:
-            metrics = [col for col in df.columns if col in consts.ALL_KNOWN_METRICS]
-
-        id_cols = (
-            ID_COLUMNS
-            if include_seeds
-            else [col for col in ID_COLUMNS if col != "seed"]
+        return df_utils.melt_for_plotting(
+            df=df,
+            metrics=metrics,
+            include_seeds=include_seeds,
+            drop_na=drop_na,
+            id_columns=ID_COLUMNS,
         )
-        available_id_cols = [col for col in id_cols if col in df.columns]
-
-        melted_df = df.melt(
-            id_vars=available_id_cols,
-            value_vars=metrics,
-            var_name="metric",
-            value_name="value",
-        )
-
-        if drop_na:
-            melted_df = melted_df.dropna(subset=["value"])
-
-        return melted_df
 
     def prepare_plot_data(
         self,

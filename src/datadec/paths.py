@@ -19,6 +19,8 @@ class DataDecidePaths:
             "full_eval": "full_eval",
             "mean_eval": "mean_eval",
             "std_eval": "std_eval",
+            "full_eval_melted": "full_eval_melted",
+            "mean_eval_melted": "mean_eval_melted",
         }
 
         package_root = Path(__file__).parent

@@ -3,6 +3,7 @@ from typing import List, Optional, Tuple
 import pandas as pd
 
 from datadec import constants as consts
+from datadec import validation
 
 
 def print_shape(df: pd.DataFrame, msg: str = "", verbose: bool = False):
@@ -16,7 +17,6 @@ def filter_by_max_step_to_use(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def filter_ppl_rows(df: pd.DataFrame) -> pd.DataFrame:
-    """Filter out rows where all perplexity columns have NaN values."""
     ppl_columns = [col for col in df.columns if col in consts.PPL_TYPES]
     assert len(ppl_columns) > 0, (
         f"No perplexity columns found in dataframe. Expected: {consts.PPL_TYPES}"
@@ -33,7 +33,6 @@ def filter_ppl_rows(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def filter_olmes_rows(df: pd.DataFrame) -> pd.DataFrame:
-    """Filter out rows where all OLMES metric columns have NaN values."""
     olmes_columns = [
         col for col in df.columns if any(task in col for task in consts.OLMES_TASKS)
     ]
@@ -80,3 +79,40 @@ def create_mean_std_df(merged_df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFr
     std_df = merged_df.groupby(group_cols)[agg_cols].std().reset_index()
 
     return mean_df, std_df
+
+
+def melt_for_plotting(
+    df: pd.DataFrame,
+    metrics: Optional[List[str]] = None,
+    include_seeds: bool = True,
+    drop_na: bool = True,
+    id_columns: Optional[List[str]] = None,
+) -> pd.DataFrame:
+    if id_columns is None:
+        id_columns = ["params", "data", "seed", "step", "tokens"]
+
+    if metrics is None:
+        metrics = [col for col in df.columns if col in consts.ALL_KNOWN_METRICS]
+    else:
+        validation.validate_metrics(metrics)
+        assert all(metric in consts.ALL_KNOWN_METRICS for metric in metrics), (
+            f"Specified metrics not found in ALL_KNOWN_METRICS: {metrics}"
+        )
+        metrics = [col for col in metrics if col in df.columns]
+
+    id_cols = (
+        id_columns if include_seeds else [col for col in id_columns if col != "seed"]
+    )
+    available_id_cols = [col for col in id_cols if col in df.columns]
+
+    melted_df = df.melt(
+        id_vars=available_id_cols,
+        value_vars=metrics,
+        var_name="metric",
+        value_name="value",
+    )
+
+    if drop_na:
+        melted_df = melted_df.dropna(subset=["value"])
+
+    return melted_df
