@@ -19,7 +19,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-plotting = ["dr-plotter @ git+https://github.com/drothermel/dr_plotter.git"]
+plotting = ["dr-plotter @ file:///Users/daniellerothermel/drotherm/repos/dr_plotter"]
 
 [build-system]
 requires = ["hatchling"]
