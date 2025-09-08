@@ -5,6 +5,9 @@ import pandas as pd
 from datadec import constants as consts
 from datadec import validation
 
+MEAN_ID_COLUMNS: List[str] = ["params", "data", "step", "tokens"]
+ID_COLUMNS: List[str] = MEAN_ID_COLUMNS + ["seed"]
+
 
 def print_shape(df: pd.DataFrame, msg: str = "", verbose: bool = False):
     if verbose:
@@ -21,32 +24,16 @@ def filter_ppl_rows(df: pd.DataFrame) -> pd.DataFrame:
     assert len(ppl_columns) > 0, (
         f"No perplexity columns found in dataframe. Expected: {consts.PPL_TYPES}"
     )
-
-    initial_count = len(df)
     filtered_df = df.dropna(subset=ppl_columns, how="all")
-    removed_count = initial_count - len(filtered_df)
-
-    if removed_count > 0:
-        print(f"Filtered out {removed_count} rows with all NaN perplexity values")
-
     return filtered_df
 
 
 def filter_olmes_rows(df: pd.DataFrame) -> pd.DataFrame:
-    olmes_columns = [
-        col for col in df.columns if any(task in col for task in consts.OLMES_TASKS)
-    ]
+    olmes_columns = [col for col in df.columns if col in consts.OLMES_METRICS]
     assert len(olmes_columns) > 0, (
         f"No OLMES metric columns found in dataframe. Expected tasks: {consts.OLMES_TASKS}"
     )
-
-    initial_count = len(df)
     filtered_df = df.dropna(subset=olmes_columns, how="all")
-    removed_count = initial_count - len(filtered_df)
-
-    if removed_count > 0:
-        print(f"Filtered out {removed_count} rows with all NaN OLMES metric values")
-
     return filtered_df
 
 
@@ -58,7 +45,6 @@ def select_by_data_param_combos(
 ) -> pd.DataFrame:
     data = data or consts.ALL_DATA_NAMES
     params = params or consts.ALL_MODEL_SIZE_STRS
-
     if data_param_combos:
         combined_filter = pd.Series([False] * len(df), index=df.index)
         for data_name, param_name in data_param_combos:
@@ -69,15 +55,12 @@ def select_by_data_param_combos(
 
 
 def create_mean_std_df(merged_df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    group_cols = ["params", "data", "step"]
-    exclude_cols = group_cols + ["seed"]  # Exclude seed from aggregation
-
+    group_cols = MEAN_ID_COLUMNS
+    exclude_cols = ID_COLUMNS
     numeric_cols = merged_df.select_dtypes(include=["number"]).columns.tolist()
     agg_cols = [col for col in numeric_cols if col not in exclude_cols]
-
     mean_df = merged_df.groupby(group_cols)[agg_cols].mean().reset_index()
     std_df = merged_df.groupby(group_cols)[agg_cols].std().reset_index()
-
     return mean_df, std_df
 
 
@@ -88,31 +71,23 @@ def melt_for_plotting(
     drop_na: bool = True,
     id_columns: Optional[List[str]] = None,
 ) -> pd.DataFrame:
-    if id_columns is None:
-        id_columns = ["params", "data", "seed", "step", "tokens"]
-
+    id_columns = ID_COLUMNS if id_columns is None else id_columns
+    id_columns = id_columns if include_seeds else MEAN_ID_COLUMNS
     if metrics is None:
         metrics = [col for col in df.columns if col in consts.ALL_KNOWN_METRICS]
-    else:
-        validation.validate_metrics(metrics)
-        assert all(metric in consts.ALL_KNOWN_METRICS for metric in metrics), (
-            f"Specified metrics not found in ALL_KNOWN_METRICS: {metrics}"
-        )
-        metrics = [col for col in metrics if col in df.columns]
-
+    validation.validate_metrics(metrics, df_cols=df.columns)
     id_cols = (
         id_columns if include_seeds else [col for col in id_columns if col != "seed"]
     )
-    available_id_cols = [col for col in id_cols if col in df.columns]
-
+    assert all(col in df.columns for col in id_cols), (
+        f"Invalid id_columns: {id_cols}. Available: {df.columns}"
+    )
     melted_df = df.melt(
-        id_vars=available_id_cols,
+        id_vars=id_cols,
         value_vars=metrics,
         var_name="metric",
         value_name="value",
     )
-
     if drop_na:
         melted_df = melted_df.dropna(subset=["value"])
-
     return melted_df

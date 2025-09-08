@@ -321,10 +321,10 @@ DROP_METRICS: List[str] = [
     "logits_per_byte_corr",
 ]
 
-# All known metrics (PPL + cross product of OLMES tasks and metric types)
-ALL_KNOWN_METRICS: Set[str] = set(PPL_TYPES) | {
+OLMES_METRICS: List[str] = [
     f"{task}_{metric_type}" for task, metric_type in product(OLMES_TASKS, METRIC_NAMES)
-}
+]
+ALL_KNOWN_METRICS: Set[str] = set(PPL_TYPES) | set(OLMES_METRICS)
 
 PARAM_NUMERIC_COL = "params_numeric"
 KEY_COLS: List[str] = ["params", "data", "seed", "step"]
