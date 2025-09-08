@@ -71,7 +71,7 @@ def average_mmlu_metrics(df: pd.DataFrame) -> pd.DataFrame:
         and "mmlu_average_correct_prob" not in df.columns
     )
     mmlu_df = df[df["task"].isin(consts.MMLU_TASKS)].drop(columns=["task"])
-    mmlu_avg = mmlu_df.groupby(consts.KEY_COLS).agg("mean").reset_index()
+    mmlu_avg = mmlu_df.groupby(consts.KEY_COLUMNS).agg("mean").reset_index()
     mmlu_avg["task"] = "mmlu_average"
     return pd.concat([df, mmlu_avg], ignore_index=True)
 
@@ -80,7 +80,7 @@ def pivot_task_metrics_to_columns(dwn_df: pd.DataFrame) -> pd.DataFrame:
     pivoted_metrics = []
     for metric_col in consts.METRIC_NAMES:
         pivoted = dwn_df.pivot_table(
-            index=consts.KEY_COLS,
+            index=consts.KEY_COLUMNS,
             columns="task",
             values=metric_col,
             aggfunc="first",
@@ -97,7 +97,7 @@ def parse_downstream_expanded_df(dwn_df_raw: pd.DataFrame) -> pd.DataFrame:
     df = df.drop(columns=consts.DWN_DROP_COLS + consts.DROP_METRICS, errors="ignore")
     df = average_mmlu_metrics(df)
     df = pivot_task_metrics_to_columns(df)
-    df = reorder_df_cols(df, prefix_order=consts.KEY_COLS)
+    df = reorder_df_cols(df, prefix_order=consts.KEY_COLUMNS)
     df = map_seed_col_to_int(df)
     return df
 
@@ -107,7 +107,7 @@ def parse_perplexity_df(ppl_df_raw: pd.DataFrame) -> pd.DataFrame:
     df = ppl_df_raw.copy()
     df = df.drop(columns=consts.PPL_DROP_COLS, errors="ignore")
     df = df.rename(columns=consts.PPL_NAME_MAP)
-    df = reorder_df_cols(df, prefix_order=consts.KEY_COLS)
+    df = reorder_df_cols(df, prefix_order=consts.KEY_COLUMNS)
     df = map_seed_col_to_int(df)
     return df
 
@@ -121,7 +121,7 @@ def merge_all_dfs(
     model_details_df: Optional[pd.DataFrame] = None,
     add_token_compute: bool = True,
 ) -> pd.DataFrame:
-    df = pd.merge(ppl_parsed_df, dwn_parsed_df, on=consts.KEY_COLS, how="outer")
+    df = pd.merge(ppl_parsed_df, dwn_parsed_df, on=consts.KEY_COLUMNS, how="outer")
 
     if add_token_compute:
         df = make_and_merge_step_to_token_compute_df(dwn_raw_df, df)

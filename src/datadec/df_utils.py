@@ -5,9 +5,6 @@ import pandas as pd
 from datadec import constants as consts
 from datadec import validation
 
-MEAN_ID_COLUMNS: List[str] = ["params", "data", "step", "tokens"]
-ID_COLUMNS: List[str] = MEAN_ID_COLUMNS + ["seed"]
-
 
 def print_shape(df: pd.DataFrame, msg: str = "", verbose: bool = False):
     if verbose:
@@ -55,8 +52,8 @@ def select_by_data_param_combos(
 
 
 def create_mean_std_df(merged_df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    group_cols = MEAN_ID_COLUMNS
-    exclude_cols = ID_COLUMNS
+    group_cols = consts.MEAN_ID_COLUMNS
+    exclude_cols = consts.FULL_ID_COLUMNS
     numeric_cols = merged_df.select_dtypes(include=["number"]).columns.tolist()
     agg_cols = [col for col in numeric_cols if col not in exclude_cols]
     mean_df = merged_df.groupby(group_cols)[agg_cols].mean().reset_index()
@@ -71,8 +68,8 @@ def melt_for_plotting(
     drop_na: bool = True,
     id_columns: Optional[List[str]] = None,
 ) -> pd.DataFrame:
-    id_columns = ID_COLUMNS if id_columns is None else id_columns
-    id_columns = id_columns if include_seeds else MEAN_ID_COLUMNS
+    id_columns = consts.FULL_ID_COLUMNS if id_columns is None else id_columns
+    id_columns = id_columns if include_seeds else consts.MEAN_ID_COLUMNS
     if metrics is None:
         metrics = [col for col in df.columns if col in consts.ALL_KNOWN_METRICS]
     validation.validate_metrics(metrics, df_cols=df.columns)

@@ -9,8 +9,6 @@ from datadec.loader import DataFrameLoader
 from datadec.paths import DataDecidePaths
 from datadec.pipeline import DataPipeline, verbose_print
 
-ID_COLUMNS = ["params", "data", "seed", "step", "tokens"]
-
 
 class DataDecide:
     def __init__(
@@ -198,7 +196,9 @@ class DataDecide:
         selected_columns = set()
 
         if include_id_columns:
-            selected_columns.update(col for col in ID_COLUMNS if col in df.columns)
+            selected_columns.update(
+                col for col in consts.FULL_ID_COLUMNS if col in df.columns
+            )
 
         if columns:
             selected_columns.update(col for col in columns if col in df.columns)
@@ -256,7 +256,7 @@ class DataDecide:
             metrics=metrics,
             include_seeds=include_seeds,
             drop_na=drop_na,
-            id_columns=ID_COLUMNS,
+            id_columns=consts.FULL_ID_COLUMNS,
         )
 
     def prepare_plot_data(
