@@ -7,18 +7,17 @@ import argparse
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from dr_plotter.configs import PlotConfig
-from dr_plotter.figure_manager import FigureManager
-from dr_plotter.scripting.bump_utils import apply_first_last_filter
-from dr_plotter.scripting.datadec_utils import (
+from datadec import DataDecide
+from datadec.constants import (
     BASE_AND_QC,
     BASE_RECIPES,
     CUSTOM_RECIPE_FAMILIES,
     OLMES_PERFORMANCE_RECIPE_CHUNKS,
     PPL_PERFORMANCE_RECIPE_CHUNKS,
     RECIPES_WITHOUT_ABLATIONS,
-    get_datadec_instance,
 )
+from dr_plotter import FigureManager
+from dr_plotter.configs import PlotConfig
 from dr_plotter.theme import BUMP_PLOT_THEME, Theme
 
 
@@ -309,6 +308,33 @@ def resolve_data_groups(data_args: list[str]) -> list[str]:
     return list(dict.fromkeys(resolved_recipes))
 
 
+def apply_first_last_filter(
+    bump_data: pd.DataFrame, time_col: str = "time", category_col: str = "category"
+) -> pd.DataFrame:
+    """Extract only first and last time points for each category (compressed bump view).
+
+    This creates a compressed visualization showing only the initial and final
+    rankings for each category, connected by straight lines. Useful for
+    highlighting ranking changes without trajectory noise.
+    """
+    filtered_data = []
+    for category in bump_data[category_col].unique():
+        cat_data = bump_data[bump_data[category_col] == category].copy()
+        time_values = sorted(cat_data[time_col].unique())
+
+        # Get first and last time points
+        first_time = time_values[0]
+        last_time = time_values[-1]
+
+        # Add first and last rows for this category
+        first_row = cat_data[cat_data[time_col] == first_time]
+        last_row = cat_data[cat_data[time_col] == last_time]
+
+        filtered_data.extend([first_row, last_row])
+
+    return pd.concat(filtered_data, ignore_index=True)
+
+
 # TODO: Refactor this function - it has grown too large (85 statements)
 # Consider breaking into smaller functions for data preparation, plotting, and output
 def plot_bump(  # noqa: PLR0915
@@ -322,7 +348,7 @@ def plot_bump(  # noqa: PLR0915
     figsize: tuple[float, float] = (12, 8),
     first_last_only: bool = False,
 ) -> None:
-    dd = get_datadec_instance()
+    dd = DataDecide()
 
     exclude_params = exclude_params or []
     exclude_data = exclude_data or []

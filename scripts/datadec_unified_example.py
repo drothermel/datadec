@@ -7,9 +7,9 @@ import sys
 import matplotlib.pyplot as plt
 import pandas as pd
 
+from datadec import DataDecide
+from dr_plotter import FigureManager
 from dr_plotter.configs import FacetingConfig, LegendConfig, PlotConfig
-from dr_plotter.figure_manager import FigureManager
-from dr_plotter.scripting.datadec_utils import get_datadec_instance
 
 
 def create_arg_parser() -> argparse.ArgumentParser:
@@ -202,7 +202,7 @@ def main() -> None:
     print("Initializing DataDecide with streamlined API...")
     try:
         # Get DataDecide instance with one call
-        dd = get_datadec_instance()
+        dd = DataDecide()
 
         # Validate user inputs directly through dd methods
         metrics = args.metrics

@@ -1,12 +1,13 @@
 from typing import Any
 
+import matplotlib.pyplot as plt
 import pandas as pd
+from dr_plotter import FigureManager
 from dr_plotter.configs import PlotConfig
-from dr_plotter.figure_manager import FigureManager
-from dr_plotter.scripting.utils import setup_arg_parser, show_or_save_plot
-from dr_plotter.scripting.datadec_utils import get_datadec_instance
 
-dd = get_datadec_instance()
+from datadec import DataDecide
+
+dd = DataDecide()
 
 
 def normalize_df(df: pd.DataFrame, params: list[str], data: list[str]) -> pd.DataFrame:
@@ -44,7 +45,7 @@ def normalize_df(df: pd.DataFrame, params: list[str], data: list[str]) -> pd.Dat
     return df
 
 
-def main(args: Any) -> Any:
+def main() -> Any:
     for c in dd.full_eval.columns:
         print(c)
     params = dd.select_params(["20M", "60M", "90M", "530M"])
@@ -282,11 +283,8 @@ def main(args: Any) -> Any:
         fm.get_axes(1, 2).set_ylim(0, 1)
         """
 
-    show_or_save_plot(fm.fig, args, "10_line_showcase")
-    return fm.fig
+    plt.show()
 
 
 if __name__ == "__main__":
-    parser = setup_arg_parser(description="Line Plot Showcase")
-    args = parser.parse_args()
-    main(args)
+    main()

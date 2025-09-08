@@ -7,9 +7,9 @@ from typing import Any
 
 import matplotlib.pyplot as plt
 
+from datadec import DataDecide
+from dr_plotter import FigureManager
 from dr_plotter.configs import PlotConfig, PositioningConfig
-from dr_plotter.figure_manager import FigureManager
-from dr_plotter.scripting.datadec_utils import get_datadec_instance
 
 
 def create_arg_parser() -> argparse.ArgumentParser:
@@ -188,7 +188,7 @@ def plot_means(  # noqa: C901, PLR0912, PLR0915
     xlim: tuple[float, float] | None = None,
     ylim: tuple[float, float] | None = None,
 ) -> None:
-    dd = get_datadec_instance()
+    dd = DataDecide()
 
     exclude_params = exclude_params or []
     exclude_data = exclude_data or []

@@ -12,13 +12,14 @@ from typing import Any
 
 import pandas as pd
 
-from dr_plotter.scripting.datadec_utils import get_clean_datadec_df
+from datadec import DataDecide
 
 
 def load_parquet_data() -> pd.DataFrame:
     """Load clean, pre-validated data from DataDecide."""
     try:
-        return get_clean_datadec_df(filter_types=["ppl", "max_steps"])
+        dd = DataDecide()
+        return dd.get_filtered_df(filter_types=["ppl", "max_steps"])
     except ImportError as e:
         print(f"Error: {e}")
         sys.exit(1)

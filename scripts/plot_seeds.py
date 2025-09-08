@@ -6,10 +6,8 @@ import matplotlib.pyplot as plt
 
 from datadec import DataDecide
 from datadec.constants import PPL_TYPES
-from datadec.plotting_utils import safe_import_plotting
-
-# Import plotting components at module level
-FigureManager, FigureConfig, (LegendConfig, LegendStrategy) = safe_import_plotting()
+from dr_plotter import FigureManager
+from dr_plotter.configs import LegendConfig, LegendStrategy, PlotConfig, LayoutConfig
 
 
 def get_data_param_combos(
@@ -28,8 +26,10 @@ def plot_seeds(
     num_rows = math.ceil(len(combinations) / num_cols)
 
     with FigureManager(
-        figure=FigureConfig(
-            rows=num_rows, cols=num_cols, figsize=(num_cols * 6, num_rows * 4)
+        config=PlotConfig(
+            layout=LayoutConfig(
+                rows=num_rows, cols=num_cols, figsize=(num_cols * 6, num_rows * 4)
+            )
         )
     ) as fm:
         for i, (param_val, recipe_val, metric) in enumerate(combinations):
@@ -83,23 +83,25 @@ def plot_overlay(
     ]
 
     with FigureManager(
-        figure=FigureConfig(
-            rows=num_rows,
-            cols=num_cols,
-            figsize=(num_cols * 6, num_rows * 6),
-            x_labels=x_labels,
-            y_labels=y_labels,
-            tight_layout_pad=1.0,
-        ),
-        legend=LegendConfig(
-            strategy=LegendStrategy.GROUPED_BY_CHANNEL,
-            channel_titles={"hue": "Val Dataset (for PPL calc)", "alpha": "Seed"},
-            layout_bottom_margin=0.22,
-            bbox_y_offset=0.22,
-            ncol=4,
-            two_legend_left_x=0.1,
-            two_legend_right_x=0.5,
-        ),
+        config=PlotConfig(
+            layout=LayoutConfig(
+                rows=num_rows,
+                cols=num_cols,
+                figsize=(num_cols * 6, num_rows * 6),
+                x_labels=x_labels,
+                y_labels=y_labels,
+                tight_layout_pad=1.0,
+            ),
+            legend=LegendConfig(
+                strategy=LegendStrategy.GROUPED_BY_CHANNEL,
+                channel_titles={"hue": "Val Dataset (for PPL calc)", "alpha": "Seed"},
+                layout_bottom_margin=0.22,
+                bbox_y_offset=0.22,
+                ncol=4,
+                two_legend_left_x=0.1,
+                two_legend_right_x=0.5,
+            ),
+        )
     ) as fm:
         for i, (data_val, param_val) in enumerate(data_param_combos):
             row = i // num_cols

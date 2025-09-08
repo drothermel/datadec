@@ -5,9 +5,9 @@ import argparse
 
 import matplotlib.pyplot as plt
 
+from datadec import DataDecide
+from dr_plotter import FigureManager
 from dr_plotter.configs import PlotConfig, PositioningConfig
-from dr_plotter.figure_manager import FigureManager
-from dr_plotter.scripting.datadec_utils import get_datadec_instance
 
 
 def create_arg_parser() -> argparse.ArgumentParser:
@@ -105,7 +105,7 @@ def plot_seeds(
     xlog: bool = False,
     ylog: bool = False,
 ) -> None:
-    dd = get_datadec_instance()
+    dd = DataDecide()
 
     exclude_params = exclude_params or []
     exclude_data = exclude_data or []

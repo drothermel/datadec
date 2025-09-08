@@ -1,10 +1,10 @@
 from pathlib import Path
 
+from dr_plotter import FigureManager
+
 from datadec import DataDecide
 from datadec.model_utils import param_to_numeric
-from datadec.plotting_utils import safe_import_plotting
 
-FigureManager, _, _ = safe_import_plotting()
 repo_root = Path(__file__).parent.parent
 
 TEST_PARAMS = ["10M", "20M", "60M", "90M"]

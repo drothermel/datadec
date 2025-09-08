@@ -350,3 +350,169 @@ LR_INPUT_COLS: List[str] = [
 ]
 LR_OUTPUT_COLS: List[str] = ["lr_at_step", "cumulative_lr"]
 PREFIX_COLS_WITH_LR: List[str] = FINAL_PREFIX_COLS + LR_OUTPUT_COLS
+
+
+# --------- Recipe Collections for Plotting and Analysis ---------
+
+BASE_RECIPES: List[str] = [
+    "C4",
+    "Falcon",
+    "Falcon+CC",
+    "Dolma1.6++",
+    "Dolma1.7",
+    "FineWeb-Pro",
+    "FineWeb-Edu",
+    "DCLM-Baseline",
+]
+
+BASE_AND_QC: List[str] = [
+    "C4",
+    "Falcon",
+    "Falcon+CC",
+    "Falcon+CC (QC 10%)",
+    "Falcon+CC (QC 20%)",
+    "Falcon+CC (QC Orig 10%)",
+    "Falcon+CC (QC Tulu 10%)",
+    "Dolma1.6++",
+    "Dolma1.7",
+    "DCLM-Baseline 25% / Dolma 75%",
+    "DCLM-Baseline 50% / Dolma 50%",
+    "DCLM-Baseline 75% / Dolma 25%",
+    "FineWeb-Pro",
+    "FineWeb-Edu",
+    "DCLM-Baseline",
+    "DCLM-Baseline (QC 10%)",
+    "DCLM-Baseline (QC 20%)",
+    "DCLM-Baseline (QC 7%, FW3)",
+    "DCLM-Baseline (QC 7%, FW2)",
+    "DCLM-Baseline (QC FW 3%)",
+    "DCLM-Baseline (QC FW 10%)",
+]
+
+RECIPES_WITHOUT_ABLATIONS: List[str] = [
+    "C4",
+    "Falcon",
+    "Falcon+CC",
+    "Falcon+CC (QC 10%)",
+    "Falcon+CC (QC 20%)",
+    "Falcon+CC (QC Orig 10%)",
+    "Falcon+CC (QC Tulu 10%)",
+    "Dolma1.6++",
+    "Dolma1.7",
+    "FineWeb-Pro",
+    "FineWeb-Edu",
+    "DCLM-Baseline",
+    "DCLM-Baseline (QC 10%)",
+    "DCLM-Baseline (QC 20%)",
+    "DCLM-Baseline (QC 7%, FW3)",
+    "DCLM-Baseline (QC 7%, FW2)",
+    "DCLM-Baseline (QC FW 3%)",
+    "DCLM-Baseline (QC FW 10%)",
+]
+
+CUSTOM_RECIPE_FAMILIES: Dict[str, List[str]] = {
+    "core_datasets": ["C4", "Falcon", "Dolma1.6++"],
+    "dolma17_variants": [
+        "Dolma1.7",
+        "Dolma1.7 (no code)",
+        "Dolma1.7 (no math, code)",
+        "Dolma1.7 (no Reddit)",
+        "Dolma1.7 (no Flan)",
+    ],
+    "dclm_variants": [
+        "DCLM-Baseline",
+        "DCLM-Baseline (QC 10%)",
+        "DCLM-Baseline (QC 20%)",
+        "DCLM-Baseline (QC 7%, FW3)",
+        "DCLM-Baseline (QC 7%, FW2)",
+        "DCLM-Baseline (QC FW 3%)",
+        "DCLM-Baseline (QC FW 10%)",
+    ],
+    "falcon_cc_variants": [
+        "Falcon+CC",
+        "Falcon+CC (QC 10%)",
+        "Falcon+CC (QC 20%)",
+        "Falcon+CC (QC Orig 10%)",
+        "Falcon+CC (QC Tulu 10%)",
+    ],
+    "fineweb_variants": ["FineWeb-Pro", "FineWeb-Edu"],
+    "mix_with_baselines": [
+        "Dolma1.7",
+        "DCLM-Baseline 25% / Dolma 75%",
+        "DCLM-Baseline 50% / Dolma 50%",
+        "DCLM-Baseline 75% / Dolma 25%",
+        "DCLM-Baseline",
+    ],
+}
+
+PPL_PERFORMANCE_RECIPE_CHUNKS: Dict[str, List[str]] = {
+    "best_ppl_performance": [
+        "DCLM-Baseline 25% / Dolma 75%",
+        "Dolma1.7 (no code)",
+        "Dolma1.7",
+        "Dolma1.7 (no Flan)",
+        "DCLM-Baseline 50% / Dolma 50%",
+        "Dolma1.6++",
+        "Dolma1.7 (no Reddit)",
+    ],
+    "good_ppl_performance": [
+        "DCLM-Baseline 75% / Dolma 25%",
+        "Dolma1.7 (no math, code)",
+        "Falcon+CC (QC Tulu 10%)",
+        "Falcon+CC (QC 20%)",
+        "Falcon+CC",
+        "Falcon+CC (QC Orig 10%)",
+    ],
+    "medium_ppl_performance": [
+        "DCLM-Baseline",
+        "Falcon+CC (QC 10%)",
+        "DCLM-Baseline (QC 20%)",
+        "DCLM-Baseline (QC 7%, FW2)",
+        "Falcon",
+        "DCLM-Baseline (QC 10%)",
+    ],
+    "poor_ppl_performance": [
+        "DCLM-Baseline (QC FW 10%)",
+        "DCLM-Baseline (QC 7%, FW3)",
+        "FineWeb-Edu",
+        "FineWeb-Pro",
+        "DCLM-Baseline (QC FW 3%)",
+        "C4",
+    ],
+}
+
+OLMES_PERFORMANCE_RECIPE_CHUNKS: Dict[str, List[str]] = {
+    "best_olmes_performance": [
+        "DCLM-Baseline (QC 7%, FW2)",
+        "DCLM-Baseline (QC FW 10%)",
+        "DCLM-Baseline (QC 20%)",
+        "DCLM-Baseline (QC 10%)",
+        "Falcon+CC (QC Orig 10%)",
+        "DCLM-Baseline (QC 7%, FW3)",
+        "Falcon+CC (QC 10%)",
+    ],
+    "good_olmes_performance": [
+        "FineWeb-Pro",
+        "FineWeb-Edu",
+        "DCLM-Baseline",
+        "Falcon+CC (QC 20%)",
+        "Falcon+CC (QC Tulu 10%)",
+        "DCLM-Baseline (QC FW 3%)",
+    ],
+    "medium_olmes_performance": [
+        "DCLM-Baseline 25% / Dolma 75%",
+        "DCLM-Baseline 75% / Dolma 25%",
+        "C4",
+        "Dolma1.7 (no code)",
+        "Dolma1.7 (no Reddit)",
+        "Falcon",
+    ],
+    "poor_olmes_performance": [
+        "Dolma1.7 (no math, code)",
+        "Dolma1.7 (no Flan)",
+        "DCLM-Baseline 50% / Dolma 50%",
+        "Falcon+CC",
+        "Dolma1.7",
+        "Dolma1.6++",
+    ],
+}
