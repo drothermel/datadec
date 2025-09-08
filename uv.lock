@@ -623,7 +623,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "datasets", specifier = ">=4.0.0" },
-    { name = "dr-plotter", marker = "extra == 'plotting'", directory = "../dr_plotter" },
+    { name = "dr-plotter", marker = "extra == 'plotting'", git = "https://github.com/drothermel/dr_plotter.git" },
     { name = "huggingface-hub" },
     { name = "ipykernel", specifier = ">=6.30.1" },
     { name = "matplotlib", specifier = ">=3.9.4" },
@@ -713,7 +713,7 @@ wheels = [
 [[package]]
 name = "dr-plotter"
 version = "0.1.0"
-source = { directory = "../dr_plotter" }
+source = { git = "https://github.com/drothermel/dr_plotter.git#0241c2f3fdffb963718f67888308ec614f7fbd3f" }
 dependencies = [
     { name = "matplotlib", version = "3.9.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "matplotlib", version = "3.10.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
@@ -730,21 +730,6 @@ dependencies = [
     { name = "scipy", version = "1.16.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "seaborn" },
 ]
-
-[package.metadata]
-requires-dist = [
-    { name = "matplotlib", specifier = ">=3.9.4" },
-    { name = "numpy", specifier = ">=2.0.2" },
-    { name = "pandas", specifier = ">=2.3.1" },
-    { name = "pyarrow", specifier = ">=21.0.0" },
-    { name = "pydantic", specifier = ">=2.11.7" },
-    { name = "scikit-learn", specifier = ">=1.6.1" },
-    { name = "scipy", specifier = ">=1.13.1" },
-    { name = "seaborn", specifier = ">=0.13.2" },
-]
-
-[package.metadata.requires-dev]
-dev = [{ name = "pytest", specifier = ">=8.4.1" }]
 
 [[package]]
 name = "exceptiongroup"
