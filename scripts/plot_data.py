@@ -1,15 +1,12 @@
-#!/usr/bin/env python3
-
 from __future__ import annotations
 
 import argparse
-from typing import Any
 
 import matplotlib.pyplot as plt
-
-from datadec import DataDecide
 from dr_plotter import FigureManager
 from dr_plotter.configs import PlotConfig, PositioningConfig
+
+from datadec import DataDecide
 
 VALID_DIMENSIONS = {"params", "data", "metrics", "seed"}
 
@@ -156,25 +153,19 @@ def create_arg_parser() -> argparse.ArgumentParser:
 
 
 def process_metrics_input(metrics_input: list[str] | None) -> list[str]:
-    """Process comma-separated metrics input into list of individual metrics."""
-    if not metrics_input:
-        return []
-
     metrics = []
+    if not metrics_input:
+        return metrics
     for item in metrics_input:
-        if "," in item:
-            metrics.extend([m.strip() for m in item.split(",")])
-        else:
-            metrics.append(item.strip())
+        metrics.extend([m.strip() for m in item.split(",")])
     return metrics
 
 
 def parse_fixed_values(fixed_values: list[str] | None) -> dict[str, list[str]]:
-    """Parse key=value format into dimension -> values mapping."""
-    if not fixed_values:
-        return {}
-
     fixed_dict = {}
+    if not fixed_values:
+        return fixed_dict
+
     for item in fixed_values:
         if "=" not in item:
             raise ValueError(f"Fixed values must be in key=value format, got: {item}")
@@ -182,53 +173,36 @@ def parse_fixed_values(fixed_values: list[str] | None) -> dict[str, list[str]]:
         key, value = item.split("=", 1)
         key = key.strip()
         value = value.strip()
-
-        if key not in VALID_DIMENSIONS:
-            raise ValueError(
-                f"Invalid fixed dimension: {key}. Must be one of: {VALID_DIMENSIONS}"
-            )
-
+        assert key in VALID_DIMENSIONS, (
+            f"Invalid fixed dimension: {key}. Must be one of: {VALID_DIMENSIONS}"
+        )
         if key not in fixed_dict:
             fixed_dict[key] = []
-
-        # Handle comma-separated values
-        if "," in value:
-            fixed_dict[key].extend([v.strip() for v in value.split(",")])
-        else:
-            fixed_dict[key].append(value)
-
+        fixed_dict[key].extend([v.strip() for v in value.split(",")])
     return fixed_dict
 
 
 def resolve_dimension_values(
     dimension: str,
     values: list[str] | None,
-    dd: Any,
-    params: list[str],
-    data: list[str],
-    metrics: list[str],
-    seeds: list[str] | None = None,
+    params: list[str] = [],
+    data: list[str] = [],
+    metrics: list[str] = [],
+    seeds: list[str] = [],
 ) -> list[str]:
-    if dimension == "params":
-        if values is None or (len(values) == 1 and values[0] == "all"):
-            return params
-        return values
-    elif dimension == "data":
-        if values is None or (len(values) == 1 and values[0] == "all"):
-            return data
-        return values
-    elif dimension == "metrics":
-        if values is None or (len(values) == 1 and values[0] == "all"):
-            return metrics
-        return values
-    elif dimension == "seed":
-        if seeds is None:
-            seeds = []
-        if values is None or (len(values) == 1 and values[0] == "all"):
-            return seeds
-        return values
-    else:
+    dim_map = {
+        "params": params,
+        "data": data,
+        "metrics": metrics,
+        "seed": seeds,
+    }
+
+    if dimension not in dim_map:
         raise ValueError(f"Unknown dimension: {dimension}")
+
+    if values is None or (len(values) == 1 and values[0] == "all"):
+        return dim_map[dimension]
+    return values
 
 
 # TODO: Refactor this function - it's overly complex (86 statements, 28 branches)
@@ -308,17 +282,14 @@ def plot_means(  # noqa: C901, PLR0912, PLR0915
             values = None
 
         if dim == "params" and values:
-            all_params = resolve_dimension_values("params", values, dd, [], [], [], [])
+            all_params = resolve_dimension_values("params", values)
         elif dim == "data" and values:
-            all_data = resolve_dimension_values("data", values, dd, [], [], [], [])
+            all_data = resolve_dimension_values("data", values)
         elif dim == "metrics" and values:
-            # Process comma-separated metrics
             processed_values = process_metrics_input(values)
-            all_metrics = resolve_dimension_values(
-                "metrics", processed_values, dd, [], [], [], []
-            )
+            all_metrics = resolve_dimension_values("metrics", processed_values)
         elif dim == "seed" and values:
-            all_seeds = resolve_dimension_values("seed", values, dd, [], [], [], [])
+            all_seeds = resolve_dimension_values("seed", values)
 
     # Use "all" for dimensions not explicitly specified
     if not all_params:
@@ -332,24 +303,21 @@ def plot_means(  # noqa: C901, PLR0912, PLR0915
 
     # Resolve final dimension values for plotting
     facet_values = resolve_dimension_values(
-        facet_dim,
-        row_values if row else col_values,
-        dd,
-        all_params,
-        all_data,
-        all_metrics,
-        all_seeds,
+        dimension=facet_dim,
+        values=row_values if row else col_values,
+        params=all_params,
+        data=all_data,
+        metrics=all_metrics,
+        seeds=all_seeds,
     )
     line_values_resolved = resolve_dimension_values(
-        lines, line_values, dd, all_params, all_data, all_metrics, all_seeds
+        lines,
+        line_values,
+        params=all_params,
+        data=all_data,
+        metrics=all_metrics,
+        seeds=all_seeds,
     )
-
-    # Debug what we're passing to prepare_plot_data
-    print(f"Params passed to prepare_plot_data: {all_params}")
-    print(f"Data passed to prepare_plot_data: {all_data}")
-    print(f"Metrics passed to prepare_plot_data: {all_metrics}")
-
-    # Prepare data with all requested metrics
     df = dd.prepare_plot_data(
         params=all_params,
         data=all_data,
@@ -358,18 +326,6 @@ def plot_means(  # noqa: C901, PLR0912, PLR0915
         auto_filter=True,
         melt=True,
     )
-    print(f"Data after prepare_plot_data: {df.shape}")
-    print(f"Unique params in df: {sorted(df['params'].unique())}")
-    print(f"Unique data in df: {sorted(df['data'].unique())}")
-    print(f"Unique metrics in df: {sorted(df['metric'].unique())}")
-
-    # Data is already aggregated by prepare_plot_data, just use it directly
-    print(f"Facet dimension: {facet_dim}, values: {facet_values}")
-    print(f"Line dimension: {lines}, values: {line_values_resolved}")
-    print(f"Unique facet values in data: {sorted(df[dim_to_col[facet_dim]].unique())}")
-    print(f"Unique line values in data: {sorted(df[dim_to_col[lines]].unique())}")
-
-    # Calculate dimensions
     nfacets = len(facet_values)
     if row:
         nrows, ncols = nfacets, 1
@@ -377,8 +333,6 @@ def plot_means(  # noqa: C901, PLR0912, PLR0915
     else:
         nrows, ncols = 1, nfacets
         figsize = (figsize_per_subplot * ncols, figsize_per_subplot * nrows)
-
-    # Layout configuration
     if legend_strategy == "figure":
         tight_layout_rect = (0.01, 0.15, 0.99, 0.97)
         positioning_config = PositioningConfig(legend_y_offset_factor=0.02)
@@ -395,19 +349,15 @@ def plot_means(  # noqa: C901, PLR0912, PLR0915
             "position": "best",
             "channel_titles": {lines: lines.title()},
         }
-
-    # Create title with fixed dimension info
     fixed_parts = []
     for dim, values in fixed_dict.items():
         values_str = ", ".join(values)
         fixed_parts.append(f"{dim.title()}: {values_str}")
-
     title_parts = [
         f"({'; '.join(fixed_parts)})" if fixed_parts else "",
         f"{facet_dim.title()} x {lines.title()}",
     ]
     title_parts = [part for part in title_parts if part]  # Remove empty parts
-
     layout_config = {
         "rows": nrows,
         "cols": ncols,
@@ -417,12 +367,10 @@ def plot_means(  # noqa: C901, PLR0912, PLR0915
         "subplot_kwargs": {"sharex": sharex, "sharey": sharey},
         "figure_title": f"{' '.join(title_parts)}",
     }
-
     if xlog:
         layout_config["xscale"] = "log"
     if ylog:
         layout_config["yscale"] = "log"
-
     with FigureManager(
         PlotConfig(
             layout=layout_config,
