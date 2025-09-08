@@ -314,6 +314,7 @@ class DataDecide:
         aggregate_seeds: bool = False,
         input_df: Optional[pd.DataFrame] = None,
         auto_filter: bool = True,
+        melt: bool = True,
         verbose: bool = False,
         **select_subset_kwargs,
     ) -> pd.DataFrame:
@@ -339,6 +340,8 @@ class DataDecide:
         if aggregate_seeds:
             df = self.aggregate_results(df, by_seeds=True, verbose=verbose)
 
-        return self.melt_for_plotting(
-            df, metrics=metrics, include_seeds=not aggregate_seeds
-        )
+        if melt:
+            return self.melt_for_plotting(
+                df, metrics=metrics, include_seeds=not aggregate_seeds
+            )
+        return df

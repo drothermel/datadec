@@ -1,57 +1,30 @@
-"""
-Plot Seeds Analysis Script
-
-Requires dr_plotter integration:
-    uv add "datadec[plotting]"
-
-Generates overlay plots showing perplexity metrics across different seeds.
-"""
-
 import math
 from pathlib import Path
+from typing import List, Tuple
 
 import matplotlib.pyplot as plt
 
 from datadec import DataDecide
 from datadec.constants import PPL_TYPES
-from datadec.script_utils import select_params, select_data
 from datadec.plotting_utils import safe_import_plotting
 
 # Import plotting components at module level
 FigureManager, FigureConfig, (LegendConfig, LegendStrategy) = safe_import_plotting()
 
 
-def load_data():
-    dd = DataDecide(data_dir="../outputs/example_data", verbose=True)
-    df = dd.load_dataframe("full_eval")
-    return df
+def get_data_param_combos(
+    dd: DataDecide, recipe=None, param=None
+) -> List[Tuple[str, str]]:
+    params = param if param is not None else "all"
+    recipes = recipe if recipe is not None else "all"
+    return [(d, p) for d in dd.select_data(recipes) for p in dd.select_params(params)]
 
 
-def process_params(param):
-    """Process parameter input using script utilities."""
-    if param is None:
-        return select_params("all")  # All params, properly sorted
-    elif isinstance(param, list):
-        return select_params(param)  # Validate and sort
-    else:
-        return select_params([param])  # Single param as list
-
-
-def process_recipes(recipe):
-    """Process recipe input using script utilities."""
-    if recipe is None:
-        return select_data("all")  # All data recipes
-    elif isinstance(recipe, list):
-        return select_data(recipe)  # Validate list
-    else:
-        return select_data([recipe])  # Single recipe as list
-
-
-def plot_seeds(df, num_cols, metrics, recipe=None, param=None):
-    params = process_params(param)
-    recipes = process_recipes(recipe)
-
-    combinations = [(p, r, m) for p in params for r in recipes for m in metrics]
+def plot_seeds(
+    dd: DataDecide, num_cols: int, metrics: List[str], recipe=None, param=None
+) -> None:
+    data_param_combos = get_data_param_combos(dd, recipe, param)
+    combinations = [(p, r, m) for r, p in data_param_combos for m in metrics]
     num_rows = math.ceil(len(combinations) / num_cols)
 
     with FigureManager(
@@ -63,7 +36,9 @@ def plot_seeds(df, num_cols, metrics, recipe=None, param=None):
             row = i // num_cols
             col = i % num_cols
 
-            subset = df[(df["params"] == param_val) & (df["data"] == recipe_val)]
+            subset = dd.select_subset(
+                dd.full_eval, params=[param_val], data=[recipe_val]
+            )
 
             fm.plot(
                 "line",
@@ -78,23 +53,24 @@ def plot_seeds(df, num_cols, metrics, recipe=None, param=None):
     plt.show()
 
 
-def plot_overlay(df, metrics, num_cols, recipe=None, param=None, save_dir=None):
-    params = process_params(param)
-    recipes = process_recipes(recipe)
-
-    # Create data_param combinations
-    data_param_combos = [(d, p) for d in recipes for p in params]
+def plot_overlay(
+    dd: DataDecide,
+    metrics: List[str],
+    num_cols: int,
+    recipe=None,
+    param=None,
+    save_dir=None,
+) -> None:
+    data_param_combos = get_data_param_combos(dd, recipe, param)
     num_rows = math.ceil(len(data_param_combos) / num_cols)
 
-    # Melt the dataframe to have all metrics in one column
-    filtered_df = df[(df["params"].isin(params)) & (df["data"].isin(recipes))].copy()
-    melted_df = filtered_df.melt(
-        id_vars=["params", "data", "seed", "tokens"],
-        value_vars=metrics,
-        var_name="metric",
-        value_name="value",
+    # Use unified plotting preparation - replaces manual filtering and melting!
+    melted_df = dd.prepare_plot_data(
+        params=param if param is not None else "all",
+        data=recipe if recipe is not None else "all",
+        metrics=metrics,
+        aggregate_seeds=False,
     )
-    melted_df = melted_df.dropna(subset=["value"])
 
     # Create x_labels and y_labels arrays
     x_labels = [
@@ -170,20 +146,21 @@ def plot_overlay(df, metrics, num_cols, recipe=None, param=None, save_dir=None):
 
 
 def main():
-    df = load_data()
-    # Use script utilities for validation and selection
-    recipes = select_data(["C4", "DCLM-Baseline", "Dolma1.7", "FineWeb-Edu"])
-    params = select_params(["90M", "150M", "300M"])
+    dd = DataDecide()
+    save_dir = "/Users/daniellerothermel/drotherm/repos/datadec/outputs/plots"
+    ncols = 3
+    recipes = ["C4", "DCLM-Baseline", "Dolma1.7", "FineWeb-Edu"]
+    params = ["90M", "150M", "300M"]
 
     for recipe in recipes:
         print(f"Generating plot for recipe: {recipe}")
         plot_overlay(
-            df,
-            PPL_TYPES,
-            num_cols=3,
+            dd=dd,
+            metrics=PPL_TYPES,
+            num_cols=ncols,
             recipe=recipe,
             param=params,
-            save_dir="/Users/daniellerothermel/drotherm/repos/datadec/outputs/plots",
+            save_dir=save_dir,
         )
 
 
