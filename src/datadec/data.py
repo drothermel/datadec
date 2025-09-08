@@ -63,47 +63,6 @@ class DataDecide:
     def load_dataframe(self, name: str) -> pd.DataFrame:
         return self.loader.load_name(name)
 
-    def get_filtered_df(
-        self,
-        input_df: Optional[pd.DataFrame] = None,
-        filter_types: List[str] = ["max_steps"],
-        return_means: bool = True,
-        min_params: str = "10M",
-        verbose: bool = False,
-    ) -> pd.DataFrame:
-        base_df = input_df if input_df is not None else self.full_eval
-        df = self.filter_data_quality(
-            base_df, filter_types=filter_types, verbose=verbose
-        )
-        df = self.select_subset(df, min_params=min_params, verbose=verbose)
-        if return_means:
-            df = self.aggregate_results(df, by_seeds=True, verbose=verbose)
-        return df
-
-    def easy_index_df(
-        self,
-        input_df: Optional[pd.DataFrame] = None,
-        df_name: str = "full_eval",
-        data: Optional[Union[str, List[str]]] = None,
-        params: Optional[Union[str, List[str]]] = None,
-        seeds: Optional[Union[int, List[int]]] = None,
-        step: Optional[Union[int, List[int]]] = None,
-        data_param_combos: Optional[List[Tuple[str, str]]] = None,
-        keep_cols: Optional[List[str]] = None,
-    ) -> pd.DataFrame:
-        base_df = input_df if input_df is not None else self.load_dataframe(df_name)
-        if step is not None:
-            step_list = step if isinstance(step, list) else [step]
-            base_df = base_df[base_df["step"].isin(step_list)]
-        return self.select_subset(
-            base_df,
-            data=data,
-            params=params,
-            seeds=seeds,
-            data_param_combos=data_param_combos,
-            columns=keep_cols,
-        )
-
     def aggregate_results(
         self,
         input_df: pd.DataFrame,
