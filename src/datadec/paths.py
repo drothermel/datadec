@@ -1,9 +1,11 @@
 from pathlib import Path
 from typing import Optional
 
+DEFAULT_DATA_DIR = "./data"
+
 
 class DataDecidePaths:
-    def __init__(self, data_dir: str = "./data"):
+    def __init__(self, data_dir: str = DEFAULT_DATA_DIR):
         self.data_dir = Path(data_dir) / "datadecide"
         self.dataset_dir = self.data_dir / "datasets"
         self.dataset_dir.mkdir(parents=True, exist_ok=True)
