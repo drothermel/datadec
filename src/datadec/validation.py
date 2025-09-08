@@ -40,13 +40,14 @@ def validate_metric_type(metric_type: Optional[str]) -> None:
         )
 
 
-def validate_metrics(metrics: List[str], df_cols: List[str]) -> None:
+def validate_metrics(metrics: List[str], df_cols: List[str] | None = None) -> None:
     assert all(metric in consts.ALL_KNOWN_METRICS for metric in metrics), (
         f"Unknown metrics: {metrics}. Available: {consts.ALL_KNOWN_METRICS}"
     )
-    assert all(metric in df_cols for metric in metrics), (
-        f"Unknown metrics: {metrics}. Available: {df_cols}"
-    )
+    if df_cols is not None:
+        assert all(metric in df_cols for metric in metrics), (
+            f"Unknown metrics: {metrics}. Available: {df_cols}"
+        )
 
 
 def _validated_select(

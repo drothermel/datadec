@@ -11,6 +11,8 @@ from datadec import DataDecide
 from dr_plotter import FigureManager
 from dr_plotter.configs import PlotConfig, PositioningConfig
 
+VALID_DIMENSIONS = {"params", "data", "metrics", "seed"}
+
 
 def create_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
@@ -21,20 +23,26 @@ def create_arg_parser() -> argparse.ArgumentParser:
     facet_group = parser.add_mutually_exclusive_group(required=True)
     facet_group.add_argument(
         "--row",
-        choices=["params", "data", "metrics"],
+        choices=["params", "data", "metrics", "seed"],
         help="Dimension to use for row faceting",
     )
     facet_group.add_argument(
         "--col",
-        choices=["params", "data", "metrics"],
+        choices=["params", "data", "metrics", "seed"],
         help="Dimension to use for column faceting",
     )
 
     parser.add_argument(
         "--lines",
-        choices=["params", "data", "metrics"],
+        choices=["params", "data", "metrics", "seed"],
         required=True,
         help="Dimension to use for line grouping within each subplot",
+    )
+
+    parser.add_argument(
+        "--alpha",
+        choices=["params", "data", "metrics", "seed"],
+        help="Dimension to use for alpha channel (transparency) grouping",
     )
 
     # Value selection
@@ -54,17 +62,24 @@ def create_arg_parser() -> argparse.ArgumentParser:
         required=True,
         help="Values for line dimension (or 'all' for all available)",
     )
-
-    # Fixed dimension (for dimensions not used in plotting)
     parser.add_argument(
-        "--fixed",
-        choices=["params", "data", "metrics"],
-        help="Dimension to hold constant (not used in row/col/lines)",
+        "--alpha_values",
+        nargs="+",
+        help="Values for alpha dimension (or 'all' for all available)",
     )
+
+    # Fixed dimensions (for dimensions not used in plotting)
     parser.add_argument(
         "--fixed-values",
         nargs="+",
-        help="Values for the fixed dimension",
+        help="Fixed dimension values in key=value format (e.g., --fixed-values metrics=pile-valppl seed=0)",
+    )
+
+    # Aggregation control
+    parser.add_argument(
+        "--aggregate-seeds",
+        action="store_true",
+        help="Aggregate seeds to show mean values instead of individual seeds",
     )
 
     # Data filtering (derived from dimensional arguments)
@@ -140,6 +155,51 @@ def create_arg_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def process_metrics_input(metrics_input: list[str] | None) -> list[str]:
+    """Process comma-separated metrics input into list of individual metrics."""
+    if not metrics_input:
+        return []
+
+    metrics = []
+    for item in metrics_input:
+        if "," in item:
+            metrics.extend([m.strip() for m in item.split(",")])
+        else:
+            metrics.append(item.strip())
+    return metrics
+
+
+def parse_fixed_values(fixed_values: list[str] | None) -> dict[str, list[str]]:
+    """Parse key=value format into dimension -> values mapping."""
+    if not fixed_values:
+        return {}
+
+    fixed_dict = {}
+    for item in fixed_values:
+        if "=" not in item:
+            raise ValueError(f"Fixed values must be in key=value format, got: {item}")
+
+        key, value = item.split("=", 1)
+        key = key.strip()
+        value = value.strip()
+
+        if key not in VALID_DIMENSIONS:
+            raise ValueError(
+                f"Invalid fixed dimension: {key}. Must be one of: {VALID_DIMENSIONS}"
+            )
+
+        if key not in fixed_dict:
+            fixed_dict[key] = []
+
+        # Handle comma-separated values
+        if "," in value:
+            fixed_dict[key].extend([v.strip() for v in value.split(",")])
+        else:
+            fixed_dict[key].append(value)
+
+    return fixed_dict
+
+
 def resolve_dimension_values(
     dimension: str,
     values: list[str] | None,
@@ -147,6 +207,7 @@ def resolve_dimension_values(
     params: list[str],
     data: list[str],
     metrics: list[str],
+    seeds: list[str] | None = None,
 ) -> list[str]:
     if dimension == "params":
         if values is None or (len(values) == 1 and values[0] == "all"):
@@ -160,6 +221,12 @@ def resolve_dimension_values(
         if values is None or (len(values) == 1 and values[0] == "all"):
             return metrics
         return values
+    elif dimension == "seed":
+        if seeds is None:
+            seeds = []
+        if values is None or (len(values) == 1 and values[0] == "all"):
+            return seeds
+        return values
     else:
         raise ValueError(f"Unknown dimension: {dimension}")
 
@@ -170,11 +237,13 @@ def plot_means(  # noqa: C901, PLR0912, PLR0915
     row: str | None = None,
     col: str | None = None,
     lines: str | None = None,
+    alpha: str | None = None,
     row_values: list[str] | None = None,
     col_values: list[str] | None = None,
     line_values: list[str] | None = None,
-    fixed: str | None = None,
+    alpha_values: list[str] | None = None,
     fixed_values: list[str] | None = None,
+    aggregate_seeds: bool = True,
     exclude_params: list[str] | None = None,
     exclude_data: list[str] | None = None,
     legend_strategy: str = "subplot",
@@ -193,39 +262,63 @@ def plot_means(  # noqa: C901, PLR0912, PLR0915
     exclude_params = exclude_params or []
     exclude_data = exclude_data or []
 
+    # Parse fixed values from key=value format
+    fixed_dict = parse_fixed_values(fixed_values)
+
     # Map dimension names to DataFrame column names
-    dim_to_col = {"params": "params", "data": "data", "metrics": "metric"}
+    dim_to_col = {
+        "params": "params",
+        "data": "data",
+        "metrics": "metric",
+        "seed": "seed",
+    }
 
     # Determine which dimensions we need and collect all required values
     facet_dim = row if row else col
     dimensions_used = {facet_dim, lines}
-    if fixed:
-        dimensions_used.add(fixed)
+    if alpha:
+        dimensions_used.add(alpha)
+    if fixed_dict:
+        dimensions_used.update(fixed_dict.keys())
+
+    # Validate that all 4 dimensions are accounted for
+    unaccounted = VALID_DIMENSIONS - dimensions_used
+    if unaccounted:
+        raise ValueError(
+            f"All dimensions must be assigned to row/col/lines/alpha or fixed. Missing: {unaccounted}"
+        )
 
     # Collect all values needed for each dimension
     all_params = []
     all_data = []
     all_metrics = []
+    all_seeds = []
 
     # Handle explicit dimension assignments
-    for dim in ["params", "data", "metrics"]:
+    for dim in ["params", "data", "metrics", "seed"]:
         if dim == facet_dim:
             values = row_values if row else col_values
         elif dim == lines:
             values = line_values
-        elif dim == fixed:
-            values = fixed_values
+        elif dim == alpha:
+            values = alpha_values
+        elif dim in fixed_dict:
+            values = fixed_dict[dim]
         else:
             values = None
 
-        if dim == "params":
-            if values:
-                all_params = resolve_dimension_values("params", values, dd, [], [], [])
-        elif dim == "data":
-            if values:
-                all_data = resolve_dimension_values("data", values, dd, [], [], [])
+        if dim == "params" and values:
+            all_params = resolve_dimension_values("params", values, dd, [], [], [], [])
+        elif dim == "data" and values:
+            all_data = resolve_dimension_values("data", values, dd, [], [], [], [])
         elif dim == "metrics" and values:
-            all_metrics = resolve_dimension_values("metrics", values, dd, [], [], [])
+            # Process comma-separated metrics
+            processed_values = process_metrics_input(values)
+            all_metrics = resolve_dimension_values(
+                "metrics", processed_values, dd, [], [], [], []
+            )
+        elif dim == "seed" and values:
+            all_seeds = resolve_dimension_values("seed", values, dd, [], [], [], [])
 
     # Use "all" for dimensions not explicitly specified
     if not all_params:
@@ -233,7 +326,9 @@ def plot_means(  # noqa: C901, PLR0912, PLR0915
     if not all_data:
         all_data = dd.select_data("all", exclude=exclude_data)
     if not all_metrics:
-        all_metrics = ["pile-valppl"]  # default metric
+        all_metrics = []
+    if not all_seeds:
+        all_seeds = []
 
     # Resolve final dimension values for plotting
     facet_values = resolve_dimension_values(
@@ -243,9 +338,10 @@ def plot_means(  # noqa: C901, PLR0912, PLR0915
         all_params,
         all_data,
         all_metrics,
+        all_seeds,
     )
     line_values_resolved = resolve_dimension_values(
-        lines, line_values, dd, all_params, all_data, all_metrics
+        lines, line_values, dd, all_params, all_data, all_metrics, all_seeds
     )
 
     # Debug what we're passing to prepare_plot_data
@@ -253,12 +349,12 @@ def plot_means(  # noqa: C901, PLR0912, PLR0915
     print(f"Data passed to prepare_plot_data: {all_data}")
     print(f"Metrics passed to prepare_plot_data: {all_metrics}")
 
-    # Prepare data with all requested metrics (aggregate seeds for mean plotting)
+    # Prepare data with all requested metrics
     df = dd.prepare_plot_data(
         params=all_params,
         data=all_data,
         metrics=all_metrics,
-        aggregate_seeds=True,
+        aggregate_seeds=aggregate_seeds,
         auto_filter=True,
         melt=True,
     )
@@ -301,11 +397,16 @@ def plot_means(  # noqa: C901, PLR0912, PLR0915
         }
 
     # Create title with fixed dimension info
-    fixed_str = ", ".join(fixed_values)
+    fixed_parts = []
+    for dim, values in fixed_dict.items():
+        values_str = ", ".join(values)
+        fixed_parts.append(f"{dim.title()}: {values_str}")
+
     title_parts = [
-        f"({fixed.title()}: {fixed_str})",
+        f"({'; '.join(fixed_parts)})" if fixed_parts else "",
         f"{facet_dim.title()} x {lines.title()}",
     ]
+    title_parts = [part for part in title_parts if part]  # Remove empty parts
 
     layout_config = {
         "rows": nrows,
@@ -329,24 +430,30 @@ def plot_means(  # noqa: C901, PLR0912, PLR0915
             kwargs={"suptitle_y": 0.98},
         )
     ) as fm:
-        fm.plot_faceted(
-            data=df,
-            plot_type="line",
-            rows=dim_to_col[facet_dim] if row else None,
-            cols=dim_to_col[facet_dim] if col else None,
-            lines=dim_to_col[lines],
-            x="step",
-            y="value",
-            linewidth=1.5,
-            alpha=0.8,
-            marker=None,
-            row_order=facet_values if row else None,
-            col_order=facet_values if col else None,
-            lines_order=line_values_resolved,
-            row_titles=bool(row),
-            col_titles=bool(col),
-            exterior_x_label="Training Steps",
-        )
+        plot_kwargs = {
+            "data": df,
+            "plot_type": "line",
+            "rows": dim_to_col[facet_dim] if row else None,
+            "cols": dim_to_col[facet_dim] if col else None,
+            "lines": dim_to_col[lines],
+            "x": "step",
+            "y": "value",
+            "linewidth": 1.5,
+            "marker": None,
+            "row_order": facet_values if row else None,
+            "col_order": facet_values if col else None,
+            "lines_order": line_values_resolved,
+            "row_titles": bool(row),
+            "col_titles": bool(col),
+            "exterior_x_label": "Training Steps",
+        }
+
+        if alpha:
+            plot_kwargs["alpha_by"] = dim_to_col[alpha]
+        else:
+            plot_kwargs["alpha"] = 0.8
+
+        fm.plot_faceted(**plot_kwargs)
 
         # Apply axis limits if specified
         if xlim or ylim:
@@ -382,11 +489,13 @@ def main() -> None:
         row=args.row,
         col=args.col,
         lines=args.lines,
+        alpha=args.alpha,
         row_values=args.row_values,
         col_values=args.col_values,
         line_values=args.line_values,
-        fixed=args.fixed,
+        alpha_values=args.alpha_values,
         fixed_values=getattr(args, "fixed_values", None),
+        aggregate_seeds=args.aggregate_seeds,
         exclude_params=args.exclude_params,
         exclude_data=args.exclude_data,
         legend_strategy=args.legend,
