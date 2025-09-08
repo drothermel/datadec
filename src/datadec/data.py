@@ -164,8 +164,8 @@ class DataDecide:
             df_utils.print_shape(df, "Empty DataFrame, no selection", verbose)
             return df
 
-        data = data if data is None else validation.select_data(data)
-        params = params if params is None else validation.select_params(params)
+        data = data if data is None else self.select_data(data)
+        params = params if params is None else self.select_params(params)
         df = df_utils.select_by_data_param_combos(df, data, params, data_param_combos)
         df_utils.print_shape(df, "After data/param selection", verbose)
 
@@ -252,3 +252,96 @@ class DataDecide:
         if not selected_columns:
             selected_columns = list(df.columns)
         return list(selected_columns)
+
+    def select_params(
+        self,
+        params: Union[str, List[str]] = "all",
+        exclude: Optional[List[str]] = None,
+    ) -> List[str]:
+        return validation._validated_select(
+            choices=params,
+            valid_options=consts.ALL_MODEL_SIZE_STRS,
+            name="parameter size",
+            exclude=exclude,
+        )
+
+    def select_data(
+        self,
+        data: Union[str, List[str]] = "all",
+        exclude: Optional[List[str]] = None,
+    ) -> List[str]:
+        return validation._validated_select(
+            choices=data,
+            valid_options=consts.ALL_DATA_NAMES,
+            name="data recipe",
+            exclude=exclude,
+        )
+
+    def melt_for_plotting(
+        self,
+        df: pd.DataFrame,
+        metrics: Optional[List[str]] = None,
+        include_seeds: bool = True,
+        drop_na: bool = True,
+    ) -> pd.DataFrame:
+        if metrics is None:
+            metrics = [col for col in df.columns if col in consts.ALL_KNOWN_METRICS]
+
+        id_cols = (
+            ID_COLUMNS
+            if include_seeds
+            else [col for col in ID_COLUMNS if col != "seed"]
+        )
+        available_id_cols = [col for col in id_cols if col in df.columns]
+
+        melted_df = df.melt(
+            id_vars=available_id_cols,
+            value_vars=metrics,
+            var_name="metric",
+            value_name="value",
+        )
+
+        if drop_na:
+            melted_df = melted_df.dropna(subset=["value"])
+
+        return melted_df
+
+    def prepare_plot_data(
+        self,
+        params: Optional[Union[str, List[str]]] = None,
+        data: Optional[Union[str, List[str]]] = None,
+        metrics: Optional[List[str]] = None,
+        aggregate_seeds: bool = False,
+        input_df: Optional[pd.DataFrame] = None,
+        auto_filter: bool = True,
+        melt: bool = True,
+        verbose: bool = False,
+        **select_subset_kwargs,
+    ) -> pd.DataFrame:
+        base_df = input_df if input_df is not None else self.full_eval
+
+        if auto_filter and metrics:
+            filter_types = validation.determine_filter_types(metrics)
+            df = self.filter_data_quality(
+                base_df, filter_types=filter_types, verbose=verbose
+            )
+        else:
+            df = base_df.copy()
+
+        df = self.select_subset(
+            df,
+            params=params,
+            data=data,
+            metrics=metrics,
+            verbose=verbose,
+            **select_subset_kwargs,
+        )
+
+        if aggregate_seeds:
+            df = self.aggregate_results(df, by_seeds=True, verbose=verbose)
+
+        if melt:
+            return self.melt_for_plotting(
+                df, metrics=metrics, include_seeds=not aggregate_seeds
+            )
+        return df

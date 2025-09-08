@@ -49,27 +49,32 @@ def validate_metrics(metrics: List[str]) -> None:
     )
 
 
-def select_params(
-    params: Union[str, List[str]] = "all",
+def _validated_select(
+    choices: Union[str, List[str]],
+    valid_options: List[str],
+    name: str,
     exclude: Optional[List[str]] = None,
 ) -> List[str]:
-    assert _choices_valid(params, consts.ALL_MODEL_SIZE_STRS), (
-        f"Invalid parameter size. Available: {consts.ALL_MODEL_SIZE_STRS}"
+    """Generic validated selection utility."""
+    assert _choices_valid(choices, valid_options), (
+        f"Invalid {name}. Available: {valid_options}"
     )
     return _select_choices(
-        choices=params,
-        valid_options=consts.ALL_MODEL_SIZE_STRS,
+        choices=choices,
+        valid_options=valid_options,
         exclude=exclude,
     )
 
 
-def select_data(
-    data: Union[str, List[str]] = "all",
-    exclude: Optional[List[str]] = None,
-) -> List[str]:
-    assert _choices_valid(data, consts.ALL_DATA_NAMES), (
-        f"Invalid data recipe. Available: {consts.ALL_DATA_NAMES}"
-    )
-    return _select_choices(
-        choices=data, valid_options=consts.ALL_DATA_NAMES, exclude=exclude
-    )
+def determine_filter_types(metrics: List[str]) -> List[str]:
+    filter_types = ["max_steps"]
+
+    ppl_metrics_filtered = [m for m in metrics if m in consts.PPL_TYPES]
+    olmes_metrics_filtered = [m for m in metrics if m not in consts.PPL_TYPES]
+
+    if ppl_metrics_filtered and not olmes_metrics_filtered:
+        filter_types.append("ppl")
+    elif olmes_metrics_filtered and not ppl_metrics_filtered:
+        filter_types.append("olmes")
+
+    return filter_types
