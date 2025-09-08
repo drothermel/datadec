@@ -598,6 +598,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "datasets" },
+    { name = "dr-plotter" },
     { name = "huggingface-hub" },
     { name = "ipykernel" },
     { name = "matplotlib", version = "3.9.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
@@ -610,11 +611,6 @@ dependencies = [
     { name = "pyarrow" },
 ]
 
-[package.optional-dependencies]
-plotting = [
-    { name = "dr-plotter" },
-]
-
 [package.dev-dependencies]
 dev = [
     { name = "pytest" },
@@ -623,7 +619,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "datasets", specifier = ">=4.0.0" },
-    { name = "dr-plotter", marker = "extra == 'plotting'", git = "https://github.com/drothermel/dr_plotter.git" },
+    { name = "dr-plotter", specifier = ">=0.1.0" },
     { name = "huggingface-hub" },
     { name = "ipykernel", specifier = ">=6.30.1" },
     { name = "matplotlib", specifier = ">=3.9.4" },
@@ -632,7 +628,6 @@ requires-dist = [
     { name = "pandas", specifier = ">=2.3.1" },
     { name = "pyarrow", specifier = ">=21.0.0" },
 ]
-provides-extras = ["plotting"]
 
 [package.metadata.requires-dev]
 dev = [{ name = "pytest", specifier = ">=8.4.1" }]
@@ -713,7 +708,7 @@ wheels = [
 [[package]]
 name = "dr-plotter"
 version = "0.1.0"
-source = { git = "https://github.com/drothermel/dr_plotter.git#0241c2f3fdffb963718f67888308ec614f7fbd3f" }
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "matplotlib", version = "3.9.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "matplotlib", version = "3.10.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
@@ -729,6 +724,10 @@ dependencies = [
     { name = "scipy", version = "1.15.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.10.*'" },
     { name = "scipy", version = "1.16.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "seaborn" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/bb/d8/3d70d25cdeb856bb4a7c33f463c0596d00f5ea5e31108e0ca30c6b9a60f2/dr_plotter-0.1.0.tar.gz", hash = "sha256:1d9d5696626364e13c04621d36cecdd24a662db957a64b3f193fed3f2e6d7d4b", size = 46321018 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1a/cf/3cd949ca3878432169c209ef1394b01fa409ebf6174b5bb4e1f814daccb4/dr_plotter-0.1.0-py3-none-any.whl", hash = "sha256:76024f0ec5300dff94e3b68b9d8f618f28c69655af6663c15f8320b5e3c702a6", size = 71131 },
 ]
 
 [[package]]
@@ -1155,11 +1154,11 @@ wheels = [
 
 [[package]]
 name = "joblib"
-version = "1.5.1"
+version = "1.5.2"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/dc/fe/0f5a938c54105553436dbff7a61dc4fed4b1b2c98852f8833beaf4d5968f/joblib-1.5.1.tar.gz", hash = "sha256:f4f86e351f39fe3d0d32a9f2c3d8af1ee4cec285aafcb27003dda5205576b444", size = 330475 }
+sdist = { url = "https://files.pythonhosted.org/packages/e8/5d/447af5ea094b9e4c4054f82e223ada074c552335b9b4b2d14bd9b35a67c4/joblib-1.5.2.tar.gz", hash = "sha256:3faa5c39054b2f03ca547da9b2f52fde67c06240c31853f306aea97f13647b55", size = 331077 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7d/4f/1195bbac8e0c2acc5f740661631d8d750dc38d4a32b23ee5df3cde6f4e0d/joblib-1.5.1-py3-none-any.whl", hash = "sha256:4719a31f054c7d766948dcd83e9613686b27114f190f717cec7eaa2084f8a74a", size = 307746 },
+    { url = "https://files.pythonhosted.org/packages/1e/e8/685f47e0d754320684db4425a0967f7d3fa70126bffd76110b7009a0090f/joblib-1.5.2-py3-none-any.whl", hash = "sha256:4e1f0bdbb987e6d843c70cf43714cb276623def372df3c22fe5266b2670bc241", size = 308396 },
 ]
 
 [[package]]
