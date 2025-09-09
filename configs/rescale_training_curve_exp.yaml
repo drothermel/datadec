@@ -1,0 +1,29 @@
+# Parameter Matching Analysis Configuration  
+# Comprehensive scaling analysis across parameter sizes with multiple x-axis types and scale combinations
+
+faceting:
+  # Layout: explicit grid with rows = x-axis type, cols = scale combinations
+  # Note: Using both rows AND cols (not rows_and_cols) for explicit 2D grid
+  rows: x_type
+  cols: scale_type
+  
+  # Visual encoding
+  hue_by: params
+  
+  # Focus on specific combinations if needed
+  # exclude_dimensions:
+  #   scale_type: ["lin-lin"]  # Skip linear scales if desired
+  
+  # Order model sizes consistently  
+  ordered_dimensions:
+    params: ["20M", "60M", "90M", "530M"]
+    scale_type: ["lin-lin", "lin-log", "log-lin", "log-log"]
+    x_type: ["tokens", "% training"]
+
+legend:
+  strategy: figure
+
+plot:
+  # Sizing optimized for 4x2 grid
+  subplot_width: 4.0 
+  subplot_height: 3.5
