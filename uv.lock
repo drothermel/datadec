@@ -619,7 +619,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "datasets", specifier = ">=4.0.0" },
-    { name = "dr-plotter", specifier = ">=0.1.0" },
+    { name = "dr-plotter", editable = "../dr_plotter" },
     { name = "huggingface-hub" },
     { name = "ipykernel", specifier = ">=6.30.1" },
     { name = "matplotlib", specifier = ">=3.9.4" },
@@ -708,7 +708,7 @@ wheels = [
 [[package]]
 name = "dr-plotter"
 version = "0.1.0"
-source = { registry = "https://pypi.org/simple" }
+source = { editable = "../dr_plotter" }
 dependencies = [
     { name = "matplotlib", version = "3.9.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "matplotlib", version = "3.10.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
@@ -725,10 +725,21 @@ dependencies = [
     { name = "scipy", version = "1.16.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "seaborn" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/bb/d8/3d70d25cdeb856bb4a7c33f463c0596d00f5ea5e31108e0ca30c6b9a60f2/dr_plotter-0.1.0.tar.gz", hash = "sha256:1d9d5696626364e13c04621d36cecdd24a662db957a64b3f193fed3f2e6d7d4b", size = 46321018 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/1a/cf/3cd949ca3878432169c209ef1394b01fa409ebf6174b5bb4e1f814daccb4/dr_plotter-0.1.0-py3-none-any.whl", hash = "sha256:76024f0ec5300dff94e3b68b9d8f618f28c69655af6663c15f8320b5e3c702a6", size = 71131 },
+
+[package.metadata]
+requires-dist = [
+    { name = "matplotlib", specifier = ">=3.9.4" },
+    { name = "numpy", specifier = ">=2.0.2" },
+    { name = "pandas", specifier = ">=2.3.1" },
+    { name = "pyarrow", specifier = ">=21.0.0" },
+    { name = "pydantic", specifier = ">=2.11.7" },
+    { name = "scikit-learn", specifier = ">=1.6.1" },
+    { name = "scipy", specifier = ">=1.13.1" },
+    { name = "seaborn", specifier = ">=0.13.2" },
 ]
+
+[package.metadata.requires-dev]
+dev = [{ name = "pytest", specifier = ">=8.4.1" }]
 
 [[package]]
 name = "exceptiongroup"

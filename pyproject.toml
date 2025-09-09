@@ -32,6 +32,9 @@ line-length = 88
 cache-dir = ".ruff_cache"
 exclude = ["outputs/*", "notebooks/*"]
 
+[tool.uv.sources]
+dr-plotter = { path = "../dr_plotter", editable = true }
+
 
 [dependency-groups]
 dev = [
