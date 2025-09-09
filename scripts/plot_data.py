@@ -17,7 +17,6 @@ from dr_plotter.scripting import (
     validate_layout_options,
     build_faceting_config,
     build_plot_config,
-    validate_dimensions_interactive,
 )
 from dr_plotter.scripting.utils import show_or_save_plot
 from dr_plotter.theme import BASE_THEME, FigureStyles, Theme
@@ -100,9 +99,8 @@ def main(**kwargs):
         **cli_kwargs,
     )
 
-    # Validate dimensional usage
-    if not validate_dimensions_interactive(df, faceting_config):
-        return
+    # Skip validate_dimensions_interactive - too many false positives
+    # DataDec users know their data and don't need this validation
 
     # Create plot configuration using framework
     plot_config = build_plot_config(config, theme=DATADEC_THEME, **cli_kwargs)
