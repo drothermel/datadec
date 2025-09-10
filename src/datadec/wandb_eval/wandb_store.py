@@ -10,22 +10,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
 
-CORE_RUN_FIELDS = {
-    "run_id",
-    "run_name",
-    "state",
-    "project",
-    "entity",
-    "created_at",
-    "runtime",
-}
-
-DEFAULT_RUNS_FILENAME = "runs_metadata.parquet"
-DEFAULT_HISTORY_FILENAME = "runs_history.parquet"
-
-# WandB history field patterns
-WANDB_SYSTEM_FIELDS = {"_step", "_timestamp"}
-WANDB_REDUNDANT_HISTORY_FIELDS = {"run_id", "run_name"}
+from datadec.wandb_eval import wandb_constants as wconsts
 
 
 class Base(DeclarativeBase):
@@ -66,8 +51,12 @@ class WandBStore:
     def store_run(self, run_data: dict[str, Any]) -> None:
         with Session(self.engine) as session:
             run_id = run_data["run_id"]
-            core_data = {k: run_data.get(k) for k in CORE_RUN_FIELDS if k in run_data}
-            raw_data = {k: v for k, v in run_data.items() if k not in CORE_RUN_FIELDS}
+            core_data = {
+                k: run_data.get(k) for k in wconsts.CORE_RUN_FIELDS if k in run_data
+            }
+            raw_data = {
+                k: v for k, v in run_data.items() if k not in wconsts.CORE_RUN_FIELDS
+            }
             core_data["raw_data"] = raw_data
             existing_run = session.get(WandBRun, run_id)
             if existing_run:
@@ -93,7 +82,8 @@ class WandBStore:
                 metrics = {
                     k: v
                     for k, v in step_data.items()
-                    if not k.startswith("_") and k not in WANDB_REDUNDANT_HISTORY_FIELDS
+                    if not k.startswith("_")
+                    and k not in wconsts.WANDB_REDUNDANT_HISTORY_FIELDS
                 }
                 history_record = WandBHistory(
                     run_id=run_id, step=step, timestamp=timestamp, metrics=metrics
@@ -119,7 +109,7 @@ class WandBStore:
             runs = result.scalars().all()
             data = []
             for run in runs:
-                row = {field: getattr(run, field) for field in CORE_RUN_FIELDS}
+                row = {field: getattr(run, field) for field in wconsts.CORE_RUN_FIELDS}
                 if run.raw_data:
                     row.update(run.raw_data)
                 data.append(row)
@@ -163,8 +153,8 @@ class WandBStore:
     def export_to_parquet(
         self,
         output_dir: str,
-        runs_filename: str = DEFAULT_RUNS_FILENAME,
-        history_filename: str = DEFAULT_HISTORY_FILENAME,
+        runs_filename: str = wconsts.DEFAULT_RUNS_FILENAME,
+        history_filename: str = wconsts.DEFAULT_HISTORY_FILENAME,
     ) -> None:
         output_path = Path(output_dir)
         output_path.mkdir(exist_ok=True)

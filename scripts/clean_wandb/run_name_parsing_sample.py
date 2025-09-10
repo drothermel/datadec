@@ -1,4 +1,3 @@
-# %%
 import pandas as pd
 
 from datadec import analysis_helpers
@@ -16,11 +15,12 @@ DYNAMICS_TO_KEEP = [
     "final_train_loss",
     "min_train_loss",
 ]
+# parsing.HISTORY_DROP for cols to drop
 
 
 def create_unified_parsed_df(sample_runs):
     all_runs_data = []
-    runs_df, history_df = analysis_helpers.load_runs_and_history_df()
+    runs_df, history_df = analysis_helpers.load_df()
 
     for _, row in sample_runs.iterrows():
         run_name = row["run_name"]
@@ -54,18 +54,9 @@ def main():
     print(f"Showing parsing results for {len(sample_runs)} random runs:\n")
 
     unified_df = create_unified_parsed_df(sample_runs)
-    # print(unified_df)
-    # print(f"\nDataFrame shape: {unified_df.shape}")
-    return unified_df
-
-
-# %%
-unified_df = main()
-unified_df
-
-# %%
-if __name__ == "__main__":
-    unified_df = main()
     print(unified_df)
+    print(f"\nDataFrame shape: {unified_df.shape}")
 
-# %%
+
+if __name__ == "__main__":
+    main()

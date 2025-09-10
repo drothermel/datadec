@@ -5,42 +5,18 @@ from typing import Any, Dict, List, Optional
 import pandas as pd
 
 from datadec import WandBStore
-
-METHODS = ["dpo", "finetune"]
-DEFAULT_REQUIRED_PARAMS = ["learning_rate", "model_size_m", "method"]
-DEFAULT_COLUMNS = ["step", "learning_rate", "train_loss", "total_tokens", "epoch"]
-SCIENTIFIC_NOTATION_COLUMNS = ["max_lr", "min_lr", "initial_lr", "final_lr"]
-THREE_DECIMAL_PLACES_COLUMNS = [
-    "initial_train_loss",
-    "final_train_loss",
-    "min_train_loss",
-    "loss_improvement",
-]
-COMMA_SEPARATED_COLUMNS = ["max_tokens"]
-TRUNCATE_COLUMNS = ["run_id"]
-TRUNCATE_LENGTH = 50
-RANDOM_SEED = 42
+from datadec.wandb_eval import wandb_constants as wconsts
 
 
 # ================ Load Runs =================
-def load_runs_df() -> pd.DataFrame:
-    store = WandBStore("postgresql+psycopg://localhost/wandb_test")
-    return store.get_runs()
-
-
-def load_history_df() -> pd.DataFrame:
-    store = WandBStore("postgresql+psycopg://localhost/wandb_test")
-    return store.get_history()
-
-
-def load_runs_and_history_df() -> tuple[pd.DataFrame, pd.DataFrame]:
+def load_df() -> pd.DataFrame:
     store = WandBStore("postgresql+psycopg://localhost/wandb_test")
     return store.get_runs(), store.get_history()
 
 
 def load_random_run_sample(sample_size: int = 20) -> pd.DataFrame:
-    runs_df = load_runs_df()
-    random.seed(RANDOM_SEED)
+    runs_df, history_df = load_df()
+    random.seed(wconsts.RANDOM_SEED)
     return runs_df.sample(n=min(sample_size, len(runs_df)))
 
 
@@ -114,7 +90,7 @@ def extract_hyperparameters(run_name: str) -> Dict[str, Any]:
         params["lr"] = params["learning_rate"]
         del params["learning_rate"]
     run_name_lower = run_name.lower()
-    for method in METHODS:
+    for method in wconsts.METHODS:
         if method in run_name_lower:
             params["method"] = method
             break
@@ -243,7 +219,7 @@ def get_complete_experimental_data(
     runs_df: pd.DataFrame, required_params: List[str] = None
 ) -> pd.DataFrame:
     if required_params is None:
-        required_params = DEFAULT_REQUIRED_PARAMS
+        required_params = wconsts.DEFAULT_REQUIRED_PARAMS
     enriched_runs = []
     for _, row in runs_df.iterrows():
         params = extract_hyperparameters(row["run_name"])
@@ -378,17 +354,17 @@ def print_dynamics_summary_table(
             width = default_widths.get(col, 12)
             value = dynamics.get(col)
 
-            if col in TRUNCATE_COLUMNS:
+            if col in wconsts.TRUNCATE_COLUMNS:
                 formatted_value = (
-                    value[:TRUNCATE_LENGTH] + "..."
-                    if value and len(value) > TRUNCATE_LENGTH
+                    value[: wconsts.TRUNCATE_LENGTH] + "..."
+                    if value and len(value) > wconsts.TRUNCATE_LENGTH
                     else (value or "None")
                 )
-            elif col in SCIENTIFIC_NOTATION_COLUMNS:
+            elif col in wconsts.SCIENTIFIC_NOTATION_COLUMNS:
                 formatted_value = f"{value:.2e}" if value is not None else "None"
-            elif col in THREE_DECIMAL_PLACES_COLUMNS:
+            elif col in wconsts.THREE_DECIMAL_PLACES_COLUMNS:
                 formatted_value = f"{value:.3f}" if value is not None else "None"
-            elif col in COMMA_SEPARATED_COLUMNS:
+            elif col in wconsts.COMMA_SEPARATED_COLUMNS:
                 formatted_value = f"{value:,.0f}" if value is not None else "None"
             else:
                 formatted_value = str(value) if value is not None else "None"
@@ -410,7 +386,7 @@ def print_training_history_sample(
         return
     print(f"Run ID: {run_id}")
     print(f"Training progression ({len(run_history)} steps):")
-    columns = DEFAULT_COLUMNS if columns is None else columns
+    columns = wconsts.DEFAULT_COLUMNS if columns is None else columns
     available_cols = [col for col in columns if col in run_history.columns]
     print(f"\nFirst {sample_size} training steps:")
     print(run_history[available_cols].head(sample_size).to_string(index=False))
