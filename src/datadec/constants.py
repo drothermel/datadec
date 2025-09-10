@@ -5,6 +5,11 @@ from typing import Any, Dict, List, Set
 MODEL_DETAILS_DF_NAME = "model_details"
 DATASET_DETAILS_DF_NAME = "dataset_details"
 
+# Formatting constants for scripts
+THOUSAND = 1000
+MILLION = 1e6
+BILLION = 1e9
+
 
 # --------- Model Architecture Details ---------
 
