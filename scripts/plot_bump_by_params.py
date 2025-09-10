@@ -243,10 +243,8 @@ def main(**kwargs):
 
     with FigureManager(plot_config) as fm:
         fm.plot(
-            "bump",
-            0,
-            0,
             bump_data,
+            "bump",
             time_col="time",
             value_col="score",
             category_col="category",

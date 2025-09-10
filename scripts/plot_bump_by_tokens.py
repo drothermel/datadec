@@ -231,7 +231,7 @@ def main(**kwargs):
     title = f"Recipe Rankings by {x_label} ({metric_str})"
 
     with FigureManager(plot_config) as fm:
-        fm.plot_faceted(
+        fm.plot(
             bump_data,
             "bump",
             time_col="time",
