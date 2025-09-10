@@ -16,7 +16,7 @@ dependencies = [
     "ipykernel>=6.30.1",
     "orjson>=3.11.2",
     "matplotlib>=3.9.4",
-    "dr-plotter>=0.1.1",
+    "dr-plotter>=0.1.2",
 ]
 
 [build-system]

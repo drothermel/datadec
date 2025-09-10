@@ -651,7 +651,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "datasets", specifier = ">=4.0.0" },
-    { name = "dr-plotter", specifier = ">=0.1.1" },
+    { name = "dr-plotter", specifier = ">=0.1.2" },
     { name = "huggingface-hub" },
     { name = "ipykernel", specifier = ">=6.30.1" },
     { name = "matplotlib", specifier = ">=3.9.4" },
@@ -739,7 +739,7 @@ wheels = [
 
 [[package]]
 name = "dr-plotter"
-version = "0.1.1"
+version = "0.1.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click", version = "8.1.8", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
@@ -760,9 +760,9 @@ dependencies = [
     { name = "scipy", version = "1.16.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "seaborn" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/58/fe/945bbfba5f93d2904cffdb53552bbc07b97f31c430f685a4eb5d6eece08f/dr_plotter-0.1.1.tar.gz", hash = "sha256:544dcc2a25ade5ba27160c66156926ab371f495a487e15a9ccba1ab948cfe027", size = 46083587 }
+sdist = { url = "https://files.pythonhosted.org/packages/c1/7f/483fd41391fca071d27bde60938b0de6a1668a5b37b9cbbadea9848e416e/dr_plotter-0.1.2.tar.gz", hash = "sha256:a5e4c690ea1f2aaf364e1f50aa47f339b2763a3200314bdaffaec17ed2cc79a3", size = 46083624 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/10/7e/9d94379c563c76d7780d9c8e7bd32466f5b66a0760061c70c63356f451e2/dr_plotter-0.1.1-py3-none-any.whl", hash = "sha256:9e94e7eda4c7e0f5a1757cf13bec4c0ef645d62de140226db8fbc002bfa6f59f", size = 82647 },
+    { url = "https://files.pythonhosted.org/packages/f5/40/3d3807d3d56ca3c5b564616d777f60050fde81541f6478a18da749fa2dcd/dr_plotter-0.1.2-py3-none-any.whl", hash = "sha256:5cb8e40c11d5cec89c5382e0edc9c47849ca9b722ec821face487fd35b662196", size = 82706 },
 ]
 
 [[package]]
