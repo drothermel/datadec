@@ -651,7 +651,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "datasets", specifier = ">=4.0.0" },
-    { name = "dr-plotter", editable = "../dr_plotter" },
+    { name = "dr-plotter", specifier = ">=0.1.1" },
     { name = "huggingface-hub" },
     { name = "ipykernel", specifier = ">=6.30.1" },
     { name = "matplotlib", specifier = ">=3.9.4" },
@@ -739,8 +739,8 @@ wheels = [
 
 [[package]]
 name = "dr-plotter"
-version = "0.1.0"
-source = { editable = "../dr_plotter" }
+version = "0.1.1"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click", version = "8.1.8", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "click", version = "8.2.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
@@ -760,23 +760,10 @@ dependencies = [
     { name = "scipy", version = "1.16.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "seaborn" },
 ]
-
-[package.metadata]
-requires-dist = [
-    { name = "click", specifier = ">=8.0.0" },
-    { name = "matplotlib", specifier = ">=3.9.4" },
-    { name = "numpy", specifier = ">=2.0.2" },
-    { name = "pandas", specifier = ">=2.3.1" },
-    { name = "pyarrow", specifier = ">=21.0.0" },
-    { name = "pydantic", specifier = ">=2.11.7" },
-    { name = "pyyaml", specifier = ">=6.0.0" },
-    { name = "scikit-learn", specifier = ">=1.6.1" },
-    { name = "scipy", specifier = ">=1.13.1" },
-    { name = "seaborn", specifier = ">=0.13.2" },
+sdist = { url = "https://files.pythonhosted.org/packages/58/fe/945bbfba5f93d2904cffdb53552bbc07b97f31c430f685a4eb5d6eece08f/dr_plotter-0.1.1.tar.gz", hash = "sha256:544dcc2a25ade5ba27160c66156926ab371f495a487e15a9ccba1ab948cfe027", size = 46083587 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/10/7e/9d94379c563c76d7780d9c8e7bd32466f5b66a0760061c70c63356f451e2/dr_plotter-0.1.1-py3-none-any.whl", hash = "sha256:9e94e7eda4c7e0f5a1757cf13bec4c0ef645d62de140226db8fbc002bfa6f59f", size = 82647 },
 ]
-
-[package.metadata.requires-dev]
-dev = [{ name = "pytest", specifier = ">=8.4.1" }]
 
 [[package]]
 name = "exceptiongroup"
