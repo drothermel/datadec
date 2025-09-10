@@ -22,6 +22,7 @@ TRUNCATE_LENGTH = 50
 RANDOM_SEED = 42
 
 
+# ================ Load Runs =================
 def load_runs_df() -> pd.DataFrame:
     store = WandBStore("postgresql+psycopg://localhost/wandb_test")
     return store.get_runs()
@@ -43,17 +44,7 @@ def load_random_run_sample(sample_size: int = 20) -> pd.DataFrame:
     return runs_df.sample(n=min(sample_size, len(runs_df)))
 
 
-def print_run_name_parsed(run_name, parsed_params):
-    print(f"RUN NAME:    {run_name}")
-    print("    PARSED PARAMETERS:")
-    if len(parsed_params) == 0:
-        print("      No parameters extracted\n")
-        return
-    for key, value in sorted(parsed_params.items()):
-        print(f"      {key:<20}: {pretty_print_vals(value)}")
-    print()
-
-
+# ================ Pretty Print Helpers =================
 def pretty_print_vals(value: Any) -> str:
     if isinstance(value, float):
         return pretty_print_floats(value)
@@ -66,90 +57,83 @@ def pretty_print_floats(value: float) -> str:
     return f"{value:.6f}".rstrip("0").rstrip(".")
 
 
+# ================ Heuristic Parsing =================
+
+
 def extract_hyperparameters(run_name: str) -> Dict[str, Any]:
-    """Extract comprehensive parameters from WandB run name.
-
-    Parses structured run names like:
-    2025_08_21-08_24_43_test_finetune_DD-dolma1_7-4M_main_1Mtx1_--learning_rate=5e-06
-    """
     params = {}
-
-    # 1. Date and time extraction
     date_time_match = re.search(r"^(\d{4}_\d{2}_\d{2})-(\d{2}_\d{2}_\d{2})_", run_name)
     if date_time_match:
         params["run_date"] = date_time_match.group(1)
         params["run_time"] = date_time_match.group(2)
 
-    # 2. Experiment name (between timestamp and DD-)
     exp_name_match = re.search(
         r"^\d{4}_\d{2}_\d{2}-\d{2}_\d{2}_\d{2}_(.+?)_DD-", run_name
     )
     if exp_name_match:
-        params["experiment_name"] = exp_name_match.group(1)
+        params["exp_name"] = exp_name_match.group(1)
 
-    # 3. Dataset family
     dataset_match = re.search(r"DD-(dolma\d+_\d+)-", run_name)
     if dataset_match:
-        params["dataset_family"] = dataset_match.group(1)
+        params["data"] = dataset_match.group(1)
 
-    # 4. Model size
     model_match = re.search(r"dolma1_7-(\d+)M", run_name)
     if model_match:
-        params["model_size_m"] = int(model_match.group(1))
+        params["real_params"] = int(model_match.group(1))
 
-    # 5. Checkpoint name
     checkpoint_match = re.search(r"-\d+M_(\w+)_\d+Mtx", run_name)
     if checkpoint_match:
         params["checkpoint"] = checkpoint_match.group(1)
 
-    # 6. Parse Mtx format: <tokens>Mtx<epochs> (e.g., "10Mtx1" = 10M tokens × 1 epoch)
     mtx_match = re.search(r"(\d+)Mtx(\d+)", run_name)
     if mtx_match:
         dataset_tokens = int(mtx_match.group(1))
         epochs_from_name = int(mtx_match.group(2))
-        params["dataset_tokens_m"] = dataset_tokens
-        params["epochs_from_name"] = epochs_from_name
-        params["dataset_total_m"] = dataset_tokens  # Keep for backward compatibility
-        params["mtx_format"] = True
+        params["epochs"] = epochs_from_name
+        params["total_tok"] = dataset_tokens
     else:
-        # Legacy pattern: main_<base>Mtx<mult> (dataset scaling)
         legacy_match = re.search(r"main_(\d+)Mtx(\d+)", run_name)
         if legacy_match:
             base = int(legacy_match.group(1))
             mult = int(legacy_match.group(2))
-            params["dataset_base_m"] = base
-            params["dataset_mult"] = mult
-            params["dataset_total_m"] = base * mult
+            params["token_base"] = base
+            params["token_mult"] = mult
+            params["total_tok"] = base * mult
 
-    # 7. Extract all explicit parameters (--param=value format)
     explicit_params = re.findall(r"--(\w+)=([^\s_]+)", run_name)
     for param_name, param_value in explicit_params:
-        param_key = f"explicit_{param_name}"
-        # Try to convert to appropriate type
         try:
             if "." in param_value or "e" in param_value.lower():
-                params[param_key] = float(param_value)
+                params[param_name] = float(param_value)
             else:
-                params[param_key] = int(param_value)
+                params[param_name] = int(param_value)
         except ValueError:
-            params[param_key] = param_value
+            params[param_name] = param_value
 
-    # 8. Learning rate (prioritize explicit, fallback to legacy patterns)
-    if "explicit_learning_rate" in params:
-        params["learning_rate"] = params["explicit_learning_rate"]
-    else:
-        lr_match = re.search(r"--learning_rate=([0-9\.e\-]+)", run_name)
-        if lr_match:
-            params["learning_rate"] = float(lr_match.group(1))
-
-    # 9. Training method detection
+    if "learning_rate" in params:
+        params["lr"] = params["learning_rate"]
+        del params["learning_rate"]
     run_name_lower = run_name.lower()
     for method in METHODS:
         if method in run_name_lower:
             params["method"] = method
             break
-
+    params = {f"{k}_rnp": v for k, v in params.items()}
     return params
+
+
+# ================ Unprocessed =================
+
+
+def print_run_name_parsed(run_name, parsed_params):
+    print(f"RUN NAME:    {run_name}")
+    print("    PARSED PARAMETERS:")
+    if len(parsed_params) == 0:
+        print("      No parameters extracted\n")
+        return
+    for key, value in sorted(parsed_params.items()):
+        print(f"      {key:<20}: {pretty_print_vals(value)}")
+    print()
 
 
 def filter_runs_by_method(runs_df: pd.DataFrame, method: str) -> pd.DataFrame:
@@ -180,9 +164,6 @@ def get_token_dynamics(run_history: pd.DataFrame) -> Dict[str, Any]:
     return {
         "max_tokens": total_tokens.max(),
         "min_tokens": total_tokens.min(),
-        "token_progression": total_tokens.iloc[-1] - total_tokens.iloc[0]
-        if len(total_tokens) > 1
-        else None,
     }
 
 
@@ -206,13 +187,9 @@ def get_lr_dynamics(run_history: pd.DataFrame) -> Dict[str, Any]:
     if len(lr_values) == 0:
         return {}
     return {
-        "max_lr": lr_values.max(),
-        "min_lr": lr_values.min(),
         "initial_lr": lr_values.iloc[0],
+        "max_lr": lr_values.max(),
         "final_lr": lr_values.iloc[-1],
-        "lr_decay_ratio": lr_values.iloc[-1] / lr_values.iloc[0]
-        if lr_values.iloc[0] != 0
-        else None,
     }
 
 
@@ -234,7 +211,7 @@ def get_run_training_dynamics(
     run_history = run_history.sort_values("step")
     dynamics = {
         "run_id": run_id,
-        "total_steps": len(run_history),
+        "step_count": len(run_history),
     }
     if "step" in run_history.columns:
         dynamics.update(get_step_dynamics(run_history))
