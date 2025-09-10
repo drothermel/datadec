@@ -86,7 +86,10 @@ class WandBStore:
             )
             for step_data in history_data:
                 step = step_data.get("_step")
-                timestamp = step_data.get("_timestamp")
+                timestamp_raw = step_data.get("_timestamp")
+                timestamp = (
+                    datetime.fromtimestamp(timestamp_raw) if timestamp_raw else None
+                )
                 metrics = {
                     k: v
                     for k, v in step_data.items()

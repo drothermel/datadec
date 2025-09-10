@@ -29,6 +29,7 @@ def download_wandb_data(
             return
         if force_refresh:
             click.echo("Force refresh enabled - downloading all runs")
+        click.echo(f"Total runs to process: {len(runs_to_download)}")
         stats = downloader.download_project(
             entity, project, force_refresh, _progress_callback
         )

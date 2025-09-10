@@ -9,6 +9,7 @@ DataDecide is a Python library for downloading, processing, and analyzing machin
 -   **Advanced Filtering:** Multiple filter types including perplexity (`ppl`), OLMES metrics (`olmes`), and training steps (`max_steps`) with composable combinations.
 -   **Scripting Utilities:** Powerful parameter and data selection with `"all"` keyword, exclusion lists, and intelligent validation for reproducible analysis scripts.
 -   **Native Plotting:** Production-ready scaling analysis plots using dr_plotter integration.
+-   **WandB Integration:** Download and store ML experiment data from Weights & Biases with PostgreSQL backend and incremental updates.
 
 ## Getting Started
 
@@ -102,6 +103,20 @@ python scripts/plot_scaling_analysis.py
 # Generates 7 different plot configurations in plots/test_plotting/
 ```
 
+### WandB Integration
+
+Download experiment data from Weights & Biases projects with PostgreSQL storage:
+
+```bash
+# Download WandB data to PostgreSQL
+python scripts/wandb_download.py --entity your-entity --project your-project --database-url postgresql+psycopg://localhost/wandb
+
+# Optionally export to parquet files
+python scripts/wandb_download.py --entity your-entity --project your-project --database-url postgresql+psycopg://localhost/wandb --output-dir ./wandb_data/
+```
+
+See [docs/wandb_integration.md](docs/wandb_integration.md) for complete setup and usage guide.
+
 The `notebooks/explore_data.py` file provides a more detailed example of how to use the library.
 
 ## Data
@@ -120,12 +135,16 @@ The data processing pipeline downloads these datasets and stores them in the `da
 │   ├── data.py           # Main DataDecide class
 │   ├── df_utils.py       # DataFrame utilities and filtering
 │   ├── script_utils.py   # Parameter/data selection utilities
+│   ├── wandb_store.py    # WandB PostgreSQL storage backend
+│   ├── wandb_downloader.py # WandB download logic with incremental updates
 │   └── ...              # Pipeline, parsing, constants, etc.
 ├── scripts/               # Utilities and analysis scripts
 │   ├── plot_scaling_analysis.py  # Production plotting system
+│   ├── wandb_download.py  # WandB data download CLI script
 │   └── legacy_deprecated/ # Archived legacy code
 ├── docs/                  # Documentation and reports
 │   ├── processes/         # Templates and guides
+│   ├── wandb_integration.md # WandB system setup and usage guide
 │   └── reports/          # Project documentation
 ├── plots/                 # Generated visualizations
 └── notebooks/            # Analysis notebooks
