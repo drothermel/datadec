@@ -82,7 +82,8 @@ Access via `dd.load_dataframe(name)`:
 - **Path access:** Always `paths.get_path(name)`, never individual properties
 - **Performance:** Use assertions, not exceptions (ML performance requirement)
 - **Type hints:** Required on all functions
-- **Imports:** Absolute imports at top of file
+- **CRITICAL - NO COMMENTS:** Under NO circumstances add comments or docstrings unless explicitly requested
+- **CRITICAL - IMPORTS LOCATION:** ALL imports MUST be at the top of the file, NEVER in the middle
 - **Plotting:** Use native dr_plotter, NOT custom wrapper functions
 
 ## Working Principles
