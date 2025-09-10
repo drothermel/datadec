@@ -17,6 +17,9 @@ dependencies = [
     "orjson>=3.11.2",
     "matplotlib>=3.9.4",
     "dr-plotter>=0.1.2",
+    "wandb>=0.21.0",
+    "sqlalchemy>=2.0.0",
+    "psycopg[binary]>=3.0.0",
 ]
 
 [build-system]
@@ -35,4 +38,5 @@ exclude = ["outputs/*", "notebooks/*"]
 [dependency-groups]
 dev = [
     "pytest>=8.4.1",
+    "pytest-postgresql>=7.0.0",
 ]

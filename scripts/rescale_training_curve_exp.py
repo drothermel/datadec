@@ -130,7 +130,7 @@ def main(**kwargs):
         ),
     )
     with FigureManager(plot_config) as fm:
-        fm.plot_faceted(df, "line")
+        fm.plot(df, "line")
     show_or_save_plot(
         fm.fig,
         kwargs.get("save_dir"),
