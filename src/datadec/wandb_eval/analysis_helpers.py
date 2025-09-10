@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional
 
 import pandas as pd
 
-from datadec import WandBStore
+from datadec.wandb_eval.wandb_store import WandBStore
 from datadec.wandb_eval import wandb_constants as wconsts
 
 

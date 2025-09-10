@@ -2,25 +2,16 @@ import pandas as pd
 
 from datadec.wandb_eval import wandb_constants as wconsts
 
-HISTORY_DPO_ONLY = [
-    "rewards/chosen",
-    "rewards/margin",
-    "rewards/average",
-    "rewards/accuracy",
-    "rewards/rejected",
-]
-HISTORY_EXTRA_DROP_COLS = [
+EXTRA_DROP_COLS = [
     "run_name",  # same as run_id, keep one
     "total_tokens_including_padding",  # keep total tokens instead
     "per_device_tps",
     "per_device_tps_including_padding",
 ]
-HISTORY_DROP = [
-    *HISTORY_DPO_ONLY,
-    *HISTORY_EXTRA_DROP_COLS,
+ALL_DROP_COLS = [
+    *wconsts.DPO_ONLY_KEYS,
+    *EXTRA_DROP_COLS,
 ]
-
-RUNS_EXTRA_DROP_COLS = []
 
 
 def get_created_time_key(df: pd.DataFrame) -> str:
@@ -46,21 +37,33 @@ def split_obj_vs_nonobj_cols(df: pd.DataFrame) -> tuple[list[str], list[str]]:
 
 
 def filter_constant_and_nanconstant_cols(df: pd.DataFrame) -> list[str]:
-    constant_columns = []
-    nanconstant_columns = []
+    all_nan_columns = []
+    all_constant_columns = []
+    constant_or_nan_columns = []
     other_columns = []
+
     for col in df.columns:
         if df[col].dtype == "object":
             assert False, "Filter object columns before finding constants"
+
         nunique = df[col].nunique()
-        if nunique == 1:
-            constant_columns.append(col)
-        elif nunique == 2 and any(df[col].isna()):
-            nanconstant_columns.append(col)
-        other_columns.append(col)
+        has_nan = df[col].isna().any()
+
+        if nunique == 0:
+            all_nan_columns.append(col)
+        elif nunique == 1 and not has_nan:
+            all_constant_columns.append(col)
+        elif nunique == 1 and has_nan:
+            constant_or_nan_columns.append(col)
+        elif nunique == 2 and has_nan:
+            constant_or_nan_columns.append(col)
+        else:
+            other_columns.append(col)
+
     return {
-        "constant": constant_columns,
-        "nanconstant": nanconstant_columns,
+        "all_nan": all_nan_columns,
+        "all_constant": all_constant_columns,
+        "constant_or_nan": constant_or_nan_columns,
         "other": other_columns,
     }
 
