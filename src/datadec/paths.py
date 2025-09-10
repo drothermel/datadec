@@ -1,9 +1,11 @@
 from pathlib import Path
 from typing import Optional
 
+DEFAULT_DATA_DIR = "./data"
+
 
 class DataDecidePaths:
-    def __init__(self, data_dir: str = "./data"):
+    def __init__(self, data_dir: str = DEFAULT_DATA_DIR):
         self.data_dir = Path(data_dir) / "datadecide"
         self.dataset_dir = self.data_dir / "datasets"
         self.dataset_dir.mkdir(parents=True, exist_ok=True)
@@ -19,6 +21,8 @@ class DataDecidePaths:
             "full_eval": "full_eval",
             "mean_eval": "mean_eval",
             "std_eval": "std_eval",
+            "full_eval_melted": "full_eval_melted",
+            "mean_eval_melted": "mean_eval_melted",
         }
 
         package_root = Path(__file__).parent

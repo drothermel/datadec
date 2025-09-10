@@ -9,8 +9,6 @@ from datadec.loader import DataFrameLoader
 from datadec.paths import DataDecidePaths
 from datadec.pipeline import DataPipeline, verbose_print
 
-ID_COLUMNS = ["params", "data", "seed", "step", "tokens"]
-
 
 class DataDecide:
     def __init__(
@@ -52,49 +50,16 @@ class DataDecide:
     def mean_eval(self) -> pd.DataFrame:
         return self.loader.load_name("mean_eval")
 
+    @property
+    def full_eval_melted(self) -> pd.DataFrame:
+        return self.loader.load_name("full_eval_melted")
+
+    @property
+    def mean_eval_melted(self) -> pd.DataFrame:
+        return self.loader.load_name("mean_eval_melted")
+
     def load_dataframe(self, name: str) -> pd.DataFrame:
         return self.loader.load_name(name)
-
-    def get_filtered_df(
-        self,
-        input_df: Optional[pd.DataFrame] = None,
-        filter_types: List[str] = ["max_steps"],
-        return_means: bool = True,
-        min_params: str = "10M",
-        verbose: bool = False,
-    ) -> pd.DataFrame:
-        base_df = input_df if input_df is not None else self.full_eval
-        df = self.filter_data_quality(
-            base_df, filter_types=filter_types, verbose=verbose
-        )
-        df = self.select_subset(df, min_params=min_params, verbose=verbose)
-        if return_means:
-            df = self.aggregate_results(df, by_seeds=True, verbose=verbose)
-        return df
-
-    def easy_index_df(
-        self,
-        input_df: Optional[pd.DataFrame] = None,
-        df_name: str = "full_eval",
-        data: Optional[Union[str, List[str]]] = None,
-        params: Optional[Union[str, List[str]]] = None,
-        seeds: Optional[Union[int, List[int]]] = None,
-        step: Optional[Union[int, List[int]]] = None,
-        data_param_combos: Optional[List[Tuple[str, str]]] = None,
-        keep_cols: Optional[List[str]] = None,
-    ) -> pd.DataFrame:
-        base_df = input_df if input_df is not None else self.load_dataframe(df_name)
-        if step is not None:
-            step_list = step if isinstance(step, list) else [step]
-            base_df = base_df[base_df["step"].isin(step_list)]
-        return self.select_subset(
-            base_df,
-            data=data,
-            params=params,
-            seeds=seeds,
-            data_param_combos=data_param_combos,
-            columns=keep_cols,
-        )
 
     def aggregate_results(
         self,
@@ -231,7 +196,9 @@ class DataDecide:
         selected_columns = set()
 
         if include_id_columns:
-            selected_columns.update(col for col in ID_COLUMNS if col in df.columns)
+            selected_columns.update(
+                col for col in consts.FULL_ID_COLUMNS if col in df.columns
+            )
 
         if columns:
             selected_columns.update(col for col in columns if col in df.columns)
@@ -284,27 +251,13 @@ class DataDecide:
         include_seeds: bool = True,
         drop_na: bool = True,
     ) -> pd.DataFrame:
-        if metrics is None:
-            metrics = [col for col in df.columns if col in consts.ALL_KNOWN_METRICS]
-
-        id_cols = (
-            ID_COLUMNS
-            if include_seeds
-            else [col for col in ID_COLUMNS if col != "seed"]
+        return df_utils.melt_for_plotting(
+            df=df,
+            metrics=metrics,
+            include_seeds=include_seeds,
+            drop_na=drop_na,
+            id_columns=consts.FULL_ID_COLUMNS,
         )
-        available_id_cols = [col for col in id_cols if col in df.columns]
-
-        melted_df = df.melt(
-            id_vars=available_id_cols,
-            value_vars=metrics,
-            var_name="metric",
-            value_name="value",
-        )
-
-        if drop_na:
-            melted_df = melted_df.dropna(subset=["value"])
-
-        return melted_df
 
     def prepare_plot_data(
         self,

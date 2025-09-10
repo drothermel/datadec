@@ -321,19 +321,39 @@ DROP_METRICS: List[str] = [
     "logits_per_byte_corr",
 ]
 
-# All known metrics (PPL + cross product of OLMES tasks and metric types)
-ALL_KNOWN_METRICS: Set[str] = set(PPL_TYPES) | {
+OLMES_METRICS: List[str] = [
     f"{task}_{metric_type}" for task, metric_type in product(OLMES_TASKS, METRIC_NAMES)
-}
+]
+ALL_KNOWN_METRICS: Set[str] = set(PPL_TYPES) | set(OLMES_METRICS)
 
 PARAM_NUMERIC_COL = "params_numeric"
-KEY_COLS: List[str] = ["params", "data", "seed", "step"]
+
+# ID Column Hierarchies - Single Source of Truth
+FULL_ID_COLUMNS: List[str] = [
+    "params",
+    "data",
+    "seed",
+    "step",
+    "tokens",
+    "compute",
+]  # Complete identification with compute for plotting
+MEAN_ID_COLUMNS: List[str] = [
+    "params",
+    "data",
+    "step",
+    "tokens",
+    "compute",
+]  # Aggregation grouping (no seed) with compute for plotting
+KEY_COLUMNS: List[str] = [
+    "params",
+    "data",
+    "seed",
+    "step",
+]  # Basic parsing keys (before tokens/compute added)
 STEP_TOK_COMP_COLS: List[str] = ["params", "step", "tokens", "compute"]
 DWN_DROP_COLS: List[str] = ["chinchilla", "tokens", "compute"]
 PPL_DROP_COLS: List[str] = ["__index_level_0__"]
-FINAL_PREFIX_COLS: List[str] = KEY_COLS + [
-    "tokens",
-    "compute",
+FINAL_PREFIX_COLS: List[str] = FULL_ID_COLUMNS + [
     "total_steps",
     "warmup_steps",
     "lr_max",
