@@ -1,6 +1,77 @@
 import pandas as pd
+import re
+from typing import Optional
 
 from datadec.wandb_eval import wandb_constants as wconsts
+from datadec.constants import HARDCODED_SIZE_MAPPING
+
+
+def extract_dataset_from_model_path(model_path: str) -> Optional[str]:
+    if pd.isna(model_path) or not isinstance(model_path, str):
+        return None
+
+    match = re.search(r"DataDecide-([^/]+?)(?:-\d+[MB])?/snapshots", model_path)
+    if match:
+        dataset_part = match.group(1)
+        return dataset_part
+    return None
+
+
+def map_wandb_dataset_to_datadecide(wandb_dataset: str) -> Optional[str]:
+    if not wandb_dataset:
+        return None
+
+    mapping = {
+        "dolma1_7": "Dolma1.7",
+        "dclm-baseline": "DCLM-Baseline",
+        "dclm-baseline-25p-dolma1.7-75p": "DCLM-Baseline 25% / Dolma 75%",
+        "dclm-baseline-50p-dolma1.7-50p": "DCLM-Baseline 50% / Dolma 50%",
+        "dclm-baseline-75p-dolma1.7-25p": "DCLM-Baseline 75% / Dolma 25%",
+        "dclm-baseline-qc-10p": "DCLM-Baseline (QC 10%)",
+        "dclm-baseline-qc-20p": "DCLM-Baseline (QC 20%)",
+        "dclm-baseline-qc-7p-fw2": "DCLM-Baseline (QC 7%, FW2)",
+        "dclm-baseline-qc-7p-fw3": "DCLM-Baseline (QC 7%, FW3)",
+        "dclm-baseline-qc-fw-10p": "DCLM-Baseline (QC FW 10%)",
+        "dclm-baseline-qc-fw-3p": "DCLM-Baseline (QC FW 3%)",
+    }
+
+    return mapping.get(wandb_dataset)
+
+
+def map_wandb_model_size_to_datadecide(model_size: int) -> Optional[str]:
+    if pd.isna(model_size):
+        return None
+
+    closest_param = None
+    min_diff = float("inf")
+    for param_str, numeric_val in HARDCODED_SIZE_MAPPING.items():
+        diff = abs(numeric_val - model_size)
+        if diff < min_diff:
+            min_diff = diff
+            closest_param = param_str
+
+    return closest_param
+
+
+def add_datadecide_columns(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.copy()
+
+    # Extract dataset from model_name_or_path and map to DataDecide format
+    if "model_name_or_path" in df.columns:
+        df["wandb_dataset"] = df["model_name_or_path"].apply(
+            extract_dataset_from_model_path
+        )
+        df["data"] = df["wandb_dataset"].apply(map_wandb_dataset_to_datadecide)
+    else:
+        df["data"] = None
+
+    # Map model_size to DataDecide params format
+    if "model_size" in df.columns:
+        df["params"] = df["model_size"].apply(map_wandb_model_size_to_datadecide)
+    else:
+        df["params"] = None
+
+    return df
 
 
 def split_oe_cols_vs_rest(remaining_cols: list[str]) -> tuple[list[str], list[str]]:
@@ -317,7 +388,8 @@ def parse_oe_eval_metrics(filtered_df: pd.DataFrame, oe_cols: list) -> pd.DataFr
     if not oe_cols:
         return pd.DataFrame(index=filtered_df.index)
 
-    result_df = pd.DataFrame(index=filtered_df.index)
+    # Collect all metrics in a dictionary first to avoid fragmentation
+    all_metrics = {}
 
     for oe_col in oe_cols:
         if oe_col not in filtered_df.columns:
@@ -352,13 +424,21 @@ def parse_oe_eval_metrics(filtered_df: pd.DataFrame, oe_cols: list) -> pd.DataFr
                         continue
                     else:
                         # Store scalar values (float, int, str)
-                        if col_name not in result_df.columns:
-                            result_df[col_name] = pd.NA
-                        result_df.loc[idx, col_name] = metric_value
+                        if col_name not in all_metrics:
+                            all_metrics[col_name] = pd.Series(
+                                index=filtered_df.index, dtype="object"
+                            )
+                        all_metrics[col_name].loc[idx] = metric_value
 
             except (json.JSONDecodeError, KeyError, TypeError):
                 # Skip malformed JSON
                 continue
+
+    # Create DataFrame from collected metrics all at once
+    if all_metrics:
+        result_df = pd.DataFrame(all_metrics, index=filtered_df.index)
+    else:
+        result_df = pd.DataFrame(index=filtered_df.index)
 
     return result_df
 
@@ -390,11 +470,14 @@ def rebuild_run_df(filtered_df: pd.DataFrame, categorized_cols: dict) -> pd.Data
         if col in filtered_df.columns:
             result_df[f"{col}_summary"] = filtered_df[col]
 
-    # Step 5: Add core_hpm_cols without suffix
+    # Step 5: Add core_hpm_cols with _hpm suffix (except learning_rate gets special treatment)
     core_hpm_cols = categorized_cols.get("core_hpm_cols", [])
     for col in core_hpm_cols:
         if col in filtered_df.columns:
-            result_df[col] = filtered_df[col]
+            if col == "learning_rate":
+                result_df[f"{col}_hpm"] = filtered_df[col]
+            else:
+                result_df[col] = filtered_df[col]
 
     # Step 6: Add chat_cols without suffix
     chat_cols = categorized_cols.get("chat_cols", [])
@@ -433,3 +516,281 @@ def rebuild_run_df(filtered_df: pd.DataFrame, categorized_cols: dict) -> pd.Data
         result_df = pd.concat([result_df, oe_metrics_df], axis=1)
 
     return result_df
+
+
+def fix_oe_metrics_to_final_step_only(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.copy()
+
+    # Find all oe_* columns
+    oe_cols = [col for col in df.columns if col.startswith("oe_")]
+
+    if not oe_cols:
+        return df
+
+    # For each run, find the max step (final step) and set oe_* to NaN for all other steps
+    for run_id in df["run_id"].unique():
+        run_mask = df["run_id"] == run_id
+        run_data = df[run_mask]
+
+        if len(run_data) > 1:  # Only process runs with multiple steps
+            max_step = run_data["step"].max()
+
+            # Set oe_* metrics to NaN for all non-final steps
+            non_final_mask = run_mask & (df["step"] != max_step)
+            df.loc[non_final_mask, oe_cols] = pd.NA
+
+    return df
+
+
+def copy_final_oe_to_pretraining_metrics(
+    df: pd.DataFrame, pretraining_df: pd.DataFrame
+) -> pd.DataFrame:
+    df = df.copy()
+
+    # Find matching metric pairs: oe_* in finetuning vs same metric in pretraining
+    wandb_eval_cols = [col for col in df.columns if col.startswith("oe_")]
+    pretrain_eval_cols = [
+        col
+        for col in pretraining_df.columns
+        if any(col == wandb_col[3:] for wandb_col in wandb_eval_cols)
+    ]
+
+    # Create mapping: oe_task_metric -> task_metric
+    metric_mapping = {}
+    for wandb_col in wandb_eval_cols:
+        pretrain_equivalent = wandb_col[3:]  # Remove 'oe_' prefix
+        if pretrain_equivalent in pretrain_eval_cols:
+            metric_mapping[wandb_col] = pretrain_equivalent
+
+    print(
+        f"Found {len(metric_mapping)} matching metric pairs for continuous scaling curves"
+    )
+
+    # Add pretraining metric columns to finetuning DataFrame (initially all NaN)
+    for pretrain_col in metric_mapping.values():
+        if pretrain_col not in df.columns:
+            df[pretrain_col] = pd.NA
+
+    # For each run, copy the final oe_* value to the corresponding pretraining metric column
+    for run_id in df["run_id"].unique():
+        run_mask = df["run_id"] == run_id
+        run_data = df[run_mask]
+
+        # Find the final step (where oe_* metrics exist)
+        final_row = run_data[
+            run_data[[col for col in wandb_eval_cols if col in run_data.columns]]
+            .notna()
+            .any(axis=1)
+        ]
+
+        if len(final_row) > 0:
+            final_row = final_row.iloc[-1]  # Get the last row with oe_* data
+
+            # Copy each oe_* value to its corresponding pretraining metric column
+            for wandb_col, pretrain_col in metric_mapping.items():
+                if wandb_col in final_row and pd.notna(final_row[wandb_col]):
+                    # Set this value only on the final step for this run
+                    final_step_mask = run_mask & (df.index == final_row.name)
+                    df.loc[final_step_mask, pretrain_col] = final_row[wandb_col]
+
+    return df
+
+
+def integrate_pretraining_data(unified_df: pd.DataFrame) -> pd.DataFrame:
+    from datadec.data import DataDecide
+
+    # Load pretraining data - use mean_eval to get averaged results across seeds
+    dd = DataDecide()
+    pretraining_df = dd.mean_eval
+
+    # Get max tokens/compute for each (params, data) combination
+    pretrain_max = (
+        pretraining_df.groupby(["params", "data"])
+        .agg({"tokens": "max", "compute": "max"})
+        .reset_index()
+    )
+    pretrain_max.columns = [
+        "params",
+        "data",
+        "pretrain_tokens_max",
+        "pretrain_compute_max",
+    ]
+
+    # Left join to add pretraining info to finetuning data
+    result_df = unified_df.merge(pretrain_max, on=["params", "data"], how="left")
+
+    # Add pretraining boolean column
+    result_df["pretraining"] = result_df["pretrain_tokens_max"].notna()
+
+    # Add cumulative tokens (pretraining + current finetuning tokens)
+    result_df["cumulative_tokens"] = result_df["pretrain_tokens_max"].fillna(
+        0
+    ) + result_df["total_tokens"].fillna(0)
+
+    # Add cumulative compute (pretraining + current finetuning compute estimate)
+    if "total_compute_est" in result_df.columns:
+        result_df["cumulative_compute"] = result_df["pretrain_compute_max"].fillna(
+            0
+        ) + result_df["total_compute_est"].fillna(0)
+
+    # Fix oe_* metrics to only appear on final step of each run
+    result_df = fix_oe_metrics_to_final_step_only(result_df)
+
+    # Copy final oe_* values to matching pretraining metric columns for continuous curves
+    result_df = copy_final_oe_to_pretraining_metrics(result_df, pretraining_df)
+
+    # Add pretraining progression rows for each matching run
+    result_df = add_pretraining_progression_rows(result_df, pretraining_df)
+
+    return result_df
+
+
+def add_pretraining_progression_rows(
+    finetuning_df: pd.DataFrame, pretraining_df: pd.DataFrame
+) -> pd.DataFrame:
+    # Get unique (params, data) combinations that have pretraining data
+    pretrain_combinations = pretraining_df[["params", "data"]].drop_duplicates()
+
+    pretraining_rows = []
+
+    # For each (params, data) combination
+    for _, combo in pretrain_combinations.iterrows():
+        params = combo["params"]
+        data = combo["data"]
+
+        # Get all finetuning runs for this combination
+        matching_runs = finetuning_df[
+            (finetuning_df["params"] == params)
+            & (finetuning_df["data"] == data)
+            & (finetuning_df["pretraining"] == True)
+        ]
+
+        if len(matching_runs) == 0:
+            continue
+
+        # Get pretraining progression for this combination
+        pretrain_progression = pretraining_df[
+            (pretraining_df["params"] == params) & (pretraining_df["data"] == data)
+        ].copy()
+
+        # For each unique run_id, create pretraining progression rows
+        unique_runs = matching_runs["run_id"].unique()
+
+        for run_id in unique_runs:
+            # Get the run metadata (hyperparameters, etc.)
+            run_metadata = matching_runs[matching_runs["run_id"] == run_id].iloc[0]
+
+            # Create pretraining rows for this run
+            for _, pretrain_row in pretrain_progression.iterrows():
+                new_row = run_metadata.copy()
+
+                # Override with pretraining-specific values
+                new_row["total_tokens"] = pretrain_row["tokens"]
+                new_row["cumulative_tokens"] = pretrain_row[
+                    "tokens"
+                ]  # No finetuning yet
+                new_row["step"] = pretrain_row["step"]
+
+                # Set compute values
+                if "compute" in pretrain_row:
+                    new_row["total_compute_est"] = pretrain_row["compute"]
+                    new_row["cumulative_compute"] = pretrain_row["compute"]
+
+                # Copy evaluation metrics from pretraining
+                for col in pretrain_row.index:
+                    if col in ["params", "data", "step", "tokens", "compute"]:
+                        continue  # Already handled
+                    if col in new_row.index:
+                        new_row[col] = pretrain_row[col]
+
+                # Clear oe_* metrics (these are only for finetuning)
+                oe_cols = [col for col in new_row.index if col.startswith("oe_")]
+                for col in oe_cols:
+                    new_row[col] = pd.NA
+
+                # Mark as pretraining phase
+                new_row["pretraining_phase"] = True
+
+                pretraining_rows.append(new_row)
+
+    if pretraining_rows:
+        # Create DataFrame from pretraining rows
+        pretrain_df_new = pd.DataFrame(pretraining_rows)
+
+        # Add pretraining_phase column to original data
+        finetuning_df["pretraining_phase"] = False
+
+        # Combine pretraining and finetuning data
+        combined_df = pd.concat([pretrain_df_new, finetuning_df], ignore_index=True)
+
+        print(f"Added {len(pretrain_df_new)} pretraining progression rows")
+        return combined_df
+    else:
+        # Add pretraining_phase column even if no pretraining rows
+        finetuning_df["pretraining_phase"] = False
+        return finetuning_df
+
+
+def create_unified_df(runs_df: pd.DataFrame, history_df: pd.DataFrame) -> pd.DataFrame:
+    result = parse_and_clean_runs_df(runs_df)
+    parsed_runs_df = rebuild_run_df(result["filtered_df"], result)
+
+    # Handle overlapping columns - drop 'project' from history (keep from runs)
+    history_clean = history_df.drop(columns=["project"])
+
+    # Inner join: only keep history rows that have corresponding metadata
+    # This drops DPO runs and other filtered-out runs from history
+    unified_df = history_clean.merge(parsed_runs_df, on="run_id", how="inner")
+
+    # Add standardized DataDecide columns for joining
+    unified_df = add_datadecide_columns(unified_df)
+
+    return unified_df
+
+
+def create_unified_df_with_pretraining(
+    runs_df: pd.DataFrame, history_df: pd.DataFrame
+) -> pd.DataFrame:
+    unified_df = create_unified_df(runs_df, history_df)
+    return integrate_pretraining_data(unified_df)
+
+
+def create_and_save_pretrain_posttrain_df(
+    save_path: Optional[str] = None,
+) -> pd.DataFrame:
+    from datadec.wandb_eval import analysis_helpers
+    from pathlib import Path
+
+    if save_path is None:
+        save_path = wconsts.PRETRAIN_POSTTRAIN_DF_PATH
+
+    print("Creating unified pretraining + finetuning DataFrame...")
+    runs_df, history_df = analysis_helpers.load_df()
+    final_df = create_unified_df_with_pretraining(runs_df, history_df)
+
+    # Convert large int columns to float for parquet compatibility
+    large_int_cols = [
+        "total_tokens",
+        "cumulative_tokens",
+        "pretrain_tokens_max",
+        "cumulative_compute",
+        "pretrain_compute_max",
+        "total_compute_est",
+    ]
+    for col in large_int_cols:
+        if col in final_df.columns:
+            final_df[col] = final_df[col].astype("float64")
+
+    # Ensure directory exists
+    Path(save_path).parent.mkdir(parents=True, exist_ok=True)
+
+    print(f"Saving to {save_path}...")
+    if save_path.endswith(".parquet"):
+        final_df.to_parquet(save_path, index=False)
+    else:
+        final_df.to_pickle(save_path)
+
+    print(f"✓ Saved {final_df.shape[0]:,} rows × {final_df.shape[1]} columns")
+    print("✓ Contains pretraining + finetuning with continuous scaling curves")
+
+    return final_df

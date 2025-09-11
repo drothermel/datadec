@@ -2,6 +2,9 @@
 TIME_KEYS = ["created_at", "timestamp"]
 EARLIEST_GOOD_RUN_DATE = "2025-08-21"
 
+# Output paths
+PRETRAIN_POSTTRAIN_DF_PATH = "./data/pretrain_posttrain.pkl"
+
 # OE Evaluation task and metric constants
 OE_EVAL_TASKS = [
     "csqa",
@@ -106,6 +109,7 @@ KEY_SETS = {
     "core_hpm_cols": [
         "seed",
         "model_size",
+        "model_name_or_path",
         "learning_rate",
         "num_train_epochs",
         "max_train_samples",
@@ -136,7 +140,6 @@ KEY_SETS = {
     "paths_cols": [
         "output_dir",
         "dataset_mix_dir",
-        "model_name_or_path",
         "dataset_local_cache_dir",
     ],
     "chat_cols": [
