@@ -56,6 +56,11 @@ class WandBDownloader:
         }
         run_data.update(run.config)
         run_data.update(run.summary._json_dict)
+
+        # Add proper tags from run.tags (this was missing!)
+        if run.tags:
+            run_data["wandb_tags"] = ",".join(run.tags)
+
         return run_data
 
     def download_run_history(self, run: wandb.apis.public.Run) -> list[dict[str, Any]]:

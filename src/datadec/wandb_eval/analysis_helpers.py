@@ -406,6 +406,69 @@ def print_training_history_sample(
                 )
 
 
+def analyze_category_overlap(df, category_cols, category_name):
+    if len(category_cols) < 2:
+        return None
+
+    overlaps = []
+    for i, col1 in enumerate(category_cols):
+        for j, col2 in enumerate(category_cols[i + 1 :], i + 1):
+            if col1 in df.columns and col2 in df.columns:
+                col1_data = df[col1]
+                col2_data = df[col2]
+
+                both_non_null = col1_data.notna() & col2_data.notna()
+                if both_non_null.sum() > 0:
+                    matching_values = (col1_data == col2_data) & both_non_null
+                    overlap_pct = (matching_values.sum() / both_non_null.sum()) * 100
+                    overlaps.append(
+                        {
+                            "col1": col1,
+                            "col2": col2,
+                            "overlap_pct": overlap_pct,
+                            "shared_rows": both_non_null.sum(),
+                        }
+                    )
+
+    return overlaps
+
+
+def analyze_object_columns(df, object_cols):
+    print("\n=== OBJECT COLUMNS DETAILED ANALYSIS ===")
+    for i, col in enumerate(object_cols, 1):
+        if col in df.columns:
+            data = df[col]
+            non_null_count = data.notna().sum()
+            total_count = len(data)
+            pct_non_null = (non_null_count / total_count) * 100
+
+            try:
+                unique_vals = data.dropna().unique()
+                n_unique = len(unique_vals)
+
+                print(
+                    f"{i:2d}. {col:<25} | unique: {n_unique:3d} | non-null: {non_null_count:3d}/{total_count} ({pct_non_null:5.1f}%)"
+                )
+
+                if n_unique <= 10 and n_unique > 0:
+                    print(f"    All values: {unique_vals.tolist()}")
+                elif n_unique > 0:
+                    sample_val = unique_vals[0]
+                    if isinstance(sample_val, str) and len(sample_val) > 50:
+                        sample_val = sample_val[:50] + "..."
+                    print(f"    Sample: {sample_val}")
+                else:
+                    print("    No values")
+
+            except Exception as e:
+                print(f"    Error analyzing: {type(e).__name__}")
+
+            print()
+        else:
+            print(f"{i:2d}. {col:<25} | NOT FOUND IN DATAFRAME")
+            print()
+
+
 def format_experimental_summary(summary: Dict[str, Any], method: str = None) -> str:
     method_label = f" {method.upper()}" if method else ""
     lines = [
