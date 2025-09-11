@@ -4,56 +4,23 @@ from typing import Any, Dict, List, Optional
 
 import pandas as pd
 
-from datadec import WandBStore
-
-METHODS = ["dpo", "finetune"]
-DEFAULT_REQUIRED_PARAMS = ["learning_rate", "model_size_m", "method"]
-DEFAULT_COLUMNS = ["step", "learning_rate", "train_loss", "total_tokens", "epoch"]
-SCIENTIFIC_NOTATION_COLUMNS = ["max_lr", "min_lr", "initial_lr", "final_lr"]
-THREE_DECIMAL_PLACES_COLUMNS = [
-    "initial_train_loss",
-    "final_train_loss",
-    "min_train_loss",
-    "loss_improvement",
-]
-COMMA_SEPARATED_COLUMNS = ["max_tokens"]
-TRUNCATE_COLUMNS = ["run_id"]
-TRUNCATE_LENGTH = 50
-RANDOM_SEED = 42
+from datadec.wandb_eval.wandb_store import WandBStore
+from datadec.wandb_eval import wandb_constants as wconsts
 
 
-def load_runs_df() -> pd.DataFrame:
-    store = WandBStore("postgresql+psycopg://localhost/wandb_test")
-    return store.get_runs()
-
-
-def load_history_df() -> pd.DataFrame:
-    store = WandBStore("postgresql+psycopg://localhost/wandb_test")
-    return store.get_history()
-
-
-def load_runs_and_history_df() -> tuple[pd.DataFrame, pd.DataFrame]:
+# ================ Load Runs =================
+def load_df() -> pd.DataFrame:
     store = WandBStore("postgresql+psycopg://localhost/wandb_test")
     return store.get_runs(), store.get_history()
 
 
 def load_random_run_sample(sample_size: int = 20) -> pd.DataFrame:
-    runs_df = load_runs_df()
-    random.seed(RANDOM_SEED)
+    runs_df, history_df = load_df()
+    random.seed(wconsts.RANDOM_SEED)
     return runs_df.sample(n=min(sample_size, len(runs_df)))
 
 
-def print_run_name_parsed(run_name, parsed_params):
-    print(f"RUN NAME:    {run_name}")
-    print("    PARSED PARAMETERS:")
-    if len(parsed_params) == 0:
-        print("      No parameters extracted\n")
-        return
-    for key, value in sorted(parsed_params.items()):
-        print(f"      {key:<20}: {pretty_print_vals(value)}")
-    print()
-
-
+# ================ Pretty Print Helpers =================
 def pretty_print_vals(value: Any) -> str:
     if isinstance(value, float):
         return pretty_print_floats(value)
@@ -66,90 +33,83 @@ def pretty_print_floats(value: float) -> str:
     return f"{value:.6f}".rstrip("0").rstrip(".")
 
 
+# ================ Heuristic Parsing =================
+
+
 def extract_hyperparameters(run_name: str) -> Dict[str, Any]:
-    """Extract comprehensive parameters from WandB run name.
-
-    Parses structured run names like:
-    2025_08_21-08_24_43_test_finetune_DD-dolma1_7-4M_main_1Mtx1_--learning_rate=5e-06
-    """
     params = {}
-
-    # 1. Date and time extraction
     date_time_match = re.search(r"^(\d{4}_\d{2}_\d{2})-(\d{2}_\d{2}_\d{2})_", run_name)
     if date_time_match:
         params["run_date"] = date_time_match.group(1)
         params["run_time"] = date_time_match.group(2)
 
-    # 2. Experiment name (between timestamp and DD-)
     exp_name_match = re.search(
         r"^\d{4}_\d{2}_\d{2}-\d{2}_\d{2}_\d{2}_(.+?)_DD-", run_name
     )
     if exp_name_match:
-        params["experiment_name"] = exp_name_match.group(1)
+        params["exp_name"] = exp_name_match.group(1)
 
-    # 3. Dataset family
     dataset_match = re.search(r"DD-(dolma\d+_\d+)-", run_name)
     if dataset_match:
-        params["dataset_family"] = dataset_match.group(1)
+        params["data"] = dataset_match.group(1)
 
-    # 4. Model size
     model_match = re.search(r"dolma1_7-(\d+)M", run_name)
     if model_match:
-        params["model_size_m"] = int(model_match.group(1))
+        params["real_params"] = int(model_match.group(1))
 
-    # 5. Checkpoint name
     checkpoint_match = re.search(r"-\d+M_(\w+)_\d+Mtx", run_name)
     if checkpoint_match:
         params["checkpoint"] = checkpoint_match.group(1)
 
-    # 6. Parse Mtx format: <tokens>Mtx<epochs> (e.g., "10Mtx1" = 10M tokens × 1 epoch)
     mtx_match = re.search(r"(\d+)Mtx(\d+)", run_name)
     if mtx_match:
         dataset_tokens = int(mtx_match.group(1))
         epochs_from_name = int(mtx_match.group(2))
-        params["dataset_tokens_m"] = dataset_tokens
-        params["epochs_from_name"] = epochs_from_name
-        params["dataset_total_m"] = dataset_tokens  # Keep for backward compatibility
-        params["mtx_format"] = True
+        params["epochs"] = epochs_from_name
+        params["total_tok"] = dataset_tokens
     else:
-        # Legacy pattern: main_<base>Mtx<mult> (dataset scaling)
         legacy_match = re.search(r"main_(\d+)Mtx(\d+)", run_name)
         if legacy_match:
             base = int(legacy_match.group(1))
             mult = int(legacy_match.group(2))
-            params["dataset_base_m"] = base
-            params["dataset_mult"] = mult
-            params["dataset_total_m"] = base * mult
+            params["token_base"] = base
+            params["token_mult"] = mult
+            params["total_tok"] = base * mult
 
-    # 7. Extract all explicit parameters (--param=value format)
     explicit_params = re.findall(r"--(\w+)=([^\s_]+)", run_name)
     for param_name, param_value in explicit_params:
-        param_key = f"explicit_{param_name}"
-        # Try to convert to appropriate type
         try:
             if "." in param_value or "e" in param_value.lower():
-                params[param_key] = float(param_value)
+                params[param_name] = float(param_value)
             else:
-                params[param_key] = int(param_value)
+                params[param_name] = int(param_value)
         except ValueError:
-            params[param_key] = param_value
+            params[param_name] = param_value
 
-    # 8. Learning rate (prioritize explicit, fallback to legacy patterns)
-    if "explicit_learning_rate" in params:
-        params["learning_rate"] = params["explicit_learning_rate"]
-    else:
-        lr_match = re.search(r"--learning_rate=([0-9\.e\-]+)", run_name)
-        if lr_match:
-            params["learning_rate"] = float(lr_match.group(1))
-
-    # 9. Training method detection
+    if "learning_rate" in params:
+        params["lr"] = params["learning_rate"]
+        del params["learning_rate"]
     run_name_lower = run_name.lower()
-    for method in METHODS:
+    for method in wconsts.METHODS:
         if method in run_name_lower:
             params["method"] = method
             break
-
+    params = {f"{k}_rnp": v for k, v in params.items()}
     return params
+
+
+# ================ Unprocessed =================
+
+
+def print_run_name_parsed(run_name, parsed_params):
+    print(f"RUN NAME:    {run_name}")
+    print("    PARSED PARAMETERS:")
+    if len(parsed_params) == 0:
+        print("      No parameters extracted\n")
+        return
+    for key, value in sorted(parsed_params.items()):
+        print(f"      {key:<20}: {pretty_print_vals(value)}")
+    print()
 
 
 def filter_runs_by_method(runs_df: pd.DataFrame, method: str) -> pd.DataFrame:
@@ -180,9 +140,6 @@ def get_token_dynamics(run_history: pd.DataFrame) -> Dict[str, Any]:
     return {
         "max_tokens": total_tokens.max(),
         "min_tokens": total_tokens.min(),
-        "token_progression": total_tokens.iloc[-1] - total_tokens.iloc[0]
-        if len(total_tokens) > 1
-        else None,
     }
 
 
@@ -206,13 +163,9 @@ def get_lr_dynamics(run_history: pd.DataFrame) -> Dict[str, Any]:
     if len(lr_values) == 0:
         return {}
     return {
-        "max_lr": lr_values.max(),
-        "min_lr": lr_values.min(),
         "initial_lr": lr_values.iloc[0],
+        "max_lr": lr_values.max(),
         "final_lr": lr_values.iloc[-1],
-        "lr_decay_ratio": lr_values.iloc[-1] / lr_values.iloc[0]
-        if lr_values.iloc[0] != 0
-        else None,
     }
 
 
@@ -234,7 +187,7 @@ def get_run_training_dynamics(
     run_history = run_history.sort_values("step")
     dynamics = {
         "run_id": run_id,
-        "total_steps": len(run_history),
+        "step_count": len(run_history),
     }
     if "step" in run_history.columns:
         dynamics.update(get_step_dynamics(run_history))
@@ -266,7 +219,7 @@ def get_complete_experimental_data(
     runs_df: pd.DataFrame, required_params: List[str] = None
 ) -> pd.DataFrame:
     if required_params is None:
-        required_params = DEFAULT_REQUIRED_PARAMS
+        required_params = wconsts.DEFAULT_REQUIRED_PARAMS
     enriched_runs = []
     for _, row in runs_df.iterrows():
         params = extract_hyperparameters(row["run_name"])
@@ -401,17 +354,17 @@ def print_dynamics_summary_table(
             width = default_widths.get(col, 12)
             value = dynamics.get(col)
 
-            if col in TRUNCATE_COLUMNS:
+            if col in wconsts.TRUNCATE_COLUMNS:
                 formatted_value = (
-                    value[:TRUNCATE_LENGTH] + "..."
-                    if value and len(value) > TRUNCATE_LENGTH
+                    value[: wconsts.TRUNCATE_LENGTH] + "..."
+                    if value and len(value) > wconsts.TRUNCATE_LENGTH
                     else (value or "None")
                 )
-            elif col in SCIENTIFIC_NOTATION_COLUMNS:
+            elif col in wconsts.SCIENTIFIC_NOTATION_COLUMNS:
                 formatted_value = f"{value:.2e}" if value is not None else "None"
-            elif col in THREE_DECIMAL_PLACES_COLUMNS:
+            elif col in wconsts.THREE_DECIMAL_PLACES_COLUMNS:
                 formatted_value = f"{value:.3f}" if value is not None else "None"
-            elif col in COMMA_SEPARATED_COLUMNS:
+            elif col in wconsts.COMMA_SEPARATED_COLUMNS:
                 formatted_value = f"{value:,.0f}" if value is not None else "None"
             else:
                 formatted_value = str(value) if value is not None else "None"
@@ -433,7 +386,7 @@ def print_training_history_sample(
         return
     print(f"Run ID: {run_id}")
     print(f"Training progression ({len(run_history)} steps):")
-    columns = DEFAULT_COLUMNS if columns is None else columns
+    columns = wconsts.DEFAULT_COLUMNS if columns is None else columns
     available_cols = [col for col in columns if col in run_history.columns]
     print(f"\nFirst {sample_size} training steps:")
     print(run_history[available_cols].head(sample_size).to_string(index=False))
@@ -451,6 +404,69 @@ def print_training_history_sample(
                 print(
                     f"  LR ratio (final/initial): {lr_values.iloc[-1] / lr_values.iloc[0]:.3f}"
                 )
+
+
+def analyze_category_overlap(df, category_cols, category_name):
+    if len(category_cols) < 2:
+        return None
+
+    overlaps = []
+    for i, col1 in enumerate(category_cols):
+        for j, col2 in enumerate(category_cols[i + 1 :], i + 1):
+            if col1 in df.columns and col2 in df.columns:
+                col1_data = df[col1]
+                col2_data = df[col2]
+
+                both_non_null = col1_data.notna() & col2_data.notna()
+                if both_non_null.sum() > 0:
+                    matching_values = (col1_data == col2_data) & both_non_null
+                    overlap_pct = (matching_values.sum() / both_non_null.sum()) * 100
+                    overlaps.append(
+                        {
+                            "col1": col1,
+                            "col2": col2,
+                            "overlap_pct": overlap_pct,
+                            "shared_rows": both_non_null.sum(),
+                        }
+                    )
+
+    return overlaps
+
+
+def analyze_object_columns(df, object_cols):
+    print("\n=== OBJECT COLUMNS DETAILED ANALYSIS ===")
+    for i, col in enumerate(object_cols, 1):
+        if col in df.columns:
+            data = df[col]
+            non_null_count = data.notna().sum()
+            total_count = len(data)
+            pct_non_null = (non_null_count / total_count) * 100
+
+            try:
+                unique_vals = data.dropna().unique()
+                n_unique = len(unique_vals)
+
+                print(
+                    f"{i:2d}. {col:<25} | unique: {n_unique:3d} | non-null: {non_null_count:3d}/{total_count} ({pct_non_null:5.1f}%)"
+                )
+
+                if n_unique <= 10 and n_unique > 0:
+                    print(f"    All values: {unique_vals.tolist()}")
+                elif n_unique > 0:
+                    sample_val = unique_vals[0]
+                    if isinstance(sample_val, str) and len(sample_val) > 50:
+                        sample_val = sample_val[:50] + "..."
+                    print(f"    Sample: {sample_val}")
+                else:
+                    print("    No values")
+
+            except Exception as e:
+                print(f"    Error analyzing: {type(e).__name__}")
+
+            print()
+        else:
+            print(f"{i:2d}. {col:<25} | NOT FOUND IN DATAFRAME")
+            print()
 
 
 def format_experimental_summary(summary: Dict[str, Any], method: str = None) -> str:

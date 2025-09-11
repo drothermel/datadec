@@ -6,8 +6,8 @@ from pathlib import Path
 
 import click
 
-from datadec.wandb_downloader import WandBDownloader
-from datadec.wandb_store import WandBStore
+from datadec.wandb_eval.wandb_downloader import WandBDownloader
+from datadec.wandb_eval.wandb_store import WandBStore
 
 
 def _progress_callback(run_index: int, total_runs: int, run_name: str) -> None:
