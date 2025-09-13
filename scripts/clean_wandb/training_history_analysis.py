@@ -1,6 +1,6 @@
 import random
 
-from datadec import analysis_helpers
+from datadec.wandb_eval import analysis_helpers
 
 RANDOM_SEED = 42
 
@@ -18,7 +18,7 @@ TRAIN_SUMMARY_COLUMNS = [
 def main():
     print("=== TRAINING HISTORY ANALYSIS ===\n")
 
-    history_df = analysis_helpers.load_history_df()
+    runs_df, history_df = analysis_helpers.load_df()
     available_runs = history_df["run_id"].unique()
     random.seed(RANDOM_SEED)
 
