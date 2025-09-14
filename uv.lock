@@ -661,6 +661,7 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "datadec" },
     { name = "pytest" },
     { name = "pytest-postgresql" },
 ]
@@ -684,6 +685,7 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "datadec", editable = "." },
     { name = "pytest", specifier = ">=8.4.1" },
     { name = "pytest-postgresql", specifier = ">=7.0.0" },
 ]

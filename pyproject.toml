@@ -36,8 +36,12 @@ line-length = 88
 cache-dir = ".ruff_cache"
 exclude = ["outputs/*", "notebooks/*"]
 
+[tool.uv.sources]
+datadec = { workspace = true }
+
 [dependency-groups]
 dev = [
+    "datadec",
     "pytest>=8.4.1",
     "pytest-postgresql>=7.0.0",
 ]
