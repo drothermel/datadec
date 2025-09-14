@@ -1,1 +1,0 @@
-/Users/daniellerothermel/drotherm/repos/dr_ref/docs/processes/strategic_report_template.md
