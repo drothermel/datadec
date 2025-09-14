@@ -163,9 +163,10 @@ def convert_objects_and_normalize_dtypes(df: pd.DataFrame) -> pd.DataFrame:
                     df[col] = df[col].apply(
                         lambda x: json.dumps(x) if x is not None else None
                     )
+                    continue
                 except Exception:
                     df[col] = df[col].astype(str)
-                continue
+                    continue
 
             try:
                 all_same_type = all(

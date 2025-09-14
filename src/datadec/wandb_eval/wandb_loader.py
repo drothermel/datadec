@@ -43,9 +43,9 @@ class WandBDataLoader:
         wandb_store = WandBStore(self.db_connection)
         return wandb_store.get_runs(), wandb_store.get_history()
 
-    def load_data(self, config: FilterConfig) -> pd.DataFrame:
-        runs_df, _ = self.load_runs_and_history()
-        return self._apply_filters(runs_df, config)
+    def load_data(self, config: FilterConfig) -> tuple[pd.DataFrame, pd.DataFrame]:
+        runs_df, history_df = self.load_runs_and_history()
+        return self._apply_filters(runs_df, config), history_df
 
     def _apply_filters(
         self, runs_df: pd.DataFrame, config: FilterConfig
