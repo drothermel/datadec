@@ -1,21 +1,21 @@
-#!/usr/bin/env python3
-
 import pandas as pd
 
-from datadec import WandBStore, analysis_helpers
+from datadec.wandb_eval import analysis_helpers
+from datadec.wandb_eval import wandb_transforms as transforms
+from datadec.wandb_eval.wandb_loader import WandBDataLoader
+
+analysis_helpers.configure_pandas_display()
 
 
 def main():
     print("=== EPOCHS ANALYSIS ===\n")
 
-    store = WandBStore("postgresql+psycopg://localhost/wandb_test")
-    runs_df = store.get_runs()
-    history_df = store.get_history()
+    loader = WandBDataLoader()
+    runs_df, history_df = loader.load_runs_and_history()
 
     print(f"Total runs in database: {len(runs_df)}")
     print(f"Total history records: {len(history_df)}")
 
-    # Check for epochs in runs metadata
     runs_with_epochs_meta = runs_df[runs_df["num_train_epochs"].notna()]
     print(f"\nRuns with epochs in metadata: {len(runs_with_epochs_meta)}")
 
@@ -24,7 +24,6 @@ def main():
             f"Unique epoch values in metadata: {sorted(runs_with_epochs_meta['num_train_epochs'].unique())}"
         )
 
-    # Check for epochs in training history
     history_with_epochs = history_df[history_df["epoch"].notna()]
     runs_with_epochs_history = history_with_epochs["run_id"].unique()
 
@@ -32,7 +31,6 @@ def main():
     print(f"History records with epoch data: {len(history_with_epochs)}")
 
     if len(runs_with_epochs_history) > 0:
-        # Get epoch statistics from history
         epoch_stats = (
             history_with_epochs.groupby("run_id")["epoch"]
             .agg(["min", "max", "count"])
@@ -45,7 +43,6 @@ def main():
         print(f"  Max epoch across all runs: {epoch_stats['max_epoch'].max():.3f}")
         print(f"  Average records per run: {epoch_stats['epoch_records'].mean():.1f}")
 
-        # Show distribution of max epochs reached
         max_epochs_distribution = epoch_stats["max_epoch"].value_counts().sort_index()
         print("\nDistribution of maximum epochs reached:")
         for epoch_val, count in max_epochs_distribution.head(10).items():
@@ -57,11 +54,9 @@ def main():
         print("DETAILED ANALYSIS OF RUNS WITH EPOCH DATA")
         print(f"{'=' * 60}")
 
-        # Sample runs with epoch data for detailed analysis
         sample_runs = list(runs_with_epochs_history)[:5]
 
         if len(sample_runs) > 0:
-            # Get training dynamics for runs with epochs
             dynamics_results = analysis_helpers.analyze_training_progression(
                 history_df, sample_runs
             )
@@ -71,7 +66,6 @@ def main():
                     f"\nTraining dynamics for runs with epoch data ({len(dynamics_results)} runs):"
                 )
 
-                # Display table with epoch information
                 dynamics_list = dynamics_results.to_dict("records")
                 columns = [
                     "run_id",
@@ -85,7 +79,6 @@ def main():
                     dynamics_list, columns=columns
                 )
 
-                # Detailed analysis of first run with epochs
                 print(f"\n{'=' * 60}")
                 print("DETAILED EPOCH PROGRESSION (FIRST RUN)")
                 print(f"{'=' * 60}")
@@ -95,7 +88,6 @@ def main():
                     sample_run_id, history_df
                 )
 
-                # Show epoch progression specifically
                 run_history = history_df[
                     history_df["run_id"] == sample_run_id
                 ].sort_values("step")
@@ -115,24 +107,25 @@ def main():
                     if len(epoch_sample) > 0:
                         print(epoch_sample.to_string(index=False))
 
-        # Cross-reference with method types
         print(f"\n{'=' * 60}")
         print("EPOCH DATA BY TRAINING METHOD")
         print(f"{'=' * 60}")
 
-        # Get method information for runs with epochs
         runs_with_epoch_methods = []
         for run_id in runs_with_epochs_history:
             run_row = runs_df[runs_df["run_id"] == run_id]
             if len(run_row) > 0:
                 run_name = run_row["run_name"].iloc[0]
-                params = analysis_helpers.extract_hyperparameters(run_name)
-                if params.get("method"):
+                params = transforms.extract_hyperparameters(run_name)
+                method = None
+                if "method_rnp" in params:
+                    method = params["method_rnp"]
+                if method:
                     epoch_data = epoch_stats[epoch_stats["run_id"] == run_id].iloc[0]
                     runs_with_epoch_methods.append(
                         {
                             "run_id": run_id,
-                            "method": params["method"],
+                            "method": method,
                             "max_epoch": epoch_data["max_epoch"],
                             "epoch_records": epoch_data["epoch_records"],
                         }
@@ -155,7 +148,6 @@ def main():
             print("\nEpoch statistics by training method:")
             print(method_summary)
 
-            # Show method distribution
             method_counts = method_epoch_df["method"].value_counts()
             print("\nRuns with epoch data by method:")
             for method, count in method_counts.items():

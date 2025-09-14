@@ -1,15 +1,14 @@
-#!/usr/bin/env python3
+from datadec.wandb_eval import analysis_helpers
+from datadec.wandb_eval.wandb_loader import WandBDataLoader
 
-from datadec import WandBStore
+analysis_helpers.configure_pandas_display()
 
-store = WandBStore("postgresql+psycopg://localhost/wandb_test")
-runs_df = store.get_runs()
-history_df = store.get_history()
+loader = WandBDataLoader()
+runs_df, history_df = loader.load_runs_and_history()
+zero_lr_runs = runs_df[runs_df["learning_rate"] == 0.0]
 
 print("=== ZERO LEARNING RATE RUNS INVESTIGATION ===\n")
 
-# Get zero LR runs
-zero_lr_runs = runs_df[runs_df["learning_rate"] == 0.0]
 print(f"Total runs with learning_rate = 0.0: {len(zero_lr_runs)}")
 print(f"Percentage of total: {len(zero_lr_runs) / len(runs_df) * 100:.1f}%")
 
@@ -52,7 +51,6 @@ for field in training_config_fields:
 print("\n2. TRAINING HISTORY ANALYSIS")
 print("=" * 50)
 
-# Check if zero LR runs have training history
 zero_lr_run_ids = set(zero_lr_runs["run_id"])
 zero_lr_history = history_df[history_df["run_id"].isin(zero_lr_run_ids)]
 
@@ -97,12 +95,11 @@ if len(zero_lr_history) > 0:
             print(f"  Training loss records: {len(loss_data)}")
             print(f"  Loss range: {loss_data.min():.3f} to {loss_data.max():.3f}")
 
-            # Check if loss is decreasing (sign of actual training)
             loss_by_run = zero_lr_history.groupby("run_id")["train_loss"].apply(list)
             decreasing_count = 0
             for run_id, losses in loss_by_run.items():
                 if len(losses) > 1:
-                    if losses[-1] < losses[0]:  # Final loss < initial loss
+                    if losses[-1] < losses[0]:
                         decreasing_count += 1
 
             print(
@@ -140,7 +137,6 @@ print(
 print("\n4. DETAILED INVESTIGATION OF SPECIFIC ZERO LR RUNS")
 print("=" * 50)
 
-# Look at a few specific examples
 print("\nA. Sample Zero LR Run Details:")
 print("-" * 30)
 for i, (_, run) in enumerate(zero_lr_runs.head(3).iterrows()):
@@ -150,7 +146,6 @@ for i, (_, run) in enumerate(zero_lr_runs.head(3).iterrows()):
     print(f"  Num epochs: {run.get('num_train_epochs', 'N/A')}")
     print(f"  Max steps: {run.get('max_train_steps', 'N/A')}")
 
-    # Check if this run has history
     run_history = history_df[history_df["run_id"] == run["run_id"]]
     if len(run_history) > 0:
         print(f"  Has training history: Yes ({len(run_history)} records)")

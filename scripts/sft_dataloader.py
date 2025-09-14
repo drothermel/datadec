@@ -1,26 +1,12 @@
-# %%
-%load_ext autoreload
-%autoreload 2
 import sys
-from pathlib import Path
 
-import pandas as pd
-
-# Configure pandas to show all columns in interactive output
-pd.set_option('display.max_columns', None)
-pd.set_option('display.width', None)
-pd.set_option('display.max_colwidth', 500)  # Limit column content width for readability
-
-sys.path.append(str(Path(__file__).parent.parent / "src"))
-
+from datadec.wandb_eval import analysis_helpers
 from datadec.wandb_eval import wandb_constants as wconsts
 from datadec.wandb_eval.wandb_loader import FilterConfig, WandBDataLoader
-# %%
 
 
-def main():
+def main() -> None:
     loader = WandBDataLoader()
-
     config = FilterConfig(
         method="finetune",
         completed_only=False,
@@ -28,79 +14,21 @@ def main():
         column_groups=wconsts.INITIAL_SFT_GROUPS,
     )
 
-    filtered_df = loader.load_data(config)
-    print(f"\nTotal runs after filtering: {len(filtered_df)}")
+    filtered_df, history_df = loader.load_data(config)
+    print()
+    print(f"Total runs after filtering: {len(filtered_df)}")
     print(f"Training methods: {filtered_df['method'].value_counts().to_dict()}")
-    if "state" in filtered_df.columns:
-        print(f"Run states: {filtered_df['state'].value_counts().to_dict()}")
-    return filtered_df
+    print(f"Run states: {filtered_df['state'].value_counts().to_dict()}")
+    print(f"History records: {len(history_df)}")
+    print()
+    print("First rows of filtered data:")
+    print(filtered_df.head(20))
+    print()
+    print("First rows of history data:")
+    print(history_df.head(20))
 
 
-# %%
-filtered_df = main()
-
-# %%
-filtered_df.head()
-
-# %%
-filtered_df["num_train_epochs"].unique()
-
-# %%
 if __name__ == "__main__":
-    filtered_df = main()
-
-
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
-# %%
+    width = 300 if len(sys.argv) == 1 else int(sys.argv[1])
+    analysis_helpers.configure_pandas_display(width)
+    main()

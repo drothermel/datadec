@@ -1,16 +1,18 @@
-#!/usr/bin/env python3
-
-from datadec import WandBStore
-import pandas as pd
-import re
 from collections import defaultdict
 
-store = WandBStore("postgresql+psycopg://localhost/wandb_test")
-runs_df = store.get_runs()
+import pandas as pd
+
+from datadec.wandb_eval import analysis_helpers
+from datadec.wandb_eval import wandb_transforms as transforms
+from datadec.wandb_eval.wandb_loader import WandBDataLoader
+
+analysis_helpers.configure_pandas_display()
+
+loader = WandBDataLoader()
+runs_df, _ = loader.load_runs_and_history()
 
 print("=== RUN NAME HYPERPARAMETER PARSING ANALYSIS ===\n")
 
-# Get all run names
 run_names = runs_df["run_name"].tolist()
 print(f"Total runs to analyze: {len(run_names)}")
 
@@ -28,7 +30,6 @@ name_lengths = [len(name) for name in run_names]
 print(f"Mean length: {sum(name_lengths) / len(name_lengths):.0f} characters")
 print(f"Range: {min(name_lengths)} to {max(name_lengths)} characters")
 
-# Length groups
 short_names = [name for name in run_names if len(name) < 80]
 medium_names = [name for name in run_names if 80 <= len(name) < 120]
 long_names = [name for name in run_names if len(name) >= 120]
@@ -40,64 +41,34 @@ print(f"Long names (≥120 chars): {len(long_names)} runs")
 print("\n2. HYPERPARAMETER EXTRACTION PATTERNS")
 print("=" * 60)
 
-# Define extraction patterns
-patterns = {
-    "learning_rate": [
-        r"--learning_rate=([0-9\.e\-]+)",
-        r"_lr=([0-9\.e\-]+)",
-        r"learning_rate=([0-9\.e\-]+)",
-    ],
-    "model_size": [
-        r"(\d+)M(?:_|\b)",
-        r"dolma1_7-(\d+)M",
-        r"-(\d+\.\d+)M",
-        r"(\d+\.\d+)M",
-    ],
-    "dataset_tokens": [r"(\d+)Mtx(\d+)", r"main_(\d+)Mtx(\d+)", r"(\d+)Mt[x_](\d+)"],
-    "batch_size": [
-        r"--per_device_train_batch_size=(\d+)",
-        r"batch_size=(\d+)",
-        r"bs=(\d+)",
-    ],
-    "max_train_samples": [r"--max_train_samples=(\d+)", r"max_samples=(\d+)"],
-    "reduce_loss": [r"--reduce_loss=(\w+)", r"reduce_loss=(\w+)"],
-    "training_method": [r"(dpo|finetune)", r"_(dpo|ft)_", r"(DPO|Finetune)"],
-    "dataset_name": [r"DD-([^_\-]+)", r"dolma([^_\-]*)", r"(dclm[^_\-]*)"],
-}
-
-
-def extract_hyperparameters(name):
-    """Extract hyperparameters from run name using patterns"""
-    extracted = {}
-
-    for param, pattern_list in patterns.items():
-        for pattern in pattern_list:
-            match = re.search(pattern, name, re.IGNORECASE)
-            if match:
-                if param == "dataset_tokens":
-                    # Special handling for token patterns like "1Mtx100"
-                    extracted[f"{param}_amount"] = match.group(1)
-                    extracted[f"{param}_multiplier"] = match.group(2)
-                elif param in ["learning_rate", "model_size"]:
-                    extracted[param] = match.group(1)
-                else:
-                    extracted[param] = match.group(1)
-                break  # Use first match
-
-    return extracted
-
 
 print("\nA. Hyperparameter Extraction Results:")
 print("-" * 50)
 
-# Extract hyperparameters from all run names
 extracted_params = []
 for name in run_names:
-    params = extract_hyperparameters(name)
-    params["run_name"] = name
-    extracted_params.append(params)
+    params = transforms.extract_hyperparameters(name)
+    converted_params = {"run_name": name}
+    for key, value in params.items():
+        if key.endswith("_rnp"):
+            base_key = key[:-4]
+            if base_key == "lr":
+                converted_params["learning_rate"] = value
+            elif base_key == "params":
+                if isinstance(value, str) and value.endswith("M"):
+                    converted_params["model_size"] = value[:-1]
+            elif base_key == "total_tok":
+                converted_params["dataset_tokens_amount"] = str(value)
+                converted_params["dataset_tokens_multiplier"] = "1"
+            elif base_key == "method":
+                converted_params["training_method"] = value
+            else:
+                converted_params[base_key] = value
+        else:
+            converted_params[key] = value
 
-# Analyze extraction success rates
+    extracted_params.append(converted_params)
+
 extraction_stats = defaultdict(int)
 for params in extracted_params:
     for key in params:
@@ -116,7 +87,7 @@ extracted_lrs = [
     for params in extracted_params
     if params.get("learning_rate")
 ]
-unique_extracted_lrs = list(set(extracted_lrs))[:15]  # Show first 15
+unique_extracted_lrs = list(set(extracted_lrs))[:15]
 print(f"Unique learning rates found in names: {len(set(extracted_lrs))}")
 print(
     f"Sample values: {sorted(unique_extracted_lrs, key=lambda x: float(x) if x else 0)}"
@@ -147,7 +118,6 @@ print("=" * 60)
 
 print("\nA. Learning Rate Comparison:")
 print("-" * 50)
-# Compare extracted LRs with metadata LRs
 lr_comparison_data = []
 for i, params in enumerate(extracted_params):
     run_data = runs_df.iloc[i]
@@ -157,13 +127,11 @@ for i, params in enumerate(extracted_params):
     if extracted_lr and pd.notna(metadata_lr):
         try:
             extracted_float = float(extracted_lr)
-            if (
-                abs(extracted_float - metadata_lr) < 1e-10 or metadata_lr == 0.0
-            ):  # Account for zero LR issue
+            if abs(extracted_float - metadata_lr) < 1e-10 or metadata_lr == 0.0:
                 lr_comparison_data.append("match")
             else:
                 lr_comparison_data.append("mismatch")
-        except:
+        except Exception:
             lr_comparison_data.append("parse_error")
     elif extracted_lr and pd.isna(metadata_lr):
         lr_comparison_data.append("name_only")
@@ -187,12 +155,12 @@ for i, params in enumerate(extracted_params):
 
     if extracted_size and pd.notna(metadata_size):
         try:
-            extracted_float = float(extracted_size) * 1e6  # Convert M to actual number
-            if abs(extracted_float - metadata_size) / metadata_size < 0.01:  # Within 1%
+            extracted_float = float(extracted_size) * 1e6
+            if abs(extracted_float - metadata_size) / metadata_size < 0.01:
                 size_comparison_data.append("match")
             else:
                 size_comparison_data.append("mismatch")
-        except:
+        except Exception:
             size_comparison_data.append("parse_error")
     elif extracted_size:
         size_comparison_data.append("name_only")
@@ -214,7 +182,7 @@ print("-" * 50)
 reliable_params = []
 for param, count in extraction_stats.items():
     success_rate = count / len(run_names)
-    if success_rate > 0.5:  # More than 50% success rate
+    if success_rate > 0.5:
         reliable_params.append((param, success_rate))
 
 reliable_params.sort(key=lambda x: x[1], reverse=True)

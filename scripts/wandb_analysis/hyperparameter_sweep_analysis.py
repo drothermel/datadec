@@ -1,72 +1,43 @@
-#!/usr/bin/env python3
-
-from datadec import WandBStore
 import pandas as pd
-import re
 
-store = WandBStore("postgresql+psycopg://localhost/wandb_test")
-runs_df = store.get_runs()
+from datadec.wandb_eval import analysis_helpers
+from datadec.wandb_eval import wandb_transforms as transforms
+from datadec.wandb_eval.wandb_loader import WandBDataLoader
+
+analysis_helpers.configure_pandas_display()
+
+loader = WandBDataLoader()
+runs_df, _ = loader.load_runs_and_history()
 
 print("=== KEY HYPERPARAMETER SWEEP ANALYSIS ===\n")
 
 
-# Enhanced extraction function
-def extract_key_hyperparameters(name):
-    """Extract key hyperparameters with better accuracy"""
-    extracted = {}
-
-    # Learning rate - multiple formats
-    lr_patterns = [r"--learning_rate=([0-9\.e\-]+)", r"learning_rate=([0-9\.e\-]+)"]
-    for pattern in lr_patterns:
-        match = re.search(pattern, name)
-        if match:
-            extracted["name_learning_rate"] = float(match.group(1))
-            break
-
-    # Model size from dolma pattern
-    model_match = re.search(r"dolma1_7-(\d+)M", name)
-    if model_match:
-        extracted["name_model_size_m"] = int(model_match.group(1))
-
-    # Dataset tokens pattern (e.g., "1Mtx100" = 1M tokens × 100 = 100M total)
-    token_match = re.search(r"main_(\d+)Mtx(\d+)", name)
-    if token_match:
-        base_tokens = int(token_match.group(1))
-        multiplier = int(token_match.group(2))
-        extracted["dataset_tokens_m"] = base_tokens
-        extracted["dataset_multiplier"] = multiplier
-        extracted["total_dataset_tokens_m"] = base_tokens * multiplier
-
-    # Training method
-    if "dpo" in name.lower():
-        extracted["name_method"] = "dpo"
-    elif "finetune" in name.lower():
-        extracted["name_method"] = "finetune"
-    else:
-        extracted["name_method"] = "other"
-
-    # Special experiment types from name
-    if "--max_train_samples=" in name:
-        sample_match = re.search(r"--max_train_samples=(\d+)", name)
-        if sample_match:
-            extracted["max_train_samples"] = int(sample_match.group(1))
-
-    if "--reduce_loss=" in name:
-        loss_match = re.search(r"--reduce_loss=(\w+)", name)
-        if loss_match:
-            extracted["reduce_loss_type"] = loss_match.group(1)
-
-    return extracted
-
-
-# Extract hyperparameters from all runs
 enhanced_data = []
 for i, name in enumerate(runs_df["run_name"]):
     run_data = runs_df.iloc[i].to_dict()
-    parsed_params = extract_key_hyperparameters(name)
+    parsed_params = transforms.extract_hyperparameters(name)
 
-    # Combine metadata and parsed data
-    combined = {**run_data, **parsed_params}
+    converted_params = {}
+    for key, value in parsed_params.items():
+        if key.endswith("_rnp"):
+            base_key = key[:-4]
+            if base_key == "lr":
+                converted_params["name_learning_rate"] = value
+            elif base_key == "data":
+                converted_params["name_data"] = value
+            elif base_key == "params":
+                if isinstance(value, str) and value.endswith("M"):
+                    converted_params["name_model_size_m"] = int(value[:-1])
+            elif base_key == "total_tok":
+                converted_params["total_dataset_tokens_m"] = value
+            elif base_key == "method":
+                converted_params["name_method"] = value
+            else:
+                converted_params[f"name_{base_key}"] = value
+        else:
+            converted_params[key] = value
+
+    combined = {**run_data, **converted_params}
     enhanced_data.append(combined)
 
 enhanced_df = pd.DataFrame(enhanced_data)
@@ -82,7 +53,6 @@ if "name_model_size_m" in enhanced_df.columns:
     for size, count in model_sizes.items():
         print(f"  {size}M: {count} runs")
 
-    # Compare with metadata
     metadata_sizes_clean = (
         pd.to_numeric(enhanced_df["model_size"], errors="coerce").dropna() / 1e6
     )
@@ -111,7 +81,6 @@ if "total_dataset_tokens_m" in enhanced_df.columns:
     for tokens, count in token_amounts.items():
         print(f"  {tokens}M: {count} runs")
 
-    # Show the base×multiplier breakdown
     if (
         "dataset_tokens_m" in enhanced_df.columns
         and "dataset_multiplier" in enhanced_df.columns
@@ -178,7 +147,6 @@ method_counts = enhanced_df["name_method"].value_counts()
 for method, count in method_counts.items():
     print(f"  {method}: {count} runs")
 
-# Analyze DPO vs Finetune by model size
 if "name_method" in enhanced_df.columns and "name_model_size_m" in enhanced_df.columns:
     method_model_crosstab = pd.crosstab(
         enhanced_df["name_model_size_m"], enhanced_df["name_method"]
@@ -196,7 +164,6 @@ enhanced_df["has_lr_in_name"] = enhanced_df["name_learning_rate"].notna()
 enhanced_df["has_tokens_in_name"] = enhanced_df["total_dataset_tokens_m"].notna()
 enhanced_df["has_special_params"] = enhanced_df["max_train_samples"].notna()
 
-# Sort by created_at to see evolution
 if "created_at" in enhanced_df.columns:
     enhanced_df_sorted = enhanced_df.sort_values("created_at")
 

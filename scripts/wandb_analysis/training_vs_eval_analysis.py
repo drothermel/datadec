@@ -1,18 +1,18 @@
-#!/usr/bin/env python3
-
-from datadec import WandBStore
 import pandas as pd
 
-store = WandBStore("postgresql+psycopg://localhost/wandb_test")
-runs_df = store.get_runs()
-history_df = store.get_history()
+from datadec.wandb_eval import analysis_helpers
+from datadec.wandb_eval.wandb_loader import WandBDataLoader
+
+analysis_helpers.configure_pandas_display()
+
+loader = WandBDataLoader()
+runs_df, history_df = loader.load_runs_and_history()
 
 print("=== TRAINING vs EVAL-ONLY RUN ANALYSIS ===\n")
 
 print("1. TRAINING INDICATORS ANALYSIS")
 print("=" * 50)
 
-# Check for training-specific fields
 training_indicators = [
     "max_train_steps",
     "num_train_epochs",
@@ -55,11 +55,9 @@ print("\n2. RUN TYPE CLASSIFICATION")
 print("=" * 50)
 
 
-# Classify runs based on multiple indicators
 def classify_run_type(row, has_history):
     name = str(row["run_name"]).lower()
 
-    # Check training indicators
     has_training_config = any(
         [
             pd.notna(row.get("max_train_steps", None))
@@ -71,7 +69,6 @@ def classify_run_type(row, has_history):
         ]
     )
 
-    # Classification logic
     if "eval" in name and not any(x in name for x in ["finetune", "dpo", "train"]):
         return "Eval-Only"
     elif has_history and has_training_config:
@@ -86,7 +83,6 @@ def classify_run_type(row, has_history):
         return "Unknown"
 
 
-# Apply classification
 run_types = []
 for _, row in runs_df.iterrows():
     has_history = row["run_id"] in runs_with_history
@@ -143,7 +139,6 @@ if "max_train_steps" in runs_df.columns:
         print(f"Median steps: {steps_data.median():.0f}")
         print(f"Range: {steps_data.min():.0f} to {steps_data.max():.0f}")
 
-        # Step ranges
         step_ranges = pd.cut(
             steps_data,
             bins=[0, 1000, 5000, 10000, float("inf")],

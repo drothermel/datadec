@@ -1,56 +1,45 @@
-#!/usr/bin/env python3
-
-from datadec import WandBStore
 import pandas as pd
-import re
 
+from datadec.wandb_eval import analysis_helpers
+from datadec.wandb_eval import wandb_transforms as transforms
+from datadec.wandb_eval.wandb_loader import WandBDataLoader
 
-def extract_hyperparameters(run_name):
-    """Extract key hyperparameters from run name"""
-    params = {}
-
-    # Learning rate
-    lr_match = re.search(r"--learning_rate=([0-9\.e\-]+)", run_name)
-    if lr_match:
-        params["learning_rate"] = float(lr_match.group(1))
-
-    # Model size (in millions)
-    model_match = re.search(r"dolma1_7-(\d+)M", run_name)
-    if model_match:
-        params["model_size_m"] = int(model_match.group(1))
-
-    # Dataset tokens pattern
-    token_match = re.search(r"main_(\d+)Mtx(\d+)", run_name)
-    if token_match:
-        base = int(token_match.group(1))
-        mult = int(token_match.group(2))
-        params["dataset_total_m"] = base * mult
-
-    # Training method
-    if "dpo" in run_name.lower():
-        params["method"] = "dpo"
-    elif "finetune" in run_name.lower():
-        params["method"] = "finetune"
-
-    return params
+analysis_helpers.configure_pandas_display()
 
 
 def main():
     print("=== SWEEP PERFORMANCE TABLES ===\n")
 
-    store = WandBStore("postgresql+psycopg://localhost/wandb_test")
-    runs_df = store.get_runs()
+    loader = WandBDataLoader()
+    runs_df, _ = loader.load_runs_and_history()
 
-    # Extract hyperparameters and combine with metadata
     param_data = []
     for _, row in runs_df.iterrows():
-        params = extract_hyperparameters(row["run_name"])
-        params.update(
+        params = transforms.extract_hyperparameters(row["run_name"])
+
+        converted_params = {}
+        for key, value in params.items():
+            if key.endswith("_rnp"):
+                base_key = key[:-4]
+                if base_key == "lr":
+                    converted_params["learning_rate"] = value
+                elif base_key == "params":
+                    if isinstance(value, str) and value.endswith("M"):
+                        converted_params["model_size_m"] = int(value[:-1])
+                elif base_key == "total_tok":
+                    converted_params["dataset_total_m"] = value
+                elif base_key == "method":
+                    converted_params["method"] = value
+                else:
+                    converted_params[base_key] = value
+            else:
+                converted_params[key] = value
+
+        converted_params.update(
             {
                 "run_id": row["run_id"],
                 "run_name": row["run_name"],
                 "state": row["state"],
-                # Key evaluation metrics
                 "olmes_acc": row.get("pretrain_eval_olmes_10_macro_avg_acc_raw", None),
                 "pile_perplexity": row.get(
                     "pretrain_eval/pile-validation/Perplexity", None
@@ -60,11 +49,10 @@ def main():
                 "train_loss": row.get("train_loss", None),
             }
         )
-        param_data.append(params)
+        param_data.append(converted_params)
 
     df = pd.DataFrame(param_data)
 
-    # Filter to finished finetune runs with complete data
     finetune_df = df[
         (df["method"] == "finetune")
         & (df["state"] == "finished")
@@ -75,7 +63,6 @@ def main():
 
     print(f"Finetune runs with complete data: {len(finetune_df)}")
 
-    # Available metrics to display
     metrics = {
         "olmes_acc": "OLMES Accuracy",
         "pile_perplexity": "Pile Perplexity",
@@ -89,11 +76,9 @@ def main():
     print("=" * 80)
     print("Format: Rows = (Model Size, Dataset Tokens), Columns = Learning Rates")
 
-    # Get unique combinations for LR sweeps
     lr_sweep_groups = finetune_df.groupby(["model_size_m", "dataset_total_m"])
 
     for metric_key, metric_name in metrics.items():
-        # Check if this metric has data
         metric_data = finetune_df[finetune_df[metric_key].notna()]
         if len(metric_data) == 0:
             continue
@@ -102,47 +87,37 @@ def main():
         print(f"METRIC: {metric_name}")
         print(f"{'-' * 60}")
 
-        # Build the performance matrix
         performance_rows = []
 
         for (model_size, dataset_tokens), group in lr_sweep_groups:
-            # Only include groups with multiple LRs and this metric data
             group_metric = group[group[metric_key].notna()]
             if len(group_metric) < 2:  # Need at least 2 LRs for a sweep
                 continue
 
-            # Get unique LRs for this group
             lrs_in_group = sorted(group_metric["learning_rate"].unique())
             if len(lrs_in_group) < 2:
                 continue
 
-            # Build row data
             row_data = {
                 "Model_Size": f"{int(model_size)}M",
                 "Dataset_Tokens": f"{int(dataset_tokens)}M",
             }
 
-            # Add performance values for each LR
             for lr in lrs_in_group:
                 lr_runs = group_metric[group_metric["learning_rate"] == lr]
                 if len(lr_runs) > 0:
-                    # Take mean if multiple runs, otherwise single value
                     if metric_key == "pile_perplexity":
-                        # For perplexity, lower is better - show with 1 decimal
                         value = lr_runs[metric_key].mean()
                         row_data[f"LR_{lr:.0e}"] = f"{value:.1f}"
                     else:
-                        # For accuracy metrics, higher is better - show with 3 decimals
                         value = lr_runs[metric_key].mean()
                         row_data[f"LR_{lr:.0e}"] = f"{value:.3f}"
 
             performance_rows.append(row_data)
 
         if performance_rows:
-            # Create DataFrame and display
             perf_df = pd.DataFrame(performance_rows)
 
-            # Sort by model size then dataset size
             perf_df["_sort_model"] = (
                 perf_df["Model_Size"].str.replace("M", "").astype(int)
             )
@@ -151,11 +126,9 @@ def main():
             )
             perf_df = perf_df.sort_values(["_sort_model", "_sort_dataset"])
 
-            # Drop sort columns and display
             display_df = perf_df.drop(columns=["_sort_model", "_sort_dataset"])
             print(display_df.to_string(index=False))
 
-            # Show best performing conditions
             if metric_key != "pile_perplexity":  # Higher is better
                 print(f"\n📈 Best {metric_name} values:")
                 for _, row in display_df.iterrows():
@@ -170,7 +143,7 @@ def main():
                         print(
                             f"  {row['Model_Size']}, {row['Dataset_Tokens']} tokens → {best_lr}: {row[best_lr]}"
                         )
-            else:  # Lower is better for perplexity
+            else:
                 print(f"\n📉 Best {metric_name} values:")
                 for _, row in display_df.iterrows():
                     lr_cols = [
@@ -189,7 +162,6 @@ def main():
         else:
             print(f"No complete LR sweep data available for {metric_name}")
 
-    # Quick summary of data availability
     print(f"\n\n{'=' * 80}")
     print("DATA AVAILABILITY SUMMARY")
     print(f"{'=' * 80}")

@@ -1,18 +1,16 @@
-#!/usr/bin/env python3
-
-from datadec import WandBStore
 import pandas as pd
 
-pd.set_option("display.max_columns", None)
-pd.set_option("display.width", None)
-pd.set_option("display.max_colwidth", 100)
+from datadec.wandb_eval import analysis_helpers
+from datadec.wandb_eval.wandb_loader import WandBDataLoader
 
-store = WandBStore("postgresql+psycopg://localhost/wandb_test")
+analysis_helpers.configure_pandas_display()
 
+loader = WandBDataLoader()
+
+print()
 print("=== ENHANCED WandB Data Analysis for Plotting Strategy ===\n")
 
-runs_df = store.get_runs()
-history_df = store.get_history()
+runs_df, history_df = loader.load_runs_and_history()
 
 print("=" * 60)
 print("1. SCALING DIMENSION ANALYSIS")
@@ -20,7 +18,6 @@ print("=" * 60)
 
 print("\nA. Model Size Scaling Pattern:")
 print("-" * 40)
-# Handle mixed data types in model_size column
 model_size_clean = pd.to_numeric(runs_df["model_size"], errors="coerce")
 model_sizes = model_size_clean.value_counts().sort_index()
 print("Model sizes (parameters) and run counts:")
@@ -67,8 +64,6 @@ print("-" * 40)
 runs_with_types = runs_df.copy()
 runs_with_types["run_type"] = run_types
 
-# Cross-tabulation of model size and run type
-# Use cleaned numeric model_size
 runs_with_types["model_size_clean"] = pd.to_numeric(
     runs_with_types["model_size"], errors="coerce"
 )
@@ -155,7 +150,6 @@ print("=" * 60)
 
 print("\nA. Learning Rate vs Model Size Relationships:")
 print("-" * 40)
-# Clean numeric conversion for analysis
 lr_model_df = runs_df[runs_df["learning_rate"] > 0].copy()
 lr_model_df["model_size_clean"] = pd.to_numeric(
     lr_model_df["model_size"], errors="coerce"
