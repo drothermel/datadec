@@ -1,9 +1,12 @@
 import re
 from itertools import product
+from pathlib import Path
 from typing import Any, Dict, List, Set
 
 MODEL_DETAILS_DF_NAME = "model_details"
 DATASET_DETAILS_DF_NAME = "dataset_details"
+
+CONFIGS_DIR = Path(__file__).parent.parent.parent / "configs"
 
 # Formatting constants for scripts
 THOUSAND = 1000
