@@ -71,7 +71,9 @@ class WandBDownloader:
             history_data.append(step_data)
         return history_data
 
-    def download_bulk_history(self, entity: str, project: str, run_ids: list[str]) -> pd.DataFrame:
+    def download_bulk_history(
+        self, entity: str, project: str, run_ids: list[str]
+    ) -> pd.DataFrame:
         """
         Download ALL project histories in bulk, then filter to desired runs.
         WARNING: This downloads histories for ALL runs in the project, not just run_ids.
@@ -84,10 +86,7 @@ class WandBDownloader:
 
         try:
             # This downloads ALL project histories (potentially inefficient)
-            history_df = runs_obj.histories(
-                samples=10000,
-                format="pandas"
-            )
+            history_df = runs_obj.histories(samples=10000, format="pandas")
 
             if history_df is not None and not history_df.empty:
                 return history_df[history_df["Run"].isin(run_ids)]
@@ -126,20 +125,33 @@ class WandBDownloader:
             # Use individual downloads for incremental updates (much more efficient)
             if force_refresh:
                 if progress_callback:
-                    progress_callback(len(runs_to_download), len(runs_to_download),
-                        f"⚠️  Starting BULK history download for all {len(run_ids_to_download)} runs. This may take 5-30 minutes with no progress updates...")
+                    progress_callback(
+                        len(runs_to_download),
+                        len(runs_to_download),
+                        f"⚠️  Starting BULK history download for all {len(run_ids_to_download)} runs. This may take 5-30 minutes with no progress updates...",
+                    )
 
-                bulk_history_df = self.download_bulk_history(entity, project, run_ids_to_download)
+                bulk_history_df = self.download_bulk_history(
+                    entity, project, run_ids_to_download
+                )
 
                 if not bulk_history_df.empty:
                     for run_id in run_ids_to_download:
-                        run_history_df = bulk_history_df[bulk_history_df["Run"] == run_id]
+                        run_history_df = bulk_history_df[
+                            bulk_history_df["Run"] == run_id
+                        ]
                         if not run_history_df.empty:
-                            history_data = run_history_df.drop(columns=["Run"]).to_dict("records")
+                            history_data = run_history_df.drop(columns=["Run"]).to_dict(
+                                "records"
+                            )
                             self.store.store_history(run_id, history_data)
                 else:
                     if progress_callback:
-                        progress_callback(len(runs_to_download), len(runs_to_download), "Bulk history failed, falling back to individual downloads...")
+                        progress_callback(
+                            len(runs_to_download),
+                            len(runs_to_download),
+                            "Bulk history failed, falling back to individual downloads...",
+                        )
                     for run in runs_to_download:
                         history_data = self.download_run_history(run)
                         if len(history_data) > 0:
@@ -147,13 +159,19 @@ class WandBDownloader:
             else:
                 # Incremental update: use individual downloads (more efficient for small numbers)
                 if progress_callback:
-                    progress_callback(len(runs_to_download), len(runs_to_download),
-                        f"Starting INDIVIDUAL history downloads for {len(run_ids_to_download)} runs (incremental mode)...")
+                    progress_callback(
+                        len(runs_to_download),
+                        len(runs_to_download),
+                        f"Starting INDIVIDUAL history downloads for {len(run_ids_to_download)} runs (incremental mode)...",
+                    )
 
                 for i, run in enumerate(runs_to_download):
                     if progress_callback:
-                        progress_callback(i + 1, len(runs_to_download),
-                            f"Downloading history for: {run.name}")
+                        progress_callback(
+                            i + 1,
+                            len(runs_to_download),
+                            f"Downloading history for: {run.name}",
+                        )
                     history_data = self.download_run_history(run)
                     if len(history_data) > 0:
                         self.store.store_history(run.id, history_data)
@@ -190,17 +208,23 @@ class WandBDownloader:
             all_runs = list(self.api.runs(f"{entity}/{project}", per_page=500))
             runs_to_sync = [run for run in all_runs if run.state == "finished"]
         else:
-            raise ValueError(f"Invalid sync mode: {mode}. Use 'recent', 'all', or 'finished'")
+            raise ValueError(
+                f"Invalid sync mode: {mode}. Use 'recent', 'all', or 'finished'"
+            )
 
         if progress_callback:
-            progress_callback(0, len(runs_to_sync), f"Found {len(runs_to_sync)} runs to sync")
+            progress_callback(
+                0, len(runs_to_sync), f"Found {len(runs_to_sync)} runs to sync"
+            )
 
         stats = {"total_runs": len(runs_to_sync), "updated_runs": 0}
         if stats["total_runs"] == 0:
             return stats
 
         # Use bulk tag sync with progress
-        updated_count = self._bulk_update_tags(entity, project, runs_to_sync, progress_callback)
+        updated_count = self._bulk_update_tags(
+            entity, project, runs_to_sync, progress_callback
+        )
         stats["updated_runs"] = updated_count
 
         return stats
@@ -223,8 +247,9 @@ class WandBDownloader:
 
                 if progress_callback:
                     progress_callback(
-                        batch_num, total_batches,
-                        f"Updating tags batch {batch_num}/{total_batches} ({len(batch)} runs)"
+                        batch_num,
+                        total_batches,
+                        f"Updating tags batch {batch_num}/{total_batches} ({len(batch)} runs)",
                     )
 
                 # Collect updates for this batch
@@ -237,6 +262,7 @@ class WandBDownloader:
                 # Execute batch update
                 if updates:
                     from sqlalchemy import text
+
                     conn.execute(
                         text(
                             "UPDATE wandb_runs SET raw_data = jsonb_set(raw_data, '{wandb_tags}', :tags) WHERE run_id = :run_id"

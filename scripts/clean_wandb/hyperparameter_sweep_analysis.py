@@ -83,11 +83,15 @@ if "name_model_size_m" in enhanced_df.columns:
         print(f"  {size}M: {count} runs")
 
     # Compare with metadata
-    metadata_sizes_clean = pd.to_numeric(enhanced_df["model_size"], errors='coerce').dropna() / 1e6
+    metadata_sizes_clean = (
+        pd.to_numeric(enhanced_df["model_size"], errors="coerce").dropna() / 1e6
+    )
     if len(metadata_sizes_clean) > 0:
-        print(f"\nMetadata model sizes: {sorted(metadata_sizes_clean.unique())[:10]}M (first 10)")
+        print(
+            f"\nMetadata model sizes: {sorted(metadata_sizes_clean.unique())[:10]}M (first 10)"
+        )
     else:
-        print(f"\nMetadata model sizes: No valid numeric values found")
+        print("\nMetadata model sizes: No valid numeric values found")
 
 print("\nB. Learning Rate Sweep:")
 print("-" * 30)

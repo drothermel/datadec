@@ -21,7 +21,7 @@ print("=" * 60)
 print("\nA. Model Size Scaling Pattern:")
 print("-" * 40)
 # Handle mixed data types in model_size column
-model_size_clean = pd.to_numeric(runs_df["model_size"], errors='coerce')
+model_size_clean = pd.to_numeric(runs_df["model_size"], errors="coerce")
 model_sizes = model_size_clean.value_counts().sort_index()
 print("Model sizes (parameters) and run counts:")
 for size, count in model_sizes.items():
@@ -69,7 +69,9 @@ runs_with_types["run_type"] = run_types
 
 # Cross-tabulation of model size and run type
 # Use cleaned numeric model_size
-runs_with_types["model_size_clean"] = pd.to_numeric(runs_with_types["model_size"], errors='coerce')
+runs_with_types["model_size_clean"] = pd.to_numeric(
+    runs_with_types["model_size"], errors="coerce"
+)
 crosstab = pd.crosstab(runs_with_types["model_size_clean"], runs_with_types["run_type"])
 print(crosstab)
 
@@ -155,13 +157,19 @@ print("\nA. Learning Rate vs Model Size Relationships:")
 print("-" * 40)
 # Clean numeric conversion for analysis
 lr_model_df = runs_df[runs_df["learning_rate"] > 0].copy()
-lr_model_df["model_size_clean"] = pd.to_numeric(lr_model_df["model_size"], errors='coerce')
+lr_model_df["model_size_clean"] = pd.to_numeric(
+    lr_model_df["model_size"], errors="coerce"
+)
 lr_model_analysis = lr_model_df[["model_size_clean", "learning_rate"]].dropna()
 if len(lr_model_analysis) > 0:
     for model_size in sorted(lr_model_analysis["model_size_clean"].unique()):
-        model_runs = lr_model_analysis[lr_model_analysis["model_size_clean"] == model_size]
+        model_runs = lr_model_analysis[
+            lr_model_analysis["model_size_clean"] == model_size
+        ]
         lr_range = f"{model_runs['learning_rate'].min():.1e} to {model_runs['learning_rate'].max():.1e}"
-        print(f"  {model_size:,.0f} params: {len(model_runs)} runs, LR range {lr_range}")
+        print(
+            f"  {model_size:,.0f} params: {len(model_runs)} runs, LR range {lr_range}"
+        )
 
 print("\nB. Experimental Coverage Analysis:")
 print("-" * 40)

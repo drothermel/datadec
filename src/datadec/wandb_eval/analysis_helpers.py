@@ -10,7 +10,9 @@ from datadec.wandb_eval.wandb_store import WandBStore
 
 # ================ Load Runs =================
 def load_df() -> pd.DataFrame:
-    store = WandBStore("postgresql+psycopg://localhost/wandb_test")
+    from . import wandb_constants as wconsts
+
+    store = WandBStore(wconsts.DEFAULT_DB_CONNECTION)
     return store.get_runs(), store.get_history()
 
 
@@ -36,7 +38,7 @@ def pretty_print_floats(value: float) -> str:
 # ================ Heuristic Parsing =================
 
 
-def extract_hyperparameters(run_name: str) -> Dict[str, Any]:
+def extract_hyperparameters(run_name: str, ignore: List[str] = []) -> Dict[str, Any]:
     params = {}
     date_time_match = re.search(r"^(\d{4}_\d{2}_\d{2})-(\d{2}_\d{2}_\d{2})_", run_name)
     if date_time_match:
@@ -49,13 +51,15 @@ def extract_hyperparameters(run_name: str) -> Dict[str, Any]:
     if exp_name_match:
         params["exp_name"] = exp_name_match.group(1)
 
-    dataset_match = re.search(r"DD-(dolma\d+_\d+)-", run_name)
+    dataset_match = re.search(r"DD-([^-]+)-", run_name)
     if dataset_match:
         params["data"] = dataset_match.group(1)
 
-    model_match = re.search(r"dolma1_7-(\d+)M", run_name)
+    model_match = re.search(r"-(\d+)([MB])_", run_name)
     if model_match:
-        params["real_params"] = int(model_match.group(1))
+        size = model_match.group(1)
+        unit = model_match.group(2)
+        params["params"] = f"{size}{unit}"
 
     checkpoint_match = re.search(r"-\d+M_(\w+)_\d+Mtx", run_name)
     if checkpoint_match:
@@ -80,7 +84,12 @@ def extract_hyperparameters(run_name: str) -> Dict[str, Any]:
     for param_name, param_value in explicit_params:
         try:
             if "." in param_value or "e" in param_value.lower():
-                params[param_name] = float(param_value)
+                float_val = float(param_value)
+                # Convert round floats to ints
+                if float_val.is_integer():
+                    params[param_name] = int(float_val)
+                else:
+                    params[param_name] = float_val
             else:
                 params[param_name] = int(param_value)
         except ValueError:
@@ -94,7 +103,7 @@ def extract_hyperparameters(run_name: str) -> Dict[str, Any]:
         if method in run_name_lower:
             params["method"] = method
             break
-    params = {f"{k}_rnp": v for k, v in params.items()}
+    params = {f"{k}_rnp": v for k, v in params.items() if k not in ignore}
     return params
 
 

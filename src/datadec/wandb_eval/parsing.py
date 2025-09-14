@@ -95,7 +95,7 @@ def get_created_time_key(df: pd.DataFrame) -> str:
     assert False, "No time key found"
 
 
-def filter_early_test_runs(df: pd.DataFrame) -> pd.DataFrame:
+def filter_broken_initial_testing_runs(df: pd.DataFrame) -> pd.DataFrame:
     return df[df[get_created_time_key(df)] >= wconsts.EARLIEST_GOOD_RUN_DATE]
 
 
@@ -105,6 +105,14 @@ def filter_dpo_test_runs(df: pd.DataFrame) -> pd.DataFrame:
 
     dpo_mask = df["wandb_tags"].fillna("").str.contains("dpo_tune_cache", na=False)
     return df[~dpo_mask]
+
+
+def drop_wandb_constant_ignored_cols(df: pd.DataFrame) -> pd.DataFrame:
+    cols_to_drop = [col for col in wconsts.ALL_DROP_COLS if col in df.columns]
+    if cols_to_drop:
+        df = df.drop(columns=cols_to_drop)
+        print(f"Dropped {len(cols_to_drop)} problematic columns: {cols_to_drop}")
+    return df
 
 
 def split_obj_vs_nonobj_cols(df: pd.DataFrame) -> tuple[list[str], list[str]]:
@@ -197,7 +205,14 @@ def convert_objects_and_normalize_dtypes(df: pd.DataFrame) -> pd.DataFrame:
                     elif isinstance(first_val, int):
                         df[col] = df[col].astype("Int64")  # nullable integer
                     elif isinstance(first_val, float):
-                        df[col] = pd.to_numeric(df[col], errors="ignore")
+                        # Check if all non-NaN values are whole numbers
+                        non_nan_vals = df[col].dropna()
+                        if len(non_nan_vals) > 0 and all(
+                            val == int(val) for val in non_nan_vals
+                        ):
+                            df[col] = df[col].astype("Int64")  # nullable integer
+                        else:
+                            df[col] = pd.to_numeric(df[col], errors="ignore")
                     elif isinstance(first_val, str):
                         df[col] = df[col].astype("string")
                 else:
@@ -288,16 +303,14 @@ def categorize_columns_by_key_sets(all_cols):
 
 
 def parse_and_clean_runs_df(runs_df):
-    filtered_df = filter_early_test_runs(runs_df)
+    filtered_df = filter_broken_initial_testing_runs(runs_df)
     filtered_df = filter_dpo_test_runs(filtered_df)
 
     # Assert our assumptions about column categories before dropping them
     assert_nan_only_columns(filtered_df)
     assert_constant_or_nan_columns(filtered_df)
 
-    cols_to_drop = [col for col in wconsts.ALL_DROP_COLS if col in filtered_df.columns]
-    if cols_to_drop:
-        filtered_df = filtered_df.drop(columns=cols_to_drop)
+    filtered_df = drop_wandb_constant_ignored_cols(filtered_df)
 
     filtered_df = convert_objects_and_normalize_dtypes(filtered_df)
 
