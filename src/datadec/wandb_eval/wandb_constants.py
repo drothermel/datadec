@@ -5,6 +5,44 @@ EARLIEST_GOOD_RUN_DATE = "2025-08-21"
 # Output paths
 PRETRAIN_POSTTRAIN_DF_PATH = "./data/pretrain_posttrain.pkl"
 
+# ---------- From parse_unified_df.py ----------
+HISTORY_POSTPROCESSED_TO_KEEP = [
+    "max_step",
+    "max_tokens",
+    "max_epoch",
+    "max_lr",
+    "final_train_loss",
+    "min_train_loss",
+]
+
+# ---------- From sft_dataloader.py ----------
+ADDED_COLS = ["method", "params", "data"]
+
+INITIAL_SFT_GROUPS = ["id_cols", "status_cols", "core_hpm_cols"]
+EXTENDED_SFT_GROUPS = INITIAL_SFT_GROUPS + ["x_axis_cols", "summary_metrics_cols"]
+FULL_SFT_GROUPS = EXTENDED_SFT_GROUPS
+
+# ---------- From wandb_transforms.py ----------
+WANDB_DATASET_TO_DATADECIDE_MAPPING = {
+    "dolma1_7": "Dolma1.7",
+    "dclm-baseline": "DCLM-Baseline",
+    "dclm-baseline-25p-dolma1.7-75p": "DCLM-Baseline 25% / Dolma 75%",
+    "dclm-baseline-50p-dolma1.7-50p": "DCLM-Baseline 50% / Dolma 50%",
+    "dclm-baseline-75p-dolma1.7-25p": "DCLM-Baseline 75% / Dolma 25%",
+    "dclm-baseline-qc-10p": "DCLM-Baseline (QC 10%)",
+    "dclm-baseline-qc-20p": "DCLM-Baseline (QC 20%)",
+    "dclm-baseline-qc-7p-fw2": "DCLM-Baseline (QC 7%, FW2)",
+    "dclm-baseline-qc-7p-fw3": "DCLM-Baseline (QC 7%, FW3)",
+    "dclm-baseline-qc-fw-10p": "DCLM-Baseline (QC FW 10%)",
+    "dclm-baseline-qc-fw-3p": "DCLM-Baseline (QC FW 3%)",
+}
+
+# Run name column candidates (ordered by preference)
+RUN_NAME_CANDIDATES = ["run_name", "run_id", "exp_name"]
+
+# Parameters to ignore during hyperparameter extraction
+DEFAULT_IGNORE_PARAMS = ["run_date", "run_time"]
+
 CORE_DPO_HPM_COLS = [
     "dpo_beta",
     "dpo_loss_type",
