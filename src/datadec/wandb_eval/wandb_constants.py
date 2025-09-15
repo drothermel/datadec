@@ -41,7 +41,7 @@ WANDB_DATASET_TO_DATADECIDE_MAPPING = {
 RUN_NAME_CANDIDATES = ["run_name", "run_id", "exp_name"]
 
 # Parameters to ignore during hyperparameter extraction
-DEFAULT_IGNORE_PARAMS = ["run_date", "run_time"]
+DEFAULT_IGNORE_PARAMS = ["run_datetime"]
 
 CORE_DPO_HPM_COLS = [
     "dpo_beta",
