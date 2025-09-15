@@ -66,7 +66,9 @@ def format_table(
     final_headers = _resolve_headers(headers, column_names, config)
 
     if output_format == "console":
-        return _create_rich_table(formatted_data, final_headers, config, column_names, title, table_style)
+        return _create_rich_table(
+            formatted_data, final_headers, config, column_names, title, table_style
+        )
     else:
         tablefmt = OUTPUT_FORMATS.get(output_format, "grid")
         return tabulate(
@@ -210,9 +212,16 @@ def _create_rich_table(
     table_style: str = "lines",
 ) -> Table:
     if table_style == "zebra":
-        table = Table(title=title, show_header=True, header_style="bold magenta", row_styles=["", "dim"])
+        table = Table(
+            title=title,
+            show_header=True,
+            header_style="bold magenta",
+            row_styles=["", "dim"],
+        )
     else:  # "lines" or default
-        table = Table(title=title, show_header=True, header_style="bold magenta", show_lines=True)
+        table = Table(
+            title=title, show_header=True, header_style="bold magenta", show_lines=True
+        )
 
     for i, header in enumerate(headers):
         col_name = _get_column_name_for_index(column_names, i)
@@ -233,7 +242,11 @@ def _get_column_name_for_index(column_names: list[str], index: int) -> str:
 
 def _get_rich_justify(col_config: dict) -> str:
     formatter = col_config.get("formatter", "string")
-    return "right" if formatter in ["scientific", "decimal", "integer", "comma"] else "left"
+    return (
+        "right"
+        if formatter in ["scientific", "decimal", "integer", "comma"]
+        else "left"
+    )
 
 
 def _get_rich_style(col_config: dict) -> Optional[str]:

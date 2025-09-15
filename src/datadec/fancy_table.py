@@ -46,7 +46,6 @@ class FancyBox(Box):
         def fill_breaks(breaks, rind):
             last_w = 0
             for w in fixed_fancy_widths[rind]:
-                print(w)
                 last_w += w
                 if last_w < len(breaks):
                     breaks[last_w] = True
@@ -575,73 +574,3 @@ class FancyTable(Table):
         if _box and show_edge:
             yield _Segment(_box.get_bottom(widths), border_style)
             yield new_line
-
-
-def create_learning_rate_table(
-    data, title: str = "Learning Rate Analysis"
-) -> FancyTable:
-    # Convert data to list of dicts if needed
-    if hasattr(data, "to_dict"):
-        rows = data.to_dict("records")
-    else:
-        rows = data
-
-    if not rows:
-        return FancyTable(title=title)
-
-    # Identify LR columns
-    lr_columns = [col for col in rows[0].keys() if col.startswith("LR_")]
-    other_columns = [col for col in rows[0].keys() if not col.startswith("LR_")]
-
-    # Create table with columns
-    table = FancyTable(title=title, show_header=True, header_style="bold magenta")
-
-    # Add non-LR columns first
-    for col in other_columns:
-        table.add_column()
-
-    # Add LR columns
-    for col in lr_columns:
-        table.add_column()
-
-    # Create multi-level headers
-    if lr_columns:
-        # First header row: "Model Info" spanning other columns, "Learning Rates" spanning LR columns
-        header_row_1 = []
-        if other_columns:
-            header_row_1.append(
-                table.create_spanned_header(
-                    "Model Configuration", len(other_columns), "bold blue"
-                )
-            )
-        if lr_columns:
-            header_row_1.append(
-                table.create_spanned_header(
-                    "Learning Rates", len(lr_columns), "bold green"
-                )
-            )
-        table.add_header_row(*header_row_1)
-
-        # Second header row: actual column names
-        header_row_2 = []
-        for col in other_columns:
-            display_name = col.replace("_", " ").title()
-            header_row_2.append(HeaderCell(display_name))
-
-        for col in lr_columns:
-            lr_value = col.replace("LR_", "")
-            header_row_2.append(HeaderCell(lr_value))
-
-        table.add_header_row(*header_row_2)
-
-    # Finalize headers after all header rows are added
-    table.finalize_headers()
-
-    # Add data rows
-    for row in rows:
-        row_data = []
-        for col in other_columns + lr_columns:
-            row_data.append(str(row.get(col, "")))
-        table.add_row(*row_data)
-
-    return table

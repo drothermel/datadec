@@ -1,9 +1,14 @@
 import pandas as pd
 from rich.console import Console
 
-from datadec.console_components import InfoBlock, MetricPanel, SectionRule, TitlePanel
+from datadec.console_components import (
+    InfoBlock,
+    SectionRule,
+    SectionTitlePanel,
+    TitlePanel,
+    create_hyperparameter_sweep_table,
+)
 from datadec.table_formatter import format_table, load_table_config
-from datadec.fancy_table import create_learning_rate_table
 from datadec.wandb_eval import analysis_helpers
 from datadec.wandb_eval import wandb_transforms as transforms
 from datadec.wandb_eval.wandb_loader import WandBDataLoader
@@ -20,19 +25,6 @@ METRICS = {
 GROUP_SWEEPS_BY = ["model_size_m", "dataset_total_m"]
 TABLE_CONFIG = load_table_config("wandb_analysis")
 TABLE_STYLE = "zebra"  # None or "lines" or "zebra"
-
-
-def create_lr_sweep_table_config(display_df, metric_key):
-    config = TABLE_CONFIG.copy()
-    for col in display_df.columns:
-        if col.startswith("LR_"):
-            lr_value = float(col.replace("LR_", ""))
-            config[col] = {
-                "header": f"{lr_value:.0e}",
-                "formatter": "decimal",
-                "precision": 1 if metric_key == "pile_perplexity" else 3,
-            }
-    return config
 
 
 def get_param_data_from_run_names(runs_df: pd.DataFrame) -> pd.DataFrame:
@@ -107,8 +99,7 @@ def build_metric_lr_sweep_df(
 
 def main():
     console = Console()
-
-    console.print(TitlePanel("SWEEP PERFORMANCE TABLES"))
+    console.print(TitlePanel("Sweep Performance Tables: LR Sweep by Metric Type"))
 
     loader = WandBDataLoader()
     runs_df, _ = loader.load_runs_and_history()
@@ -160,41 +151,30 @@ def main():
         perf_df = perf_df.sort_values(["_sort_model", "_sort_dataset"])
         display_df = perf_df.drop(columns=["_sort_model", "_sort_dataset"])
 
-        # Use FancyTable for better visualization of learning rate sweeps
-        table = create_learning_rate_table(
-            display_df,
-            title=f"{metric_name} Learning Rate Sweep"
+        # Create hyperparameter sweep table using the reusable component
+        lr_columns = [col for col in display_df.columns if col.startswith("LR_")]
+        other_columns = [col for col in display_df.columns if not col.startswith("LR_")]
+
+        table, info_block = create_hyperparameter_sweep_table(
+            data=display_df,
+            fixed_section={"title": "Training Setup", "columns": other_columns},
+            swept_section={
+                "title": "Learning Rate",
+                "columns": lr_columns,
+                "display_transform": lambda col: col.replace("LR_", ""),
+            },
+            optimization="min" if metric_key == "pile_perplexity" else "max",
+            best_performance={
+                "enabled": False,
+                "title": "Best Perf",
+                "column_names": ["LR", "Value"],
+            },
+            highlight_threshold=0.01,
         )
 
-        best_values_lines = []
-        if metric_key != "pile_perplexity":  # Higher is better
-            best_values_lines.append("📈 Best values:")
-            for _, row in display_df.iterrows():
-                lr_cols = [col for col in display_df.columns if col.startswith("LR_")]
-                if lr_cols:
-                    best_lr = max(
-                        lr_cols,
-                        key=lambda x: float(row[x]) if pd.notna(row[x]) else -1,
-                    )
-                    best_values_lines.append(
-                        f"  {row['Model_Size']}, {row['Dataset_Tokens']} tokens → {best_lr}: {row[best_lr]}"
-                    )
-        else:
-            best_values_lines.append("📉 Best values:")
-            for _, row in display_df.iterrows():
-                lr_cols = [col for col in display_df.columns if col.startswith("LR_")]
-                if lr_cols:
-                    best_lr = min(
-                        lr_cols,
-                        key=lambda x: float(row[x])
-                        if pd.notna(row[x])
-                        else float("inf"),
-                    )
-                    best_values_lines.append(
-                        f"  {row['Model_Size']}, {row['Dataset_Tokens']} tokens → {best_lr}: {row[best_lr]}"
-                    )
-
-        console.print(MetricPanel(metric_name, table, "", "\n".join(best_values_lines)))
+        console.print(SectionTitlePanel(metric_name))
+        console.print(table)
+        console.print(info_block)
 
 
 if __name__ == "__main__":
