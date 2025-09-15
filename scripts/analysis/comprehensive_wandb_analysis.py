@@ -21,6 +21,14 @@ analysis_helpers.configure_pandas_display()
 
 TABLE_CONFIG = load_table_config("wandb_analysis")
 TABLE_STYLE = "zebra"
+CRITICAL_FIELDS = ["model_size", "learning_rate", "train_loss", "state"]
+ALL_RUN_TYPES = [
+    "Training",
+    "Training (minimal config)",
+    "Training (config only)",
+    "Eval-Only",
+    "Unknown",
+]
 
 
 @dataclass
@@ -149,18 +157,14 @@ def _calculate_data_quality(
     runs_df: pd.DataFrame, history_df: pd.DataFrame, extracted_params: List[Dict]
 ) -> DataQualityResults:
     runs_with_history = set(history_df["run_id"].unique())
-
     run_types = []
     for _, row in runs_df.iterrows():
         has_history = row["run_id"] in runs_with_history
         run_type = _classify_run_type(row, has_history)
         run_types.append(run_type)
-
     run_classification = pd.Series(run_types).value_counts()
-
-    critical_fields = ["model_size", "learning_rate", "train_loss", "state"]
     field_completeness = []
-    for field in critical_fields:
+    for field in CRITICAL_FIELDS:
         if field in runs_df.columns:
             completeness = runs_df[field].notna().sum() / len(runs_df) * 100
             field_completeness.append(
@@ -176,7 +180,6 @@ def _calculate_data_quality(
     size_comparison_data = []
     for i, params in enumerate(extracted_params):
         run_data = runs_df.iloc[i]
-
         extracted_lr = params.get("learning_rate")
         metadata_lr = run_data.get("learning_rate", None)
         if extracted_lr and pd.notna(metadata_lr):
@@ -194,7 +197,6 @@ def _calculate_data_quality(
             lr_comparison_data.append("metadata_only")
         else:
             lr_comparison_data.append("neither")
-
         extracted_size = params.get("model_size_m")
         metadata_size = run_data.get("model_size", None)
         if extracted_size and pd.notna(metadata_size):
@@ -217,13 +219,11 @@ def _calculate_data_quality(
         "learning_rate": pd.Series(lr_comparison_data).value_counts(),
         "model_size": pd.Series(size_comparison_data).value_counts(),
     }
-
     training_history_coverage = {
         "runs_with_history": len(runs_with_history),
         "total_runs": len(runs_df),
         "coverage_percentage": len(runs_with_history) / len(runs_df) * 100,
     }
-
     finished_runs = (runs_df["state"] == "finished").sum()
     history_coverage = len(runs_with_history) / len(runs_df)
     field_avg_completeness = sum(
@@ -236,7 +236,6 @@ def _calculate_data_quality(
         + history_coverage * 30
         + field_avg_completeness * 0.3
     )
-
     return DataQualityResults(
         total_runs=len(runs_df),
         run_classification=run_classification,
@@ -253,20 +252,16 @@ def _calculate_experimental_design(
     extraction_stats: Dict[str, int],
 ) -> ExperimentalDesignResults:
     params_df = pd.DataFrame(extracted_params)
-
     if "model_size_m" in params_df.columns and "learning_rate" in params_df.columns:
-        # Filter to only runs with both parameters present (no Missing data)
         complete_params = params_df[
             params_df["model_size_m"].notna() & params_df["learning_rate"].notna()
         ]
-
         if len(complete_params) > 0:
             model_lr_crosstab = pd.crosstab(
                 complete_params["model_size_m"],
                 complete_params["learning_rate"],
                 margins=True,
             )
-            # Convert learning rate columns to scientific notation
             new_columns = []
             for col in model_lr_crosstab.columns:
                 if col == "All":
@@ -276,46 +271,34 @@ def _calculate_experimental_design(
                 else:
                     new_columns.append(col)
             model_lr_crosstab.columns = new_columns
-
-            # Rename "All" to "Present" for index
             if "All" in model_lr_crosstab.index:
                 model_lr_crosstab = model_lr_crosstab.rename(index={"All": "Present"})
         else:
             model_lr_crosstab = pd.DataFrame()
     else:
         model_lr_crosstab = pd.DataFrame()
-
     if "model_size_m" in params_df.columns and "dataset_total_m" in params_df.columns:
-        # Filter to only runs with both parameters present (no Missing data)
         complete_params_data = params_df[
             params_df["model_size_m"].notna() & params_df["dataset_total_m"].notna()
         ]
-
         if len(complete_params_data) > 0:
             model_data_crosstab = pd.crosstab(
                 complete_params_data["model_size_m"],
                 complete_params_data["dataset_total_m"],
                 margins=True,
             )
-            # Rename "All" to "Present"
             if "All" in model_data_crosstab.columns:
                 model_data_crosstab = model_data_crosstab.rename(
                     columns={"All": "Present"}
-                )
-            if "All" in model_data_crosstab.index:
-                model_data_crosstab = model_data_crosstab.rename(
-                    index={"All": "Present"}
                 )
         else:
             model_data_crosstab = pd.DataFrame()
     else:
         model_data_crosstab = pd.DataFrame()
-
     experimental_grid = {
         "model_lr": model_lr_crosstab,
         "model_data": model_data_crosstab,
     }
-
     sweep_completeness = []
     for param, count in extraction_stats.items():
         success_rate = count / len(extracted_params)
@@ -332,7 +315,6 @@ def _calculate_experimental_design(
                 else "Low",
             }
         )
-
     if "method" in params_df.columns:
         method_comparison = params_df["method"].value_counts().to_frame("count")
         method_comparison["percentage"] = (
@@ -340,7 +322,6 @@ def _calculate_experimental_design(
         ).round(1)
     else:
         method_comparison = pd.DataFrame()
-
     special_experiments = []
     if "max_train_samples" in runs_df.columns:
         data_eff_count = runs_df["max_train_samples"].notna().sum()
@@ -352,7 +333,6 @@ def _calculate_experimental_design(
                     "description": "Experiments with max_train_samples limits",
                 }
             )
-
     if "reduce_loss_type" in runs_df.columns:
         loss_exp_count = runs_df["reduce_loss_type"].notna().sum()
         if loss_exp_count > 0:
@@ -363,7 +343,6 @@ def _calculate_experimental_design(
                     "description": "Experiments with custom loss reduction",
                 }
             )
-
     high_viability_params = sum(
         1 for sc in sweep_completeness if sc["viability"] == "High"
     )
@@ -372,7 +351,6 @@ def _calculate_experimental_design(
         if sweep_completeness
         else 0
     )
-
     return ExperimentalDesignResults(
         hyperparameter_extraction=extraction_stats,
         experimental_grid=experimental_grid,
@@ -396,7 +374,6 @@ def _calculate_anomaly_detection(
         if len(zero_lr_runs) > 0
         else 0,
     }
-
     state_counts = runs_df["state"].value_counts()
     failed_run_patterns = []
     for state, count in state_counts.items():
@@ -408,7 +385,6 @@ def _calculate_anomaly_detection(
                     "percentage": count / len(runs_df) * 100,
                 }
             )
-
     data_inconsistencies = []
     if len(zero_lr_runs) > 0:
         data_inconsistencies.append(
@@ -418,7 +394,6 @@ def _calculate_anomaly_detection(
                 "impact": "High - affects training analysis",
             }
         )
-
     missing_history = len(runs_df) - history_df["run_id"].nunique()
     if missing_history > 0:
         data_inconsistencies.append(
@@ -428,16 +403,13 @@ def _calculate_anomaly_detection(
                 "impact": "Medium - limits training analysis",
             }
         )
-
     outlier_summary = {
         "zero_lr_runs": len(zero_lr_runs),
         "failed_runs": len(runs_df) - (runs_df["state"] == "finished").sum(),
         "missing_history": missing_history,
     }
-
     total_issues = sum(outlier_summary.values())
     reliability_score = max(0, 100 - (total_issues / len(runs_df) * 100))
-
     return AnomalyDetectionResults(
         zero_lr_analysis=zero_lr_analysis,
         failed_run_patterns=failed_run_patterns,
@@ -451,9 +423,7 @@ def _calculate_training_dynamics(
     runs_df: pd.DataFrame, history_df: pd.DataFrame
 ) -> TrainingDynamicsResults:
     if len(history_df) > 0:
-        available_runs = list(history_df["run_id"].unique())[
-            :10
-        ]  # Sample for performance
+        available_runs = list(history_df["run_id"].unique())[:10]
         if available_runs:
             progression_summary = analysis_helpers.analyze_training_progression(
                 history_df, available_runs
@@ -462,7 +432,6 @@ def _calculate_training_dynamics(
             progression_summary = pd.DataFrame()
     else:
         progression_summary = pd.DataFrame()
-
     epoch_analysis = {}
     if "num_train_epochs" in runs_df.columns:
         epochs_data = runs_df["num_train_epochs"].dropna()
@@ -472,7 +441,6 @@ def _calculate_training_dynamics(
                 "mean_epochs": epochs_data.mean(),
                 "epoch_range": f"{epochs_data.min():.1f} - {epochs_data.max():.1f}",
             }
-
     convergence_patterns = []
     if len(progression_summary) > 0:
         avg_steps = (
@@ -487,14 +455,11 @@ def _calculate_training_dynamics(
                 "sample_size": len(progression_summary),
             }
         )
-
     performance_distribution = {}
     if "state" in runs_df.columns:
         success_rate = (runs_df["state"] == "finished").sum() / len(runs_df) * 100
         performance_distribution["overall_success_rate"] = success_rate
-
     success_score = performance_distribution.get("overall_success_rate", 0)
-
     return TrainingDynamicsResults(
         progression_summary=progression_summary,
         epoch_analysis=epoch_analysis,
@@ -530,7 +495,6 @@ def _calculate_strategy_recommendations(
                     "recommendation": "Suitable for secondary analysis",
                 }
             )
-
     recommended_dimensions = [
         {
             "dimension": "Model Size Scaling",
@@ -548,7 +512,6 @@ def _calculate_strategy_recommendations(
             "rationale": "Good coverage for finetune vs DPO",
         },
     ]
-
     data_gaps = []
     if data_quality.quality_score < 70:
         data_gaps.append("Improve overall data completeness")
@@ -556,13 +519,11 @@ def _calculate_strategy_recommendations(
         data_gaps.append("Address anomalous runs and data inconsistencies")
     if experimental_design.coverage_score < 60:
         data_gaps.append("Expand hyperparameter sweep coverage")
-
     next_experiments = [
         "Focus on completing partial hyperparameter sweeps",
         "Address systematic data quality issues",
         "Prioritize experiments in well-covered parameter space",
     ]
-
     analysis_limitations = []
     if anomaly_detection.zero_lr_analysis["count"] > 0:
         analysis_limitations.append(
@@ -572,14 +533,12 @@ def _calculate_strategy_recommendations(
         analysis_limitations.append(
             "Limited training history reduces dynamics analysis reliability"
         )
-
     confidence_scores = {
         "hyperparameter_analysis": experimental_design.coverage_score,
         "training_dynamics": training_dynamics.success_score,
         "data_quality": data_quality.quality_score,
         "anomaly_detection": anomaly_detection.reliability_score,
     }
-
     return StrategyResults(
         plotting_viability=plotting_viability,
         recommended_dimensions=recommended_dimensions,
@@ -593,7 +552,6 @@ def _calculate_strategy_recommendations(
 def calculate_comprehensive_analysis() -> ComprehensiveAnalysisResults:
     loader = WandBDataLoader()
     runs_df, history_df = loader.load_runs_and_history()
-
     extracted_params, extraction_stats = _extract_hyperparameters_unified(
         runs_df["run_name"].tolist()
     )
@@ -607,7 +565,6 @@ def calculate_comprehensive_analysis() -> ComprehensiveAnalysisResults:
     recommendations = _calculate_strategy_recommendations(
         data_quality, experimental_design, anomaly_detection, training_dynamics
     )
-
     return ComprehensiveAnalysisResults(
         data_quality=data_quality,
         experimental_design=experimental_design,
@@ -622,20 +579,9 @@ def _display_data_quality_section(console: Console, results: DataQualityResults)
     console.print(InfoBlock(f"Total runs analyzed: {results.total_runs}"))
     console.print(InfoBlock(f"Overall quality score: {results.quality_score:.1f}/100"))
     console.print()
-
     console.print(SectionTitlePanel("Run Classification"))
-
-    # Show all possible run types, including zeros for completeness
-    all_run_types = [
-        "Training",
-        "Training (minimal config)",
-        "Training (config only)",
-        "Eval-Only",
-        "Unknown",
-    ]
-
     classification_data = []
-    for run_type in all_run_types:
+    for run_type in ALL_RUN_TYPES:
         count = results.run_classification.get(run_type, 0)
         classification_data.append(
             {
@@ -649,7 +595,6 @@ def _display_data_quality_section(console: Console, results: DataQualityResults)
     )
     console.print(table)
     console.print()
-
     console.print(SectionTitlePanel("Field Completeness"))
     table = format_table(
         results.field_completeness,
@@ -658,7 +603,6 @@ def _display_data_quality_section(console: Console, results: DataQualityResults)
     )
     console.print(table)
     console.print()
-
     console.print(SectionTitlePanel("Metadata Validation"))
     for param, validation_results in results.metadata_validation.items():
         validation_data = [
@@ -688,7 +632,6 @@ def _display_experimental_design_section(
         )
     )
     console.print()
-
     console.print(SectionTitlePanel("Hyperparameter Extraction Success"))
     table = format_table(
         results.sweep_completeness,
@@ -697,14 +640,12 @@ def _display_experimental_design_section(
     )
     console.print(table)
     console.print()
-
     if not results.experimental_grid["model_lr"].empty:
         console.print(
             SectionTitlePanel("Experimental Grid: Model Size × Learning Rate")
         )
         _display_experimental_grid_table(console, results.experimental_grid["model_lr"])
         console.print()
-
     if not results.method_comparison.empty:
         console.print(SectionTitlePanel("Training Method Distribution"))
         method_data = [
@@ -720,7 +661,6 @@ def _display_experimental_design_section(
         )
         console.print(table)
         console.print()
-
     if results.special_experiments:
         console.print(SectionTitlePanel("Special Experiments"))
         table = format_table(
@@ -740,7 +680,6 @@ def _display_anomaly_detection_section(
         InfoBlock(f"Data reliability score: {results.reliability_score:.1f}/100")
     )
     console.print()
-
     console.print(SectionTitlePanel("Zero Learning Rate Analysis"))
     zero_lr_data = [
         {"metric": "Total zero LR runs", "value": results.zero_lr_analysis["count"]},
@@ -758,7 +697,6 @@ def _display_anomaly_detection_section(
     )
     console.print(table)
     console.print()
-
     if results.failed_run_patterns:
         console.print(SectionTitlePanel("Failed Run Patterns"))
         table = format_table(
@@ -768,7 +706,6 @@ def _display_anomaly_detection_section(
         )
         console.print(table)
         console.print()
-
     if results.data_inconsistencies:
         console.print(SectionTitlePanel("Data Inconsistencies"))
         table = format_table(
@@ -786,7 +723,6 @@ def _display_training_dynamics_section(
     console.print(SectionRule("4. TRAINING DYNAMICS ANALYSIS"))
     console.print(InfoBlock(f"Training success score: {results.success_score:.1f}/100"))
     console.print()
-
     if not results.progression_summary.empty:
         console.print(SectionTitlePanel("Training Progression Sample"))
         console.print(
@@ -796,7 +732,6 @@ def _display_training_dynamics_section(
         )
         console.print(results.progression_summary.head(10))
         console.print()
-
     if results.epoch_analysis:
         console.print(SectionTitlePanel("Epoch Analysis"))
         epoch_data = [
@@ -808,7 +743,6 @@ def _display_training_dynamics_section(
         )
         console.print(table)
         console.print()
-
     if results.convergence_patterns:
         console.print(SectionTitlePanel("Convergence Patterns"))
         table = format_table(
@@ -825,14 +759,12 @@ def _display_strategy_recommendations_section(
 ):
     console.print(SectionRule("5. STRATEGIC RECOMMENDATIONS"))
     console.print()
-
     console.print(SectionTitlePanel("Plotting Viability Assessment"))
     table = format_table(
         results.plotting_viability, title="Analysis Readiness", table_style=TABLE_STYLE
     )
     console.print(table)
     console.print()
-
     console.print(SectionTitlePanel("Recommended Analysis Dimensions"))
     table = format_table(
         results.recommended_dimensions,
@@ -841,7 +773,6 @@ def _display_strategy_recommendations_section(
     )
     console.print(table)
     console.print()
-
     if results.data_gaps:
         console.print(SectionTitlePanel("Data Gaps & Improvements Needed"))
         for gap in results.data_gaps:
@@ -852,13 +783,11 @@ def _display_strategy_recommendations_section(
     for recommendation in results.next_experiments:
         console.print(InfoBlock(f"• {recommendation}", "green"))
     console.print()
-
     if results.analysis_limitations:
         console.print(SectionTitlePanel("Analysis Limitations"))
         for limitation in results.analysis_limitations:
             console.print(InfoBlock(f"⚠️  {limitation}", "red"))
         console.print()
-
     console.print(SectionTitlePanel("Confidence Scores"))
     confidence_data = [
         {
@@ -874,9 +803,6 @@ def _display_strategy_recommendations_section(
 
 
 def _display_experimental_grid_table(console: Console, crosstab_df: pd.DataFrame):
-    """Display experimental grid using reusable counts table component"""
-
-    # Transform model size row labels to add "M" suffix
     display_crosstab = crosstab_df.copy()
     new_index = []
     for idx in display_crosstab.index:
@@ -885,17 +811,14 @@ def _display_experimental_grid_table(console: Console, crosstab_df: pd.DataFrame
         else:
             new_index.append(f"{idx}M")
     display_crosstab.index = new_index
-
-    # Create the counts table
     table = create_counts_table(
         crosstab_df=display_crosstab,
         row_section_title="Model Size",
         col_section_title="Learning Rate",
         present_row_name="Present",
         present_col_name="Present",
-        col_display_transform=None,  # Uses default scientific notation for numeric columns
+        col_display_transform=None,
     )
-
     console.print(InfoBlock("Experimental coverage matrix (run counts):"))
     console.print(table)
     console.print(
@@ -924,7 +847,6 @@ def display_comprehensive_analysis(
         TitlePanel("Comprehensive WandB Analysis: Complete Experimental Assessment")
     )
     console.print()
-
     _display_data_quality_section(console, results.data_quality)
     _display_experimental_design_section(console, results.experimental_design)
     _display_anomaly_detection_section(console, results.anomaly_detection)
@@ -936,7 +858,6 @@ def main():
     console = Console()
     console.print(InfoBlock("Loading and analyzing WandB experimental data...", "blue"))
     console.print()
-
     results = calculate_comprehensive_analysis()
     display_comprehensive_analysis(results, console)
 

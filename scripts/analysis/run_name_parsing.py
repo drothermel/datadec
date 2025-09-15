@@ -18,6 +18,25 @@ from datadec.wandb_eval.wandb_loader import WandBDataLoader
 
 analysis_helpers.configure_pandas_display()
 
+HEADER_MAP = {
+    "training_method": "Method",
+    "learning_rate": "LR",
+    "model_size": "Size",
+    "dataset_tokens_amount": "Tokens",
+    "epochs": "Epochs",
+    "data": "Data",
+    "exp_name": "Exp",
+    "checkpoint": "Ckpt",
+    "max_train_samples": "Max Samples",
+    "reduce_loss": "Reduce Loss",
+    "run_datetime": "DateTime",
+}
+
+COLUMN_CONFIG = {
+    "index": {"header": "#", "formatter": "integer"},
+    "run_name": {"header": "Run Name", "formatter": "string"},
+}
+
 
 @dataclass
 class ParsingAnalysisResults:
@@ -65,7 +84,6 @@ def _analyze_name_patterns(run_names: list[str]) -> dict:
 def _extract_hyperparameters(run_names: list[str]) -> tuple[list[dict], dict[str, int]]:
     extracted_params = []
     for name in run_names:
-        # Allow date/time extraction by using empty ignore list
         params = transforms.extract_hyperparameters(name, ignore=[])
         converted_params = {"run_name": name}
         for key, value in params.items():
@@ -87,13 +105,11 @@ def _extract_hyperparameters(run_names: list[str]) -> tuple[list[dict], dict[str
             else:
                 converted_params[key] = value
         extracted_params.append(converted_params)
-
     extraction_stats = defaultdict(int)
     for params in extracted_params:
         for key in params:
             if key != "run_name" and params[key]:
                 extraction_stats[key] += 1
-
     return extracted_params, dict(extraction_stats)
 
 
@@ -104,14 +120,12 @@ def _analyze_specific_parameters(extracted_params: list[dict]) -> dict:
         if params.get("learning_rate")
     ]
     unique_extracted_lrs = list(set(extracted_lrs))[:15]
-
     extracted_sizes = [
         params.get("model_size")
         for params in extracted_params
         if params.get("model_size")
     ]
     unique_sizes = sorted(set(extracted_sizes), key=lambda x: float(x) if x else 0)
-
     token_amounts = [
         params.get("dataset_tokens_amount")
         for params in extracted_params
@@ -120,7 +134,6 @@ def _analyze_specific_parameters(extracted_params: list[dict]) -> dict:
     unique_token_amounts = sorted(
         set(token_amounts), key=lambda x: float(x) if x else 0
     )
-
     return {
         "extracted_lrs": extracted_lrs,
         "unique_extracted_lrs": unique_extracted_lrs,
@@ -137,7 +150,6 @@ def _compare_with_metadata(extracted_params: list[dict], runs_df: pd.DataFrame) 
         run_data = runs_df.iloc[i]
         extracted_lr = params.get("learning_rate")
         metadata_lr = run_data.get("learning_rate", None)
-
         if extracted_lr and pd.notna(metadata_lr):
             try:
                 extracted_float = float(extracted_lr)
@@ -159,7 +171,6 @@ def _compare_with_metadata(extracted_params: list[dict], runs_df: pd.DataFrame) 
         run_data = runs_df.iloc[i]
         extracted_size = params.get("model_size")
         metadata_size = run_data.get("model_size", None)
-
         if extracted_size and pd.notna(metadata_size):
             try:
                 extracted_float = float(extracted_size) * 1e6
@@ -175,7 +186,6 @@ def _compare_with_metadata(extracted_params: list[dict], runs_df: pd.DataFrame) 
             size_comparison_data.append("metadata_only")
         else:
             size_comparison_data.append("neither")
-
     return {
         "lr_comparison_counts": pd.Series(lr_comparison_data).value_counts(),
         "size_comparison_counts": pd.Series(size_comparison_data).value_counts(),
@@ -190,13 +200,10 @@ def _generate_recommendations(
         success_rate = count / total_runs
         if success_rate > 0.5:
             reliable_params.append((param, success_rate))
-
     reliable_params.sort(key=lambda x: x[1], reverse=True)
-
     unreliable_params = [
         param for param, count in extraction_stats.items() if count / total_runs < 0.3
     ]
-
     return {"reliable_params": reliable_params, "unreliable_params": unreliable_params}
 
 
@@ -207,7 +214,6 @@ def calculate_parsing_analysis() -> ParsingAnalysisResults:
     param_analysis = _analyze_specific_parameters(extracted_params)
     metadata_comparison = _compare_with_metadata(extracted_params, runs_df)
     recommendations = _generate_recommendations(extraction_stats, len(run_names))
-
     return ParsingAnalysisResults(
         total_runs=len(run_names),
         run_names=run_names,
@@ -238,12 +244,10 @@ def _display_title_and_overview(console: Console, results: ParsingAnalysisResult
 
 def _display_name_pattern_analysis(console: Console, results: ParsingAnalysisResults):
     console.print(SectionRule("RUN NAME PATTERN ANALYSIS"))
-
     console.print(SectionTitlePanel("Sample Run Names (Evolution)"))
     for i, name in enumerate(results.run_names[:10]):
         console.print(f"  {i + 1:2}. {name[:80]}{'...' if len(name) > 80 else ''}")
     console.print()
-
     mean_length = sum(results.name_lengths) / len(results.name_lengths)
     length_data = [
         {"category": "Mean Length", "value": f"{mean_length:.0f} characters"},
@@ -255,7 +259,6 @@ def _display_name_pattern_analysis(console: Console, results: ParsingAnalysisRes
         {"category": "Medium (80-120)", "value": f"{len(results.medium_names)} runs"},
         {"category": "Long (≥120)", "value": f"{len(results.long_names)} runs"},
     ]
-
     table = format_table(
         length_data, title="Name Length Distribution", table_style="zebra"
     )
@@ -265,7 +268,6 @@ def _display_name_pattern_analysis(console: Console, results: ParsingAnalysisRes
 
 def _display_extraction_analysis(console: Console, results: ParsingAnalysisResults):
     console.print(SectionRule("HYPERPARAMETER EXTRACTION PATTERNS"))
-
     extraction_data = []
     for param, count in sorted(results.extraction_stats.items()):
         percentage = count / results.total_runs * 100
@@ -277,15 +279,12 @@ def _display_extraction_analysis(console: Console, results: ParsingAnalysisResul
                 "success_rate": f"{percentage:.1f}%",
             }
         )
-
     table = format_table(
         extraction_data, title="Extraction Success Rates", table_style="zebra"
     )
     console.print(table)
     console.print()
-
     console.print(SectionTitlePanel("Parameter Patterns Found"))
-
     sorted_lrs = sorted(
         results.unique_extracted_lrs, key=lambda x: float(x) if x else 0
     )
@@ -296,7 +295,6 @@ def _display_extraction_analysis(console: Console, results: ParsingAnalysisResul
         )
     )
     console.print(InfoBlock(f"Model sizes: {', '.join(results.unique_sizes)}", "dim"))
-
     token_info = [f"{amount}M" for amount in results.unique_token_amounts]
     console.print(
         InfoBlock(
@@ -309,7 +307,6 @@ def _display_extraction_analysis(console: Console, results: ParsingAnalysisResul
 
 def _display_metadata_comparison(console: Console, results: ParsingAnalysisResults):
     console.print(SectionRule("VALIDATION AGAINST METADATA"))
-
     lr_comparison_data = [
         {
             "category": category,
@@ -318,7 +315,6 @@ def _display_metadata_comparison(console: Console, results: ParsingAnalysisResul
         }
         for category, count in results.lr_comparison_counts.items()
     ]
-
     table = format_table(
         lr_comparison_data,
         title="Learning Rate: Name Extraction vs Metadata",
@@ -326,7 +322,6 @@ def _display_metadata_comparison(console: Console, results: ParsingAnalysisResul
     )
     console.print(table)
     console.print()
-
     size_comparison_data = [
         {
             "category": category,
@@ -335,7 +330,6 @@ def _display_metadata_comparison(console: Console, results: ParsingAnalysisResul
         }
         for category, count in results.size_comparison_counts.items()
     ]
-
     table = format_table(
         size_comparison_data,
         title="Model Size: Name Extraction vs Metadata",
@@ -347,7 +341,6 @@ def _display_metadata_comparison(console: Console, results: ParsingAnalysisResul
 
 def _display_recommendations(console: Console, results: ParsingAnalysisResults):
     console.print(SectionRule("PARSING RECOMMENDATIONS"))
-
     reliable_data = [
         {
             "parameter": param,
@@ -358,22 +351,18 @@ def _display_recommendations(console: Console, results: ParsingAnalysisResults):
         }
         for param, rate in results.reliable_params
     ]
-
     table = format_table(
         reliable_data, title="Reliability Assessment", table_style="zebra"
     )
     console.print(table)
     console.print()
-
     console.print(SectionTitlePanel("Strategic Parsing Approach"))
-
     strategy_items = [
         "Extract from names where reliability > 70%",
         "Use metadata fallback for unreliable parameters",
         "Cross-validate extracted vs metadata values",
         "Prioritize hybrid approach for robustness",
     ]
-
     for item in strategy_items:
         console.print(InfoBlock(f"• {item}", "green"))
     console.print()
@@ -395,80 +384,42 @@ def _display_detailed_examples(
     console: Console, results: ParsingAnalysisResults, num_examples: int = 50
 ):
     console.print(SectionRule("DETAILED RUN NAME EXAMPLES"))
-
-    # Sort extracted params by date if available
     sorted_params = results.extracted_params.copy()
     params_with_dates = []
     params_without_dates = []
-
     for params in sorted_params:
         if params.get("run_datetime"):
             try:
-                # Use ISO datetime format which sorts naturally: 2025-09-01 15:57:34
                 sort_key = params["run_datetime"]
                 params_with_dates.append((sort_key, params))
-            except:
+            except Exception:
                 params_without_dates.append(params)
         else:
             params_without_dates.append(params)
-
-    # Sort by date/time, newest first
     params_with_dates.sort(key=lambda x: x[0], reverse=True)
     sorted_extracted_params = [p[1] for p in params_with_dates] + params_without_dates
-
-    # Discover all parameter keys across all extractions
     all_param_keys = set()
     for params in results.extracted_params:
         all_param_keys.update(params.keys())
-
-    # Remove run_name from the parameter list and sort the rest
     param_keys = sorted([key for key in all_param_keys if key != "run_name"])
-
-    # Create nice headers for known parameters, use title case for others
-    header_map = {
-        "training_method": "Method",
-        "learning_rate": "LR",
-        "model_size": "Size",
-        "dataset_tokens_amount": "Tokens",
-        "epochs": "Epochs",
-        "data": "Data",
-        "exp_name": "Exp",
-        "checkpoint": "Ckpt",
-        "max_train_samples": "Max Samples",
-        "reduce_loss": "Reduce Loss",
-        "run_datetime": "DateTime",
-    }
-
     examples_data = []
     for i, params in enumerate(sorted_extracted_params[:num_examples]):
         example_row = {"index": i + 1, "run_name": params.get("run_name", "")}
-
-        # Add all discovered parameters
         for key in param_keys:
             value = params.get(key, "")
             example_row[key] = "-" if (value == "" or value is None) else str(value)
-
         examples_data.append(example_row)
-
-    # Build column config dynamically
-    column_config = {
-        "index": {"header": "#", "formatter": "integer"},
-        "run_name": {"header": "Run Name", "formatter": "string"},
-    }
-
     for key in param_keys:
-        header = header_map.get(key, key.replace("_", " ").title())
-        column_config[key] = {"header": header, "formatter": "string"}
-
+        header = HEADER_MAP.get(key, key.replace("_", " ").title())
+        COLUMN_CONFIG[key] = {"header": header, "formatter": "string"}
     table = format_table(
         examples_data,
         title=f"Detailed Parameter Extraction Examples (First {len(examples_data)} runs, sorted by date)",
         table_style="zebra",
-        column_config=column_config,
+        column_config=COLUMN_CONFIG,
     )
     console.print(table)
     console.print()
-
     console.print(
         InfoBlock(
             f"Showing detailed extraction results for {len(examples_data)} run names with all discovered parameters.",
@@ -491,8 +442,6 @@ def display_parsing_analysis(
 
 def main():
     console = Console()
-
-    # Parse command line arguments
     if len(sys.argv) > 1:
         try:
             requested_examples = int(sys.argv[1])
@@ -502,12 +451,8 @@ def main():
             sys.exit(1)
     else:
         requested_examples = 50
-
     results = calculate_parsing_analysis()
-
-    # Use min(requested, available) to handle cases where user requests more than available
     actual_examples = min(requested_examples, results.total_runs)
-
     console.print(
         InfoBlock(
             f"Requested {requested_examples} examples, showing {actual_examples} (total available: {results.total_runs})",
@@ -515,7 +460,6 @@ def main():
         )
     )
     console.print()
-
     display_parsing_analysis(results, console, num_examples=actual_examples)
 
 
