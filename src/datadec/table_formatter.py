@@ -3,6 +3,7 @@ from typing import Callable, Optional, Union
 import pandas as pd
 import yaml
 from tabulate import tabulate
+from rich.table import Table
 
 from datadec.constants import CONFIGS_DIR
 
@@ -54,20 +55,26 @@ def format_table(
     headers: Optional[list[str]] = None,
     output_format: str = "console",
     column_config: Optional[dict[str, dict]] = None,
+    title: Optional[str] = None,
+    table_style: str = "lines",
     disable_numparse: bool = True,
-) -> str:
+) -> Union[str, Table]:
     processed_data = _preprocess_data(data)
     column_names = _get_column_names(data)
     config = column_config or {}
     formatted_data = _apply_column_formatting(processed_data, config, column_names)
     final_headers = _resolve_headers(headers, column_names, config)
-    tablefmt = OUTPUT_FORMATS.get(output_format, "grid")
-    return tabulate(
-        formatted_data,
-        headers=final_headers,
-        tablefmt=tablefmt,
-        disable_numparse=disable_numparse,
-    )
+
+    if output_format == "console":
+        return _create_rich_table(formatted_data, final_headers, config, column_names, title, table_style)
+    else:
+        tablefmt = OUTPUT_FORMATS.get(output_format, "grid")
+        return tabulate(
+            formatted_data,
+            headers=final_headers,
+            tablefmt=tablefmt,
+            disable_numparse=disable_numparse,
+        )
 
 
 def _preprocess_data(data: Union[list[dict], pd.DataFrame, list[list]]) -> list[list]:
@@ -149,6 +156,7 @@ def format_dynamics_table(
     dynamics_list: list[dict],
     columns: list[str] = None,
     output_format: str = "console",
+    table_style: str = "lines",
     disable_numparse: bool = True,
 ) -> str:
     if not dynamics_list:
@@ -166,6 +174,7 @@ def format_dynamics_table(
         data=data_to_format,
         output_format=output_format,
         column_config=wandb_config,
+        table_style=table_style,
         disable_numparse=disable_numparse,
     )
 
@@ -174,6 +183,7 @@ def format_coverage_table(
     df: pd.DataFrame,
     title: str = "Column Coverage",
     output_format: str = "console",
+    table_style: str = "lines",
     disable_numparse: bool = True,
 ) -> str:
     coverage_data = []
@@ -185,6 +195,54 @@ def format_coverage_table(
         data=coverage_data,
         output_format=output_format,
         column_config=COVERAGE_TABLE_CONFIG,
+        table_style=table_style,
         disable_numparse=disable_numparse,
     )
     return result
+
+
+def _create_rich_table(
+    formatted_data: list[list],
+    headers: list[str],
+    config: dict[str, dict],
+    column_names: list[str],
+    title: Optional[str] = None,
+    table_style: str = "lines",
+) -> Table:
+    if table_style == "zebra":
+        table = Table(title=title, show_header=True, header_style="bold magenta", row_styles=["", "dim"])
+    else:  # "lines" or default
+        table = Table(title=title, show_header=True, header_style="bold magenta", show_lines=True)
+
+    for i, header in enumerate(headers):
+        col_name = _get_column_name_for_index(column_names, i)
+        col_config = config.get(col_name, {})
+        justify = _get_rich_justify(col_config)
+        style = _get_rich_style(col_config)
+        table.add_column(header, justify=justify, style=style)
+
+    for row in formatted_data:
+        table.add_row(*[str(cell) for cell in row])
+
+    return table
+
+
+def _get_column_name_for_index(column_names: list[str], index: int) -> str:
+    return column_names[index] if index < len(column_names) else f"col_{index}"
+
+
+def _get_rich_justify(col_config: dict) -> str:
+    formatter = col_config.get("formatter", "string")
+    return "right" if formatter in ["scientific", "decimal", "integer", "comma"] else "left"
+
+
+def _get_rich_style(col_config: dict) -> Optional[str]:
+    formatter = col_config.get("formatter", "string")
+    style_map = {
+        "scientific": "yellow",
+        "decimal": "green",
+        "integer": "cyan",
+        "comma": "cyan",
+        "truncate": "dim",
+    }
+    return style_map.get(formatter)
