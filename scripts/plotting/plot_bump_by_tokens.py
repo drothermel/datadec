@@ -45,7 +45,6 @@ def prepare_data(kwargs: dict[str, Any]) -> pd.DataFrame:
     x_axis = kwargs.get("x_axis", "tokens")
     time_col = "tokens" if x_axis == "tokens" else "step"
     x_label = "Token Count" if x_axis == "tokens" else "Training Steps"
-
     return prepare_datadecide_bump_data(
         kwargs,
         transformations=[align_to_common_start_point],

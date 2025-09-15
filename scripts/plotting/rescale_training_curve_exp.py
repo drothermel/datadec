@@ -68,8 +68,6 @@ def prepare_faceted_data(df: pd.DataFrame) -> pd.DataFrame:
     df_normed["x_value"] = df_normed["normed_x"]
     df_normed["x_label"] = "% of training tokens"
     faceted_df = pd.concat([df_tokens, df_normed], ignore_index=True)
-
-    # Create DataFrame with scale types and cross join for all combinations
     scale_df = pd.DataFrame({"scale_type": SCALE_ROW})
     return pd.merge(faceted_df, scale_df, how="cross")
 

@@ -13,7 +13,6 @@ def main() -> None:
         recent_only=False,
         column_groups=wconsts.INITIAL_SFT_GROUPS,
     )
-
     filtered_df, history_df = loader.load_data(config)
     print()
     print(f"Total runs after filtering: {len(filtered_df)}")
