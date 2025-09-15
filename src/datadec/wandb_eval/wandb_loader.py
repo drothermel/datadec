@@ -1,11 +1,10 @@
 from dataclasses import dataclass
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 import pandas as pd
 
 from datadec.wandb_eval import wandb_constants as wconsts
 from datadec.wandb_eval import wandb_transforms as transforms
-from datadec.wandb_eval.wandb_store import WandBStore
 
 
 @dataclass
@@ -36,12 +35,8 @@ class FilterConfig:
 
 
 class WandBDataLoader:
-    def __init__(self, db_connection: str = None):
-        self.db_connection = db_connection or wconsts.DEFAULT_DB_CONNECTION
-
-    def load_runs_and_history(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
-        wandb_store = WandBStore(self.db_connection)
-        return wandb_store.get_runs(), wandb_store.get_history()
+    def __init__(self):
+        pass
 
     def load_data(self, config: FilterConfig) -> tuple[pd.DataFrame, pd.DataFrame]:
         runs_df, history_df = self.load_runs_and_history()
