@@ -200,3 +200,117 @@ def create_hyperparameter_sweep_table(
     )
     info_block = InfoBlock(info_text, style="dim")
     return table, info_block
+
+
+def create_counts_table(
+    crosstab_df: pd.DataFrame,
+    row_section_title: str,
+    col_section_title: str,
+    present_row_name: str = "Present",
+    present_col_name: str = "Present",
+    col_display_transform: Optional[callable] = None,
+) -> FancyTable:
+    """
+    Create a hierarchical table for displaying count/crosstab data.
+
+    Args:
+        crosstab_df: DataFrame with row/column crosstab data including totals
+        row_section_title: Title for the row section (left column)
+        col_section_title: Title for the main data columns
+        present_row_name: Name of the totals row (default "Present")
+        present_col_name: Name of the totals column (default "Present")
+        col_display_transform: Optional function to transform column names for display
+
+    Returns:
+        FancyTable with hierarchical headers and green styling for totals
+    """
+
+    # Get data columns (exclude Present/totals column)
+    data_columns = [col for col in crosstab_df.columns if col != present_col_name]
+
+    # Convert crosstab to table data format
+    table_data = []
+    for row_name in crosstab_df.index:
+        if row_name != present_row_name:
+            row_data = {"row_label": str(row_name)}
+            # Add data column values
+            for col in data_columns:
+                row_data[col] = int(crosstab_df.loc[row_name, col])
+            # Add present total
+            row_data["present_total"] = int(crosstab_df.loc[row_name, present_col_name])
+            table_data.append(row_data)
+
+    # Add Present totals row
+    present_row = {"row_label": present_row_name}
+    for col in data_columns:
+        present_row[col] = int(crosstab_df.loc[present_row_name, col])
+    present_row["present_total"] = int(
+        crosstab_df.loc[present_row_name, present_col_name]
+    )
+    table_data.append(present_row)
+
+    # Convert to DataFrame
+    table_df = pd.DataFrame(table_data)
+
+    # Create FancyTable with hierarchical headers
+    table = FancyTable(
+        show_header=True, header_style="bold magenta", row_styles=["", "dim"]
+    )
+
+    # Add columns
+    for col in table_df.columns:
+        table.add_column()
+
+    # First header row - section titles (empty for single columns)
+    header_row_1 = [
+        table.create_spanned_header("", 1, ""),  # Empty for row label
+        table.create_spanned_header(col_section_title, len(data_columns), "bold green"),
+        table.create_spanned_header("", 1, ""),  # Empty for Present
+    ]
+    table.add_header_row(*header_row_1)
+
+    # Second header row - actual column names
+    header_row_2 = [HeaderCell(row_section_title)]
+
+    # Add data column headers with optional transformation
+    for col in data_columns:
+        if col_display_transform:
+            display_name = col_display_transform(col)
+        elif isinstance(col, (int, float)):
+            # Default scientific notation for numeric columns
+            display_name = f"{float(col):.2e}"
+        else:
+            display_name = str(col)
+        header_row_2.append(HeaderCell(display_name))
+
+    # Add Present column
+    header_row_2.append(HeaderCell(present_col_name))
+
+    table.add_header_row(*header_row_2)
+
+    # Add data rows
+    for _, row in table_df.iterrows():
+        row_data = []
+
+        # Row label column
+        row_label_value = str(row["row_label"])
+        if present_row_name in row_label_value:
+            row_data.append(f"[bold green]{row_label_value}[/bold green]")
+        else:
+            row_data.append(f"[bold cyan]{row_label_value}[/bold cyan]")
+
+        # Data columns
+        for col in data_columns:
+            value = str(row[col])
+            if present_row_name in row_label_value:
+                row_data.append(f"[bold green]{value}[/bold green]")
+            else:
+                row_data.append(value)
+
+        # Present total column
+        present_value = str(row["present_total"])
+        row_data.append(f"[bold green]{present_value}[/bold green]")
+
+        table.add_row(*row_data)
+
+    return table
