@@ -1,126 +1,112 @@
-import random
-import re
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 import pandas as pd
 
-from datadec.wandb_eval.wandb_store import WandBStore
 from datadec.wandb_eval import wandb_constants as wconsts
 
+DEFAULT_PANDAS_OPTIONS = {
+    "display.max_columns": None,
+    "display.width": 300,
+    "display.max_colwidth": 500,
+    "display.expand_frame_repr": True,
+}
 
-# ================ Load Runs =================
-def load_df() -> pd.DataFrame:
-    store = WandBStore("postgresql+psycopg://localhost/wandb_test")
-    return store.get_runs(), store.get_history()
+DEFAULT_COLS = [
+    "run_id",
+    "total_steps",
+    "max_lr",
+    "final_lr",
+    "final_train_loss",
+    "max_tokens",
+]
+
+DEFAULT_COLUMN_WIDTHS = {
+    "run_id": 52,
+    "total_steps": 8,
+    "max_lr": 10,
+    "min_lr": 10,
+    "initial_lr": 10,
+    "final_lr": 10,
+    "initial_train_loss": 10,
+    "final_train_loss": 12,
+    "min_train_loss": 10,
+    "max_tokens": 12,
+    "max_epoch": 10,
+    "loss_improvement": 8,
+}
+
+DEFAULT_COLUMN_HEADERS = {
+    "run_id": "Run ID (first 50 chars)",
+    "total_steps": "Steps",
+    "max_lr": "Max LR",
+    "min_lr": "Min LR",
+    "initial_lr": "Init LR",
+    "final_lr": "Final LR",
+    "initial_train_loss": "Init Loss",
+    "final_train_loss": "Final Loss",
+    "min_train_loss": "Min Loss",
+    "max_tokens": "Max Tokens",
+    "max_epoch": "Max Epoch",
+    "loss_improvement": "Loss Δ",
+}
 
 
-def load_random_run_sample(sample_size: int = 20) -> pd.DataFrame:
-    runs_df, history_df = load_df()
-    random.seed(wconsts.RANDOM_SEED)
-    return runs_df.sample(n=min(sample_size, len(runs_df)))
+def configure_pandas_display(width: int = 300) -> None:
+    for key, value in DEFAULT_PANDAS_OPTIONS.items():
+        pd.set_option(key, value)
 
 
-# ================ Pretty Print Helpers =================
-def pretty_print_vals(value: Any) -> str:
-    if isinstance(value, float):
-        return pretty_print_floats(value)
-    return str(value)
+def print_dynamics_summary_table(
+    dynamics_list: List[Dict[str, Any]],
+    columns: List[str] = [],
+    column_widths: Dict[str, int] = {},
+) -> None:
+    assert len(dynamics_list) > 0, "No dynamics data to display."
+    columns = [*DEFAULT_COLS] if len(columns) == 0 else columns
+    column_widths = {**DEFAULT_COLUMN_WIDTHS, **column_widths}
+    header_map = {**DEFAULT_COLUMN_HEADERS}
 
+    header_line = ""
+    separator_line = ""
+    for col in columns:
+        width = column_widths.get(col, 12)
+        header = header_map.get(col, col.replace("_", " ").title())
+        header_line += f"{header:<{width}} "
+        separator_line += "-" * width + " "
 
-def pretty_print_floats(value: float) -> str:
-    if abs(value) < 0.001 or abs(value) > 1000:
-        return f"{value:.2e}"
-    return f"{value:.6f}".rstrip("0").rstrip(".")
+    print(header_line.rstrip())
+    print(separator_line.rstrip())
 
+    for dynamics in dynamics_list:
+        row_line = ""
+        for col in columns:
+            width = column_widths.get(col, 12)
+            value = dynamics.get(col)
 
-# ================ Heuristic Parsing =================
-
-
-def extract_hyperparameters(run_name: str) -> Dict[str, Any]:
-    params = {}
-    date_time_match = re.search(r"^(\d{4}_\d{2}_\d{2})-(\d{2}_\d{2}_\d{2})_", run_name)
-    if date_time_match:
-        params["run_date"] = date_time_match.group(1)
-        params["run_time"] = date_time_match.group(2)
-
-    exp_name_match = re.search(
-        r"^\d{4}_\d{2}_\d{2}-\d{2}_\d{2}_\d{2}_(.+?)_DD-", run_name
-    )
-    if exp_name_match:
-        params["exp_name"] = exp_name_match.group(1)
-
-    dataset_match = re.search(r"DD-(dolma\d+_\d+)-", run_name)
-    if dataset_match:
-        params["data"] = dataset_match.group(1)
-
-    model_match = re.search(r"dolma1_7-(\d+)M", run_name)
-    if model_match:
-        params["real_params"] = int(model_match.group(1))
-
-    checkpoint_match = re.search(r"-\d+M_(\w+)_\d+Mtx", run_name)
-    if checkpoint_match:
-        params["checkpoint"] = checkpoint_match.group(1)
-
-    mtx_match = re.search(r"(\d+)Mtx(\d+)", run_name)
-    if mtx_match:
-        dataset_tokens = int(mtx_match.group(1))
-        epochs_from_name = int(mtx_match.group(2))
-        params["epochs"] = epochs_from_name
-        params["total_tok"] = dataset_tokens
-    else:
-        legacy_match = re.search(r"main_(\d+)Mtx(\d+)", run_name)
-        if legacy_match:
-            base = int(legacy_match.group(1))
-            mult = int(legacy_match.group(2))
-            params["token_base"] = base
-            params["token_mult"] = mult
-            params["total_tok"] = base * mult
-
-    explicit_params = re.findall(r"--(\w+)=([^\s_]+)", run_name)
-    for param_name, param_value in explicit_params:
-        try:
-            if "." in param_value or "e" in param_value.lower():
-                params[param_name] = float(param_value)
+            if col in wconsts.TRUNCATE_COLUMNS:
+                formatted_value = (
+                    value[: wconsts.TRUNCATE_LENGTH] + "..."
+                    if value and len(value) > wconsts.TRUNCATE_LENGTH
+                    else (value or "None")
+                )
+            elif col in wconsts.SCIENTIFIC_NOTATION_COLUMNS:
+                formatted_value = f"{value:.2e}" if value is not None else "None"
+            elif col in wconsts.THREE_DECIMAL_PLACES_COLUMNS:
+                formatted_value = f"{value:.3f}" if value is not None else "None"
+            elif col in wconsts.COMMA_SEPARATED_COLUMNS:
+                formatted_value = f"{value:,.0f}" if value is not None else "None"
             else:
-                params[param_name] = int(param_value)
-        except ValueError:
-            params[param_name] = param_value
+                formatted_value = str(value) if value is not None else "None"
 
-    if "learning_rate" in params:
-        params["lr"] = params["learning_rate"]
-        del params["learning_rate"]
-    run_name_lower = run_name.lower()
-    for method in wconsts.METHODS:
-        if method in run_name_lower:
-            params["method"] = method
-            break
-    params = {f"{k}_rnp": v for k, v in params.items()}
-    return params
+            row_line += f"{formatted_value:<{width}} "
+        print(row_line.rstrip())
 
 
-# ================ Unprocessed =================
-
-
-def print_run_name_parsed(run_name, parsed_params):
-    print(f"RUN NAME:    {run_name}")
-    print("    PARSED PARAMETERS:")
-    if len(parsed_params) == 0:
-        print("      No parameters extracted\n")
-        return
-    for key, value in sorted(parsed_params.items()):
-        print(f"      {key:<20}: {pretty_print_vals(value)}")
-    print()
-
-
-def filter_runs_by_method(runs_df: pd.DataFrame, method: str) -> pd.DataFrame:
-    runs_with_params = []
-    for _, row in runs_df.iterrows():
-        params = extract_hyperparameters(row["run_name"])
-        if params.get("method") == method:
-            combined_data = row.to_dict()
-            combined_data.update(params)
-            runs_with_params.append(combined_data)
-    return pd.DataFrame(runs_with_params)
+def print_dataframe_coverage(df: pd.DataFrame, title: str = "Column Coverage") -> None:
+    print(f"\n{title} ({len(df.columns)} columns):")
+    for i, col in enumerate(df.columns):
+        coverage = df[col].notna().sum() / len(df) * 100
+        print(f"  {i + 1:2d}. {col:<35} ({coverage:5.1f}% coverage)")
 
 
 def get_step_dynamics(run_history: pd.DataFrame) -> Dict[str, Any]:
@@ -178,9 +164,7 @@ def get_epoch_dynamics(run_history: pd.DataFrame) -> Dict[str, Any]:
     }
 
 
-def get_run_training_dynamics(
-    history_df: pd.DataFrame, run_id: str
-) -> Optional[Dict[str, Any]]:
+def get_run_training_dynamics(history_df: pd.DataFrame, run_id: str) -> Dict[str, Any]:
     run_history = history_df[history_df["run_id"] == run_id].copy()
     if len(run_history) == 0:
         return None
@@ -206,172 +190,11 @@ def analyze_training_progression(
     history_df: pd.DataFrame, run_ids: List[str]
 ) -> pd.DataFrame:
     dynamics_results = []
-
     for run_id in run_ids:
         dynamics = get_run_training_dynamics(history_df, run_id)
         if dynamics:
             dynamics_results.append(dynamics)
-
     return pd.DataFrame(dynamics_results)
-
-
-def get_complete_experimental_data(
-    runs_df: pd.DataFrame, required_params: List[str] = None
-) -> pd.DataFrame:
-    if required_params is None:
-        required_params = wconsts.DEFAULT_REQUIRED_PARAMS
-    enriched_runs = []
-    for _, row in runs_df.iterrows():
-        params = extract_hyperparameters(row["run_name"])
-        combined_data = row.to_dict()
-        combined_data.update(params)
-        enriched_runs.append(combined_data)
-    df = pd.DataFrame(enriched_runs)
-    filters = [df["state"] == "finished"]
-    for param in required_params:
-        filters.append(df[param].notna())
-    complete_mask = pd.concat(filters, axis=1).all(axis=1)
-    return df[complete_mask]
-
-
-def create_experimental_summary(
-    runs_df: pd.DataFrame, method: str = None
-) -> Dict[str, Any]:
-    if method:
-        filtered_df = filter_runs_by_method(runs_df, method)
-        complete_df = get_complete_experimental_data(filtered_df)
-    else:
-        complete_df = get_complete_experimental_data(runs_df)
-    summary = {
-        "total_runs": len(runs_df),
-        "method_runs": len(filtered_df) if method else len(runs_df),
-        "complete_runs": len(complete_df),
-        "finished_runs": (runs_df["state"] == "finished").sum(),
-    }
-    if len(complete_df) > 0:
-        if "learning_rate" in complete_df.columns:
-            summary["unique_learning_rates"] = sorted(
-                complete_df["learning_rate"].unique()
-            )
-            summary["lr_count"] = complete_df["learning_rate"].nunique()
-        if "model_size_m" in complete_df.columns:
-            summary["unique_model_sizes"] = sorted(complete_df["model_size_m"].unique())
-            summary["model_size_count"] = complete_df["model_size_m"].nunique()
-        if "dataset_total_m" in complete_df.columns:
-            summary["unique_dataset_sizes"] = sorted(
-                complete_df["dataset_total_m"].unique()
-            )
-            summary["dataset_size_count"] = complete_df["dataset_total_m"].nunique()
-        if (
-            "learning_rate" in complete_df.columns
-            and "model_size_m" in complete_df.columns
-        ):
-            coverage_table = pd.crosstab(
-                complete_df["model_size_m"], complete_df["learning_rate"], margins=False
-            )
-            summary["model_lr_coverage"] = coverage_table.to_dict()
-    return summary
-
-
-def print_dataframe_coverage(df: pd.DataFrame, title: str = "Column Coverage") -> None:
-    print(f"\n{title} ({len(df.columns)} columns):")
-    for i, col in enumerate(df.columns):
-        coverage = df[col].notna().sum() / len(df) * 100
-        print(f"  {i + 1:2d}. {col:<35} ({coverage:5.1f}% coverage)")
-
-
-def print_dynamics_summary_table(
-    dynamics_list: List[Dict[str, Any]],
-    columns: List[str] = None,
-    column_widths: Dict[str, int] = None,
-) -> None:
-    if not dynamics_list:
-        print("No dynamics data to display.")
-        return
-
-    # Default columns if none specified
-    if columns is None:
-        columns = [
-            "run_id",
-            "total_steps",
-            "max_lr",
-            "final_lr",
-            "final_train_loss",
-            "max_tokens",
-        ]
-
-    # Default column widths
-    default_widths = {
-        "run_id": 52,
-        "total_steps": 8,
-        "max_lr": 10,
-        "min_lr": 10,
-        "initial_lr": 10,
-        "final_lr": 10,
-        "initial_train_loss": 10,
-        "final_train_loss": 12,
-        "min_train_loss": 10,
-        "max_tokens": 12,
-        "max_epoch": 10,
-        "loss_improvement": 8,
-    }
-
-    if column_widths:
-        default_widths.update(column_widths)
-
-    # Column headers and formatting
-    header_map = {
-        "run_id": "Run ID (first 50 chars)",
-        "total_steps": "Steps",
-        "max_lr": "Max LR",
-        "min_lr": "Min LR",
-        "initial_lr": "Init LR",
-        "final_lr": "Final LR",
-        "initial_train_loss": "Init Loss",
-        "final_train_loss": "Final Loss",
-        "min_train_loss": "Min Loss",
-        "max_tokens": "Max Tokens",
-        "max_epoch": "Max Epoch",
-        "loss_improvement": "Loss Δ",
-    }
-
-    # Print header
-    header_line = ""
-    separator_line = ""
-    for col in columns:
-        width = default_widths.get(col, 12)
-        header = header_map.get(col, col.replace("_", " ").title())
-        header_line += f"{header:<{width}} "
-        separator_line += "-" * width + " "
-
-    print(header_line.rstrip())
-    print(separator_line.rstrip())
-
-    # Print data rows
-    for dynamics in dynamics_list:
-        row_line = ""
-        for col in columns:
-            width = default_widths.get(col, 12)
-            value = dynamics.get(col)
-
-            if col in wconsts.TRUNCATE_COLUMNS:
-                formatted_value = (
-                    value[: wconsts.TRUNCATE_LENGTH] + "..."
-                    if value and len(value) > wconsts.TRUNCATE_LENGTH
-                    else (value or "None")
-                )
-            elif col in wconsts.SCIENTIFIC_NOTATION_COLUMNS:
-                formatted_value = f"{value:.2e}" if value is not None else "None"
-            elif col in wconsts.THREE_DECIMAL_PLACES_COLUMNS:
-                formatted_value = f"{value:.3f}" if value is not None else "None"
-            elif col in wconsts.COMMA_SEPARATED_COLUMNS:
-                formatted_value = f"{value:,.0f}" if value is not None else "None"
-            else:
-                formatted_value = str(value) if value is not None else "None"
-
-            row_line += f"{formatted_value:<{width}} "
-
-        print(row_line.rstrip())
 
 
 def print_training_history_sample(
@@ -404,99 +227,3 @@ def print_training_history_sample(
                 print(
                     f"  LR ratio (final/initial): {lr_values.iloc[-1] / lr_values.iloc[0]:.3f}"
                 )
-
-
-def analyze_category_overlap(df, category_cols, category_name):
-    if len(category_cols) < 2:
-        return None
-
-    overlaps = []
-    for i, col1 in enumerate(category_cols):
-        for j, col2 in enumerate(category_cols[i + 1 :], i + 1):
-            if col1 in df.columns and col2 in df.columns:
-                col1_data = df[col1]
-                col2_data = df[col2]
-
-                both_non_null = col1_data.notna() & col2_data.notna()
-                if both_non_null.sum() > 0:
-                    matching_values = (col1_data == col2_data) & both_non_null
-                    overlap_pct = (matching_values.sum() / both_non_null.sum()) * 100
-                    overlaps.append(
-                        {
-                            "col1": col1,
-                            "col2": col2,
-                            "overlap_pct": overlap_pct,
-                            "shared_rows": both_non_null.sum(),
-                        }
-                    )
-
-    return overlaps
-
-
-def analyze_object_columns(df, object_cols):
-    print("\n=== OBJECT COLUMNS DETAILED ANALYSIS ===")
-    for i, col in enumerate(object_cols, 1):
-        if col in df.columns:
-            data = df[col]
-            non_null_count = data.notna().sum()
-            total_count = len(data)
-            pct_non_null = (non_null_count / total_count) * 100
-
-            try:
-                unique_vals = data.dropna().unique()
-                n_unique = len(unique_vals)
-
-                print(
-                    f"{i:2d}. {col:<25} | unique: {n_unique:3d} | non-null: {non_null_count:3d}/{total_count} ({pct_non_null:5.1f}%)"
-                )
-
-                if n_unique <= 10 and n_unique > 0:
-                    print(f"    All values: {unique_vals.tolist()}")
-                elif n_unique > 0:
-                    sample_val = unique_vals[0]
-                    if isinstance(sample_val, str) and len(sample_val) > 50:
-                        sample_val = sample_val[:50] + "..."
-                    print(f"    Sample: {sample_val}")
-                else:
-                    print("    No values")
-
-            except Exception as e:
-                print(f"    Error analyzing: {type(e).__name__}")
-
-            print()
-        else:
-            print(f"{i:2d}. {col:<25} | NOT FOUND IN DATAFRAME")
-            print()
-
-
-def format_experimental_summary(summary: Dict[str, Any], method: str = None) -> str:
-    method_label = f" {method.upper()}" if method else ""
-    lines = [
-        f"{method_label} Experimental Design Summary:",
-        f"  Total runs: {summary['total_runs']}",
-    ]
-    if method:
-        lines.append(f"  {method.title()} runs: {summary['method_runs']}")
-    lines.extend(
-        [
-            f"  Complete runs: {summary['complete_runs']}",
-            f"  Finished runs: {summary['finished_runs']}",
-        ]
-    )
-    if summary.get("lr_count", 0) > 0:
-        lr_list = summary["unique_learning_rates"]
-        lr_display = (
-            str(lr_list)
-            if len(lr_list) <= 5
-            else f"{lr_list[:3]}...+{len(lr_list) - 3} more"
-        )
-        lines.append(f"  Learning rates ({summary['lr_count']}): {lr_display}")
-    if summary.get("model_size_count", 0) > 0:
-        lines.append(
-            f"  Model sizes ({summary['model_size_count']}): {summary['unique_model_sizes']}"
-        )
-    if summary.get("dataset_size_count", 0) > 0:
-        lines.append(
-            f"  Dataset sizes ({summary['dataset_size_count']}): {summary['unique_dataset_sizes']}"
-        )
-    return "\n".join(lines)

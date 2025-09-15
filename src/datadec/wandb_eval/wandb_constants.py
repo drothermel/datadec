@@ -5,6 +5,62 @@ EARLIEST_GOOD_RUN_DATE = "2025-08-21"
 # Output paths
 PRETRAIN_POSTTRAIN_DF_PATH = "./data/pretrain_posttrain.pkl"
 
+# ---------- From parse_unified_df.py ----------
+HISTORY_POSTPROCESSED_TO_KEEP = [
+    "max_step",
+    "max_tokens",
+    "max_epoch",
+    "max_lr",
+    "final_train_loss",
+    "min_train_loss",
+]
+
+# ---------- From sft_dataloader.py ----------
+ADDED_COLS = ["method", "params", "data"]
+
+INITIAL_SFT_GROUPS = ["id_cols", "status_cols", "core_hpm_cols"]
+EXTENDED_SFT_GROUPS = INITIAL_SFT_GROUPS + ["x_axis_cols", "summary_metrics_cols"]
+FULL_SFT_GROUPS = EXTENDED_SFT_GROUPS
+
+# ---------- From wandb_transforms.py ----------
+WANDB_DATASET_TO_DATADECIDE_MAPPING = {
+    "dolma1_7": "Dolma1.7",
+    "dclm-baseline": "DCLM-Baseline",
+    "dclm-baseline-25p-dolma1.7-75p": "DCLM-Baseline 25% / Dolma 75%",
+    "dclm-baseline-50p-dolma1.7-50p": "DCLM-Baseline 50% / Dolma 50%",
+    "dclm-baseline-75p-dolma1.7-25p": "DCLM-Baseline 75% / Dolma 25%",
+    "dclm-baseline-qc-10p": "DCLM-Baseline (QC 10%)",
+    "dclm-baseline-qc-20p": "DCLM-Baseline (QC 20%)",
+    "dclm-baseline-qc-7p-fw2": "DCLM-Baseline (QC 7%, FW2)",
+    "dclm-baseline-qc-7p-fw3": "DCLM-Baseline (QC 7%, FW3)",
+    "dclm-baseline-qc-fw-10p": "DCLM-Baseline (QC FW 10%)",
+    "dclm-baseline-qc-fw-3p": "DCLM-Baseline (QC FW 3%)",
+}
+
+# Run name column candidates (ordered by preference)
+RUN_NAME_CANDIDATES = ["run_name", "run_id", "exp_name"]
+
+# Parameters to ignore during hyperparameter extraction
+DEFAULT_IGNORE_PARAMS = ["run_date", "run_time"]
+
+CORE_DPO_HPM_COLS = [
+    "dpo_beta",
+    "dpo_loss_type",
+]
+DPO_ONLY_COLS = [
+    *CORE_DPO_HPM_COLS,
+    "dpo_label_smoothing",
+    "dpo_gamma_beta_ratio",
+    "dpo_use_paged_optimizer",
+    "logps/chosen",
+    "logps/rejected",
+    "rewards/chosen",
+    "rewards/margin",
+    "rewards/average",
+    "rewards/accuracy",
+    "rewards/rejected",
+]
+
 # OE Evaluation task and metric constants
 OE_EVAL_TASKS = [
     "csqa",
@@ -98,14 +154,6 @@ KEY_SETS = {
         "exp_name",
     ],
     "status_cols": ["state", "created_at", "runtime", "timeout"],
-    "pretrain_hpm_cols": [
-        "pretrain_steps",
-        "pretrain_tokens",
-        "pretrain_sequences",
-        "pretrain_compute",
-        "model_pretrain_steps",
-        "model_pretrain_compute",
-    ],
     "core_hpm_cols": [
         "seed",
         "model_size",
@@ -120,12 +168,6 @@ KEY_SETS = {
         "lr_scheduler_type",
         "tokenizer_name_or_path",
         "warmup_ratio",
-        "max_seq_length",
-        "checkpointing_steps",
-        "load_balancing_weight",
-        "preprocessing_num_workers",
-        "gradient_accumulation_steps",
-        "per_device_train_batch_size",
     ],
     "x_axis_cols": [
         "step",
@@ -137,6 +179,14 @@ KEY_SETS = {
         "total_compute_est",
     ],
     "summary_metrics_cols": ["train_loss"],
+    "pretrain_hpm_cols": [
+        "pretrain_steps",
+        "pretrain_tokens",
+        "pretrain_sequences",
+        "pretrain_compute",
+        "model_pretrain_steps",
+        "model_pretrain_compute",
+    ],
     "paths_cols": [
         "output_dir",
         "dataset_mix_dir",
@@ -151,26 +201,16 @@ KEY_SETS = {
         "hf_metadata_dataset",
     ],
     "details_cols": [
+        "max_seq_length",
+        "checkpointing_steps",
+        "load_balancing_weight",
+        "preprocessing_num_workers",
+        "gradient_accumulation_steps",
+        "per_device_train_batch_size",
         "dataset_cache_mode",
         "tokenizer_revision",
         "logging_steps",
         *CONSTANT_OR_NAN_COLS,
-    ],
-    "dpo_hpm_cols": [
-        "dpo_beta",
-        "dpo_label_smoothing",
-        "dpo_gamma_beta_ratio",
-        "dpo_loss_type",
-        "dpo_use_paged_optimizer",
-    ],
-    "dpo_eval_cols": [
-        "logps/chosen",
-        "logps/rejected",
-        "rewards/chosen",
-        "rewards/margin",
-        "rewards/average",
-        "rewards/accuracy",
-        "rewards/rejected",
     ],
     "eval_setting_cols": ["oe_eval_tasks", "oe_eval_max_length"],
     "complex_cols": [
@@ -216,17 +256,18 @@ EXTRA_DROP_COLS = [
     "report_to",  # just wandb
 ]
 ALL_DROP_COLS = [
+    *DPO_ONLY_COLS,
     *KEY_SETS["paths_cols"],
     *KEY_SETS["details_cols"],
     *KEY_SETS["nan_only_cols"],
-    *KEY_SETS["dpo_hpm_cols"],
-    *KEY_SETS["dpo_eval_cols"],
     *KEY_SETS["pretrain_hpm_cols"],
     *EXTRA_DROP_COLS,
 ]
 
 
 # ---------- From wandb_store.py ----------
+DEFAULT_DB_CONNECTION = "postgresql+psycopg://localhost/wandb"
+
 CORE_RUN_FIELDS = [
     "run_id",
     "run_name",

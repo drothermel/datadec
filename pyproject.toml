@@ -20,6 +20,7 @@ dependencies = [
     "wandb>=0.21.0",
     "sqlalchemy>=2.0.0",
     "psycopg[binary]>=3.0.0",
+    "psycopg2-binary>=2.9.10",
 ]
 
 [build-system]
@@ -35,8 +36,12 @@ line-length = 88
 cache-dir = ".ruff_cache"
 exclude = ["outputs/*", "notebooks/*"]
 
+[tool.uv.sources]
+datadec = { workspace = true }
+
 [dependency-groups]
 dev = [
+    "datadec",
     "pytest>=8.4.1",
     "pytest-postgresql>=7.0.0",
 ]

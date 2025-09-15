@@ -105,15 +105,44 @@ python scripts/plot_scaling_analysis.py
 
 ### WandB Integration
 
-Download experiment data from Weights & Biases projects with PostgreSQL storage:
+Download experiment data from Weights & Biases projects with PostgreSQL storage and bulk optimizations:
 
+#### Full Database Download (Optimized)
 ```bash
-# Download WandB data to PostgreSQL
-python scripts/wandb_download.py --entity your-entity --project your-project --database-url postgresql+psycopg://localhost/wandb
+# Initial download - uses bulk API optimization (5-6x faster)
+python scripts/wandb_download.py --entity your-entity --project your-project --force-refresh
 
-# Optionally export to parquet files
-python scripts/wandb_download.py --entity your-entity --project your-project --database-url postgresql+psycopg://localhost/wandb --output-dir ./wandb_data/
+# With parquet export
+python scripts/wandb_download.py --entity your-entity --project your-project --force-refresh --output-dir ./wandb_data/
 ```
+
+#### Incremental Updates (Daily Use)
+```bash
+# Fast incremental updates - only downloads new/changed runs
+python scripts/wandb_download.py --entity your-entity --project your-project
+
+# Custom database connection
+python scripts/wandb_download.py --entity your-entity --project your-project --database-url postgresql+psycopg://localhost/custom_db
+```
+
+#### Tag Synchronization
+```bash
+# Sync tags only (very fast)
+python scripts/wandb_download.py --entity your-entity --project your-project --sync-tags-only
+
+# Download + sync tags in one operation
+python scripts/wandb_download.py --entity your-entity --project your-project --also-sync-tags
+
+# Tag sync modes: recent (default), all, finished
+python scripts/wandb_download.py --entity your-entity --project your-project --sync-tags-only --sync-tags-mode all
+```
+
+#### Performance Features
+- **Bulk API optimization**: 5-6x faster full downloads using bulk history retrieval
+- **Incremental updates**: Smart detection of new/unfinished runs
+- **Progress reporting**: Real-time progress for all operations
+- **Batch processing**: Efficient tag updates with 50-run batches
+- **Automatic fallbacks**: Individual downloads if bulk operations fail
 
 See [docs/wandb_integration.md](docs/wandb_integration.md) for complete setup and usage guide.
 
