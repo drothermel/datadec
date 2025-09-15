@@ -54,30 +54,84 @@ def extract_hyperparameters(run_name: str, ignore: List[str] = None) -> Dict[str
         ignore = wconsts.DEFAULT_IGNORE_PARAMS
     params = {}
 
-    date_time_match = re.search(r"^(\d{4}_\d{2}_\d{2})-(\d{2}_\d{2}_\d{2})_", run_name)
+    # Try new format first: YYMMDD-HHMMSS
+    date_time_match = re.search(r"^(\d{6})-(\d{6})_", run_name)
     if date_time_match:
-        params["run_date"] = date_time_match.group(1)
-        params["run_time"] = date_time_match.group(2)
+        # Convert YYMMDD-HHMMSS to sortable ISO datetime format
+        date_part = date_time_match.group(1)
+        time_part = date_time_match.group(2)
+        year = "20" + date_part[:2]  # Assume 20XX
+        month = date_part[2:4]
+        day = date_part[4:6]
+        hour = time_part[:2]
+        minute = time_part[2:4]
+        second = time_part[4:6]
+        params["run_datetime"] = f"{year}-{month}-{day} {hour}:{minute}:{second}"
+    else:
+        # Try old format: YYYY_MM_DD-HH_MM_SS
+        date_time_match = re.search(
+            r"^(\d{4}_\d{2}_\d{2})-(\d{2}_\d{2}_\d{2})_", run_name
+        )
+        if date_time_match:
+            # Convert old format to sortable ISO datetime format
+            date_str = date_time_match.group(1).replace("_", "-")
+            time_str = date_time_match.group(2).replace("_", ":")
+            params["run_datetime"] = f"{date_str} {time_str}"
 
-    exp_name_match = re.search(
-        r"^\d{4}_\d{2}_\d{2}-\d{2}_\d{2}_\d{2}_(.+?)_DD-", run_name
-    )
+    # Extract experiment name - try new format first, then old format, then fallback
+    exp_name_match = re.search(r"^\d{6}-\d{6}_(.+?)_DD-", run_name)
     if exp_name_match:
-        params["exp_name"] = exp_name_match.group(1)
+        # New format: YYMMDD-HHMMSS_experiment_name_DD-
+        full_exp_name = exp_name_match.group(1)
+        # Clean up experiment name by removing model sizes and token configs, but keep method names that are part of experiment name
+        clean_exp_name = re.sub(r"_(?:\d+[MB]|\d+Mtx\d+).*$", "", full_exp_name)
+        params["exp_name"] = clean_exp_name if clean_exp_name else full_exp_name
+    else:
+        # Old format: YYYY_MM_DD-HH_MM_SS_experiment_name_DD-
+        exp_name_match = re.search(
+            r"^\d{4}_\d{2}_\d{2}-\d{2}_\d{2}_\d{2}_(.+?)_DD-", run_name
+        )
+        if exp_name_match:
+            full_exp_name = exp_name_match.group(1)
+            # Clean up experiment name by removing model sizes and token configs, but keep method names that are part of experiment name
+            clean_exp_name = re.sub(r"_(?:\d+[MB]|\d+Mtx\d+).*$", "", full_exp_name)
+            params["exp_name"] = clean_exp_name if clean_exp_name else full_exp_name
+        else:
+            # Fallback: extract between datetime and first recognizable parameter
+            fallback_match = re.search(
+                r"^\d{4}_\d{2}_\d{2}-\d{2}_\d{2}_\d{2}_(.+?)_(?:dd__|dolma|dclm)",
+                run_name,
+            )
+            if fallback_match:
+                full_exp_name = fallback_match.group(1)
+                # Clean up experiment name
+                clean_exp_name = re.sub(r"_(?:\d+[MB]|\d+Mtx\d+).*$", "", full_exp_name)
+                params["exp_name"] = clean_exp_name if clean_exp_name else full_exp_name
 
-    dataset_match = re.search(r"DD-([^-]+)-", run_name)
-    if dataset_match:
-        params["data"] = dataset_match.group(1)
+    # Extract from the second DD part (after _Ft_) if present, which has the actual model info
+    ft_dd_match = re.search(
+        r"_Ft_DD-([^-]+(?:_[^-]+)*)[-_](\d+)([MB])[-_](\d+)[-_]\d+", run_name
+    )
+    if ft_dd_match:
+        # Format: _Ft_DD-dclm_qc10p-60M-29042-0
+        params["data"] = ft_dd_match.group(1)  # dclm_qc10p
+        params["params"] = f"{ft_dd_match.group(2)}{ft_dd_match.group(3)}"  # 60M
+        params["checkpoint"] = ft_dd_match.group(4)  # 29042
+    else:
+        # Fallback to original simple patterns
+        dataset_match = re.search(r"DD-([^-]+)-", run_name)
+        if dataset_match:
+            params["data"] = dataset_match.group(1)
 
-    model_match = re.search(r"-(\d+)([MB])_", run_name)
-    if model_match:
-        size = model_match.group(1)
-        unit = model_match.group(2)
-        params["params"] = f"{size}{unit}"
+        model_match = re.search(r"-(\d+)([MB])_", run_name)
+        if model_match:
+            size = model_match.group(1)
+            unit = model_match.group(2)
+            params["params"] = f"{size}{unit}"
 
-    checkpoint_match = re.search(r"-\d+M_(\w+)_\d+Mtx", run_name)
-    if checkpoint_match:
-        params["checkpoint"] = checkpoint_match.group(1)
+        checkpoint_match = re.search(r"-\d+M_(\w+)_\d+Mtx", run_name)
+        if checkpoint_match:
+            params["checkpoint"] = checkpoint_match.group(1)
 
     mtx_match = re.search(r"(\d+)Mtx(\d+)", run_name)
     if mtx_match:
@@ -86,13 +140,19 @@ def extract_hyperparameters(run_name: str, ignore: List[str] = None) -> Dict[str
         params["epochs"] = epochs_from_name
         params["total_tok"] = dataset_tokens
     else:
-        legacy_match = re.search(r"main_(\d+)Mtx(\d+)", run_name)
-        if legacy_match:
-            base = int(legacy_match.group(1))
-            mult = int(legacy_match.group(2))
-            params["token_base"] = base
-            params["token_mult"] = mult
-            params["total_tok"] = base * mult
+        # Check for __NNNMt format (e.g., __100Mt)
+        mt_only_match = re.search(r"__(\d+)Mt(?:_|$)", run_name)
+        if mt_only_match:
+            dataset_tokens = int(mt_only_match.group(1))
+            params["total_tok"] = dataset_tokens
+        else:
+            legacy_match = re.search(r"main_(\d+)Mtx(\d+)", run_name)
+            if legacy_match:
+                base = int(legacy_match.group(1))
+                mult = int(legacy_match.group(2))
+                params["token_base"] = base
+                params["token_mult"] = mult
+                params["total_tok"] = base * mult
 
     explicit_params = re.findall(r"--(\w+)=([^\s_]+)", run_name)
     for param_name, param_value in explicit_params:

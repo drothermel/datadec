@@ -54,3 +54,65 @@ loss_improvement:
   header: "Loss Δ"
   formatter: "decimal"
   precision: 3
+
+Model_Size:
+  header: "Model"
+  formatter: "string"
+
+Dataset_Tokens:
+  header: "Dataset"
+  formatter: "string"
+
+model_size_m:
+  header: "Model Size"
+  formatter: "string"
+
+dataset_total_m:
+  header: "Dataset Tokens"
+  formatter: "string"
+
+learning_rate:
+  header: "Learning Rate"
+  formatter: "scientific"
+  precision: 2
+
+olmes_acc:
+  header: "OLMES Acc"
+  formatter: "decimal"
+  precision: 3
+
+pile_perplexity:
+  header: "Pile PPL"
+  formatter: "decimal"
+  precision: 1
+
+arc_challenge:
+  header: "ARC Challenge"
+  formatter: "decimal"
+  precision: 3
+
+mmlu_acc:
+  header: "MMLU Acc"
+  formatter: "decimal"
+  precision: 3
+
+train_loss:
+  header: "Train Loss"
+  formatter: "decimal"
+  precision: 3
+
+metric:
+  header: "Metric"
+  formatter: "string"
+
+available:
+  header: "Available"
+  formatter: "integer"
+
+total:
+  header: "Total"
+  formatter: "integer"
+
+coverage:
+  header: "Coverage"
+  formatter: "string"
