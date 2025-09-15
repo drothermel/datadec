@@ -1,0 +1,56 @@
+run_id:
+  header: "Run ID"
+  formatter: "truncate"
+  max_length: 52
+
+total_steps:
+  header: "Steps"
+  formatter: "integer"
+
+max_lr:
+  header: "Max LR"
+  formatter: "scientific"
+  precision: 2
+
+min_lr:
+  header: "Min LR"
+  formatter: "scientific"
+  precision: 2
+
+initial_lr:
+  header: "Init LR"
+  formatter: "scientific"
+  precision: 2
+
+final_lr:
+  header: "Final LR"
+  formatter: "scientific"
+  precision: 2
+
+initial_train_loss:
+  header: "Init Loss"
+  formatter: "decimal"
+  precision: 3
+
+final_train_loss:
+  header: "Final Loss"
+  formatter: "decimal"
+  precision: 3
+
+min_train_loss:
+  header: "Min Loss"
+  formatter: "decimal"
+  precision: 3
+
+max_tokens:
+  header: "Max Tokens"
+  formatter: "comma"
+
+max_epoch:
+  header: "Max Epoch"
+  formatter: "integer"
+
+loss_improvement:
+  header: "Loss Δ"
+  formatter: "decimal"
+  precision: 3
