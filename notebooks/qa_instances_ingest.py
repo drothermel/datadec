@@ -24,20 +24,21 @@ app = marimo.App(width="columns", app_title="Extract DD Try 1")
 def _():
     import marimo as mo
     from pathlib import Path
-    import tarfile
     import srsly
     from clumper import Clumper
     from attrs import define
     from cattrs import structure
+    from dr_ingest.qa import ensure_extracted, list_tarballs
 
     return (
         Clumper,
         Path,
         define,
+        ensure_extracted,
+        list_tarballs,
         mo,
         srsly,
         structure,
-        tarfile,
     )
 
 
@@ -63,32 +64,13 @@ def _(Path):
 
 
 @app.cell
-def _(Path):
-    def get_dir(root_dir, data, params, seed):
-        return Path(root_dir, data, params, f"seed-{seed}")
-
-    def get_all_tard(root_dir, data, params, seed):
-        target_dir = get_dir(root_dir, data, params, seed)
-        return list(target_dir.glob("*.tar.gz"))
-
-    return (get_all_tard,)
+def _():
+    return
 
 
 @app.cell
-def _(Path, tarfile):
-    def extract_path(path, dest):
-        tar_path = Path(path.stem)
-        path_name = tar_path.stem
-        dest_path = Path(dest, path_name)
-        if dest_path.exists():
-            print(f">> Already extracted: {path_name}")
-        else:
-            print(f">> Extracting: {path_name}")
-            with tarfile.open(path, "r:gz") as tar:
-                tar.extractall(path=dest)
-        return dest_path
-
-    return (extract_path,)
+def _():
+    return
 
 
 @app.cell(column=1, hide_code=True)
@@ -98,11 +80,11 @@ def _(mo):
 
 
 @app.cell(hide_code=True)
-def _(get_all_tard, instance_ds_snapshots):
+def _(instance_ds_snapshots, list_tarballs):
     data = "c4"
     params = "4M"
     seed = 2
-    c4_4m_2_tard_files = get_all_tard(instance_ds_snapshots, data, params, seed)
+    c4_4m_2_tard_files = list_tarballs(instance_ds_snapshots, data, params, seed)
     print(
         f"Num tar'd: {len(c4_4m_2_tard_files)}, first example: {c4_4m_2_tard_files[0].parts[-4:]}"
     )
@@ -114,12 +96,12 @@ def _(
     Path,
     c4_4m_2_tard_files,
     data,
-    extract_path,
+    ensure_extracted,
     extracted_dir,
     params,
     seed,
 ):
-    newly_extracted = extract_path(
+    newly_extracted = ensure_extracted(
         c4_4m_2_tard_files[0], Path(extracted_dir, f"{data}_{params}_{seed}")
     )
     print(f"Newly extracted: {newly_extracted.parts[-2:]}")
