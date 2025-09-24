@@ -2,6 +2,8 @@
 
 DataDecide is a Python library for downloading, processing, and analyzing machine learning experiment data, specifically focusing on language model evaluation results.
 
+> For project-wide context and onboarding, see the [Agent Guide](../dr_ref/docs/guides/AGENT_GUIDE_datadec.md).
+
 ## Features
 
 -   **Data Pipeline:** A multi-stage pipeline that downloads raw data from Hugging Face, processes it, and enriches it with additional details.
