@@ -26,14 +26,20 @@ def _():
     from pathlib import Path
     import srsly
     from clumper import Clumper
-    from attrs import define
     from cattrs import structure
     from dr_ingest.qa import ensure_extracted, list_tarballs
+    from dr_ingest.qa.schemas import (
+        ModelAnswerOutput,
+        QuestionOutputData,
+        TaskOutputData,
+    )
 
     return (
         Clumper,
         Path,
-        define,
+        ModelAnswerOutput,
+        QuestionOutputData,
+        TaskOutputData,
         ensure_extracted,
         list_tarballs,
         mo,
@@ -115,41 +121,6 @@ def _(newly_extracted):
     for f in extracted_files[:5]:
         print(f.parts[-2:])
     return (extracted_files,)
-
-
-@app.cell
-def _(define):
-    @define
-    class ModelAnswerOutput:
-        is_greedy: bool
-        logits_per_byte: float
-        logits_per_char: float
-        logits_per_token: float
-        num_chars: int
-        num_tokens: int
-        num_tokens_all: int
-        sum_logits: float
-        sum_logits_uncond: float
-
-    @define
-    class QuestionOutputData:
-        doc_id: int
-        native_id: int
-        label: int
-        answer_outputs: list[ModelAnswerOutput]
-
-    @define
-    class TaskOutputData:
-        task_hash: str
-        model_hash: str
-        data: str
-        params: str
-        seed: int
-        task: str
-        step: int
-        question_outputs: list[QuestionOutputData]
-
-    return QuestionOutputData, TaskOutputData
 
 
 @app.cell
