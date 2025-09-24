@@ -25,7 +25,6 @@ def _():
     import marimo as mo
     from pathlib import Path
     import srsly
-    from clumper import Clumper
     from cattrs import structure
     from dr_ingest.qa import ensure_extracted, list_tarballs
     from dr_ingest.qa.schemas import (
@@ -33,15 +32,24 @@ def _():
         QuestionOutputData,
         TaskOutputData,
     )
+    from dr_ingest.qa.transform import (
+        build_file_metadata,
+        extract_question_payloads,
+        preview_agg_metrics,
+        model_output_keys,
+    )
 
     return (
-        Clumper,
         Path,
         ModelAnswerOutput,
         QuestionOutputData,
         TaskOutputData,
         ensure_extracted,
         list_tarballs,
+        build_file_metadata,
+        extract_question_payloads,
+        preview_agg_metrics,
+        model_output_keys,
         mo,
         srsly,
         structure,
@@ -174,42 +182,33 @@ def _(curr_file, srsly):
 
 
 @app.cell(hide_code=True)
-def _(Clumper, curr_jsonl, curr_step, curr_task, data, params, seed):
-    full_file_info = (
-        Clumper(curr_jsonl)
-        .select("task_hash", "model_hash")
-        .mutate(
-            data=lambda c: data,
-            params=lambda c: params,
-            seed=lambda c: seed,
-            task=lambda c: curr_task,
-            step=lambda c: curr_step,
-        )
-        .drop_duplicates()
-        .show(name="Full File Info")
-        .collect()
+def _(build_file_metadata, curr_jsonl, curr_step, curr_task, data, params, seed):
+    full_file_info = build_file_metadata(
+        curr_jsonl,
+        data=data,
+        params=params,
+        seed=seed,
+        task=curr_task,
+        step=curr_step,
     )
+    print("Full File Info", full_file_info)
     return (full_file_info,)
 
 
 @app.cell(hide_code=True)
-def _(Clumper, curr_jsonl):
+def _(curr_jsonl, preview_agg_metrics):
     # Get the agg metrics
-    Clumper(curr_jsonl).map(lambda d: {**d["metrics"], "doc_id": d["doc_id"]}).show(
-        n=1, name="Agg Metrics"
-    )
+    agg_metrics = preview_agg_metrics(curr_jsonl)
+    if agg_metrics:
+        print("Agg Metrics", agg_metrics[0])
     return
 
 
 @app.cell(hide_code=True)
-def _(Clumper, curr_jsonl):
-    parsed_per_answer = (
-        Clumper(curr_jsonl)
-        .drop("metrics", "task_hash", "model_hash")
-        .rename(answer_outputs="model_output")
-        .show(n=1, name="After")
-        .collect()
-    )
+def _(curr_jsonl, extract_question_payloads):
+    parsed_per_answer = extract_question_payloads(curr_jsonl)
+    if parsed_per_answer:
+        print("Parsed example", parsed_per_answer[0])
     return (parsed_per_answer,)
 
 
@@ -219,13 +218,11 @@ def _():
 
 
 @app.cell(hide_code=True)
-def _(Clumper, curr_jsonl):
+def _(extract_question_payloads, curr_jsonl, model_output_keys):
     # Get the model output keys
-    ordered_model_pred_keys = sorted(
-        (Clumper(curr_jsonl).map(lambda d: d["model_output"][0]).keys())
-    )
+    keys = model_output_keys(extract_question_payloads(curr_jsonl))
     print(">> Ordered Model Pred Keys")
-    for k in ordered_model_pred_keys:
+    for k in keys:
         print(f"   - {k}")
     return
 
