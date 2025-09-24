@@ -27,37 +27,14 @@ def _():
     import tarfile
     import srsly
     from clumper import Clumper
-    import rich
-    from attrs import define, field
-    from cattrs import Converter, structure
-    from sqlalchemy_utils import CompositeType, register_composites
-    import sqlalchemy
-    from sqlalchemy.dialects.postgresql import ARRAY
-    from sqlalchemy import (
-        create_engine,
-        Column,
-        Integer,
-        String,
-        Boolean,
-        Float,
-        Numeric,
-        Text,
-    )
+    from attrs import define
+    from cattrs import structure
+
     return (
-        ARRAY,
-        Boolean,
         Clumper,
-        Column,
-        CompositeType,
-        Float,
-        Integer,
         Path,
-        String,
-        Text,
-        create_engine,
         define,
         mo,
-        sqlalchemy,
         srsly,
         structure,
         tarfile,
@@ -90,10 +67,10 @@ def _(Path):
     def get_dir(root_dir, data, params, seed):
         return Path(root_dir, data, params, f"seed-{seed}")
 
-
     def get_all_tard(root_dir, data, params, seed):
         target_dir = get_dir(root_dir, data, params, seed)
         return list(target_dir.glob("*.tar.gz"))
+
     return (get_all_tard,)
 
 
@@ -110,34 +87,8 @@ def _(Path, tarfile):
             with tarfile.open(path, "r:gz") as tar:
                 tar.extractall(path=dest)
         return dest_path
+
     return (extract_path,)
-
-
-@app.cell
-def _(create_engine):
-    new_engine = create_engine("postgresql+psycopg2://localhost/test_dd")
-    return
-
-
-@app.cell
-def _(sqlalchemy):
-    Base = sqlalchemy.orm.declarative_base()
-    return
-
-
-@app.cell
-def _(Column, CompositeType, String):
-    # Define the composite type in Python
-    address_type = CompositeType(
-        "address_type",
-        [
-            Column("street", String),
-            Column("city", String),
-            Column("state", String),
-            Column("zip_code", String),
-        ],
-    )
-    return
 
 
 @app.cell(column=1, hide_code=True)
@@ -198,14 +149,12 @@ def _(define):
         sum_logits: float
         sum_logits_uncond: float
 
-
     @define
     class QuestionOutputData:
         doc_id: int
         native_id: int
         label: int
         answer_outputs: list[ModelAnswerOutput]
-
 
     @define
     class TaskOutputData:
@@ -217,48 +166,8 @@ def _(define):
         task: str
         step: int
         question_outputs: list[QuestionOutputData]
+
     return QuestionOutputData, TaskOutputData
-
-
-@app.cell
-def _(ARRAY, Boolean, Column, CompositeType, Float, Integer, Text):
-    qa_model_answer_type = CompositeType(
-        "qa_model_answer",
-        [
-            Column("is_greedy", Boolean),
-            Column("logits_per_byte", Float),
-            Column("logits_per_char", Float),
-            Column("logits_per_token", Float),
-            Column("num_chars", Integer),
-            Column("num_tokens", Integer),
-            Column("num_tokens_all", Integer),
-            Column("sum_logits", Float),
-            Column("sum_logits_uncond", Float),
-        ],
-    )
-    question_output_type = CompositeType(
-        "question_output",
-        [
-            Column("doc_id", Integer),
-            Column("native_id", Integer),
-            Column("label", Integer),
-            Column("answer_outputs", ARRAY(qa_model_answer_type)),
-        ],
-    )
-    qa_task_output_type = CompositeType(
-        "qa_task_output",
-        [
-            Column("task_hash", Text),
-            Column("model_hash", Text),
-            Column("data", Text),
-            Column("params", Text),
-            Column("seed", Integer),
-            Column("task", Text),
-            Column("step", Integer),
-            Column("question_outputs", ARRAY(question_output_type)),
-        ],
-    )
-    return
 
 
 @app.cell
@@ -313,7 +222,7 @@ def _(curr_file, srsly):
 
 @app.cell(hide_code=True)
 def _(Clumper, curr_jsonl, curr_step, curr_task, data, params, seed):
-    full_file_info = deduplicated_full_info = (
+    full_file_info = (
         Clumper(curr_jsonl)
         .select("task_hash", "model_hash")
         .mutate(
@@ -333,11 +242,8 @@ def _(Clumper, curr_jsonl, curr_step, curr_task, data, params, seed):
 @app.cell(hide_code=True)
 def _(Clumper, curr_jsonl):
     # Get the agg metrics
-    agg_metrics = (
-        Clumper(curr_jsonl)
-        .map(lambda d: {**d["metrics"], "doc_id": d["doc_id"]})
-        .show(n=1, name="Agg Metrics")
-        .collect()
+    Clumper(curr_jsonl).map(lambda d: {**d["metrics"], "doc_id": d["doc_id"]}).show(
+        n=1, name="Agg Metrics"
     )
     return
 
