@@ -45,49 +45,18 @@ def _(WANDB_HISTORY_FILENAME, WANDB_RUNS_FILENAME, get_file_size_mb):
 
 
 @app.cell
-def _(Any, wandb):
-    def extract_run_data(wandb_run: wandb.apis.public.Run) -> dict[str, Any]:
-        return dict(
-            run_id=wandb_run.id,
-            run_name=wandb_run.name,
-            state=wandb_run.state,
-            project=wandb_run.project,
-            entity=wandb_run.entity,
-            created_at=wandb_run.created_at,
-            config=dict(wandb_run.config),
-            summary=dict(wandb_run.summary._json_dict) if wandb_run.summary else {},
-            wandb_metadata=wandb_run.metadata or {},
-            system_metrics=wandb_run.system_metrics or {},
-            system_attrs=dict(wandb_run._attrs),  # noqa: SLF001
-            sweep_info={
-                "sweep_id": getattr(wandb_run, "sweep_id", None),
-                "sweep_url": getattr(wandb_run, "sweep_url", None),
-            },
-        )
-    return (extract_run_data,)
+def _():
+    from functools import partial
+    from dr_wandb import fetch_project_runs
 
+    def make_progress_callback(log_every: int = 10):
+        def progress(idx: int, total: int, name: str) -> None:
+            if idx % log_every == 0:
+                print(f"Processing run {idx}/{total}: {name}")
 
-@app.cell
-def _(Any, wandb):
-    def extract_run_history_data(
-        wandb_run: wandb.apis.public.Run,
-    ) -> list[dict[str, Any]]:
-        all_entries = []
-        for history_entry in wandb_run.scan_history():
-            all_entries.append(
-                dict(
-                    run_id=wandb_run.id,
-                    step=history_entry.get("_step"),
-                    timestamp=history_entry.get("_timestamp"),
-                    runtime=history_entry.get("_runtime"),
-                    wandb_metadata=history_entry.get("_wandb", {}),
-                    metrics={
-                        k: v for k, v in history_entry.items() if not k.startswith("_")
-                    },
-                )
-            )
-        return all_entries
-    return (extract_run_history_data,)
+        return progress
+
+    return (fetch_project_runs, make_progress_callback, partial)
 
 
 @app.cell
@@ -98,19 +67,21 @@ def _(Path):
 
 
 @app.cell
-def _(extract_run_data, extract_run_history_data, wandb):
+def _(fetch_project_runs, make_progress_callback, partial):
     def download_all_from_wandb(entity, project, runs_per_page=500):
-        api = wandb.Api()
-        all_runs = api.runs(f"{entity}/{project}", per_page=runs_per_page)
-        all_run_dicts, all_run_history = [], []
-        for i, run in enumerate(all_runs):
-            if i % 10 == 0:
-                print(f"Processing run {i}: {run.id}")
-            all_run_dicts.append(extract_run_data(run))
-            all_run_history.append(extract_run_history_data(run))
-        nruns, nhists = len(all_run_dicts), len(all_run_history)
-        print(f">> Finished downlading, {nruns} runs and {nhists} histories")
-        return all_run_dicts, all_run_history
+        progress = partial(make_progress_callback(),)
+        runs, histories = fetch_project_runs(
+            entity,
+            project,
+            runs_per_page=runs_per_page,
+            include_history=True,
+            progress_callback=progress,
+        )
+        print(
+            f">> Finished downloading, {len(runs)} runs and {len(histories)} histories"
+        )
+        return runs, histories
+
     return (download_all_from_wandb,)
 
 
@@ -122,7 +93,6 @@ def _():
 @app.cell(column=1)
 def _():
     import marimo as mo
-    import wandb
     from typing import Any
     import itertools
     import srsly
@@ -133,7 +103,7 @@ def _():
     import pandas as pd
     from collections import defaultdict
     import quak
-    return Any, Clumper, Path, defaultdict, duckdb, pd, quak, srsly, wandb
+    return Any, Clumper, Path, defaultdict, duckdb, pd, quak, srsly
 
 
 @app.cell
