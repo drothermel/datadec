@@ -11,7 +11,7 @@ from datadec.console_components import (
     SectionTitlePanel,
     TitlePanel,
 )
-from datadec.table_formatter import format_table
+from dr_frames import format_table
 from datadec.wandb_eval import analysis_helpers
 from datadec.wandb_eval import wandb_transforms as transforms
 from datadec.wandb_eval.wandb_loader import WandBDataLoader
