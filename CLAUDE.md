@@ -14,10 +14,9 @@ Remember: The goal is code that *disappears* into the background, allowing resea
 
 ## Essential Commands
 - `us` runs `uv sync` - Install all dependencies including dev, test, and test-ml groups
-- `lint` runs `uv run ruff check --fix .` - Lint code with ruff and apply autofixes where possible
-- `ft` runs `uv run ruff format .` - Format code with ruff  
+- `uv run ruff format && uv run ruff check --fix .` - Lint code with ruff and apply autofixes where possible
 - `uv run pytest` - Run tests with pytest (supports parallel execution with xdist)
-- `lint_fix` - Run ruff format and then check with --fix
+- `uv run ty check` - Run tests with pytest (supports parallel execution with xdist)
 
 **IMPORTANT**: Do NOT run tests, linting, type checking, or formatting unless explicitly requested by the user. Focus on the requested changes only.
 
@@ -90,15 +89,6 @@ Remember: The goal is code that *disappears* into the background, allowing resea
 - **Show full modified functions**, not just diffs
 - **Prefer explicit code** over clever code
 - **Follow "Leave No Trace"** - remove all legacy patterns when making changes
-
-### Git Shortcuts
-| Shortcut | Command | Use |
-|----------|---------|-----|
-| `gst` | `git status` | Check state |
-| `gd_agent` | `git --no-pager diff` | See changes |
-| `glo` | `git log --oneline -10` | Recent commits |
-| `ga .` | `git add .` | Stage files |
-| `gc -m "msg"` | `git commit -m "msg"` | Commit |
 
 ### 📋 COMMIT STRATEGY
 - **Small, semantic commits**: 20-30 lines per commit with clear purpose
