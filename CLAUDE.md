@@ -6,9 +6,7 @@ This file provides project level guidance to Claude Code (claude.ai/code) when w
 **MANDATORY:** Before starting ANY work, read `docs/processes/design_philosophy.md` to understand the core principles and methodology that guide this project. All code changes must align with these principles.
 
 - **No Backward Compatibility**: This is a research library - breaking changes are acceptable for better design
-- **Fail Fast, Fail Loudly**: Use assertions, avoid defensive programming that hides bugs
-- **No Exception Handling**: Never use try-catch blocks - let errors surface immediately
-- **Assertions Over Exceptions**: Use `assert condition, "message"` instead of `raise ValueError()`
+- **Fail Fast, Fail Loudly**: Avoid defensive programming that hides bugs
 - **Minimize Friction**: Every design choice should reduce friction between idea and visualization
 - **Embrace Change, Demand Consistency**: When making changes, update ALL affected parts
 
@@ -76,11 +74,6 @@ Remember: The goal is code that *disappears* into the background, allowing resea
       # Clear, focused function that explains itself
   ```
 
-### Fail Fast and Loud: Asserts Not Try-Except
-- **Always aim to check assumptions with asserts**
-- Avoid nested try-except blocks
-- Instead, identify assumptions and assert them at the top of the function
-
 ## 🛠️ DEVELOPMENT WORKFLOW
 
 ### When Editing Files
@@ -94,8 +87,6 @@ Remember: The goal is code that *disappears* into the background, allowing resea
 ### Code Quality Gates
 - **Use type hints** on all functions
 - **ALL imports at file top** - never mid-file, never in functions, never anywhere else
-- **Use assertions, not exceptions** - single line `assert condition, "message"` instead of try-catch or raising exceptions
-- **Never use try-catch blocks** - let errors bubble up; use assertions for validation
 - **Show full modified functions**, not just diffs
 - **Prefer explicit code** over clever code
 - **Follow "Leave No Trace"** - remove all legacy patterns when making changes

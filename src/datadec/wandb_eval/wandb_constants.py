@@ -1,11 +1,10 @@
-# ---------- From parsing.py ----------
+from __future__ import annotations
+
 TIME_KEYS = ["created_at", "timestamp"]
 EARLIEST_GOOD_RUN_DATE = "2025-08-21"
 
-# Output paths
 PRETRAIN_POSTTRAIN_DF_PATH = "./data/pretrain_posttrain.pkl"
 
-# ---------- From parse_unified_df.py ----------
 HISTORY_POSTPROCESSED_TO_KEEP = [
     "max_step",
     "max_tokens",
@@ -15,14 +14,12 @@ HISTORY_POSTPROCESSED_TO_KEEP = [
     "min_train_loss",
 ]
 
-# ---------- From sft_dataloader.py ----------
 ADDED_COLS = ["method", "params", "data"]
 
 INITIAL_SFT_GROUPS = ["id_cols", "status_cols", "core_hpm_cols"]
 EXTENDED_SFT_GROUPS = INITIAL_SFT_GROUPS + ["x_axis_cols", "summary_metrics_cols"]
 FULL_SFT_GROUPS = EXTENDED_SFT_GROUPS
 
-# ---------- From wandb_transforms.py ----------
 WANDB_DATASET_TO_DATADECIDE_MAPPING = {
     "dolma1_7": "Dolma1.7",
     "dclm-baseline": "DCLM-Baseline",
@@ -37,10 +34,8 @@ WANDB_DATASET_TO_DATADECIDE_MAPPING = {
     "dclm-baseline-qc-fw-3p": "DCLM-Baseline (QC FW 3%)",
 }
 
-# Run name column candidates (ordered by preference)
 RUN_NAME_CANDIDATES = ["run_name", "run_id", "exp_name"]
 
-# Parameters to ignore during hyperparameter extraction
 DEFAULT_IGNORE_PARAMS = ["run_datetime"]
 
 CORE_DPO_HPM_COLS = [
@@ -61,7 +56,6 @@ DPO_ONLY_COLS = [
     "rewards/rejected",
 ]
 
-# OE Evaluation task and metric constants
 OE_EVAL_TASKS = [
     "csqa",
     "piqa",
@@ -144,7 +138,7 @@ CONSTANT_OR_NAN_COLS = [
     "do_not_randomize_output_dir",
 ]
 
-KEY_SETS = {
+KEY_SETS: dict[str, list[str]] = {
     "id_cols": [
         "run_id",
         "run_name",
@@ -214,9 +208,8 @@ KEY_SETS = {
     ],
     "eval_setting_cols": ["oe_eval_tasks", "oe_eval_max_length"],
     "complex_cols": [
-        "wandb_config",  # Structured config data that needs parsing
-        "wandb_tags",  # Complex tag combinations that need special handling
-        # Note: oe_eval_metrics/* columns need nested JSON parsing
+        "wandb_config",
+        "wandb_tags",
     ],
     "nan_only_cols": [
         "hf_entity",
@@ -243,17 +236,17 @@ EXACT_MATCH_COLS = [
     ["entity", "wandb_entity"],
 ]
 EXTRA_DROP_COLS = [
-    "wandb_config",  # structured and repeated keys
-    "run_name",  # same as run_id, keep one
-    "exp_name",  # same as run_name, keep one
-    "wandb_entity",  # same as entity
-    "total_tokens_including_padding",  # keep total tokens instead
+    "wandb_config",
+    "run_name",
+    "exp_name",
+    "wandb_entity",
+    "total_tokens_including_padding",
     "per_device_tps",
     "per_device_tps_including_padding",
-    "_wandb",  # redundant with _runtime (truncated integer version)
-    "tokenizer",  # complex object, not needed for analysis
-    "tokenizer_files_hash",  # derived from tokenizer, not needed
-    "report_to",  # just wandb
+    "_wandb",
+    "tokenizer",
+    "tokenizer_files_hash",
+    "report_to",
 ]
 ALL_DROP_COLS = [
     *DPO_ONLY_COLS,
@@ -265,7 +258,6 @@ ALL_DROP_COLS = [
 ]
 
 
-# ---------- From wandb_store.py ----------
 DEFAULT_DB_CONNECTION = "postgresql+psycopg://localhost/wandb"
 
 CORE_RUN_FIELDS = [
@@ -282,8 +274,6 @@ CORE_HISTORY_FIELDS = ["run_id", "run_name", "project", "step", "timestamp"]
 DEFAULT_RUNS_FILENAME = "runs_metadata.parquet"
 DEFAULT_HISTORY_FILENAME = "runs_history.parquet"
 
-# ---------- From analysis_helpers.py ----------
-# WandB history field patterns
 WANDB_SYSTEM_FIELDS = {"_step", "_timestamp"}
 WANDB_REDUNDANT_HISTORY_FIELDS = {"run_id", "run_name"}
 

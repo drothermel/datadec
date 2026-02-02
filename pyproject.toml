@@ -6,9 +6,11 @@ readme = "README.md"
 authors = [
     { name = "Danielle Rothermel", email = "danielle.rothermel@gmail.com" }
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.12"
 dependencies = [
     "datasets>=4.0.0",
+    "dr-frames[formatting]>=0.1.0",
+    "dr-render>=0.1.0",
     "pandas>=2.3.1",
     "numpy>=2.0.2",
     "pyarrow>=21.0.0",
@@ -16,7 +18,6 @@ dependencies = [
     "ipykernel>=6.30.1",
     "orjson>=3.11.2",
     "matplotlib>=3.9.4",
-    "dr-plotter>=0.1.2",
     "wandb>=0.21.0",
     "sqlalchemy>=2.0.0",
     "psycopg[binary]>=3.0.0",
@@ -28,7 +29,6 @@ dependencies = [
     "cattrs>=25.2.0",
     "clumper>=0.2.15",
     "marimo[lsp]>=0.16.0",
-    "psycopg2>=2.9.10",
     "sqlalchemy-utils>=0.42.0",
     "duckdb>=1.4.0",
     "sqlglot>=27.16.3",
@@ -70,4 +70,5 @@ dev = [
     "datadec",
     "pytest>=8.4.1",
     "pytest-postgresql>=7.0.0",
+    "ty",
 ]

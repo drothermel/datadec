@@ -1,11 +1,13 @@
+from __future__ import annotations
+
 from pathlib import Path
-from typing import Optional
 
 import pandas as pd
-from datasets import load_dataset
+from datasets import Dataset, load_dataset
 
 from datadec import constants as consts
-from datadec import data_utils, df_utils, model_utils, parsing
+from datadec import df_utils, model_utils, parsing
+from datadec.data import get_data_recipe_details_df
 from datadec.paths import DataDecidePaths
 
 
@@ -15,6 +17,7 @@ def download_dataset(
     split: str,
 ) -> None:
     raw_df = load_dataset(repo_id, split=split)
+    assert isinstance(raw_df, Dataset)
     raw_df.to_parquet(path)
 
 
@@ -96,7 +99,7 @@ class DataPipeline:
             dwn_raw_df=pd.read_parquet(self.paths.get_path("dwn_raw")),
             ppl_parsed_df=pd.read_parquet(self.paths.get_path("ppl_parsed")),
             dwn_parsed_df=pd.read_parquet(self.paths.get_path("dwn_parsed")),
-            dataset_details_df=data_utils.get_data_recipe_details_df(
+            dataset_details_df=get_data_recipe_details_df(
                 self.paths.ds_details_csv_path
             ),
             model_details_df=model_utils.get_model_details_df(),
@@ -142,7 +145,7 @@ class DataPipeline:
         mean_eval_melted.to_parquet(mean_eval_melted_path)
         verbose_print(f"Wrote to {mean_eval_melted_path}", verbose)
 
-    def run(self, recompute_from: Optional[str] = None, verbose: bool = False) -> None:
+    def run(self, recompute_from: str | None = None, verbose: bool = False) -> None:
         recompute_from = "download" if recompute_from == "all" else recompute_from
         compute_all = False
         for stage_name in self.pipeline_stage_fxns.keys():
