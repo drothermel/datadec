@@ -47,7 +47,12 @@ dependencies = [
     "catalogue>=2.0.10",
     "confection>=0.1.5",
     "typer>=0.19.2",
+    "pydantic>=2.12.4",
+    "marimo-utils>=0.1.0",
 ]
+
+[project.scripts]
+datadec-ingest = "datadec.ingest.datadec_ingest:app"
 
 [build-system]
 requires = ["hatchling"]
