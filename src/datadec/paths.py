@@ -1,11 +1,12 @@
+from __future__ import annotations
+
 from pathlib import Path
-from typing import Optional
 
 DEFAULT_DATA_DIR = "./data"
 
 
 class DataDecidePaths:
-    def __init__(self, data_dir: str = DEFAULT_DATA_DIR):
+    def __init__(self, data_dir: str = DEFAULT_DATA_DIR) -> None:
         self.data_dir = Path(data_dir) / "datadecide"
         self.dataset_dir = self.data_dir / "datasets"
         self.dataset_dir.mkdir(parents=True, exist_ok=True)
@@ -41,7 +42,7 @@ class DataDecidePaths:
             raise ValueError(f"Unknown dataframe '{name}'. Available: {available}")
         return self.data_dir / f"{self.dataframes[name]}.parquet"
 
-    def get_existing_path(self, name: str) -> Optional[Path]:
+    def get_existing_path(self, name: str) -> Path | None:
         path = self.get_path(name)
         if not path.exists():
             return None

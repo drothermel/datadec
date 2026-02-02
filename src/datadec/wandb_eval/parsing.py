@@ -1,78 +1,20 @@
+from __future__ import annotations
+
 import json
-import re
 from pathlib import Path
-from typing import Optional
 
 import pandas as pd
 
-from datadec.constants import HARDCODED_SIZE_MAPPING
 from datadec.data import DataDecide
 from datadec.wandb_eval import analysis_helpers
 from datadec.wandb_eval import wandb_constants as wconsts
-
-
-def extract_dataset_from_model_path(model_path: str) -> Optional[str]:
-    if pd.isna(model_path) or not isinstance(model_path, str):
-        return None
-
-    match = re.search(r"DataDecide-([^/]+?)(?:-\d+[MB])?/snapshots", model_path)
-    if match:
-        dataset_part = match.group(1)
-        return dataset_part
-    return None
-
-
-def map_wandb_dataset_to_datadecide(wandb_dataset: str) -> Optional[str]:
-    if not wandb_dataset:
-        return None
-
-    mapping = {
-        "dolma1_7": "Dolma1.7",
-        "dclm-baseline": "DCLM-Baseline",
-        "dclm-baseline-25p-dolma1.7-75p": "DCLM-Baseline 25% / Dolma 75%",
-        "dclm-baseline-50p-dolma1.7-50p": "DCLM-Baseline 50% / Dolma 50%",
-        "dclm-baseline-75p-dolma1.7-25p": "DCLM-Baseline 75% / Dolma 25%",
-        "dclm-baseline-qc-10p": "DCLM-Baseline (QC 10%)",
-        "dclm-baseline-qc-20p": "DCLM-Baseline (QC 20%)",
-        "dclm-baseline-qc-7p-fw2": "DCLM-Baseline (QC 7%, FW2)",
-        "dclm-baseline-qc-7p-fw3": "DCLM-Baseline (QC 7%, FW3)",
-        "dclm-baseline-qc-fw-10p": "DCLM-Baseline (QC FW 10%)",
-        "dclm-baseline-qc-fw-3p": "DCLM-Baseline (QC FW 3%)",
-    }
-
-    return mapping.get(wandb_dataset)
-
-
-def map_wandb_model_size_to_datadecide(model_size: int) -> Optional[str]:
-    if pd.isna(model_size):
-        return None
-
-    closest_param = None
-    min_diff = float("inf")
-    for param_str, numeric_val in HARDCODED_SIZE_MAPPING.items():
-        diff = abs(numeric_val - model_size)
-        if diff < min_diff:
-            min_diff = diff
-            closest_param = param_str
-
-    return closest_param
-
-
-def add_datadecide_columns(df: pd.DataFrame) -> pd.DataFrame:
-    df = df.copy()
-    if "model_name_or_path" in df.columns:
-        df["wandb_dataset"] = df["model_name_or_path"].apply(
-            extract_dataset_from_model_path
-        )
-        df["data"] = df["wandb_dataset"].apply(map_wandb_dataset_to_datadecide)
-    else:
-        df["data"] = None
-    if "model_size" in df.columns:
-        df["params"] = df["model_size"].apply(map_wandb_model_size_to_datadecide)
-    else:
-        df["params"] = None
-
-    return df
+from datadec.wandb_eval.wandb_transforms import (
+    add_datadecide_columns,
+    convert_objects_and_normalize_dtypes,
+    drop_wandb_constant_ignored_cols,
+    filter_broken_initial_testing_runs,
+    filter_dpo_test_runs,
+)
 
 
 def split_oe_cols_vs_rest(remaining_cols: list[str]) -> tuple[list[str], list[str]]:
@@ -89,33 +31,6 @@ def split_pretrain_eval_cols_vs_rest(
     return pretrain_cols, rest_cols
 
 
-def get_created_time_key(df: pd.DataFrame) -> str:
-    for tk in wconsts.TIME_KEYS:
-        if tk in df.columns:
-            return tk
-    assert False, "No time key found"
-
-
-def filter_broken_initial_testing_runs(df: pd.DataFrame) -> pd.DataFrame:
-    return df[df[get_created_time_key(df)] >= wconsts.EARLIEST_GOOD_RUN_DATE]
-
-
-def filter_dpo_test_runs(df: pd.DataFrame) -> pd.DataFrame:
-    if "wandb_tags" not in df.columns:
-        return df
-
-    dpo_mask = df["wandb_tags"].fillna("").str.contains("dpo_tune_cache", na=False)
-    return df[~dpo_mask]
-
-
-def drop_wandb_constant_ignored_cols(df: pd.DataFrame) -> pd.DataFrame:
-    cols_to_drop = [col for col in wconsts.ALL_DROP_COLS if col in df.columns]
-    if cols_to_drop:
-        df = df.drop(columns=cols_to_drop)
-        print(f"Dropped {len(cols_to_drop)} problematic columns: {cols_to_drop}")
-    return df
-
-
 def split_obj_vs_nonobj_cols(df: pd.DataFrame) -> tuple[list[str], list[str]]:
     object_columns = []
     nonobject_columns = []
@@ -127,7 +42,7 @@ def split_obj_vs_nonobj_cols(df: pd.DataFrame) -> tuple[list[str], list[str]]:
     return object_columns, nonobject_columns
 
 
-def filter_constant_and_nanconstant_cols(df: pd.DataFrame) -> list[str]:
+def filter_constant_and_nanconstant_cols(df: pd.DataFrame) -> dict[str, list[str]]:
     all_nan_columns = []
     all_constant_columns = []
     constant_or_nan_columns = []
@@ -144,11 +59,11 @@ def filter_constant_and_nanconstant_cols(df: pd.DataFrame) -> list[str]:
             all_nan_columns.append(col)
         elif nunique_with_nan == 1:
             if has_nan:
-                all_nan_columns.append(col)  # Only NaN values
+                all_nan_columns.append(col)
             else:
-                all_constant_columns.append(col)  # Only one constant value
+                all_constant_columns.append(col)
         elif nunique_with_nan == 2 and has_nan:
-            constant_or_nan_columns.append(col)  # One constant + NaN
+            constant_or_nan_columns.append(col)
         else:
             other_columns.append(col)
 
@@ -170,68 +85,6 @@ def extract_oe_eval_metrics_cols(df: pd.DataFrame) -> tuple[pd.DataFrame, list[s
         remaining_df = df.drop(columns=oe_eval_cols)
         return remaining_df, oe_eval_cols
     return df, []
-
-
-def convert_objects_and_normalize_dtypes(df: pd.DataFrame) -> pd.DataFrame:
-    df = df.copy()
-
-    for col in df.columns:
-        if df[col].dtype == "object":
-            non_null_data = df[col].dropna()
-            if len(non_null_data) == 0:
-                continue
-
-            first_val = non_null_data.iloc[0]
-            if isinstance(first_val, (dict, list, tuple, set)):
-                try:
-                    df[col] = df[col].apply(
-                        lambda x: json.dumps(x) if x is not None else None
-                    )
-                except Exception:
-                    df[col] = df[col].astype(str)
-                continue
-            try:
-                all_same_type = all(
-                    type(val) is type(first_val) for val in non_null_data
-                )
-                if all_same_type:
-                    if isinstance(first_val, bool):
-                        df[col] = df[col].astype("boolean")
-                    elif isinstance(first_val, int):
-                        df[col] = df[col].astype("Int64")
-                    elif isinstance(first_val, float):
-                        non_nan_vals = df[col].dropna()
-                        if len(non_nan_vals) > 0 and all(
-                            val == int(val) for val in non_nan_vals
-                        ):
-                            df[col] = df[col].astype("Int64")
-                        else:
-                            df[col] = pd.to_numeric(df[col], errors="ignore")
-                    elif isinstance(first_val, str):
-                        df[col] = df[col].astype("string")
-                else:
-                    numeric_df = pd.to_numeric(df[col], errors="coerce")
-                    if not numeric_df.isna().all():
-                        numeric_vals = numeric_df.dropna()
-                        if len(numeric_vals) > 0 and all(
-                            val == int(val) for val in numeric_vals
-                        ):
-                            df[col] = numeric_df.astype("Int64")
-                        else:
-                            df[col] = numeric_df
-            except Exception:
-                continue
-
-        if pd.api.types.is_float_dtype(df[col]):
-            non_null_data = df[col].dropna()
-            if len(non_null_data) > 0:
-                try:
-                    is_whole = all(val == int(val) for val in non_null_data)
-                    if is_whole:
-                        df[col] = df[col].astype("Int64")
-                except (ValueError, OverflowError, TypeError):
-                    pass
-    return df
 
 
 def assert_nan_only_columns(df: pd.DataFrame) -> None:
@@ -269,7 +122,7 @@ def assert_exact_match_columns(df: pd.DataFrame) -> None:
                     )
 
 
-def assert_no_remaining_noise_columns(col_categories: dict) -> None:
+def assert_no_remaining_noise_columns(col_categories: dict[str, list[str]]) -> None:
     assert len(col_categories["all_nan"]) == 0, (
         f"Found {len(col_categories['all_nan'])} unexpected all-NaN columns: {col_categories['all_nan']}"
     )
@@ -281,8 +134,10 @@ def assert_no_remaining_noise_columns(col_categories: dict) -> None:
     )
 
 
-def categorize_columns_by_key_sets(all_cols):
-    categorized = {name: [] for name in wconsts.KEY_SETS.keys()}
+def categorize_columns_by_key_sets(
+    all_cols: list[str],
+) -> tuple[dict[str, list[str]], list[str]]:
+    categorized: dict[str, list[str]] = {name: [] for name in wconsts.KEY_SETS.keys()}
     remaining_cols = list(all_cols)
     for category_name, key_list in wconsts.KEY_SETS.items():
         matched_cols = [col for col in remaining_cols if col in key_list]
@@ -291,7 +146,9 @@ def categorize_columns_by_key_sets(all_cols):
     return categorized, remaining_cols
 
 
-def parse_and_clean_runs_df(runs_df):
+def parse_and_clean_runs_df(
+    runs_df: pd.DataFrame,
+) -> dict[str, list[str] | pd.DataFrame]:
     filtered_df = filter_broken_initial_testing_runs(runs_df)
     filtered_df = filter_dpo_test_runs(filtered_df)
     assert_nan_only_columns(filtered_df)
@@ -305,7 +162,7 @@ def parse_and_clean_runs_df(runs_df):
     categorized_cols, rest_cols = categorize_columns_by_key_sets(rest_cols)
     object_cols, nonobject_cols = split_obj_vs_nonobj_cols(filtered_df[rest_cols])
     assert len(object_cols) == 0, (
-        f"Found {len(object_cols)} unexpected object columns after conversion: {object_cols}"  # noqa: E501
+        f"Found {len(object_cols)} unexpected object columns after conversion: {object_cols}"
     )
     if nonobject_cols:
         nonobj_df = filtered_df[nonobject_cols]
@@ -337,7 +194,9 @@ def parse_and_clean_runs_df(runs_df):
     }
 
 
-def preprocess_object_columns(df: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
+def preprocess_object_columns(
+    df: pd.DataFrame,
+) -> tuple[pd.DataFrame, dict[str, list[str]]]:
     df, oe_eval_cols = extract_oe_eval_metrics_cols(df)
     df = convert_objects_and_normalize_dtypes(df)
     return df, {"oe_eval_cols": oe_eval_cols}
@@ -346,7 +205,7 @@ def preprocess_object_columns(df: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
 def parse_wandb_tags(filtered_df: pd.DataFrame) -> pd.DataFrame:
     if "wandb_tags" not in filtered_df.columns:
         return pd.DataFrame(index=filtered_df.index)
-    all_tags = set()
+    all_tags: set[str] = set()
     tags_series = filtered_df["wandb_tags"].dropna()
     for tag_string in tags_series:
         if isinstance(tag_string, str):
@@ -366,10 +225,12 @@ def parse_wandb_tags(filtered_df: pd.DataFrame) -> pd.DataFrame:
     return tag_df
 
 
-def parse_oe_eval_metrics(filtered_df: pd.DataFrame, oe_cols: list) -> pd.DataFrame:
+def parse_oe_eval_metrics(
+    filtered_df: pd.DataFrame, oe_cols: list[str]
+) -> pd.DataFrame:
     if not oe_cols:
         return pd.DataFrame(index=filtered_df.index)
-    all_metrics = {}
+    all_metrics: dict[str, pd.Series] = {}
     for oe_col in oe_cols:
         if oe_col not in filtered_df.columns:
             continue
@@ -491,7 +352,7 @@ def copy_final_oe_to_pretraining_metrics(
         for col in pretraining_df.columns
         if any(col == wandb_col[3:] for wandb_col in wandb_eval_cols)
     ]
-    metric_mapping = {}
+    metric_mapping: dict[str, str] = {}
     for wandb_col in wandb_eval_cols:
         pretrain_equivalent = wandb_col[3:]
         if pretrain_equivalent in pretrain_eval_cols:
@@ -616,7 +477,7 @@ def create_unified_df_with_pretraining(
 
 
 def create_and_save_pretrain_posttrain_df(
-    save_path: Optional[str] = None,
+    save_path: str | None = None,
 ) -> pd.DataFrame:
     if save_path is None:
         save_path = wconsts.PRETRAIN_POSTTRAIN_DF_PATH
@@ -640,6 +501,6 @@ def create_and_save_pretrain_posttrain_df(
         final_df.to_parquet(save_path, index=False)
     else:
         final_df.to_pickle(save_path)
-    print(f"✓ Saved {final_df.shape[0]:,} rows × {final_df.shape[1]} columns")
-    print("✓ Contains pretraining + finetuning with continuous scaling curves")
+    print(f"Saved {final_df.shape[0]:,} rows x {final_df.shape[1]} columns")
+    print("Contains pretraining + finetuning with continuous scaling curves")
     return final_df

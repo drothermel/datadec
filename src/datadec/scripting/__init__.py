@@ -1,11 +1,3 @@
-"""
-DataDecide scripting utilities.
-
-Provides utilities for CLI scripts, visualization helpers, and plot-specific functionality.
-Organized into general utilities and specialized modules for different plot types.
-"""
-
-# Import key utilities for easy access
 from .utils import (
     align_to_common_start_point,
     convert_domain_args_to_faceting,
@@ -26,7 +18,6 @@ from .bump_utils import (
 )
 
 __all__ = [
-    # General utilities
     "align_to_common_start_point",
     "convert_domain_args_to_faceting",
     "resolve_data_groups",
@@ -34,7 +25,6 @@ __all__ = [
     "format_perplexity",
     "format_step_label",
     "format_token_count",
-    # Bump utilities
     "add_bump_ranking_labels",
     "add_bump_value_annotations",
     "prepare_bump_ranking_data",

@@ -1,9 +1,18 @@
-from typing import Any, Optional
+from __future__ import annotations
+
+from typing import Any
 
 import pandas as pd
 
 from datadec.wandb_eval import wandb_constants as wconsts
 from datadec.wandb_eval import wandb_transforms as transforms
+from datadec.wandb_eval.parsing import (
+    categorize_columns_by_key_sets,
+    filter_constant_and_nanconstant_cols,
+    split_oe_cols_vs_rest,
+    split_obj_vs_nonobj_cols,
+    split_pretrain_eval_cols_vs_rest,
+)
 from datadec.wandb_eval.wandb_loader import WandBDataLoader
 
 
@@ -19,17 +28,6 @@ def convert_cols_to_strings(
         except Exception:
             failed_cols.append(col)
     return df, failed_cols
-
-
-def split_obj_vs_nonobj_cols(df: pd.DataFrame) -> tuple[list[str], list[str]]:
-    object_columns = []
-    nonobject_columns = []
-    for col in df.columns:
-        if df[col].dtype == "object":
-            object_columns.append(col)
-        else:
-            nonobject_columns.append(col)
-    return object_columns, nonobject_columns
 
 
 def handle_object_cols(df: pd.DataFrame, rest_cols: list[str]) -> list[str]:
@@ -78,65 +76,8 @@ def analyze_wandb_tags(df: pd.DataFrame) -> dict[str, Any]:
     }
 
 
-def split_oe_cols_vs_rest(cols: list[str]) -> tuple[list[str], list[str]]:
-    oe_cols = [col for col in cols if col.startswith("oe_eval_metrics/")]
-    rest_cols = [col for col in cols if col not in oe_cols]
-    return oe_cols, rest_cols
-
-
-def split_pretrain_eval_cols_vs_rest(cols: list[str]) -> tuple[list[str], list[str]]:
-    pretrain_cols = [col for col in cols if col.startswith("pretrain_eval")]
-    rest_cols = [col for col in cols if col not in pretrain_cols]
-    return pretrain_cols, rest_cols
-
-
-def categorize_columns_by_key_sets(
-    all_cols: list[str],
-) -> tuple[dict[str, list[str]], list[str]]:
-    categorized = {name: [] for name in wconsts.KEY_SETS.keys()}
-    remaining_cols = list(all_cols)
-    for category_name, key_list in wconsts.KEY_SETS.items():
-        matched_cols = [col for col in remaining_cols if col in key_list]
-        categorized[category_name] = matched_cols
-        remaining_cols = [col for col in remaining_cols if col not in matched_cols]
-    return categorized, remaining_cols
-
-
-def filter_constant_and_nanconstant_cols(df: pd.DataFrame) -> dict[str, list[str]]:
-    all_nan_columns = []
-    all_constant_columns = []
-    constant_or_nan_columns = []
-    other_columns = []
-
-    for col in df.columns:
-        if df[col].dtype == "object":
-            assert False, "Filter object columns before finding constants"
-
-        nunique_with_nan = df[col].nunique(dropna=False)
-        has_nan = df[col].isna().any()
-
-        if nunique_with_nan == 0:
-            all_nan_columns.append(col)
-        elif nunique_with_nan == 1:
-            if has_nan:
-                all_nan_columns.append(col)
-            else:
-                all_constant_columns.append(col)
-        elif nunique_with_nan == 2 and has_nan:
-            constant_or_nan_columns.append(col)
-        else:
-            other_columns.append(col)
-
-    return {
-        "all_nan": all_nan_columns,
-        "all_constant": all_constant_columns,
-        "constant_or_nan": constant_or_nan_columns,
-        "other": other_columns,
-    }
-
-
 class WandBDataAnalyzer:
-    def __init__(self, loader: WandBDataLoader = None):
+    def __init__(self, loader: WandBDataLoader | None = None) -> None:
         self.loader = loader or WandBDataLoader()
         self.runs_df, self.history_df = self.loader.load_runs_and_history()
         self.filtered_df, self.results = self.analyze_column_categorization(
@@ -146,7 +87,7 @@ class WandBDataAnalyzer:
     def analyze_column_categorization(
         self, runs_df: pd.DataFrame
     ) -> tuple[pd.DataFrame, dict[str, Any]]:
-        col_categories = {
+        col_categories: dict[str, list[str]] = {
             "object_cols": [],
             "all_nan_cols": [],
             "all_constant_cols": [],
@@ -174,9 +115,7 @@ class WandBDataAnalyzer:
         col_categories["truly_uncategorized"] = col_categories["other"]
         return filtered_df, col_categories
 
-    def generate_comprehensive_report(
-        self, runs_df: Optional[pd.DataFrame] = None
-    ) -> str:
+    def generate_comprehensive_report(self, runs_df: pd.DataFrame | None = None) -> str:
         if runs_df is None:
             runs_df, _ = self.loader.load_runs_and_history()
 
@@ -289,7 +228,7 @@ class WandBDataAnalyzer:
         return "\n".join(report_lines)
 
 
-def main():
+def main() -> None:
     analyzer = WandBDataAnalyzer()
     report = analyzer.generate_comprehensive_report()
     print(report)

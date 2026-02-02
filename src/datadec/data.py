@@ -1,22 +1,98 @@
+from __future__ import annotations
+
 import itertools
-from typing import List, Optional, Tuple, Union
+from pathlib import Path
+from typing import Union
 
 import pandas as pd
 
 from datadec import constants as consts
-from datadec import data_utils, df_utils, model_utils, validation
-from datadec.loader import DataFrameLoader
+from datadec import df_utils, model_utils, validation
 from datadec.paths import DataDecidePaths
 from datadec.pipeline import DataPipeline, verbose_print
+
+
+def get_data_recipe_family(
+    data_name: str, data_recipe_families: dict[str, list[str]] | None = None
+) -> str:
+    if data_recipe_families is None:
+        data_recipe_families = consts.DATA_RECIPE_FAMILIES
+
+    for family, names in data_recipe_families.items():
+        if data_name in names:
+            return family
+    return "unknown"
+
+
+def get_data_recipe_details_df(ds_details_path: Path) -> pd.DataFrame:
+    df = pd.read_csv(ds_details_path).rename(columns={"dataset": "data"})
+
+    df["data"] = (
+        df["data"]
+        .str.replace("Dolma1.7 (no math code)", "Dolma1.7 (no math, code)")
+        .str.replace("DCLM-Baseline (QC 7%", "DCLM-Baseline (QC 7%,")
+    )
+
+    return df
+
+
+class DataFrameLoader:
+    def __init__(self, paths: DataDecidePaths | None = None) -> None:
+        self._cache: dict[str, pd.DataFrame] = {}
+        self.paths: DataDecidePaths = paths if paths else DataDecidePaths()
+
+    @property
+    def cached_dataframes(self) -> list[str]:
+        return list(self._cache.keys())
+
+    def possible_dataframes(self) -> list[str]:
+        return list(self.paths.available_dataframes)
+
+    def written_dataframes(self) -> list[str]:
+        written_dataframes = []
+        for df_name in self.possible_dataframes():
+            maybe_path = self.paths.get_existing_path(df_name)
+            if maybe_path is not None:
+                written_dataframes.append(df_name)
+        return written_dataframes
+
+    def set_name(self, name: str, df: pd.DataFrame) -> None:
+        self._cache[name] = df
+
+    def load_path(self, path: Path, name: str | None = None) -> pd.DataFrame:
+        key = name if name is not None else str(path)
+        if key not in self._cache:
+            self._cache[key] = pd.read_parquet(path)
+        return self._cache[key]
+
+    def load_name(self, name: str) -> pd.DataFrame:
+        if not self.paths.check_name_in_paths(name):
+            if not self.is_cached(name):
+                raise ValueError(f"Unknown dataframe '{name}'")
+            return self._cache[name]
+        path = self.paths.get_path(name)
+        return self.load_path(path, name)
+
+    def is_cached(self, cache_key: str) -> bool:
+        return cache_key in self._cache
+
+    def clear_cache(self, cache_key: str | None = None) -> None:
+        if cache_key is None:
+            self._cache.clear()
+        else:
+            self._cache.pop(cache_key, None)
+
+    def get_cache_size(self) -> int:
+        return len(self._cache)
 
 
 class DataDecide:
     def __init__(
         self,
         data_dir: str = "./data",
-        recompute_from: str = None,
+        recompute_from: str | None = None,
         verbose: bool = True,
-    ):
+    ) -> None:
         self.paths = DataDecidePaths(data_dir)
 
         self.pipeline = DataPipeline(self.paths)
@@ -29,12 +105,12 @@ class DataDecide:
         )
         self.loader.set_name(
             consts.DATASET_DETAILS_DF_NAME,
-            data_utils.get_data_recipe_details_df(self.paths.ds_details_csv_path),
+            get_data_recipe_details_df(self.paths.ds_details_csv_path),
         )
         verbose_print("Finished setting up DataDecide.", verbose)
 
     @property
-    def all_data_param_combos(self):
+    def all_data_param_combos(self) -> list[tuple[str, str]]:
         return list(
             itertools.product(
                 consts.ALL_DATA_NAMES,
@@ -67,7 +143,7 @@ class DataDecide:
         by_seeds: bool = True,
         return_std: bool = False,
         verbose: bool = False,
-    ) -> Union[pd.DataFrame, Tuple[pd.DataFrame, pd.DataFrame]]:
+    ) -> Union[pd.DataFrame, tuple[pd.DataFrame, pd.DataFrame]]:
         if len(input_df) == 0 or not by_seeds:
             df_utils.print_shape(input_df, "Empty DataFrame or no aggregation", verbose)
             if return_std:
@@ -84,9 +160,11 @@ class DataDecide:
     def filter_data_quality(
         self,
         input_df: pd.DataFrame,
-        filter_types: List[str] = ["max_steps"],
+        filter_types: list[str] | None = None,
         verbose: bool = False,
     ) -> pd.DataFrame:
+        if filter_types is None:
+            filter_types = ["max_steps"]
         validation.validate_filter_types(filter_types)
         df = input_df.copy()
         df_utils.print_shape(df, "Initial", verbose)
@@ -109,17 +187,17 @@ class DataDecide:
     def select_subset(
         self,
         input_df: pd.DataFrame,
-        data: Optional[Union[str, List[str]]] = None,
-        params: Optional[Union[str, List[str]]] = None,
-        seeds: Optional[Union[int, List[int]]] = None,
-        step_lims: Optional[Tuple[Optional[int], Optional[int]]] = None,
-        token_lims: Optional[Tuple[Optional[int], Optional[int]]] = None,
-        min_params: Optional[str] = None,
-        max_params: Optional[str] = None,
-        data_param_combos: Optional[List[Tuple[str, str]]] = None,
-        columns: Optional[List[str]] = None,
-        metrics: Optional[List[str]] = None,
-        metric_type: Optional[str] = None,
+        data: str | list[str] | None = None,
+        params: str | list[str] | None = None,
+        seeds: int | list[int] | None = None,
+        step_lims: tuple[int | None, int | None] | None = None,
+        token_lims: tuple[int | None, int | None] | None = None,
+        min_params: str | None = None,
+        max_params: str | None = None,
+        data_param_combos: list[tuple[str, str]] | None = None,
+        columns: list[str] | None = None,
+        metrics: list[str] | None = None,
+        metric_type: str | None = None,
         include_id_columns: bool = True,
         verbose: bool = False,
     ) -> pd.DataFrame:
@@ -187,13 +265,13 @@ class DataDecide:
     def _build_column_list(
         self,
         df: pd.DataFrame,
-        columns: Optional[List[str]],
-        metrics: Optional[List[str]],
-        metric_type: Optional[str],
+        columns: list[str] | None,
+        metrics: list[str] | None,
+        metric_type: str | None,
         include_id_columns: bool,
-    ) -> List[str]:
+    ) -> list[str]:
         validation.validate_metric_type(metric_type)
-        selected_columns = set()
+        selected_columns: set[str] = set()
 
         if include_id_columns:
             selected_columns.update(
@@ -217,14 +295,14 @@ class DataDecide:
                 metric for metric in metrics if metric in df.columns
             )
         if not selected_columns:
-            selected_columns = list(df.columns)
+            return list(df.columns)
         return list(selected_columns)
 
     def select_params(
         self,
-        params: Union[str, List[str]] = "all",
-        exclude: Optional[List[str]] = None,
-    ) -> List[str]:
+        params: str | list[str] = "all",
+        exclude: list[str] | None = None,
+    ) -> list[str]:
         return validation._validated_select(
             choices=params,
             valid_options=consts.ALL_MODEL_SIZE_STRS,
@@ -234,9 +312,9 @@ class DataDecide:
 
     def select_data(
         self,
-        data: Union[str, List[str]] = "all",
-        exclude: Optional[List[str]] = None,
-    ) -> List[str]:
+        data: str | list[str] = "all",
+        exclude: list[str] | None = None,
+    ) -> list[str]:
         return validation._validated_select(
             choices=data,
             valid_options=consts.ALL_DATA_NAMES,
@@ -247,7 +325,7 @@ class DataDecide:
     def melt_for_plotting(
         self,
         df: pd.DataFrame,
-        metrics: Optional[List[str]] = None,
+        metrics: list[str] | None = None,
         include_seeds: bool = True,
         drop_na: bool = True,
     ) -> pd.DataFrame:
@@ -261,11 +339,11 @@ class DataDecide:
 
     def prepare_plot_data(
         self,
-        params: Optional[Union[str, List[str]]] = None,
-        data: Optional[Union[str, List[str]]] = None,
-        metrics: Optional[List[str]] = None,
+        params: str | list[str] | None = None,
+        data: str | list[str] | None = None,
+        metrics: list[str] | None = None,
         aggregate_seeds: bool = False,
-        input_df: Optional[pd.DataFrame] = None,
+        input_df: pd.DataFrame | None = None,
         auto_filter: bool = True,
         melt: bool = True,
         verbose: bool = False,

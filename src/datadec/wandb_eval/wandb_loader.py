@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import List, Optional
 
 import pandas as pd
 
@@ -9,14 +10,14 @@ from datadec.wandb_eval import wandb_transforms as transforms
 
 @dataclass
 class FilterConfig:
-    method: Optional[str] = "finetune"
+    method: str | None = "finetune"
     completed_only: bool = True
     recent_only: bool = True
-    required_params: Optional[List[str]] = None
-    column_groups: List[str] = None
+    required_params: list[str] | None = None
+    column_groups: list[str] | None = None
     include_oe_evaluations: bool = False
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.required_params is None:
             self.required_params = []
         if self.column_groups is None:
@@ -35,7 +36,7 @@ class FilterConfig:
 
 
 class WandBDataLoader:
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     def load_data(self, config: FilterConfig) -> tuple[pd.DataFrame, pd.DataFrame]:

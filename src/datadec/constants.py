@@ -1,23 +1,20 @@
+from __future__ import annotations
+
 import re
 from itertools import product
 from pathlib import Path
-from typing import Any, Dict, List, Set
+from typing import Any
 
 MODEL_DETAILS_DF_NAME = "model_details"
 DATASET_DETAILS_DF_NAME = "dataset_details"
 
 CONFIGS_DIR = Path(__file__).parent.parent.parent / "configs"
 
-# Formatting constants for scripts
 THOUSAND = 1000
 MILLION = 1e6
 BILLION = 1e9
 
-
-# --------- Model Architecture Details ---------
-
-# This is the list of sizes we're using
-ALL_MODEL_SIZE_STRS: List[str] = [
+ALL_MODEL_SIZE_STRS: list[str] = [
     "4M",
     "6M",
     "8M",
@@ -34,7 +31,6 @@ ALL_MODEL_SIZE_STRS: List[str] = [
     "1B",
 ]
 
-# Below here is mostly taken directly from the OLMO Ladder Code
 MAX_SEQ_LEN: int = 2_048
 TOKEN_LEN_XC_MULTIPLIER: int = 20
 MODEL_SIZE_NORM_VALUE: int = 108_000_000
@@ -46,7 +42,7 @@ BS_EXPONENT: float = 2 / 3
 GPUS_PER_NODE: int = 8
 MICROBATCH_SIZE: int = 4
 
-MODEL_SHAPES: Dict[str, Dict[str, int]] = {
+MODEL_SHAPES: dict[str, dict[str, int]] = {
     "4M": {"d_model": 64, "n_heads": 8, "n_layers": 8, "mlp_ratio": 8},
     "6M": {"d_model": 96, "n_heads": 8, "n_layers": 8, "mlp_ratio": 8},
     "8M": {"d_model": 128, "n_heads": 8, "n_layers": 8, "mlp_ratio": 8},
@@ -63,7 +59,7 @@ MODEL_SHAPES: Dict[str, Dict[str, int]] = {
     "1B": {"d_model": 2048, "n_heads": 16, "n_layers": 16, "mlp_ratio": 8},
 }
 
-HARDCODED_SIZE_MAPPING: Dict[str, int] = {
+HARDCODED_SIZE_MAPPING: dict[str, int] = {
     "4M": 3_744_832,
     "6M": 6_010_464,
     "8M": 8_538_240,
@@ -80,9 +76,7 @@ HARDCODED_SIZE_MAPPING: Dict[str, int] = {
     "1B": 1_000_000_000,
 }
 
-# Selected by me based on a combo of the max consistent step in the dfs
-# and the hpms listed in the appendix of the paper
-MAX_STEP_TO_USE: Dict[str, int] = {
+MAX_STEP_TO_USE: dict[str, int] = {
     "1B": 67500,
     "750M": 62500,
     "530M": 51250,
@@ -100,7 +94,7 @@ MAX_STEP_TO_USE: Dict[str, int] = {
 }
 
 
-MODEL_CONFIG_BASE: Dict[str, Any] = {
+MODEL_CONFIG_BASE: dict[str, Any] = {
     "default_seed": 6198,
     "length_str": "5xC",
     "lr_warmup_start": 0.0,
@@ -134,20 +128,16 @@ MODEL_CONFIG_BASE: Dict[str, Any] = {
     "init_cutoff_factor": 3,
 }
 
-# Used to parse any numeric strings
 NUMBER_UNIT_RE = re.compile(r"^([0-9]+)([a-zA-Z]+)$")
 
-# --------- Huggingface Dataset Info ---------
-HF_DATASET_NAMES: Dict[str, str] = {
+HF_DATASET_NAMES: dict[str, str] = {
     "ppl_eval_ds": "allenai/DataDecide-ppl-results",
     "dwn_eval_ds": "allenai/DataDecide-eval-results",
     "dwn_instance_ds": "allenai/DataDecide-eval-instances",
 }
 HF_DATASET_SPLIT: str = "train"
 
-# --------- Data Recipe Consts ---------
-
-DATA_RECIPE_FAMILIES: Dict[str, List[str]] = {
+DATA_RECIPE_FAMILIES: dict[str, list[str]] = {
     "dolma17": [
         "Dolma1.7",
         "Dolma1.7 (no code)",
@@ -182,13 +172,11 @@ DATA_RECIPE_FAMILIES: Dict[str, List[str]] = {
     ],
 }
 
-ALL_DATA_NAMES: List[str] = [
+ALL_DATA_NAMES: list[str] = [
     name for family in DATA_RECIPE_FAMILIES.values() for name in family
 ]
 
-# --------- Seed and Metric Consts ---------
-
-SEED_MAP: Dict[str, int] = {
+SEED_MAP: dict[str, int] = {
     "default": 0,
     "small aux 2": 1,
     "small aux 3": 2,
@@ -196,7 +184,7 @@ SEED_MAP: Dict[str, int] = {
     "large aux 3": 4,
 }
 
-PPL_NAME_MAP: Dict[str, str] = {
+PPL_NAME_MAP: dict[str, str] = {
     "eval/wikitext_103-validation/Perplexity": "wikitext_103-valppl",
     "eval/pile-validation/Perplexity": "pile-valppl",
     "eval/c4_en-validation/Perplexity": "c4_en-valppl",
@@ -209,10 +197,10 @@ PPL_NAME_MAP: Dict[str, str] = {
     "eval/dolma_common-crawl-validation/Perplexity": "dolma_common-crawl-valppl",
     "eval/dolma_books-validation/Perplexity": "dolma_books-valppl",
 }
-PPL_TYPES: List[str] = list(PPL_NAME_MAP.values())
+PPL_TYPES: list[str] = list(PPL_NAME_MAP.values())
 
 
-MMLU_TASKS: List[str] = [
+MMLU_TASKS: list[str] = [
     "mmlu_abstract_algebra",
     "mmlu_anatomy",
     "mmlu_astronomy",
@@ -273,7 +261,7 @@ MMLU_TASKS: List[str] = [
     "mmlu_world_religions",
 ]
 
-OLMES_TASKS: List[str] = [
+OLMES_TASKS: list[str] = [
     "mmlu_average",
     "arc_challenge",
     "arc_easy",
@@ -286,7 +274,7 @@ OLMES_TASKS: List[str] = [
     "winogrande",
 ]
 
-METRIC_NAMES: List[str] = [
+METRIC_NAMES: list[str] = [
     "correct_choice",
     "acc_raw",
     "acc_per_token",
@@ -317,10 +305,7 @@ METRIC_NAMES: List[str] = [
     "primary_metric",
 ]
 
-# --------- Proj Specific Consts ---------
-
-# Mainly for parsing into a standard df format
-DROP_METRICS: List[str] = [
+DROP_METRICS: list[str] = [
     "predicted_index_raw",
     "predicted_index_per_token",
     "predicted_index_per_char",
@@ -329,46 +314,45 @@ DROP_METRICS: List[str] = [
     "logits_per_byte_corr",
 ]
 
-OLMES_METRICS: List[str] = [
+OLMES_METRICS: list[str] = [
     f"{task}_{metric_type}" for task, metric_type in product(OLMES_TASKS, METRIC_NAMES)
 ]
-ALL_KNOWN_METRICS: Set[str] = set(PPL_TYPES) | set(OLMES_METRICS)
+ALL_KNOWN_METRICS: set[str] = set(PPL_TYPES) | set(OLMES_METRICS)
 
 PARAM_NUMERIC_COL = "params_numeric"
 
-# ID Column Hierarchies - Single Source of Truth
-FULL_ID_COLUMNS: List[str] = [
+FULL_ID_COLUMNS: list[str] = [
     "params",
     "data",
     "seed",
     "step",
     "tokens",
     "compute",
-]  # Complete identification with compute for plotting
-MEAN_ID_COLUMNS: List[str] = [
+]
+MEAN_ID_COLUMNS: list[str] = [
     "params",
     "data",
     "step",
     "tokens",
     "compute",
-]  # Aggregation grouping (no seed) with compute for plotting
-KEY_COLUMNS: List[str] = [
+]
+KEY_COLUMNS: list[str] = [
     "params",
     "data",
     "seed",
     "step",
-]  # Basic parsing keys (before tokens/compute added)
-STEP_TOK_COMP_COLS: List[str] = ["params", "step", "tokens", "compute"]
-DWN_DROP_COLS: List[str] = ["chinchilla", "tokens", "compute"]
-PPL_DROP_COLS: List[str] = ["__index_level_0__"]
-FINAL_PREFIX_COLS: List[str] = FULL_ID_COLUMNS + [
+]
+STEP_TOK_COMP_COLS: list[str] = ["params", "step", "tokens", "compute"]
+DWN_DROP_COLS: list[str] = ["chinchilla", "tokens", "compute"]
+PPL_DROP_COLS: list[str] = ["__index_level_0__"]
+FINAL_PREFIX_COLS: list[str] = FULL_ID_COLUMNS + [
     "total_steps",
     "warmup_steps",
     "lr_max",
     "batch_size",
 ]
 
-LR_INPUT_COLS: List[str] = [
+LR_INPUT_COLS: list[str] = [
     "step",
     "lr_warmup_start",
     "lr_max",
@@ -376,13 +360,11 @@ LR_INPUT_COLS: List[str] = [
     "warmup_steps",
     "lr_decay_steps",
 ]
-LR_OUTPUT_COLS: List[str] = ["lr_at_step", "cumulative_lr"]
-PREFIX_COLS_WITH_LR: List[str] = FINAL_PREFIX_COLS + LR_OUTPUT_COLS
+LR_OUTPUT_COLS: list[str] = ["lr_at_step", "cumulative_lr"]
+PREFIX_COLS_WITH_LR: list[str] = FINAL_PREFIX_COLS + LR_OUTPUT_COLS
 
 
-# --------- Recipe Collections for Plotting and Analysis ---------
-
-BASE_RECIPES: List[str] = [
+BASE_RECIPES: list[str] = [
     "C4",
     "Falcon",
     "Falcon+CC",
@@ -393,7 +375,7 @@ BASE_RECIPES: List[str] = [
     "DCLM-Baseline",
 ]
 
-BASE_AND_QC: List[str] = [
+BASE_AND_QC: list[str] = [
     "C4",
     "Falcon",
     "Falcon+CC",
@@ -417,7 +399,7 @@ BASE_AND_QC: List[str] = [
     "DCLM-Baseline (QC FW 10%)",
 ]
 
-RECIPES_WITHOUT_ABLATIONS: List[str] = [
+RECIPES_WITHOUT_ABLATIONS: list[str] = [
     "C4",
     "Falcon",
     "Falcon+CC",
@@ -438,7 +420,7 @@ RECIPES_WITHOUT_ABLATIONS: List[str] = [
     "DCLM-Baseline (QC FW 10%)",
 ]
 
-CUSTOM_RECIPE_FAMILIES: Dict[str, List[str]] = {
+CUSTOM_RECIPE_FAMILIES: dict[str, list[str]] = {
     "core_datasets": ["C4", "Falcon", "Dolma1.6++"],
     "dolma17_variants": [
         "Dolma1.7",
@@ -473,7 +455,7 @@ CUSTOM_RECIPE_FAMILIES: Dict[str, List[str]] = {
     ],
 }
 
-PPL_PERFORMANCE_RECIPE_CHUNKS: Dict[str, List[str]] = {
+PPL_PERFORMANCE_RECIPE_CHUNKS: dict[str, list[str]] = {
     "best_ppl_performance": [
         "DCLM-Baseline 25% / Dolma 75%",
         "Dolma1.7 (no code)",
@@ -509,7 +491,7 @@ PPL_PERFORMANCE_RECIPE_CHUNKS: Dict[str, List[str]] = {
     ],
 }
 
-OLMES_PERFORMANCE_RECIPE_CHUNKS: Dict[str, List[str]] = {
+OLMES_PERFORMANCE_RECIPE_CHUNKS: dict[str, list[str]] = {
     "best_olmes_performance": [
         "DCLM-Baseline (QC 7%, FW2)",
         "DCLM-Baseline (QC FW 10%)",
