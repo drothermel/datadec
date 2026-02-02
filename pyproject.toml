@@ -30,7 +30,6 @@ dependencies = [
     "cattrs>=25.2.0",
     "clumper>=0.2.15",
     "marimo[lsp]>=0.16.0",
-    "psycopg2>=2.9.10",
     "sqlalchemy-utils>=0.42.0",
     "duckdb>=1.4.0",
     "sqlglot>=27.16.3",
@@ -73,4 +72,5 @@ dev = [
     "datadec",
     "pytest>=8.4.1",
     "pytest-postgresql>=7.0.0",
+    "ty",
 ]
