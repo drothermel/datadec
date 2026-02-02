@@ -1,4 +1,6 @@
-from typing import List, Optional, Union
+from __future__ import annotations
+
+from collections.abc import Sequence
 
 from datadec import constants as consts
 
@@ -6,7 +8,7 @@ FILTER_TYPES = ["max_steps", "ppl", "olmes"]
 METRIC_TYPES = ["ppl", "olmes"]
 
 
-def _choices_valid(choices: Union[str, List[str]], valid_options: List[str]) -> bool:
+def _choices_valid(choices: str | list[str], valid_options: list[str]) -> bool:
     if choices == "all":
         return True
     choice_list = [choices] if isinstance(choices, str) else choices
@@ -14,10 +16,10 @@ def _choices_valid(choices: Union[str, List[str]], valid_options: List[str]) -> 
 
 
 def _select_choices(
-    choices: Union[str, List[str]],
-    valid_options: List[str],
-    exclude: Optional[List[str]] = None,
-) -> List[str]:
+    choices: str | list[str],
+    valid_options: list[str],
+    exclude: list[str] | None = None,
+) -> list[str]:
     exclude = exclude or []
     if choices == "all":
         selected = [choice for choice in valid_options if choice not in exclude]
@@ -27,20 +29,20 @@ def _select_choices(
     return selected
 
 
-def validate_filter_types(filter_types: List[str]) -> None:
+def validate_filter_types(filter_types: list[str]) -> None:
     assert all(filter_type in FILTER_TYPES for filter_type in filter_types), (
         f"Invalid filter types: {filter_types}. Available: {FILTER_TYPES}"
     )
 
 
-def validate_metric_type(metric_type: Optional[str]) -> None:
+def validate_metric_type(metric_type: str | None) -> None:
     if metric_type is not None:
         assert metric_type in METRIC_TYPES, (
             f"Unknown metric_type '{metric_type}'. Available: {METRIC_TYPES}"
         )
 
 
-def validate_metrics(metrics: List[str], df_cols: List[str] | None = None) -> None:
+def validate_metrics(metrics: list[str], df_cols: Sequence[str] | None = None) -> None:
     assert all(metric in consts.ALL_KNOWN_METRICS for metric in metrics), (
         f"Unknown metrics: {metrics}. Available: {consts.ALL_KNOWN_METRICS}"
     )
@@ -51,11 +53,11 @@ def validate_metrics(metrics: List[str], df_cols: List[str] | None = None) -> No
 
 
 def _validated_select(
-    choices: Union[str, List[str]],
-    valid_options: List[str],
+    choices: str | list[str],
+    valid_options: list[str],
     name: str,
-    exclude: Optional[List[str]] = None,
-) -> List[str]:
+    exclude: list[str] | None = None,
+) -> list[str]:
     assert _choices_valid(choices, valid_options), (
         f"Invalid {name}. Available: {valid_options}"
     )
@@ -66,7 +68,7 @@ def _validated_select(
     )
 
 
-def determine_filter_types(metrics: List[str]) -> List[str]:
+def determine_filter_types(metrics: list[str]) -> list[str]:
     filter_types = ["max_steps"]
     ppl_metrics_filtered = [m for m in metrics if m in consts.PPL_TYPES]
     olmes_metrics_filtered = [m for m in metrics if m not in consts.PPL_TYPES]

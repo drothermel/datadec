@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import json
 import re
-from typing import Dict, List, Optional, Set
+from typing import Any
 
 import pandas as pd
 
@@ -8,7 +10,7 @@ from datadec import constants as consts
 from datadec.wandb_eval import wandb_constants as wconsts
 
 
-def extract_dataset_from_model_path(model_path: str) -> Optional[str]:
+def extract_dataset_from_model_path(model_path: Any) -> str | None:
     if pd.isna(model_path) or not isinstance(model_path, str):
         return None
     match = re.search(r"DataDecide-([^/]+?)(?:-\d+[MB])?/snapshots", model_path)
@@ -17,13 +19,13 @@ def extract_dataset_from_model_path(model_path: str) -> Optional[str]:
     return None
 
 
-def map_wandb_dataset_to_datadecide(wandb_dataset: str) -> Optional[str]:
+def map_wandb_dataset_to_datadecide(wandb_dataset: str) -> str | None:
     if not wandb_dataset:
         return None
     return wconsts.WANDB_DATASET_TO_DATADECIDE_MAPPING.get(wandb_dataset)
 
 
-def map_wandb_model_size_to_datadecide(model_size: int) -> Optional[str]:
+def map_wandb_model_size_to_datadecide(model_size: Any) -> str | None:
     if pd.isna(model_size):
         return None
     closest_param = None
@@ -49,7 +51,9 @@ def add_datadecide_columns(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def extract_hyperparameters(run_name: str, ignore: List[str] = None) -> Dict[str, any]:
+def extract_hyperparameters(
+    run_name: str, ignore: list[str] | None = None
+) -> dict[str, Any]:
     if ignore is None:
         ignore = wconsts.DEFAULT_IGNORE_PARAMS
     params = {}
@@ -284,7 +288,7 @@ def infer_training_method(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def get_columns_for_groups(df: pd.DataFrame, column_groups: List[str]) -> Set[str]:
+def get_columns_for_groups(df: pd.DataFrame, column_groups: list[str]) -> set[str]:
     selected_columns = set()
     for group_name in column_groups:
         if group_name in wconsts.KEY_SETS:
@@ -299,7 +303,9 @@ def get_columns_for_groups(df: pd.DataFrame, column_groups: List[str]) -> Set[st
 
 
 def select_column_groups(
-    df: pd.DataFrame, column_groups: List[str], include_oe_evaluations: bool = False
+    df: pd.DataFrame,
+    column_groups: list[str] | None,
+    include_oe_evaluations: bool = False,
 ) -> pd.DataFrame:
     if not column_groups:
         return df

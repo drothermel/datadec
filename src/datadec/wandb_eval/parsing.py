@@ -1,12 +1,10 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 import pandas as pd
 
 from datadec.data import DataDecide
-from datadec.wandb_eval import analysis_helpers
 from datadec.wandb_eval import wandb_constants as wconsts
 from datadec.wandb_eval.wandb_transforms import (
     add_datadecide_columns,
@@ -462,7 +460,9 @@ def add_pretraining_progression_rows(
 
 def create_unified_df(runs_df: pd.DataFrame, history_df: pd.DataFrame) -> pd.DataFrame:
     result = parse_and_clean_runs_df(runs_df)
-    parsed_runs_df = rebuild_run_df(result["filtered_df"], result)
+    filtered_df = result["filtered_df"]
+    assert isinstance(filtered_df, pd.DataFrame)
+    parsed_runs_df = rebuild_run_df(filtered_df, result)
     history_clean = history_df.drop(columns=["project"])
     unified_df = history_clean.merge(parsed_runs_df, on="run_id", how="inner")
     unified_df = add_datadecide_columns(unified_df)
@@ -474,33 +474,3 @@ def create_unified_df_with_pretraining(
 ) -> pd.DataFrame:
     unified_df = create_unified_df(runs_df, history_df)
     return integrate_pretraining_data(unified_df)
-
-
-def create_and_save_pretrain_posttrain_df(
-    save_path: str | None = None,
-) -> pd.DataFrame:
-    if save_path is None:
-        save_path = wconsts.PRETRAIN_POSTTRAIN_DF_PATH
-    print("Creating unified pretraining + finetuning DataFrame...")
-    runs_df, history_df = analysis_helpers.load_df()
-    final_df = create_unified_df_with_pretraining(runs_df, history_df)
-    large_int_cols = [
-        "total_tokens",
-        "cumulative_tokens",
-        "pretrain_tokens_max",
-        "cumulative_compute",
-        "pretrain_compute_max",
-        "total_compute_est",
-    ]
-    for col in large_int_cols:
-        if col in final_df.columns:
-            final_df[col] = final_df[col].astype("float64")
-    Path(save_path).parent.mkdir(parents=True, exist_ok=True)
-    print(f"Saving to {save_path}...")
-    if save_path.endswith(".parquet"):
-        final_df.to_parquet(save_path, index=False)
-    else:
-        final_df.to_pickle(save_path)
-    print(f"Saved {final_df.shape[0]:,} rows x {final_df.shape[1]} columns")
-    print("Contains pretraining + finetuning with continuous scaling curves")
-    return final_df

@@ -72,7 +72,7 @@ def melt_for_plotting(
     id_columns = id_columns if include_seeds else consts.MEAN_ID_COLUMNS
     if metrics is None:
         metrics = [col for col in df.columns if col in consts.ALL_KNOWN_METRICS]
-    validation.validate_metrics(metrics, df_cols=df.columns)
+    validation.validate_metrics(metrics, df_cols=list(df.columns))
     id_cols = (
         id_columns if include_seeds else [col for col in id_columns if col != "seed"]
     )

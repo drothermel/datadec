@@ -1,4 +1,6 @@
-from typing import Any, Dict, List
+from __future__ import annotations
+
+from typing import Any
 
 import pandas as pd
 
@@ -57,9 +59,9 @@ def configure_pandas_display(width: int = 300) -> None:
 
 
 def print_dynamics_summary_table(
-    dynamics_list: List[Dict[str, Any]],
-    columns: List[str] = [],
-    column_widths: Dict[str, int] = {},
+    dynamics_list: list[dict[str, Any]],
+    columns: list[str] = [],
+    column_widths: dict[str, int] = {},
 ) -> None:
     assert len(dynamics_list) > 0, "No dynamics data to display."
     columns = [*DEFAULT_COLS] if len(columns) == 0 else columns
@@ -109,7 +111,7 @@ def print_dataframe_coverage(df: pd.DataFrame, title: str = "Column Coverage") -
         print(f"  {i + 1:2d}. {col:<35} ({coverage:5.1f}% coverage)")
 
 
-def get_step_dynamics(run_history: pd.DataFrame) -> Dict[str, Any]:
+def get_step_dynamics(run_history: pd.DataFrame) -> dict[str, Any]:
     step_values = run_history["step"].dropna()
     if len(step_values) == 0:
         return {}
@@ -119,7 +121,7 @@ def get_step_dynamics(run_history: pd.DataFrame) -> Dict[str, Any]:
     }
 
 
-def get_token_dynamics(run_history: pd.DataFrame) -> Dict[str, Any]:
+def get_token_dynamics(run_history: pd.DataFrame) -> dict[str, Any]:
     total_tokens = run_history["total_tokens"].dropna()
     if len(total_tokens) == 0:
         return {}
@@ -129,7 +131,7 @@ def get_token_dynamics(run_history: pd.DataFrame) -> Dict[str, Any]:
     }
 
 
-def get_loss_dynamics(run_history: pd.DataFrame) -> Dict[str, Any]:
+def get_loss_dynamics(run_history: pd.DataFrame) -> dict[str, Any]:
     train_loss = run_history["train_loss"].dropna()
     if len(train_loss) == 0:
         return {}
@@ -144,7 +146,7 @@ def get_loss_dynamics(run_history: pd.DataFrame) -> Dict[str, Any]:
     }
 
 
-def get_lr_dynamics(run_history: pd.DataFrame) -> Dict[str, Any]:
+def get_lr_dynamics(run_history: pd.DataFrame) -> dict[str, Any]:
     lr_values = run_history["learning_rate"].dropna()
     if len(lr_values) == 0:
         return {}
@@ -155,7 +157,7 @@ def get_lr_dynamics(run_history: pd.DataFrame) -> Dict[str, Any]:
     }
 
 
-def get_epoch_dynamics(run_history: pd.DataFrame) -> Dict[str, Any]:
+def get_epoch_dynamics(run_history: pd.DataFrame) -> dict[str, Any]:
     epoch_values = run_history["epoch"].dropna()
     if len(epoch_values) == 0:
         return {}
@@ -164,7 +166,9 @@ def get_epoch_dynamics(run_history: pd.DataFrame) -> Dict[str, Any]:
     }
 
 
-def get_run_training_dynamics(history_df: pd.DataFrame, run_id: str) -> Dict[str, Any]:
+def get_run_training_dynamics(
+    history_df: pd.DataFrame, run_id: str
+) -> dict[str, Any] | None:
     run_history = history_df[history_df["run_id"] == run_id].copy()
     if len(run_history) == 0:
         return None
@@ -187,7 +191,7 @@ def get_run_training_dynamics(history_df: pd.DataFrame, run_id: str) -> Dict[str
 
 
 def analyze_training_progression(
-    history_df: pd.DataFrame, run_ids: List[str]
+    history_df: pd.DataFrame, run_ids: list[str]
 ) -> pd.DataFrame:
     dynamics_results = []
     for run_id in run_ids:
@@ -201,7 +205,7 @@ def print_training_history_sample(
     run_id: str,
     history_df: pd.DataFrame,
     sample_size: int = 3,
-    columns: List[str] = None,
+    columns: list[str] | None = None,
 ) -> None:
     run_history = history_df[history_df["run_id"] == run_id].sort_values("step")
     if len(run_history) == 0:

@@ -133,7 +133,7 @@ def numerical_cosine_integral(
         1 + np.cos(np.pi * t_values / lr_decay_steps)
     )
 
-    return np.trapz(lr_values, t_values)
+    return float(np.trapezoid(lr_values, t_values))
 
 
 def calculate_cumulative_lr(
