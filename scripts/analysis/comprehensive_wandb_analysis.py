@@ -13,7 +13,7 @@ from datadec.console_components import (
     create_counts_table,
 )
 from dr_frames import format_table
-from dr_showntell import load_table_config
+from dr_render import load_table_config
 from datadec.wandb_eval import analysis_helpers
 from datadec.wandb_eval import wandb_transforms as transforms
 from datadec.wandb_eval.wandb_loader import WandBDataLoader

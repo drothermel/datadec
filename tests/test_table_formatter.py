@@ -1,7 +1,7 @@
 import pandas as pd
 
 from dr_frames import format_coverage_table, format_table
-from dr_showntell import format_dynamics_table, load_table_config
+from dr_render import format_dynamics_table, load_table_config
 
 
 class TestFormatTable:
