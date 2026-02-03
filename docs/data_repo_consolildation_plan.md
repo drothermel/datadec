@@ -1,6 +1,6 @@
 # Data Repository Consolidation Plan
 
-> **Status update (Feb 2026):** `dr_ingest` has been removed; its project-specific parsing now lives in `ft-scaling`, and metrics-all + QA ingest live in `datadec.ingest`. Shared utilities live in `dr_hf`/`dr_duck`/`dr_frames`.
+> **Status update (Feb 2026):** `dr_ingest` has been removed; its project-specific parsing now lives in `ft-scaling`, and metrics-all + QA ingest live in `datadec.ingest`. ddpred analysis tooling is moving to `ft-pred`. Shared utilities live in `dr_hf`/`dr_duck`/`dr_frames`.
 
 This document outlines the plan to reorganize data processing repositories for clarity and maintainability.
 
@@ -80,7 +80,7 @@ APPLICATION (downstream consumer)
 | Repo | Current Purpose | Status |
 |------|-----------------|--------|
 | `ft-scaling` | Fine-tuning scaling analysis | ✅ Migrated (dr_ingest removed) |
-| `ddpred` | DataDecide prediction | Needs rename to ft-pred |
+| `ddpred` | DataDecide prediction | Analysis tooling migrating to ft-pred; rename pending |
 | `datadec` | DataDecide processing | Needs audit for project-specific code |
 | `by-tomorrow-app` | Frontend + backend | Wait for other repos |
 

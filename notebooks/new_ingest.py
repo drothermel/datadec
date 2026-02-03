@@ -288,7 +288,7 @@ def _(
                 paths = [paths]
             loader = (
                 load_json_artifact
-                if artifact in (TaskArtifactType.CONFIG, TaskArtifactType.METRICS)
+                if artifact is TaskArtifactType.METRICS
                 else load_jsonl_artifact
             )
             rels[artifact] = loader(conn, paths, artifact.value)
@@ -305,9 +305,6 @@ def _(
             reqs_rel = conn.sql("SELECT reqs_base.*, CAST(NULL AS BIGINT) AS idx FROM reqs_base")
         conn.register("reqs", reqs_rel)
 
-        cfg_rel = rels[TaskArtifactType.CONFIG]
-        conn.register("cfg", cfg_rel)
-
         met_rel = rels[TaskArtifactType.METRICS]
         conn.register("met", met_rel)
 
@@ -320,9 +317,6 @@ def _(
         )
         select_parts += build_prefixed_column_aliases(
             reqs_rel.columns, "reqs", load_cfg.prefix_map[TaskArtifactType.REQUESTS], load_cfg.skip_map[TaskArtifactType.REQUESTS]
-        )
-        select_parts += build_prefixed_column_aliases(
-            cfg_rel.columns, "cfg", load_cfg.prefix_map[TaskArtifactType.CONFIG], load_cfg.skip_map[TaskArtifactType.CONFIG]
         )
         select_parts += build_prefixed_column_aliases(
             met_rel.columns, "met", load_cfg.prefix_map[TaskArtifactType.METRICS], load_cfg.skip_map[TaskArtifactType.METRICS]
@@ -348,7 +342,6 @@ def _(
                 ON reqs.file_prefix = dk.file_prefix
                AND reqs.doc_id = dk.doc_id
                AND reqs.idx IS NOT DISTINCT FROM dk.idx
-            LEFT JOIN cfg   USING (file_prefix)
             LEFT JOIN met   USING (file_prefix)
             """
         )
@@ -493,8 +486,8 @@ def _(mo):
     To run the full pipeline without exhausting notebook memory, use the CLI:
 
     ```bash
-    uv run ingest-datadec cache --metrics-dir <metrics_dir> --cache-dir <cache_dir>
-    uv run ingest-datadec dedupe --cache-dir <cache_dir>
+    uv run datadec-ingest cache --metrics-dir <metrics_dir> --cache-dir <cache_dir>
+    uv run datadec-ingest dedupe --cache-dir <cache_dir>
     ```
 
     The CLI reuses the same helpers defined above but streams each directory in a

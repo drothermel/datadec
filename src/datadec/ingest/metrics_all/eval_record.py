@@ -10,7 +10,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from datadec.ingest.metrics_all.constants import LoadMetricsAllConfig
 from datadec.ingest.types import TaskArtifactType
-from marimo_utils.display import add_marimo_display
+from datadec.optional import add_marimo_display
 
 __all__ = [
     "ArtifactIndex",

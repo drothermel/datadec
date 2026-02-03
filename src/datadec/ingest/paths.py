@@ -1,23 +1,31 @@
+import os
 from pathlib import Path
 from typing import Any
 
 from pydantic import BaseModel, Field, model_validator
 
-from marimo_utils.display import add_marimo_display
+from datadec.optional import add_marimo_display
 
-__all__ = ["Paths"]
+DATADEC_DATA_DIR_ENV = "DATADEC_DATA_DIR"
+
+__all__ = ["DATADEC_DATA_DIR_ENV", "Paths"]
 
 
 @add_marimo_display()
 class Paths(BaseModel):
-    username: str = "drotherm"
+    """Default paths for metrics-all ingestion.
 
-    data_dir: Path = Field(
-        default_factory=lambda data: Path.home() / data["username"] / "data"
-    )
-    data_cache_dir: Path = Field(
-        default_factory=lambda data: data["data_dir"] / "cache"
-    )
+    Set ``DATADEC_DATA_DIR`` to override the default base directory (``~/data``).
+    """
+    @staticmethod
+    def _default_data_dir() -> Path:
+        env_value = os.getenv(DATADEC_DATA_DIR_ENV)
+        if env_value:
+            return Path(env_value).expanduser()
+        return Path.home() / "data"
+
+    data_dir: Path = Field(default_factory=_default_data_dir)
+    data_cache_dir: Path = Field(default_factory=lambda data: data["data_dir"] / "cache")
     metrics_all_dir: Path = Field(
         default_factory=lambda data: data["data_dir"] / "datadec"
     )

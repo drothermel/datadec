@@ -94,6 +94,7 @@ params   | data      | step  | tokens | compute | metric              | value
 | `dr_wandb` | CLI tool for downloading wandb experiment data |
 | `dr_duck` | MotherDuck/DuckDB connectors for cloud data access (not yet integrated) |
 | `ft-scaling` | Fine-tuning scaling analysis and W&B parsing |
+| `ft-pred` | Prediction/sweep analysis tooling and model evaluation |
 
 ## Data Flow Diagram
 

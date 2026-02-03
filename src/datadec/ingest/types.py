@@ -5,7 +5,6 @@ class TaskArtifactType(StrEnum):
     PREDICTIONS = "predictions"
     RECORDED_INPUTS = "recorded-inputs"
     REQUESTS = "requests"
-    CONFIG = "config"
     METRICS = "metrics"
 
     @property
@@ -17,7 +16,7 @@ class TaskArtifactType(StrEnum):
                 | TaskArtifactType.REQUESTS
             ):
                 return "jsonl"
-            case TaskArtifactType.CONFIG | TaskArtifactType.METRICS:
+            case TaskArtifactType.METRICS:
                 return "json"
             case _:
                 raise ValueError(f"Invalid task artifact type: {self}")

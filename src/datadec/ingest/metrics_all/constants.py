@@ -4,7 +4,7 @@ from typing import Any
 from pydantic import BaseModel, Field, field_validator
 
 from datadec.ingest.types import TaskArtifactType
-from marimo_utils.display import add_marimo_display
+from datadec.optional import add_marimo_display
 
 
 @add_marimo_display()
@@ -20,7 +20,6 @@ class LoadMetricsAllConfig(BaseModel):
             TaskArtifactType.PREDICTIONS: "prd",
             TaskArtifactType.RECORDED_INPUTS: "inp",
             TaskArtifactType.REQUESTS: "req",
-            TaskArtifactType.CONFIG: "cfg",
             TaskArtifactType.METRICS: "met",
         }
     )
@@ -30,7 +29,6 @@ class LoadMetricsAllConfig(BaseModel):
             TaskArtifactType.PREDICTIONS: {"file_prefix", "doc_id", "idx"},
             TaskArtifactType.RECORDED_INPUTS: {"file_prefix", "doc_id", "idx"},
             TaskArtifactType.REQUESTS: {"file_prefix", "doc_id", "idx"},
-            TaskArtifactType.CONFIG: {"file_prefix", "doc_id"},
             TaskArtifactType.METRICS: {"file_prefix", "doc_id"},
         }
     )

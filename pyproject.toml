@@ -11,7 +11,6 @@ dependencies = [
     "datasets>=4.0.0",
     "pandas>=2.3.1",
     "numpy>=2.0.2",
-    "scipy>=1.11.0",
     "pyarrow>=21.0.0",
     "huggingface_hub",
     "orjson>=3.11.2",
@@ -21,7 +20,6 @@ dependencies = [
     "duckdb>=1.4.0",
     "typer>=0.19.2",
     "pydantic>=2.12.4",
-    "marimo-utils>=0.1.0",
 ]
 
 

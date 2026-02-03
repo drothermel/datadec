@@ -84,6 +84,7 @@ print(f"Selected {len(data_recipes)} datasets: {data_recipes}")
 ```
 
 For fine-tuning / WandB analysis, use the `ft-scaling` repo (this repo now focuses on external DataDecide processing only).
+For prediction/sweep analysis tooling, use the `ft-pred` repo.
 
 The `notebooks/explore_data.py` file provides a more detailed example of how to use the library.
 
@@ -96,6 +97,8 @@ This library uses the following Hugging Face datasets:
 
 The data processing pipeline downloads these datasets and stores them in the `data_dir` specified during the `DataDecide` initialization.  Then does some filtering, parsing, merging, and pulling in external information about hpms and other training settings.
 
+The ingest CLI defaults to `~/data` and can be overridden by setting `DATADEC_DATA_DIR`.
+
 ## Project Structure
 
 ```
@@ -105,7 +108,7 @@ The data processing pipeline downloads these datasets and stores them in the `da
 │   ├── script_utils.py   # Parameter/data selection utilities
 │   ├── ingest/           # metrics-all + QA ingest pipeline + CLI
 │   └── ...              # Pipeline, parsing, constants, etc.
-├── scripts/               # Utilities and analysis scripts
+├── scripts/               # Misc utilities (prediction analysis lives in ft-pred)
 ├── docs/                  # Documentation and reports
 │   └── reports/          # Project documentation
 └── notebooks/            # Analysis notebooks

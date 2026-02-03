@@ -9,6 +9,7 @@ import pandas as pd
 from datadec import constants as consts
 from datadec import df_utils, model_utils, validation
 from datadec.paths import DataDecidePaths
+from datadec.recipes import get_data_recipe_details_df
 from datadec.pipeline import DataPipeline, verbose_print
 
 
@@ -23,17 +24,6 @@ def get_data_recipe_family(
             return family
     return "unknown"
 
-
-def get_data_recipe_details_df(ds_details_path: Path) -> pd.DataFrame:
-    df = pd.read_csv(ds_details_path).rename(columns={"dataset": "data"})
-
-    df["data"] = (
-        df["data"]
-        .str.replace("Dolma1.7 (no math code)", "Dolma1.7 (no math, code)")
-        .str.replace("DCLM-Baseline (QC 7%", "DCLM-Baseline (QC 7%,")
-    )
-
-    return df
 
 
 class DataFrameLoader:
