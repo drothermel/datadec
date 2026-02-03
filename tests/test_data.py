@@ -7,12 +7,8 @@ import pandas as pd
 import pytest
 
 from datadec import constants as consts
-from datadec.data import (
-    DataDecide,
-    DataFrameLoader,
-    get_data_recipe_details_df,
-    get_data_recipe_family,
-)
+from datadec.data import DataDecide, DataFrameLoader, get_data_recipe_family
+from datadec.recipes import get_data_recipe_details_df
 
 
 class TestGetDataRecipeFamily:

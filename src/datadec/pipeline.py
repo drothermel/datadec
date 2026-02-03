@@ -7,7 +7,7 @@ from datasets import Dataset, load_dataset
 
 from datadec import constants as consts
 from datadec import df_utils, model_utils, parsing
-from datadec.data import get_data_recipe_details_df
+from datadec.recipes import get_data_recipe_details_df
 from datadec.paths import DataDecidePaths
 
 

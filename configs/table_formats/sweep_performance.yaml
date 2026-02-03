@@ -1,7 +1,0 @@
-Model_Size:
-  header: "Model Size"
-  formatter: "string"
-
-Dataset_Tokens:
-  header: "Dataset Tokens"
-  formatter: "string"

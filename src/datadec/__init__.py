@@ -1,3 +1,11 @@
 import warnings
 
+from datadec.data import DataDecide
+from datadec import ingest
+
 warnings.filterwarnings("ignore", message="urllib3 v2 only supports OpenSSL")
+
+__all__ = [
+    "DataDecide",
+    "ingest",
+]

@@ -9,45 +9,22 @@ authors = [
 requires-python = ">=3.12"
 dependencies = [
     "datasets>=4.0.0",
-    "dr-frames[formatting]>=0.1.0",
-    "dr-render>=0.1.0",
     "pandas>=2.3.1",
     "numpy>=2.0.2",
     "pyarrow>=21.0.0",
     "huggingface_hub",
-    "ipykernel>=6.30.1",
     "orjson>=3.11.2",
-    "matplotlib>=3.9.4",
-    "wandb>=0.21.0",
-    "sqlalchemy>=2.0.0",
-    "psycopg[binary]>=3.0.0",
-    "psycopg2-binary>=2.9.10",
-    "tabulate>=0.9.0",
-    "rich>=14.1.0",
     "srsly>=2.5.1",
     "attrs>=25.3.0",
-    "cattrs>=25.2.0",
     "clumper>=0.2.15",
-    "marimo[lsp]>=0.16.0",
-    "sqlalchemy-utils>=0.42.0",
     "duckdb>=1.4.0",
-    "sqlglot>=27.16.3",
-    "altair>=5.5.0",
-    "vegafusion>=2.0.2",
-    "vl-convert-python>=1.8.0",
-    "ruff>=0.13.1",
-    "openai>=1.108.1",
-    "nbformat>=5.10.4",
-    "websockets>=15.0.1",
-    "python-lsp-server>=1.13.1",
-    "ty>=0.0.1a21",
-    "basedpyright>=1.31.4",
-    "quak>=0.3.2",
-    "memo>=0.2.4",
-    "catalogue>=2.0.10",
-    "confection>=0.1.5",
     "typer>=0.19.2",
+    "pydantic>=2.12.4",
 ]
+
+
+[project.scripts]
+datadec-ingest = "datadec.ingest.datadec_ingest:app"
 
 [build-system]
 requires = ["hatchling"]
@@ -57,18 +34,10 @@ build-backend = "hatchling.build"
 allow-direct-references = true
 
 [tool.ruff]
-include = ["src/**/*.py", "scripts/**/*.py", "tests/**/*.py"]
-line-length = 88
-cache-dir = ".ruff_cache"
+line-length = 80
 exclude = ["outputs/*", "notebooks/*"]
-
-[tool.uv.sources]
-datadec = { workspace = true }
 
 [dependency-groups]
 dev = [
-    "datadec",
     "pytest>=8.4.1",
-    "pytest-postgresql>=7.0.0",
-    "ty",
 ]

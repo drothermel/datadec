@@ -1,5 +1,7 @@
 # Data Repository Consolidation Plan
 
+> **Status update (Feb 2026):** `dr_ingest` has been removed; its project-specific parsing now lives in `ft-scaling`, and metrics-all + QA ingest live in `datadec.ingest`. ddpred analysis tooling is moving to `ft-pred`. Shared utilities live in `dr_hf`/`dr_duck`/`dr_frames`.
+
 This document outlines the plan to reorganize data processing repositories for clarity and maintainability.
 
 ## Goals
@@ -23,7 +25,7 @@ EXTERNAL DATA (AllenAI published)
 └── datadec       → DataDecide parsing/processing (CLEANUP - remove project-specific code)
 
 YOUR PROJECTS (internal experiments)
-├── ft-scaling    → Fine-tuning scaling analysis (NEW - consolidates dd_parsed + dr_ingest)
+├── ft-scaling    → Fine-tuning scaling analysis (consolidates dd_parsed; replaces dr_ingest)
 └── ft-pred       → Fine-tuning prediction (RENAME from ddpred)
 
 APPLICATION (downstream consumer)
@@ -66,7 +68,7 @@ APPLICATION (downstream consumer)
 
 | Repo | New Dependencies | Status |
 |------|------------------|--------|
-| `dr_ingest` | dr-hf, dr-duck, dr-frames | ✅ Updated, merged |
+| `ft-scaling` | dr-hf, dr-duck, dr-frames | ✅ Migrated (replaces dr_ingest) |
 | `dr_marimo` | dr-frames | ✅ Updated, merged |
 | `ml-moe` | dr-frames | ✅ Updated, merged |
 | `datadec` | dr-frames[formatting], dr-render | ✅ Updated, merged |
@@ -77,8 +79,8 @@ APPLICATION (downstream consumer)
 
 | Repo | Current Purpose | Status |
 |------|-----------------|--------|
-| `dr_ingest` | Project-specific parsing (after utility extraction) | Needs cleanup or deprecation |
-| `ddpred` | DataDecide prediction | Needs rename to ft-pred |
+| `ft-scaling` | Fine-tuning scaling analysis | ✅ Migrated (dr_ingest removed) |
+| `ddpred` | DataDecide prediction | Analysis tooling migrating to ft-pred; rename pending |
 | `datadec` | DataDecide processing | Needs audit for project-specific code |
 | `by-tomorrow-app` | Frontend + backend | Wait for other repos |
 
@@ -100,7 +102,7 @@ All utility packages published to PyPI:
 - ✅ `dr-render==0.1.0`
 
 All dependent repos updated to import from utility packages:
-- ✅ dr_ingest
+- ✅ ft-scaling (replaces dr_ingest)
 - ✅ dr_marimo
 - ✅ ml-moe
 - ✅ datadec
@@ -111,7 +113,7 @@ New repo for fine-tuning scaling analysis:
 
 - [ ] Create `ft-scaling` repo
 - [ ] Migrate from `drotherm/dd_parsed` HuggingFace dataset
-- [ ] Migrate project-specific code from `dr_ingest`
+- [x] Migrate project-specific code from `dr_ingest` → `ft-scaling` (complete; dr_ingest removed)
 - [ ] Migrate any project-specific code from `datadec`
 - [ ] Update HuggingFace dataset to `drotherm/ft-scaling`?
 
@@ -130,7 +132,7 @@ Ensure it only contains AllenAI DataDecide processing:
 - [ ] Remove any project-specific code (moved to ft-scaling)
 - [ ] Verify clean separation from ft-* repos
 
-### Phase 5: Clean `dr_ingest`
+### Phase 5: Remove `dr_ingest` (complete)
 
 After extraction to ft-scaling:
 
@@ -149,7 +151,7 @@ Decide how app consumes data:
 
 ## Open Questions
 
-1. ~~**dr_ingest scope:** How much is generic DuckDB vs project-specific?~~ ✓ Audited
+1. ~~**former dr_ingest scope:** How much is generic DuckDB vs project-specific?~~ ✓ Audited
 2. ~~**ddpred contents:** What AllenAI parsing exists there?~~ ✓ Audited
 3. **Data serving:** What should by-tomorrow-app serve and from where?
 4. **HuggingFace naming:** Rename `dd_parsed` → `ft-scaling`?
@@ -160,11 +162,11 @@ Decide how app consumes data:
 
 | Current Repo | Destination | Content | Status |
 |--------------|-------------|---------|--------|
-| dr_ingest (DuckDB) | **dr_duck** | DuckDB/MotherDuck utilities | ✅ Published v0.1.0 |
-| dr_ingest (pandas) | **dr_frames** | DataFrame manipulation utilities | ✅ Published v0.1.0 |
-| hf_utils + dr_ingest/hf | **dr_hf** | HuggingFace operations | ✅ Published v0.1.0 |
+| former dr_ingest (DuckDB) | **dr_duck** | DuckDB/MotherDuck utilities | ✅ Published v0.1.0 |
+| former dr_ingest (pandas) | **dr_frames** | DataFrame manipulation utilities | ✅ Published v0.1.0 |
+| hf_utils + dr_hf | **dr_hf** | HuggingFace operations | ✅ Published v0.1.0 |
 | dr_showntell | **dr_render** | Table formatting | ✅ Published v0.1.0 |
-| dr_ingest (project) | **ft-scaling** (new) | WandB parsing, pipelines | Pending |
+| former dr_ingest (project) | **ft-scaling** | WandB parsing, pipelines | ✅ migrated |
 | ddpred | **ft-pred** (rename) | Prediction models | Pending |
 | ddpred (data loading) | **datadec** | DataDecide integration | Pending |
 | datadec | **datadec** (cleanup) | AllenAI constants/loading | Pending |
