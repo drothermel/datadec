@@ -36,16 +36,10 @@ build-backend = "hatchling.build"
 allow-direct-references = true
 
 [tool.ruff]
-include = ["src/**/*.py", "scripts/**/*.py", "tests/**/*.py"]
-line-length = 88
-cache-dir = ".ruff_cache"
+line-length = 80
 exclude = ["outputs/*", "notebooks/*"]
-
-[tool.uv.sources]
-datadec = { workspace = true }
 
 [dependency-groups]
 dev = [
-    "datadec",
     "pytest>=8.4.1",
 ]
