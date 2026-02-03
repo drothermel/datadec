@@ -6,6 +6,9 @@ data/
 .dmypy.*
 *.swp
 outputs/
+plots/
+reports/
+dist/
 **/.DS_Store
 **/__pycache__/
 wandb_data/

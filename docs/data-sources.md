@@ -6,8 +6,8 @@ This document maps out all data sources used by the by-tomorrow-app visualizatio
 
 | Data File | Rows | Source | Processing Repo |
 |-----------|------|--------|-----------------|
-| `mean_eval_melted.parquet` | 1.8M | AllenAI DataDecide | `datadec`, `hf_utils` |
-| `combined_plotting_data_matched.pkl` | 149 | Your wandb experiments | `dr_wandb`, `datadec` |
+| `mean_eval_melted.parquet` | 1.8M | AllenAI DataDecide | `datadec`, `dr_hf` |
+| `combined_plotting_data_matched.pkl` | 149 | Your wandb experiments | `dr_wandb`, `ft-scaling` |
 
 ## Data Sources Overview
 
@@ -57,15 +57,15 @@ params   | data      | step  | tokens | compute | metric              | value
 
 **Processing pipeline:**
 1. Download from `allenai/DataDecide-ppl-results` and `allenai/DataDecide-eval-results`
-2. Parse and rename columns (via `hf_utils` or `datadec`)
+2. Parse and rename columns (via `dr_hf` or `datadec`)
 3. Merge ppl and downstream results on (params, data, seed, step)
 4. Add tokens and compute columns
 5. Average across seeds → "mean_eval"
 6. Melt to long format → "melted"
 
 **Repos involved:**
-- `hf_utils` - `src/hf_utils/datadecide.py` - Downloads and initial parsing
-- `datadec` - `src/datadec/constants.py` - Column mappings, metric names, data recipe definitions
+- `dr_hf` - HuggingFace dataset utilities and downloads
+- `datadec` - Column mappings, metric names, data recipe definitions
 
 #### `combined_plotting_data_matched.pkl` (9.5MB, 149 rows)
 
@@ -83,17 +83,17 @@ params   | data      | step  | tokens | compute | metric              | value
 
 **Repos involved:**
 - `dr_wandb` - Downloads experiment data from Weights & Biases
-- `datadec` - Processing and matching logic
+- `ft-scaling` - Processing and matching logic
 
 ## Related Repos
 
 | Repo | Purpose |
 |------|---------|
 | `datadec` | Main data processing library for DataDecide data. Constants, parsing, filtering. |
-| `hf_utils` | HuggingFace utilities including DataDecide dataset downloading |
+| `dr_hf` | HuggingFace utilities including DataDecide dataset downloading |
 | `dr_wandb` | CLI tool for downloading wandb experiment data |
-| `dr_ingest` | MotherDuck/DuckDB connectors for cloud data access (not yet integrated) |
-| `dr_plotter` | Plotting utilities used with datadec |
+| `dr_duck` | MotherDuck/DuckDB connectors for cloud data access (not yet integrated) |
+| `ft-scaling` | Fine-tuning scaling analysis and W&B parsing |
 
 ## Data Flow Diagram
 
@@ -111,7 +111,7 @@ params   | data      | step  | tokens | compute | metric              | value
                 │                           │                  │
                 ▼                           ▼                  ▼
 ┌───────────────────────────┐  ┌─────────────────────┐  ┌──────────────────┐
-│      hf_utils/datadec     │  │      datadec        │  │    dr_wandb      │
+│       dr_hf/datadec       │  │     ft-scaling      │  │    dr_wandb      │
 │  Download & parse AllenAI │  │  Parse scaling law  │  │  Download runs   │
 └───────────────┬───────────┘  └──────────┬──────────┘  └────────┬─────────┘
                 │                         │                      │
@@ -143,7 +143,7 @@ params   | data      | step  | tokens | compute | metric              | value
 
 ## Future Options
 
-1. **MotherDuck Integration** - The `dr_ingest` repo has a MotherDuck connector that could query HuggingFace datasets directly, eliminating the need for local data files.
+1. **MotherDuck Integration** - The `dr_duck` repo provides a MotherDuck connector that could query HuggingFace datasets directly, eliminating the need for local data files.
 
 2. **Direct HuggingFace Serving** - Could serve data directly from `drotherm/dd_parsed` instead of committing files to git.
 
