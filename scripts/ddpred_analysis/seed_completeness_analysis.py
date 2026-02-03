@@ -2,7 +2,7 @@ from typing import Dict, Any, List, Callable
 import pandas as pd
 from datadec import DataDecide
 import datadec.constants
-from ft_pred.analysis import (
+from datadec.analysis import (
     analyze_seed_data_density_filtered,
     analyze_mmlu_eval_focused_density,
     get_ordered_models,

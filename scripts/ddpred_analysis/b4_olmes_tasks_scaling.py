@@ -3,9 +3,9 @@ import pandas as pd
 from datadec import DataDecide
 from dr_plotter.figure import FigureManager
 from dr_plotter.figure_config import FigureConfig
-from ft_pred.core.data_filtering import get_filtered_data
-from ft_pred.core.data_preparation import extract_targets
-from ft_pred.analysis import (
+from datadec.data_filtering import get_filtered_data
+from datadec.analysis import extract_targets
+from datadec.analysis import (
     convert_model_size_to_numeric,
     apply_seed_validation_1b,
     get_recipe_order,

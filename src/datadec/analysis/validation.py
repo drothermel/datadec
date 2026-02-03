@@ -1,8 +1,20 @@
 from typing import Dict, Any, List, Optional
 import pandas as pd
 import numpy as np
-from ft_pred.metrics.utils import compute_comprehensive_metrics
-from ft_pred.config import get_cv_config
+
+def _calc_mse(preds: np.ndarray, true_vals: np.ndarray) -> float:
+    return float(np.mean((preds - true_vals) ** 2))
+
+
+def _calc_rmse(preds: np.ndarray, true_vals: np.ndarray) -> float:
+    return float(np.sqrt(_calc_mse(preds, true_vals)))
+
+
+def _calc_r2(preds: np.ndarray, true_vals: np.ndarray) -> float:
+    ss_res = float(np.sum((true_vals - preds) ** 2))
+    ss_tot = float(np.sum((true_vals - np.mean(true_vals)) ** 2))
+    return float('nan') if ss_tot == 0 else 1.0 - ss_res / ss_tot
+
 
 
 def apply_seed_validation_1b(df: pd.DataFrame, min_steps: int = 20) -> pd.DataFrame:
@@ -222,10 +234,9 @@ def analyze_horizon_performance(
             pct_pred = predictions[mask]
 
             if len(pct_true) > 1:
-                metrics_result = compute_comprehensive_metrics(pct_pred, pct_true)
-                r2 = metrics_result["r2"]
-                mse = metrics_result["mse"]
-                rmse = metrics_result["rmse"]
+                r2 = _calc_r2(pct_pred, pct_true)
+                mse = _calc_mse(pct_pred, pct_true)
+                rmse = _calc_rmse(pct_pred, pct_true)
 
                 metrics = {
                     "r2": r2,
@@ -254,13 +265,18 @@ def analyze_cv_folds(
     assert len(X) == len(groups), "X and groups must have same length"
     assert cv_folds > 1, "cv_folds must be greater than 1"
 
-    config = get_cv_config()
-    group_kfold = config.create_simple_group_kfold(n_splits=cv_folds)
     fold_info = []
 
-    for fold_idx, (train_idx, val_idx) in enumerate(
-        group_kfold.split(X, groups=groups)
-    ):
+    unique_groups = list(pd.unique(groups))
+    folds = [[] for _ in range(cv_folds)]
+    for idx, group in enumerate(unique_groups):
+        folds[idx % cv_folds].append(group)
+
+    for fold_idx, val_groups in enumerate(folds):
+        val_groups = set(val_groups)
+        val_mask = groups.isin(val_groups)
+        val_idx = np.where(val_mask)[0]
+        train_idx = np.where(~val_mask)[0]
         train_groups = set(groups.iloc[train_idx])
         val_groups = set(groups.iloc[val_idx])
 

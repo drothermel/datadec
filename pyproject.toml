@@ -11,6 +11,7 @@ dependencies = [
     "datasets>=4.0.0",
     "pandas>=2.3.1",
     "numpy>=2.0.2",
+    "scipy>=1.11.0",
     "pyarrow>=21.0.0",
     "huggingface_hub",
     "orjson>=3.11.2",

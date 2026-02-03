@@ -3,9 +3,22 @@ import pandas as pd
 import numpy as np
 from scipy import stats
 import datadec.constants
-from ft_pred.metrics.utils import compute_comprehensive_metrics
-from ft_pred.analysis.core import get_ordered_models
-from ft_pred.analysis.validation import apply_max_step_filter
+from datadec.analysis.core import get_ordered_models
+from datadec.analysis.validation import apply_max_step_filter
+
+def _calc_mse(preds: np.ndarray, true_vals: np.ndarray) -> float:
+    return float(np.mean((preds - true_vals) ** 2))
+
+
+def _calc_rmse(preds: np.ndarray, true_vals: np.ndarray) -> float:
+    return float(np.sqrt(_calc_mse(preds, true_vals)))
+
+
+def _calc_r2(preds: np.ndarray, true_vals: np.ndarray) -> float:
+    ss_res = float(np.sum((true_vals - preds) ** 2))
+    ss_tot = float(np.sum((true_vals - np.mean(true_vals)) ** 2))
+    return float('nan') if ss_tot == 0 else 1.0 - ss_res / ss_tot
+
 
 
 def calculate_confidence_intervals(
@@ -289,10 +302,9 @@ def analyze_horizon_performance(
             pct_pred = predictions[mask]
 
             if len(pct_true) > 1:
-                metrics_result = compute_comprehensive_metrics(pct_pred, pct_true)
-                r2 = metrics_result["r2"]
-                mse = metrics_result["mse"]
-                rmse = metrics_result["rmse"]
+                r2 = _calc_r2(pct_pred, pct_true)
+                mse = _calc_mse(pct_pred, pct_true)
+                rmse = _calc_rmse(pct_pred, pct_true)
 
                 metrics = {
                     "r2": r2,
