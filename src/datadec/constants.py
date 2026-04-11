@@ -130,13 +130,6 @@ MODEL_CONFIG_BASE: dict[str, Any] = {
 
 NUMBER_UNIT_RE = re.compile(r"^([0-9]+)([a-zA-Z]+)$")
 
-HF_DATASET_NAMES: dict[str, str] = {
-    "ppl_eval_ds": "allenai/DataDecide-ppl-results",
-    "dwn_eval_ds": "allenai/DataDecide-eval-results",
-    "dwn_instance_ds": "allenai/DataDecide-eval-instances",
-}
-HF_DATASET_SPLIT: str = "train"
-
 DATA_RECIPE_FAMILIES: dict[str, list[str]] = {
     "dolma17": [
         "Dolma1.7",

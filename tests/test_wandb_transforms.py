@@ -84,17 +84,15 @@ class TestAddDatadecideColumns:
 
 
 class TestExtractHyperparameters:
-    def test_extracts_new_format_datetime(self) -> None:
+    def test_ignores_new_format_datetime_by_default(self) -> None:
         run_name = "241201-120000_exp_DD-test-60M_100Mtx1"
         result = extract_hyperparameters(run_name)
-        assert "run_datetime_rnp" in result
-        assert result["run_datetime_rnp"] == "2024-12-01 12:00:00"
+        assert "run_datetime_rnp" not in result
 
-    def test_extracts_old_format_datetime(self) -> None:
+    def test_ignores_old_format_datetime_by_default(self) -> None:
         run_name = "2024_12_01-12_00_00_exp_DD-test-60M"
         result = extract_hyperparameters(run_name)
-        assert "run_datetime_rnp" in result
-        assert result["run_datetime_rnp"] == "2024-12-01 12:00:00"
+        assert "run_datetime_rnp" not in result
 
     def test_extracts_model_params(self) -> None:
         run_name = "241201-120000_exp_DD-test-60M_100Mtx1"

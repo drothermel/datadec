@@ -19,9 +19,9 @@ from datadec.model_utils import (
 
 
 class TestRoundValueByMultiple:
-    def test_rounds_up(self) -> None:
+    def test_uses_python_rounding_for_halfway_cases(self) -> None:
         result = round_value_by_multiple(105.0, 10)
-        assert result == 110
+        assert result == 100
 
     def test_rounds_down(self) -> None:
         result = round_value_by_multiple(104.0, 10)

@@ -1,24 +1,12 @@
 from __future__ import annotations
 
-from pathlib import Path
-
 import pandas as pd
-from datasets import Dataset, load_dataset
+from dr_hf import download_dataset
 
-from datadec import constants as consts
 from datadec import df_utils, model_utils, parsing
-from datadec.data import get_data_recipe_details_df
+from datadec.hf_locations import HF_DATASET_LOCATIONS, HF_DATASET_SPLIT
 from datadec.paths import DataDecidePaths
-
-
-def download_dataset(
-    path: Path,
-    repo_id: str,
-    split: str,
-) -> None:
-    raw_df = load_dataset(repo_id, split=split)
-    assert isinstance(raw_df, Dataset)
-    raw_df.to_parquet(path)
+from datadec.recipe_details import get_data_recipe_details_df
 
 
 def verbose_print(msg: str, verbose: bool = False) -> None:
@@ -65,8 +53,8 @@ class DataPipeline:
             download_path = self.paths.get_path(f"{raw_metric_type}_raw")
             download_dataset(
                 path=download_path,
-                repo_id=consts.HF_DATASET_NAMES[f"{raw_metric_type}_eval_ds"],
-                split=consts.HF_DATASET_SPLIT,
+                repo_id=HF_DATASET_LOCATIONS[f"{raw_metric_type}_eval_ds"].repo_id,
+                split=HF_DATASET_SPLIT,
             )
             verbose_print(f"Wrote to {download_path}", verbose)
 

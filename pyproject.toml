@@ -47,6 +47,7 @@ dependencies = [
     "catalogue>=2.0.10",
     "confection>=0.1.5",
     "typer>=0.19.2",
+    "dr-hf>=0.1.0",
 ]
 
 [build-system]

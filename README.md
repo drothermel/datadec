@@ -10,7 +10,6 @@ DataDecide is a Python library for downloading, processing, and analyzing machin
 -   **Easy Data Access:** A simple interface to load and access various dataframes, including raw data, parsed data, and aggregated results.
 -   **Advanced Filtering:** Multiple filter types including perplexity (`ppl`), OLMES metrics (`olmes`), and training steps (`max_steps`) with composable combinations.
 -   **Scripting Utilities:** Powerful parameter and data selection with `"all"` keyword, exclusion lists, and intelligent validation for reproducible analysis scripts.
--   **Native Plotting:** Production-ready scaling analysis plots using dr_plotter integration.
 -   **WandB Integration:** Download and store ML experiment data from Weights & Biases with PostgreSQL backend and incremental updates.
 
 ## Getting Started
@@ -23,15 +22,6 @@ To install the necessary dependencies, run:
 uv sync
 source .venv/bin/activate
 ```
-
-To get dr_plotter:
-```bash
-uv sync --all-extras
-
-# To update the github version
-uv lock --upgrade-package dr_plotter
-```
-
 
 ### Usage
 
@@ -92,17 +82,6 @@ limited_data = select_data("all", exclude=["C4"])         # All except C4
 
 print(f"Selected {len(params)} models: {params}")
 print(f"Selected {len(data_recipes)} datasets: {data_recipes}")
-```
-
-### Plotting
-
-Generate scaling analysis plots using the native dr_plotter integration:
-
-```python
-# Run the production plotting system
-python scripts/plot_scaling_analysis.py
-
-# Generates 7 different plot configurations in plots/test_plotting/
 ```
 
 ### WandB Integration
@@ -170,14 +149,10 @@ The data processing pipeline downloads these datasets and stores them in the `da
 │   ├── wandb_downloader.py # WandB download logic with incremental updates
 │   └── ...              # Pipeline, parsing, constants, etc.
 ├── scripts/               # Utilities and analysis scripts
-│   ├── plot_scaling_analysis.py  # Production plotting system
-│   ├── wandb_download.py  # WandB data download CLI script
-│   └── legacy_deprecated/ # Archived legacy code
 ├── docs/                  # Documentation and reports
 │   ├── processes/         # Templates and guides
 │   ├── wandb_integration.md # WandB system setup and usage guide
 │   └── reports/          # Project documentation
-├── plots/                 # Generated visualizations
 └── notebooks/            # Analysis notebooks
 ```
 

@@ -93,7 +93,6 @@ params   | data      | step  | tokens | compute | metric              | value
 | `hf_utils` | HuggingFace utilities including DataDecide dataset downloading |
 | `dr_wandb` | CLI tool for downloading wandb experiment data |
 | `dr_ingest` | MotherDuck/DuckDB connectors for cloud data access (not yet integrated) |
-| `dr_plotter` | Plotting utilities used with datadec |
 
 ## Data Flow Diagram
 
