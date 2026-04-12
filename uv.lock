@@ -672,7 +672,7 @@ wheels = [
 
 [[package]]
 name = "dr-ds"
-version = "0.1.3"
+version = "0.1.2"
 source = { directory = "../dr-ds" }
 dependencies = [
     { name = "pandas", version = "2.3.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.14'" },
