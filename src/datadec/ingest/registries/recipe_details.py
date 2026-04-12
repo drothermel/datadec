@@ -4,8 +4,8 @@ from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict
 
-from datadec import recipe_details as legacy_recipe_details
 from datadec.ingest.enums import DataRecipeName
+from datadec.recipe_details import get_data_recipe_details_df, get_data_recipe_family
 
 
 class RecipeDetails(BaseModel):
@@ -45,11 +45,11 @@ class RecipeRegistry(BaseModel):
 
 
 def load_recipe_registry(csv_path: Path) -> RecipeRegistry:
-    df = legacy_recipe_details.get_data_recipe_details_df(csv_path)
+    df = get_data_recipe_details_df(csv_path)
     details_by_recipe: dict[DataRecipeName, RecipeDetails] = {}
     for row in df.to_dict(orient="records"):
         recipe_name = DataRecipeName(row["data"])
-        family = legacy_recipe_details.get_data_recipe_family(row["data"])
+        family = get_data_recipe_family(row["data"])
         details_by_recipe[recipe_name] = RecipeDetails.model_validate(
             {**row, "family": family}
         )
