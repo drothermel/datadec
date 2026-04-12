@@ -9,7 +9,7 @@ import pandas as pd
 import srsly
 
 from datadec.ingest.checkpoint import EvalCheckpoint
-from datadec.ingest.coerce import coerce_int
+from dr_ds import coerce_int
 from datadec.ingest.enums import DataRecipeName, ModelSizeName, Seed, Task
 from datadec.ingest.metrics import PerplexityMetrics, TaskEvalMetrics
 from datadec.ingest.registries.model_details import (
