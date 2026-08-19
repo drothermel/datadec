@@ -7,9 +7,9 @@ from typing import Any
 import orjson
 import pandas as pd
 import srsly
+from dr_ds import coerce_int
 
 from datadec.data.ingest.checkpoint import EvalCheckpoint
-from dr_ds import coerce_int
 from datadec.data.ingest.enums import DataRecipeName, ModelSizeName, Seed, Task
 from datadec.data.ingest.metrics import PerplexityMetrics, TaskEvalMetrics
 from datadec.data.ingest.registries.model_details import (
@@ -19,9 +19,9 @@ from datadec.data.ingest.registries.model_details import (
 from datadec.data.ingest.run import TrainingRun
 from datadec.data.paths import DataDecidePaths
 from datadec.data.pipeline import DataPipeline
+from datadec.data.preprocess.ppl import group_perplexity_rows
 
 type RunKey = tuple[ModelSizeName, DataRecipeName, Seed]
-type PplRowsByKey = dict[RunKey, dict[int, PerplexityMetrics]]
 type TaskRowsByKey = dict[RunKey, dict[int, dict[Task, TaskEvalMetrics]]]
 
 
@@ -42,7 +42,7 @@ def ingest_from_hf(
         print(f">> ppl rows: {len(ppl_df)}")
         print(f">> dwn rows: {len(dwn_df)}")
 
-    ppl_by_key = _group_perplexity_rows(ppl_df)
+    ppl_by_key = group_perplexity_rows(ppl_df)
     task_by_key = _group_task_rows(dwn_df)
 
     run_keys = sorted(set(ppl_by_key.keys()) | set(task_by_key.keys()))
@@ -80,18 +80,6 @@ def _ensure_raw_parquets_exist(paths: DataDecidePaths, *, verbose: bool) -> None
     if verbose:
         print(f">> missing raw parquets for {missing_types}; downloading")
     DataPipeline(paths).download_raw_data(verbose=verbose)
-
-
-def _group_perplexity_rows(ppl_df: pd.DataFrame) -> PplRowsByKey:
-    grouped: PplRowsByKey = defaultdict(dict)
-    records = ppl_df.to_dict(orient="records")
-    for record in records:
-        run_key = _run_key_from_record(record)
-        step = coerce_int(record["step"])
-        if step is None:
-            continue
-        grouped[run_key][step] = PerplexityMetrics.model_validate(record)
-    return grouped
 
 
 def _group_task_rows(dwn_df: pd.DataFrame) -> TaskRowsByKey:
