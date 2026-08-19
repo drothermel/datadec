@@ -1,0 +1,351 @@
+raw_directory = "raw/scaling-law"
+source_precedence = [
+  "results_ladder_5xC_seeds.csv",
+  "results_ladder_5xC_small_seed_extras.csv",
+  "results_ladder_5xC_small_seeds_extra_real.csv",
+]
+models = [
+  "4M",
+  "6M",
+  "8M",
+  "10M",
+  "14M",
+  "16M",
+  "20M",
+  "60M",
+  "90M",
+  "150M",
+  "300M",
+  "530M",
+  "750M",
+  "1B",
+]
+
+[source_group_map]
+DCLM-baseline = "dclm-baseline"
+c4 = "c4"
+dclm_ft7percentile_fw2 = "dclm-baseline-top-fw2-7p"
+dclm_ft7percentile_fw3 = "dclm-baseline-top-fw3-7p"
+dclm_fw_top10 = "dclm-baseline-top-fw-10p"
+dclm_fw_top3 = "dclm-baseline-top-fw-3p"
+dolma-v1-6-and-sources-baseline = "dolma1.6++"
+dolma17 = "dolma1.7"
+dolma17-25p-DCLM-baseline-75p = "dclm-baseline-75p-dolma1.7-25p"
+dolma17-50p-DCLM-baseline-50p = "dclm-baseline-50p-dolma1.7-50p"
+dolma17-75p-DCLM-baseline-25p = "dclm-baseline-25p-dolma1.7-75p"
+falcon = "falcon"
+falcon_and_cc = "falcon-with-cc"
+falcon_and_cc_eli5_oh_top10p = "falcon-with-cc-top-10p"
+falcon_and_cc_eli5_oh_top20p = "falcon-with-cc-top-20p"
+falcon_and_cc_og_eli5_oh_top10p = "falcon-with-cc-top-orig-10p"
+falcon_and_cc_tulu_qc_top10 = "falcon-with-cc-top-tulu-10p"
+fineweb_edu_dedup = "fineweb-edu"
+no_code = "dolma1.7-no-code"
+no_flan = "dolma1.7-no-flan"
+no_math_no_code = "dolma1.7-no-math-no-code"
+no_reddit = "dolma1.7-no-reddit"
+pos_eli5_oh_neg_dclm_refinedweb_steps_2000_lr3e4_top10p = "dclm-baseline-top-10p"
+pos_eli5_oh_neg_dclm_refinedweb_steps_2000_lr3e4_top20p = "dclm-baseline-top-20p"
+prox_fineweb_pro = "fineweb-pro"
+
+[seed_map]
+2 = "default"
+4 = "large aux 2"
+5 = "large aux 3"
+14 = "small aux 2"
+15 = "small aux 3"
+
+[seed_policy]
+excluded_legacy_values = [6198]
+missing = "exclude_legacy_input"
+unknown_non_null = "error"
+
+[tables.evaluations]
+path = "processed/scaling-law/evaluations.parquet"
+primary_key = ["recipe", "params", "seed_value", "step", "task"]
+sort_key = ["recipe", "params", "seed_value", "step", "task"]
+
+[[tables.evaluations.columns]]
+name = "source_file"
+logical_type = "string"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "recipe"
+logical_type = "string"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "data"
+logical_type = "string"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "params"
+logical_type = "string"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "seed_value"
+logical_type = "int64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "seed"
+logical_type = "string"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "step"
+logical_type = "int64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "task"
+logical_type = "string"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "chinchilla"
+logical_type = "string"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "tokens"
+logical_type = "int64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "compute"
+logical_type = "float64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "correct_choice"
+logical_type = "float64"
+nullable = true
+
+[[tables.evaluations.columns]]
+name = "acc_raw"
+logical_type = "float64"
+nullable = true
+
+[[tables.evaluations.columns]]
+name = "acc_per_token"
+logical_type = "float64"
+nullable = true
+
+[[tables.evaluations.columns]]
+name = "acc_per_char"
+logical_type = "float64"
+nullable = true
+
+[[tables.evaluations.columns]]
+name = "acc_per_byte"
+logical_type = "float64"
+nullable = true
+
+[[tables.evaluations.columns]]
+name = "acc_uncond"
+logical_type = "float64"
+nullable = true
+
+[[tables.evaluations.columns]]
+name = "no_answer"
+logical_type = "float64"
+nullable = true
+
+[[tables.evaluations.columns]]
+name = "sum_logits_corr"
+logical_type = "float64"
+nullable = true
+
+[[tables.evaluations.columns]]
+name = "logits_per_token_corr"
+logical_type = "float64"
+nullable = true
+
+[[tables.evaluations.columns]]
+name = "logits_per_char_corr"
+logical_type = "float64"
+nullable = true
+
+[[tables.evaluations.columns]]
+name = "bits_per_byte_corr"
+logical_type = "float64"
+nullable = true
+
+[[tables.evaluations.columns]]
+name = "logits_per_byte_corr"
+logical_type = "float64"
+nullable = true
+
+[[tables.evaluations.columns]]
+name = "correct_prob"
+logical_type = "float64"
+nullable = true
+
+[[tables.evaluations.columns]]
+name = "correct_prob_per_token"
+logical_type = "float64"
+nullable = true
+
+[[tables.evaluations.columns]]
+name = "correct_prob_per_char"
+logical_type = "float64"
+nullable = true
+
+[[tables.evaluations.columns]]
+name = "margin"
+logical_type = "float64"
+nullable = true
+
+[[tables.evaluations.columns]]
+name = "margin_per_token"
+logical_type = "float64"
+nullable = true
+
+[[tables.evaluations.columns]]
+name = "margin_per_char"
+logical_type = "float64"
+nullable = true
+
+[[tables.evaluations.columns]]
+name = "total_prob"
+logical_type = "float64"
+nullable = true
+
+[[tables.evaluations.columns]]
+name = "total_prob_per_token"
+logical_type = "float64"
+nullable = true
+
+[[tables.evaluations.columns]]
+name = "total_prob_per_char"
+logical_type = "float64"
+nullable = true
+
+[[tables.evaluations.columns]]
+name = "uncond_correct_prob"
+logical_type = "float64"
+nullable = true
+
+[[tables.evaluations.columns]]
+name = "uncond_correct_prob_per_token"
+logical_type = "float64"
+nullable = true
+
+[[tables.evaluations.columns]]
+name = "uncond_correct_prob_per_char"
+logical_type = "float64"
+nullable = true
+
+[[tables.evaluations.columns]]
+name = "uncond_total_prob"
+logical_type = "float64"
+nullable = true
+
+[[tables.evaluations.columns]]
+name = "norm_correct_prob"
+logical_type = "float64"
+nullable = true
+
+[[tables.evaluations.columns]]
+name = "norm_correct_prob_per_token"
+logical_type = "float64"
+nullable = true
+
+[[tables.evaluations.columns]]
+name = "norm_correct_prob_per_char"
+logical_type = "float64"
+nullable = true
+
+[[tables.evaluations.columns]]
+name = "primary_metric"
+logical_type = "float64"
+nullable = true
+
+[tables.checkpoint_losses]
+path = "processed/scaling-law/checkpoint-losses.parquet"
+primary_key = ["recipe", "params", "seed_value", "step"]
+sort_key = ["recipe", "params", "seed_value", "step"]
+
+[[tables.checkpoint_losses.columns]]
+name = "source_file"
+logical_type = "string"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "recipe"
+logical_type = "string"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "data"
+logical_type = "string"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "params"
+logical_type = "string"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "seed_value"
+logical_type = "int64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "seed"
+logical_type = "string"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "step"
+logical_type = "int64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "chinchilla"
+logical_type = "string"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "tokens"
+logical_type = "int64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "compute"
+logical_type = "float64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "c4_en_validation_cross_entropy"
+logical_type = "float64"
+nullable = true
+
+[[tables.checkpoint_losses.columns]]
+name = "dolma_common_crawl_validation_cross_entropy"
+logical_type = "float64"
+nullable = true
+
+[[tables.checkpoint_losses.columns]]
+name = "pile_validation_cross_entropy"
+logical_type = "float64"
+nullable = true
+
+[[tables.checkpoint_losses.columns]]
+name = "wikitext_103_validation_cross_entropy"
+logical_type = "float64"
+nullable = true
+
+[[tables.checkpoint_losses.columns]]
+name = "train_cross_entropy"
+logical_type = "float64"
+nullable = true
+
+[[tables.checkpoint_losses.columns]]
+name = "throughput_total_tokens"
+logical_type = "float64"
+nullable = true

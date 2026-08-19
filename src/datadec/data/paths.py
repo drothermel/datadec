@@ -2,7 +2,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from datadec.config import load_olmes_contract, load_source_manifest
+from datadec.config import (
+    load_olmes_contract,
+    load_scaling_law_contract,
+    load_source_manifest,
+)
 
 DEFAULT_DATA_DIR = "./data"
 
@@ -12,7 +16,6 @@ class DataDecidePaths:
         manifest = load_source_manifest()
         self.data_dir = Path(data_dir)
         self.dataset_dir = self.data_dir / "datasets"
-        self.dataset_dir.mkdir(parents=True, exist_ok=True)
 
         self.dataframes = {
             "ppl_raw": manifest.ppl.output,
@@ -55,6 +58,21 @@ class DataDecidePaths:
 
     def dataset_path(self, max_params_str: str) -> Path:
         return self.dataset_dir / f"dataset_{max_params_str}.pkl"
+
+    def scaling_law_raw_paths(self) -> tuple[Path, ...]:
+        contract = load_scaling_law_contract()
+        raw_directory = self.data_dir / contract.raw_directory
+        return tuple(
+            raw_directory / filename for filename in contract.source_precedence
+        )
+
+    def scaling_law_evaluations_path(self) -> Path:
+        contract = load_scaling_law_contract()
+        return self.data_dir / contract.tables.evaluations.path
+
+    def scaling_law_checkpoint_losses_path(self) -> Path:
+        contract = load_scaling_law_contract()
+        return self.data_dir / contract.tables.checkpoint_losses.path
 
     def olmes_details_tasks_path(self, recipe: str) -> Path:
         return self._olmes_details_table_path("detailed_tasks", recipe)
