@@ -11,6 +11,7 @@ import pytest
 from datadec.data.ingest.enums import DataRecipeName, ModelSizeName, Seed
 from datadec.data.paths import DataDecidePaths
 from datadec.data.preprocess.ppl import (
+    PPL_IDENTITY_COLUMNS,
     PPL_METRIC_COLUMNS,
     PPL_OUTPUT_COLUMNS,
     flatten_perplexity_rows,
@@ -156,6 +157,94 @@ def test_empty_input_writes_exact_typed_schema(tmp_path: Path) -> None:
         "step": np.dtype("int64"),
         **{field: np.dtype("float64") for field in PPL_METRIC_COLUMNS},
     }
+
+
+def test_preprocess_projects_sorts_and_counts_without_grouping_helpers(
+    tmp_path: Path,
+) -> None:
+    paths = DataDecidePaths(tmp_path)
+    input_path = paths.get_path("ppl_raw")
+    input_path.parent.mkdir(parents=True)
+    records = [
+        _raw_record(params="4M", data="C4", seed="default", step=200),
+        _raw_record(
+            params="10M",
+            data="C4",
+            seed="small aux 2",
+            step=300,
+            wikitext=None,
+        ),
+        _raw_record(params="4M", data="C4", seed="default", step=100),
+    ]
+    records[0][PILE_RAW] = "3.5"
+    records[0]["unknown/raw-column"] = "ignored"
+    pd.DataFrame(records).to_parquet(input_path, index=False)
+
+    with (
+        patch(
+            "datadec.data.preprocess.ppl.group_perplexity_rows",
+            side_effect=AssertionError("preprocessing must use DuckDB"),
+        ),
+        patch(
+            "datadec.data.preprocess.ppl.flatten_perplexity_rows",
+            side_effect=AssertionError("preprocessing must use DuckDB"),
+        ),
+    ):
+        result = preprocess_ppl(paths)
+
+    output_path = paths.get_path("ppl_processed")
+    output = pd.read_parquet(output_path)
+    assert result.checkpoint_count == 3
+    assert result.training_run_count == 2
+    assert tuple(output.columns) == PPL_OUTPUT_COLUMNS
+    assert output.dtypes.to_dict() == {
+        "params": pd.StringDtype(),
+        "data": pd.StringDtype(),
+        "seed": pd.StringDtype(),
+        "step": np.dtype("int64"),
+        **{field: np.dtype("float64") for field in PPL_METRIC_COLUMNS},
+    }
+    assert list(
+        output.loc[:, PPL_IDENTITY_COLUMNS].itertuples(index=False, name=None)
+    ) == [
+        ("10M", "C4", "small aux 2", 300),
+        ("4M", "C4", "default", 100),
+        ("4M", "C4", "default", 200),
+    ]
+    assert pd.isna(output.loc[0, "wikitext_103_valppl"])
+    assert output.loc[2, "pile_valppl"] == 3.5
+    assert not output_path.with_name(f".{output_path.name}.tmp").exists()
+
+
+def test_preprocess_rejects_duplicate_normalized_key_with_row_context(
+    tmp_path: Path,
+) -> None:
+    paths = DataDecidePaths(tmp_path)
+    input_path = paths.get_path("ppl_raw")
+    input_path.parent.mkdir(parents=True)
+    pd.DataFrame(
+        [_raw_record(step=1250), _raw_record(step=1250.0)]
+    ).to_parquet(input_path, index=False)
+
+    with pytest.raises(ValueError, match="duplicate PPL checkpoint at row 1") as exc:
+        preprocess_ppl(paths)
+
+    assert "params='4M', data='C4', seed='default', step=1250" in str(exc.value)
+
+
+def test_preprocess_rejects_unknown_enum_with_row_context(tmp_path: Path) -> None:
+    paths = DataDecidePaths(tmp_path)
+    input_path = paths.get_path("ppl_raw")
+    input_path.parent.mkdir(parents=True)
+    pd.DataFrame([_raw_record(data="unknown recipe")]).to_parquet(
+        input_path, index=False
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="unknown PPL data at row 0: 'unknown recipe'",
+    ):
+        preprocess_ppl(paths)
 
 
 def test_typed_ingest_calls_the_shared_perplexity_grouping_helper(

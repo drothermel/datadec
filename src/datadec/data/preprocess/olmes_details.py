@@ -2,14 +2,13 @@ from __future__ import annotations
 
 import hashlib
 import io
-import os
 import re
 import tarfile
 import time
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
-from typing import Any, Literal, cast
+from typing import Any, cast
 from uuid import uuid4
 
 import duckdb
@@ -21,6 +20,16 @@ from fsspec.implementations.memory import MemoryFileSystem
 from datadec.config import OLMESContract, OLMESTableContract, load_olmes_contract
 from datadec.config import load_source_manifest
 from datadec.data.paths import DataDecidePaths
+from datadec.data.preprocess.duckdb import (
+    DuckDbLogicalType,
+    PendingParquetExport,
+    duckdb_type,
+    prepare_parquet_export,
+    quote_identifier,
+    remove_owned_file,
+    replace_parquet_exports,
+    sql_literal,
+)
 from datadec.data.preprocess.ppl import _normalize_step
 
 _CHECKPOINT_MEMBER_RE = re.compile(
@@ -33,7 +42,7 @@ _MEMORY_ROOT = "/datadec-olmes-details"
 _INT64_MIN = -(2**63)
 _INT64_MAX = 2**63 - 1
 
-type _LogicalType = Literal["string", "int64", "float64", "bool"]
+type _LogicalType = DuckDbLogicalType
 _STRING_LOGICAL_TYPE: _LogicalType = "string"
 _INT64_LOGICAL_TYPE: _LogicalType = "int64"
 
@@ -394,23 +403,6 @@ def _parse_checkpoint_member_path(
     )
 
 
-def _identifier(value: str) -> str:
-    return f'"{value.replace(chr(34), chr(34) * 2)}"'
-
-
-def _sql_literal(value: str | Path) -> str:
-    return "'" + str(value).replace("'", "''") + "'"
-
-
-def _duckdb_type(logical_type: _LogicalType) -> str:
-    return {
-        "string": "VARCHAR",
-        "int64": "BIGINT",
-        "float64": "DOUBLE",
-        "bool": "BOOLEAN",
-    }[logical_type]
-
-
 def _create_data_table(
     connection: duckdb.DuckDBPyConnection,
     *,
@@ -421,10 +413,12 @@ def _create_data_table(
     for column in contract.columns:
         nullable = "" if column.nullable else " NOT NULL"
         definitions.append(
-            f"{_identifier(column.name)} {_duckdb_type(column.logical_type)}{nullable}"
+            f"{quote_identifier(column.name)} "
+            f"{duckdb_type(column.logical_type)}{nullable}"
         )
     connection.execute(
-        f"CREATE TABLE IF NOT EXISTS {_identifier(name)} ({', '.join(definitions)})"
+        f"CREATE TABLE IF NOT EXISTS {quote_identifier(name)} "
+        f"({', '.join(definitions)})"
     )
 
 
@@ -561,15 +555,16 @@ def _cast_json_value(
     expression: str,
     logical_type: _LogicalType,
 ) -> str:
-    return f"CAST({_json_text(expression)} AS {_duckdb_type(logical_type)})"
+    return f"CAST({_json_text(expression)} AS {duckdb_type(logical_type)})"
 
 
 def _prediction_json_columns(contract: OLMESContract) -> dict[str, str]:
     instance_metrics = ", ".join(
-        f"{_identifier(name)} JSON" for name in contract.metrics.detailed_instances
+        f"{quote_identifier(name)} JSON"
+        for name in contract.metrics.detailed_instances
     )
     choice_metrics = ", ".join(
-        f"{_identifier(name)} JSON" for name in contract.metrics.detailed_choices
+        f"{quote_identifier(name)} JSON" for name in contract.metrics.detailed_choices
     )
     return {
         "doc_id": "JSON",
@@ -587,7 +582,7 @@ def _validation_case(
 ) -> str:
     clauses = [
         f"WHEN NOT {_valid_json_value(expression, logical_type=logical_type, nullable=nullable)} "
-        f"THEN {_sql_literal(name)}"
+        f"THEN {sql_literal(name)}"
         for name, expression, logical_type, nullable in fields
     ]
     return "CASE " + " ".join(clauses) + " END"
@@ -614,7 +609,7 @@ def _raise_invalid_prediction_value(
     instance_fields.extend(
         (
             name,
-            f"p.metrics.{_identifier(name)}",
+            f"p.metrics.{quote_identifier(name)}",
             instance_meta[name].logical_type,
             instance_meta[name].nullable,
         )
@@ -649,7 +644,7 @@ def _raise_invalid_prediction_value(
     choice_fields = [
         (
             name,
-            f"u.choice.{_identifier(name)}",
+            f"u.choice.{quote_identifier(name)}",
             choice_meta[name].logical_type,
             choice_meta[name].nullable,
         )
@@ -747,7 +742,7 @@ def _insert_task_rows(
 ) -> None:
     columns = _output_columns(contract, "detailed_tasks")
     placeholders = ", ".join("?" for _ in columns)
-    column_sql = ", ".join(_identifier(column) for column in columns)
+    column_sql = ", ".join(quote_identifier(column) for column in columns)
     connection.executemany(
         f"INSERT INTO tasks ({column_sql}) VALUES ({placeholders})",
         [[row.get(column) for column in columns] for row in rows],
@@ -785,14 +780,14 @@ def _instance_select_sql(contract: OLMESContract) -> str:
     expressions.update(
         {
             name: _cast_json_value(
-                f"p.metrics.{_identifier(name)}", metric_meta[name].logical_type
+                f"p.metrics.{quote_identifier(name)}", metric_meta[name].logical_type
             )
             for name in contract.metrics.detailed_instances
         }
     )
     columns = _output_columns(contract, "detailed_instances")
     select_list = ",\n               ".join(
-        f"{expressions[name]} AS {_identifier(name)}" for name in columns
+        f"{expressions[name]} AS {quote_identifier(name)}" for name in columns
     )
     return f"""
         SELECT {select_list}
@@ -821,14 +816,14 @@ def _choice_select_sql(contract: OLMESContract) -> str:
     expressions.update(
         {
             name: _cast_json_value(
-                f"u.choice.{_identifier(name)}", metric_meta[name].logical_type
+                f"u.choice.{quote_identifier(name)}", metric_meta[name].logical_type
             )
             for name in contract.metrics.detailed_choices
         }
     )
     columns = _output_columns(contract, "detailed_choices")
     select_list = ",\n               ".join(
-        f"{expressions[name]} AS {_identifier(name)}" for name in columns
+        f"{expressions[name]} AS {quote_identifier(name)}" for name in columns
     )
     return f"""
         SELECT {select_list}
@@ -853,10 +848,11 @@ def _empty_checkpoint_predictions_sql(contract: OLMESContract) -> str:
         "CAST(NULL AS JSON) AS native_id",
     ]
     instance_metrics = ", ".join(
-        f"{_identifier(name)} JSON" for name in contract.metrics.detailed_instances
+        f"{quote_identifier(name)} JSON"
+        for name in contract.metrics.detailed_instances
     )
     choice_metrics = ", ".join(
-        f"{_identifier(name)} JSON" for name in contract.metrics.detailed_choices
+        f"{quote_identifier(name)} JSON" for name in contract.metrics.detailed_choices
     )
     fields.extend(
         (
@@ -1019,43 +1015,24 @@ def _validate_staging_counts(connection: duckdb.DuckDBPyConnection) -> None:
         )
 
 
-def _remove_owned_file(path: Path) -> None:
-    if not path.exists() and not path.is_symlink():
-        return
-    if path.is_dir() and not path.is_symlink():
-        raise ValueError(f"expected an owned file but found a directory: {path}")
-    path.unlink()
-
-
 def _export_parquet(
     connection: duckdb.DuckDBPyConnection,
     *,
     table_name: str,
     table: OLMESTableContract,
     output_path: Path,
-) -> tuple[Path, int]:
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    temp_path = output_path.with_name(f".{output_path.name}.tmp")
-    _remove_owned_file(temp_path)
-    columns = ", ".join(_identifier(column.name) for column in table.columns)
-    sort_key = ", ".join(_identifier(column) for column in table.sort_key)
-    connection.execute(
-        f"""
-        COPY (
+) -> PendingParquetExport:
+    columns = ", ".join(quote_identifier(column.name) for column in table.columns)
+    sort_key = ", ".join(quote_identifier(column) for column in table.sort_key)
+    return prepare_parquet_export(
+        connection,
+        select_sql=f"""
             SELECT {columns}
-            FROM {_identifier(table_name)}
+            FROM {quote_identifier(table_name)}
             ORDER BY {sort_key}
-        )
-        TO {_sql_literal(temp_path)}
-        (FORMAT PARQUET, COMPRESSION ZSTD)
-        """
+        """,
+        output_path=output_path,
     )
-    count_row = connection.execute(
-        "SELECT count(*) FROM read_parquet(?)", [str(temp_path)]
-    ).fetchone()
-    assert count_row is not None
-    row_count = count_row[0]
-    return temp_path, row_count
 
 
 def _finalize_outputs(
@@ -1087,11 +1064,8 @@ def _finalize_outputs(
             output_path=choices_path,
         ),
     )
-    for (temp_path, _), output_path in zip(
-        exports, (tasks_path, instances_path, choices_path), strict=True
-    ):
-        os.replace(temp_path, output_path)
-    return tuple(row_count for _, row_count in exports)
+    replace_parquet_exports(exports)
+    return tuple(export.row_count for export in exports)
 
 
 def _remove_completed_staging_database(staging_path: Path) -> None:
@@ -1099,7 +1073,7 @@ def _remove_completed_staging_database(staging_path: Path) -> None:
         staging_path,
         staging_path.with_name(f"{staging_path.name}.wal"),
     ):
-        _remove_owned_file(path)
+        remove_owned_file(path)
     temporary_directory = Path(f"{staging_path}.tmp")
     if temporary_directory.exists():
         if temporary_directory.is_symlink() or not temporary_directory.is_dir():

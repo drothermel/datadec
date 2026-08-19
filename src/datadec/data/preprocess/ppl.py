@@ -3,13 +3,23 @@ from __future__ import annotations
 from collections import defaultdict
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
+import json
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, TypeAlias
 
+import duckdb
 import numpy as np
 import pandas as pd
+import pyarrow.parquet as pq
 
 from datadec.data.paths import DataDecidePaths
+from datadec.data.preprocess.duckdb import (
+    duckdb_type,
+    prepare_parquet_export,
+    quote_identifier,
+    replace_parquet_exports,
+    sql_literal,
+)
 
 if TYPE_CHECKING:
     from datadec.data.ingest.enums import DataRecipeName, ModelSizeName, Seed
@@ -103,18 +113,73 @@ def preprocess_ppl(
     input_path = paths.get_path("ppl_raw")
     output_path = paths.get_path("ppl_processed")
 
-    ppl_df = pd.read_parquet(input_path)
-    grouped = group_perplexity_rows(ppl_df)
-    output_df = flatten_perplexity_rows(grouped)
+    from datadec.data.ingest.enums import DataRecipeName, ModelSizeName, Seed
+    from datadec.data.ingest.metrics import RAW_PPL_TO_FIELD, PerplexityMetrics
 
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_df.to_parquet(output_path, index=False)
+    _assert_metric_field_parity(PerplexityMetrics)
+    if tuple(RAW_PPL_TO_FIELD.values()) != PPL_METRIC_COLUMNS:
+        raise AssertionError(
+            "persisted PPL metric columns drift from raw metric mapping: "
+            f"expected={PPL_METRIC_COLUMNS!r}, "
+            f"actual={tuple(RAW_PPL_TO_FIELD.values())!r}"
+        )
+
+    parquet_file = pq.ParquetFile(input_path)
+    connection = duckdb.connect()
+    try:
+        if parquet_file.metadata.num_rows == 0:
+            select_sql = _empty_output_select_sql()
+            training_run_count = 0
+        else:
+            raw_columns = set(parquet_file.schema_arrow.names)
+            row_index_column = "_datadec_row_index"
+            while row_index_column in raw_columns:
+                row_index_column = f"_{row_index_column}"
+            connection.execute(
+                f"""
+                CREATE TEMP VIEW _ppl_raw AS
+                SELECT *, row_number() OVER () - 1
+                    AS {quote_identifier(row_index_column)}
+                FROM read_parquet({sql_literal(input_path)})
+                """
+            )
+            _validate_raw_ppl(
+                connection,
+                raw_columns=raw_columns,
+                row_index_column=row_index_column,
+                model_sizes=tuple(item.value for item in ModelSizeName),
+                data_recipes=tuple(item.value for item in DataRecipeName),
+                seeds=tuple(item.value for item in Seed),
+                raw_metric_columns=tuple(RAW_PPL_TO_FIELD),
+            )
+            select_sql = _output_select_sql(
+                raw_columns=raw_columns,
+                raw_metric_to_field=RAW_PPL_TO_FIELD,
+            )
+            training_run_count_row = connection.execute(
+                """
+                SELECT count(DISTINCT (params, data, seed))
+                FROM _ppl_raw
+                """
+            ).fetchone()
+            assert training_run_count_row is not None
+            training_run_count = training_run_count_row[0]
+
+        export = prepare_parquet_export(
+            connection,
+            select_sql=select_sql,
+            output_path=output_path,
+            key_value_metadata={"pandas": _pandas_parquet_metadata()},
+        )
+        replace_parquet_exports((export,))
+    finally:
+        connection.close()
 
     result = PplPreprocessResult(
         input_path=input_path,
         output_path=output_path,
-        checkpoint_count=len(output_df),
-        training_run_count=len(grouped),
+        checkpoint_count=export.row_count,
+        training_run_count=training_run_count,
     )
     if verbose:
         print(f"ppl input: {result.input_path}")
@@ -122,6 +187,193 @@ def preprocess_ppl(
         print(f"ppl checkpoints: {result.checkpoint_count}")
         print(f"ppl training runs: {result.training_run_count}")
     return result
+
+
+def _pandas_parquet_metadata() -> str:
+    columns = []
+    for name in PPL_OUTPUT_COLUMNS:
+        if name in PPL_IDENTITY_COLUMNS[:3]:
+            pandas_type = "object"
+            numpy_type = "string"
+        elif name == "step":
+            pandas_type = numpy_type = "int64"
+        else:
+            pandas_type = numpy_type = "float64"
+        columns.append(
+            {
+                "name": name,
+                "field_name": name,
+                "pandas_type": pandas_type,
+                "numpy_type": numpy_type,
+                "metadata": None,
+            }
+        )
+    return json.dumps(
+        {
+            "index_columns": [],
+            "column_indexes": [],
+            "columns": columns,
+            "attributes": {},
+            "creator": {"library": "duckdb"},
+            "pandas_version": pd.__version__,
+        },
+        separators=(",", ":"),
+    )
+
+
+def _validate_raw_ppl(
+    connection: duckdb.DuckDBPyConnection,
+    *,
+    raw_columns: set[str],
+    row_index_column: str,
+    model_sizes: tuple[str, ...],
+    data_recipes: tuple[str, ...],
+    seeds: tuple[str, ...],
+    raw_metric_columns: tuple[str, ...],
+) -> None:
+    row_index = quote_identifier(row_index_column)
+    missing = [column for column in PPL_IDENTITY_COLUMNS if column not in raw_columns]
+    if missing:
+        raise ValueError(f"missing required PPL input columns: {missing!r}")
+
+    row_count = connection.execute("SELECT count(*) FROM _ppl_raw").fetchone()
+    assert row_count is not None
+    if row_count[0] and not raw_columns.intersection(raw_metric_columns):
+        raise ValueError(
+            "missing PPL metric columns at row 0: expected at least one raw metric"
+        )
+
+    invalid_values: list[tuple[int, int, str, object]] = []
+    for field_order, (column, allowed) in enumerate(
+        (
+            ("params", model_sizes),
+            ("data", data_recipes),
+            ("seed", seeds),
+        )
+    ):
+        allowed_sql = ", ".join(sql_literal(value) for value in allowed)
+        quoted = quote_identifier(column)
+        invalid = connection.execute(
+            f"""
+            SELECT {row_index}, {quoted}
+            FROM _ppl_raw
+            WHERE {quoted} IS NULL
+               OR CAST({quoted} AS VARCHAR) NOT IN ({allowed_sql})
+            ORDER BY {row_index}
+            LIMIT 1
+            """
+        ).fetchone()
+        if invalid is not None:
+            invalid_values.append((invalid[0], field_order, column, invalid[1]))
+
+    step_text = "trim(CAST(step AS VARCHAR))"
+    step_decimal = f"try_cast({step_text} AS DECIMAL(38, 18))"
+    invalid_step = connection.execute(
+        f"""
+        SELECT {row_index}, step
+        FROM _ppl_raw
+        WHERE step IS NULL
+           OR typeof(step) = 'BOOLEAN'
+           OR {step_decimal} IS NULL
+           OR {step_decimal} <> trunc({step_decimal})
+           OR try_cast({step_text} AS BIGINT) IS NULL
+        ORDER BY {row_index}
+        LIMIT 1
+        """
+    ).fetchone()
+    if invalid_step is not None:
+        invalid_values.append((invalid_step[0], 3, "step", invalid_step[1]))
+
+    if invalid_values:
+        row_index, _, field, value = min(invalid_values)
+        if field == "step":
+            raise ValueError(
+                f"invalid PPL step at row {row_index}: {value!r}; "
+                "expected a finite integral int64 value"
+            )
+        raise ValueError(
+            f"unknown PPL {field} at row {row_index}: {value!r}"
+        )
+
+    normalized_step = f"CAST({step_text} AS BIGINT)"
+    duplicate = connection.execute(
+        f"""
+        SELECT {row_index}, params, data, seed, normalized_step
+        FROM (
+            SELECT
+                {row_index},
+                CAST(params AS VARCHAR) AS params,
+                CAST(data AS VARCHAR) AS data,
+                CAST(seed AS VARCHAR) AS seed,
+                {normalized_step} AS normalized_step,
+                row_number() OVER (
+                    PARTITION BY params, data, seed, {normalized_step}
+                    ORDER BY {row_index}
+                ) AS duplicate_ordinal
+            FROM _ppl_raw
+        )
+        WHERE duplicate_ordinal > 1
+        ORDER BY {row_index}
+        LIMIT 1
+        """
+    ).fetchone()
+    if duplicate is not None:
+        row_index, params, data, seed, step = duplicate
+        raise ValueError(
+            f"duplicate PPL checkpoint at row {row_index}: "
+            f"params={params!r}, data={data!r}, seed={seed!r}, step={step}"
+        )
+
+
+def _empty_output_select_sql() -> str:
+    expressions = [
+        f"CAST(NULL AS {duckdb_type('string')}) AS {quote_identifier(column)}"
+        for column in PPL_IDENTITY_COLUMNS[:3]
+    ]
+    expressions.append(f"CAST(NULL AS {duckdb_type('int64')}) AS step")
+    expressions.extend(
+        f"CAST(NULL AS {duckdb_type('float64')}) AS {quote_identifier(column)}"
+        for column in PPL_METRIC_COLUMNS
+    )
+    return f"SELECT {', '.join(expressions)} WHERE false"
+
+
+def _output_select_sql(
+    *,
+    raw_columns: set[str],
+    raw_metric_to_field: dict[str, str],
+) -> str:
+    step_text = "trim(CAST(step AS VARCHAR))"
+    expressions = [
+        f"CAST({quote_identifier(column)} AS {duckdb_type('string')}) "
+        f"AS {quote_identifier(column)}"
+        for column in PPL_IDENTITY_COLUMNS[:3]
+    ]
+    expressions.append(f"CAST({step_text} AS {duckdb_type('int64')}) AS step")
+    raw_by_field = {field: raw for raw, field in raw_metric_to_field.items()}
+    for field in PPL_METRIC_COLUMNS:
+        raw_column = raw_by_field[field]
+        if raw_column not in raw_columns:
+            value = f"CAST(NULL AS {duckdb_type('float64')})"
+        else:
+            raw_identifier = quote_identifier(raw_column)
+            converted = (
+                f"try_cast({raw_identifier} AS {duckdb_type('float64')})"
+            )
+            value = (
+                "CASE "
+                f"WHEN typeof({raw_identifier}) = 'BOOLEAN' "
+                f"OR isnan({converted}) "
+                "THEN NULL "
+                f"ELSE {converted} END"
+            )
+        expressions.append(f"{value} AS {quote_identifier(field)}")
+    sort_key = ", ".join(quote_identifier(column) for column in PPL_IDENTITY_COLUMNS)
+    return f"""
+        SELECT {", ".join(expressions)}
+        FROM _ppl_raw
+        ORDER BY {sort_key}
+    """
 
 
 def _assert_metric_field_parity(metrics_type: type[PerplexityMetrics]) -> None:
