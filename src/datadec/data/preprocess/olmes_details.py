@@ -1,19 +1,22 @@
 from __future__ import annotations
 
+import hashlib
 import io
+import os
 import re
 import tarfile
+import time
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, cast
+from uuid import uuid4
 
+import duckdb
 import numpy as np
 import orjson
-import pandas as pd
-import pyarrow as pa
-import pyarrow.parquet as pq
 from dr_ds import coerce_float
+from fsspec.implementations.memory import MemoryFileSystem
 
 from datadec.config import OLMESContract, OLMESTableContract, load_olmes_contract
 from datadec.config import load_source_manifest
@@ -25,17 +28,14 @@ _CHECKPOINT_MEMBER_RE = re.compile(
 )
 _METRICS_SUFFIX = "-metrics.json"
 _PREDICTIONS_SUFFIX = "-predictions.jsonl"
-_PREDICTION_REQUIRED_KEYS = (
-    "doc_id",
-    "label",
-    "metrics",
-    "model_output",
-    "task_hash",
-    "model_hash",
-)
-
+_STAGING_FILENAME = ".olmes-details.duckdb"
+_MEMORY_ROOT = "/datadec-olmes-details"
 _INT64_MIN = -(2**63)
 _INT64_MAX = 2**63 - 1
+
+type _LogicalType = Literal["string", "int64", "float64", "bool"]
+_STRING_LOGICAL_TYPE: _LogicalType = "string"
+_INT64_LOGICAL_TYPE: _LogicalType = "int64"
 
 
 @dataclass(frozen=True, slots=True)
@@ -53,6 +53,12 @@ class OlmesDetailsPreprocessResult:
     @property
     def output_path(self) -> Path:
         return self.output_tasks_path
+
+
+@dataclass(frozen=True, slots=True)
+class _CheckpointPayload:
+    task_rows: tuple[dict[str, object], ...]
+    predictions_by_task: dict[str, bytes]
 
 
 def _output_columns(contract: OLMESContract, table_name: str) -> tuple[str, ...]:
@@ -78,7 +84,6 @@ def _assert_table_schema_parity(
             f"persisted OLMES {label} columns drift from contract: "
             f"expected={expected!r}, actual={actual!r}"
         )
-
     metric_columns = _metric_columns(contract, table_name)
     trailing = tuple(column.name for column in table.columns[-len(metric_columns) :])
     if trailing != metric_columns:
@@ -112,40 +117,6 @@ def _assert_all_detailed_schema_parity(contract: OLMESContract) -> None:
     _assert_detailed_choices_schema_parity(contract)
 
 
-def _nullable_column_names(table: OLMESTableContract) -> frozenset[str]:
-    return frozenset(column.name for column in table.columns if column.nullable)
-
-
-def _pandas_dtype(
-    logical_type: Literal["string", "int64", "float64", "bool"],
-    *,
-    nullable: bool = False,
-) -> str:
-    if logical_type == "string":
-        return "string"
-    if logical_type == "int64":
-        return "Int64" if nullable else "int64"
-    if logical_type == "bool":
-        return "boolean"
-    return logical_type
-
-
-def _typed_output_dataframe(
-    rows: list[dict[str, object]],
-    *,
-    table: OLMESTableContract,
-    columns: tuple[str, ...],
-) -> pd.DataFrame:
-    column_meta = {column.name: column for column in table.columns}
-    values_by_column = {column: [row.get(column) for row in rows] for column in columns}
-    typed_columns: dict[str, pd.Series[Any]] = {}
-    for column in columns:
-        meta = column_meta[column]
-        dtype = _pandas_dtype(meta.logical_type, nullable=meta.nullable)
-        typed_columns[column] = pd.Series(values_by_column[column], dtype=dtype)
-    return pd.DataFrame(typed_columns, columns=list(columns))
-
-
 def _recipe_tar_path(paths: DataDecidePaths, recipe: str) -> Path:
     manifest = load_source_manifest()
     filename = manifest.olmes_details.filename_template.format(recipe=recipe)
@@ -171,8 +142,7 @@ def _normalize_int64_field(value: Any, *, context: str, field: str) -> int:
     if not invalid:
         try:
             if not isinstance(
-                value,
-                (str, int, float, Decimal, np.integer, np.floating),
+                value, (str, int, float, Decimal, np.integer, np.floating)
             ):
                 raise InvalidOperation
             text = str(value).strip()
@@ -205,8 +175,7 @@ def _normalize_float64_field(value: Any, *, context: str, field: str) -> float:
     if not invalid:
         try:
             if not isinstance(
-                value,
-                (str, int, float, Decimal, np.integer, np.floating),
+                value, (str, int, float, Decimal, np.integer, np.floating)
             ):
                 raise InvalidOperation
             text = str(value).strip()
@@ -222,133 +191,6 @@ def _normalize_float64_field(value: Any, *, context: str, field: str) -> float:
             "expected a finite float64 value"
         )
     return float(decimal_value)
-
-
-def _normalize_bool_field(value: Any, *, context: str, field: str) -> bool:
-    if isinstance(value, (bool, np.bool_)):
-        return bool(value)
-    raise ValueError(
-        f"invalid OLMES detail {field} in {context}: {value!r}; expected a bool value"
-    )
-
-
-def _normalize_native_id(
-    value: Any,
-    *,
-    context: str,
-) -> tuple[str | None, str]:
-    if value is None:
-        return None, "null"
-    if isinstance(value, (bool, np.bool_)):
-        raise ValueError(
-            f"invalid OLMES detail native_id in {context}: {value!r}; "
-            "expected integer, string, or null"
-        )
-    if isinstance(value, (int, np.integer)):
-        return str(int(value)), "integer"
-    if isinstance(value, str):
-        return value, "string"
-    raise ValueError(
-        f"invalid OLMES detail native_id in {context}: {value!r}; "
-        "expected integer, string, or null"
-    )
-
-
-def _column_logical_types(table: OLMESTableContract) -> dict[str, str]:
-    return {column.name: column.logical_type for column in table.columns}
-
-
-def _extract_metric_values(
-    metrics_block: dict[str, Any],
-    *,
-    metric_names: tuple[str, ...],
-    table: OLMESTableContract,
-    context: str,
-) -> dict[str, object]:
-    nullable = _nullable_column_names(table)
-    logical_types = _column_logical_types(table)
-    values: dict[str, object] = {}
-    for field in metric_names:
-        if field not in metrics_block:
-            if field in nullable:
-                values[field] = None
-                continue
-            raise ValueError(
-                f"missing OLMES detail metric {field!r} in {context}; "
-                "expected a non-null value"
-            )
-        raw_value = metrics_block[field]
-        if raw_value is None:
-            if field in nullable:
-                values[field] = None
-                continue
-            raise ValueError(
-                f"invalid OLMES detail metric {field!r} in {context}: "
-                "expected a non-null value"
-            )
-        logical_type = logical_types[field]
-        if logical_type == "int64":
-            values[field] = _normalize_int64_field(
-                raw_value, context=context, field=field
-            )
-        elif logical_type == "float64":
-            values[field] = _normalize_float64_field(
-                raw_value, context=context, field=field
-            )
-        elif logical_type == "bool":
-            values[field] = _normalize_bool_field(
-                raw_value, context=context, field=field
-            )
-        else:
-            raise ValueError(
-                f"unsupported OLMES detail metric type for {field!r} in {context}: "
-                f"{logical_type!r}"
-            )
-    return values
-
-
-def _index_checkpoint_members(
-    inner: tarfile.TarFile,
-    *,
-    expected_step: int,
-    context: str,
-) -> tuple[dict[str, tarfile.TarInfo], dict[str, tarfile.TarInfo]]:
-    metrics_by_task: dict[str, tarfile.TarInfo] = {}
-    predictions_by_task: dict[str, tarfile.TarInfo] = {}
-    step_prefix = f"step-{expected_step}/"
-
-    for member in inner.getmembers():
-        if not member.isfile():
-            continue
-        name = member.name
-        if not name.startswith(step_prefix):
-            raise ValueError(
-                f"unexpected member path in {context}: {name!r}; "
-                f"expected prefix {step_prefix!r}"
-            )
-        filename = name[len(step_prefix) :]
-        if filename.endswith(_METRICS_SUFFIX):
-            task = filename[: -len(_METRICS_SUFFIX)]
-            metrics_by_task[task] = member
-        elif filename.endswith(_PREDICTIONS_SUFFIX):
-            task = filename[: -len(_PREDICTIONS_SUFFIX)]
-            predictions_by_task[task] = member
-
-    metrics_tasks = set(metrics_by_task)
-    predictions_tasks = set(predictions_by_task)
-    if metrics_tasks != predictions_tasks:
-        missing_predictions = sorted(metrics_tasks - predictions_tasks)
-        missing_metrics = sorted(predictions_tasks - metrics_tasks)
-        details: list[str] = []
-        if missing_predictions:
-            details.append(f"missing predictions for {missing_predictions!r}")
-        if missing_metrics:
-            details.append(f"missing metrics for {missing_metrics!r}")
-        raise ValueError(
-            f"unpaired OLMES detail task files in {context}: {'; '.join(details)}"
-        )
-
-    return metrics_by_task, predictions_by_task
 
 
 def _build_task_row(
@@ -368,7 +210,6 @@ def _build_task_row(
         raise ValueError(
             f"unknown OLMES detail seed_value in {context}: {seed_value!r}"
         )
-
     task_name = metrics_payload.get("task_name")
     task_config = metrics_payload.get("task_config")
     if not isinstance(task_config, dict):
@@ -378,11 +219,9 @@ def _build_task_row(
     config_task_name = task_config.get("task_name")
     if task_name != task or config_task_name != task:
         raise ValueError(
-            f"task identity mismatch in {context}: "
-            f"path task={task!r}, task_name={task_name!r}, "
-            f"task_config.task_name={config_task_name!r}"
+            f"task identity mismatch in {context}: path task={task!r}, "
+            f"task_name={task_name!r}, task_config.task_name={config_task_name!r}"
         )
-
     model_config = metrics_payload.get("model_config")
     compute_config = metrics_payload.get("compute_config")
     if not isinstance(model_config, dict) or not isinstance(compute_config, dict):
@@ -390,31 +229,18 @@ def _build_task_row(
             f"invalid OLMES detail config objects in {context}: "
             "expected model_config and compute_config objects"
         )
-
     metrics_block = metrics_payload.get("metrics")
     if not isinstance(metrics_block, dict):
         raise ValueError(f"invalid OLMES detail metrics in {context}: expected object")
-
     primary_metric = task_config.get("primary_metric")
     if not isinstance(primary_metric, str) or not primary_metric.strip():
         raise ValueError(
             f"invalid OLMES detail primary_metric in {context}: {primary_metric!r}"
         )
-
-    metric_values: dict[str, float | None] = {}
-    for field in contract.metrics.detailed_tasks:
-        if field in metrics_block:
-            metric_values[field] = coerce_float(metrics_block[field])
-        else:
-            metric_values[field] = None
-
-    task_hash = _require_hash(
-        metrics_payload.get("task_hash"), context=context, field="task_hash"
-    )
-    model_hash = _require_hash(
-        metrics_payload.get("model_hash"), context=context, field="model_hash"
-    )
-
+    metric_values = {
+        field: coerce_float(metrics_block[field]) if field in metrics_block else None
+        for field in contract.metrics.detailed_tasks
+    }
     return {
         "recipe": recipe,
         "data": contract.recipe_map[recipe],
@@ -423,8 +249,12 @@ def _build_task_row(
         "seed": contract.seed_map[seed_value],
         "step": step,
         "task": task,
-        "task_hash": task_hash,
-        "model_hash": model_hash,
+        "task_hash": _require_hash(
+            metrics_payload.get("task_hash"), context=context, field="task_hash"
+        ),
+        "model_hash": _require_hash(
+            metrics_payload.get("model_hash"), context=context, field="model_hash"
+        ),
         "model_config": _canonical_json(model_config),
         "task_config": _canonical_json(task_config),
         "compute_config": _canonical_json(compute_config),
@@ -449,134 +279,54 @@ def _build_task_row(
     }
 
 
-def _validate_prediction_payload(
-    prediction: Any,
+def _index_checkpoint_members(
+    inner: tarfile.TarFile,
     *,
+    expected_step: int,
     context: str,
-) -> dict[str, Any]:
-    if not isinstance(prediction, dict):
-        raise ValueError(
-            f"invalid OLMES detail prediction JSON in {context}: expected object"
-        )
-    missing = [key for key in _PREDICTION_REQUIRED_KEYS if key not in prediction]
-    if missing:
-        raise ValueError(
-            f"invalid OLMES detail prediction JSON in {context}: "
-            f"missing keys {missing!r}"
-        )
-    if not isinstance(prediction["metrics"], dict):
-        raise ValueError(
-            f"invalid OLMES detail prediction metrics in {context}: expected object"
-        )
-    if not isinstance(prediction["model_output"], list):
-        raise ValueError(
-            f"invalid OLMES detail prediction model_output in {context}: expected array"
-        )
-    return prediction
-
-
-def _build_instance_row(
-    prediction: dict[str, Any],
-    *,
-    recipe: str,
-    params: str,
-    seed_value: int,
-    step: int,
-    task: str,
-    task_hash: str,
-    model_hash: str,
-    contract: OLMESContract,
-    context: str,
-) -> dict[str, object]:
-    doc_id = _normalize_int64_field(
-        prediction["doc_id"], context=context, field="doc_id"
-    )
-    label = _normalize_int64_field(prediction["label"], context=context, field="label")
-    native_id, native_id_kind = _normalize_native_id(
-        prediction.get("native_id"), context=context
-    )
-    prediction_task_hash = _require_hash(
-        prediction["task_hash"], context=context, field="task_hash"
-    )
-    prediction_model_hash = _require_hash(
-        prediction["model_hash"], context=context, field="model_hash"
-    )
-    if prediction_task_hash != task_hash or prediction_model_hash != model_hash:
-        raise ValueError(
-            f"hash mismatch in {context}, doc_id={doc_id}: "
-            f"expected task_hash={task_hash!r}, model_hash={model_hash!r}"
-        )
-
-    metric_values = _extract_metric_values(
-        prediction["metrics"],
-        metric_names=contract.metrics.detailed_instances,
-        table=contract.tables.detailed_instances,
-        context=f"{context}, doc_id={doc_id}",
-    )
-
-    return {
-        "recipe": recipe,
-        "data": contract.recipe_map[recipe],
-        "params": params,
-        "seed_value": seed_value,
-        "seed": contract.seed_map[seed_value],
-        "step": step,
-        "task": task,
-        "task_hash": task_hash,
-        "model_hash": model_hash,
-        "doc_id": doc_id,
-        "native_id": native_id,
-        "native_id_kind": native_id_kind,
-        "label": label,
-        **metric_values,
-    }
-
-
-def _build_choice_rows(
-    prediction: dict[str, Any],
-    *,
-    recipe: str,
-    params: str,
-    seed_value: int,
-    step: int,
-    task: str,
-    contract: OLMESContract,
-    context: str,
-) -> list[dict[str, object]]:
-    doc_id = _normalize_int64_field(
-        prediction["doc_id"], context=context, field="doc_id"
-    )
-    rows: list[dict[str, object]] = []
-    for choice_index, choice_metrics in enumerate(prediction["model_output"]):
-        if not isinstance(choice_metrics, dict):
+) -> tuple[dict[str, tarfile.TarInfo], dict[str, tarfile.TarInfo]]:
+    metrics_by_task: dict[str, tarfile.TarInfo] = {}
+    predictions_by_task: dict[str, tarfile.TarInfo] = {}
+    step_prefix = f"step-{expected_step}/"
+    for member in inner.getmembers():
+        if not member.isfile():
+            continue
+        if not member.name.startswith(step_prefix):
             raise ValueError(
-                f"invalid OLMES detail choice metrics in {context}, "
-                f"doc_id={doc_id}, choice_index={choice_index}: expected object"
+                f"unexpected member path in {context}: {member.name!r}; "
+                f"expected prefix {step_prefix!r}"
             )
-        metric_values = _extract_metric_values(
-            choice_metrics,
-            metric_names=contract.metrics.detailed_choices,
-            table=contract.tables.detailed_choices,
-            context=f"{context}, doc_id={doc_id}, choice_index={choice_index}",
+        filename = member.name[len(step_prefix) :]
+        if filename.endswith(_METRICS_SUFFIX):
+            task = filename[: -len(_METRICS_SUFFIX)]
+            target = metrics_by_task
+        elif filename.endswith(_PREDICTIONS_SUFFIX):
+            task = filename[: -len(_PREDICTIONS_SUFFIX)]
+            target = predictions_by_task
+        else:
+            continue
+        if task in target:
+            raise ValueError(
+                f"duplicate OLMES detail task payload in {context}: {task!r}"
+            )
+        target[task] = member
+    metrics_tasks = set(metrics_by_task)
+    predictions_tasks = set(predictions_by_task)
+    if metrics_tasks != predictions_tasks:
+        details: list[str] = []
+        missing_predictions = sorted(metrics_tasks - predictions_tasks)
+        missing_metrics = sorted(predictions_tasks - metrics_tasks)
+        if missing_predictions:
+            details.append(f"missing predictions for {missing_predictions!r}")
+        if missing_metrics:
+            details.append(f"missing metrics for {missing_metrics!r}")
+        raise ValueError(
+            f"unpaired OLMES detail task files in {context}: {'; '.join(details)}"
         )
-        rows.append(
-            {
-                "recipe": recipe,
-                "data": contract.recipe_map[recipe],
-                "params": params,
-                "seed_value": seed_value,
-                "seed": contract.seed_map[seed_value],
-                "step": step,
-                "task": task,
-                "doc_id": doc_id,
-                "choice_index": choice_index,
-                **metric_values,
-            }
-        )
-    return rows
+    return metrics_by_task, predictions_by_task
 
 
-def _process_checkpoint_tar(
+def _read_checkpoint_payload(
     inner_bytes: bytes,
     *,
     recipe: str,
@@ -584,129 +334,42 @@ def _process_checkpoint_tar(
     seed_value: int,
     step: int,
     contract: OLMESContract,
-    seen_task_keys: set[tuple[str, str, int, int, str]],
-    seen_instance_keys: set[tuple[str, str, int, int, str, int]],
-    seen_choice_keys: set[tuple[str, str, int, int, str, int, int]],
-) -> tuple[list[dict[str, object]], list[dict[str, object]], list[dict[str, object]]]:
+) -> _CheckpointPayload:
     context = (
         f"recipe={recipe!r}, params={params!r}, seed_value={seed_value}, step={step}"
     )
     task_rows: list[dict[str, object]] = []
-    instance_rows: list[dict[str, object]] = []
-    choice_rows: list[dict[str, object]] = []
-
+    predictions: dict[str, bytes] = {}
     with tarfile.open(fileobj=io.BytesIO(inner_bytes), mode="r:gz") as inner:
         metrics_by_task, predictions_by_task = _index_checkpoint_members(
             inner, expected_step=step, context=context
         )
-
         for task in sorted(metrics_by_task):
             task_context = f"{context}, task={task!r}"
-            metrics_member = metrics_by_task[task]
-            predictions_member = predictions_by_task[task]
-            metrics_file = inner.extractfile(metrics_member)
-            predictions_file = inner.extractfile(predictions_member)
+            metrics_file = inner.extractfile(metrics_by_task[task])
+            predictions_file = inner.extractfile(predictions_by_task[task])
             if metrics_file is None or predictions_file is None:
-                raise ValueError(f"missing OLMES detail task payload in {context}")
-
+                raise ValueError(f"missing OLMES detail task payload in {task_context}")
             metrics_payload = orjson.loads(metrics_file.read())
             if not isinstance(metrics_payload, dict):
                 raise ValueError(
-                    f"invalid OLMES detail metrics JSON in {context}: expected object"
+                    f"invalid OLMES detail metrics JSON in {task_context}: "
+                    "expected object"
                 )
-
-            declared_instances = _normalize_int64_field(
-                metrics_payload.get("num_instances"),
-                context=task_context,
-                field="num_instances",
-            )
-            task_row = _build_task_row(
-                metrics_payload,
-                recipe=recipe,
-                params=params,
-                seed_value=seed_value,
-                step=step,
-                task=task,
-                contract=contract,
-                context=task_context,
-            )
-            task_key = (recipe, params, seed_value, step, task)
-            if task_key in seen_task_keys:
-                raise ValueError(
-                    f"duplicate OLMES detail task row in {context}: "
-                    f"recipe={recipe!r}, params={params!r}, "
-                    f"seed_value={seed_value}, step={step}, task={task!r}"
-                )
-            seen_task_keys.add(task_key)
-            task_rows.append(task_row)
-
-            task_hash = str(task_row["task_hash"])
-            model_hash = str(task_row["model_hash"])
-            parsed_instances = 0
-            for line_number, line in enumerate(predictions_file, start=1):
-                if not line.strip():
-                    continue
-                prediction = _validate_prediction_payload(
-                    orjson.loads(line),
-                    context=f"{task_context}, line={line_number}",
-                )
-                instance_row = _build_instance_row(
-                    prediction,
-                    recipe=recipe,
-                    params=params,
-                    seed_value=seed_value,
-                    step=step,
-                    task=task,
-                    task_hash=task_hash,
-                    model_hash=model_hash,
-                    contract=contract,
-                    context=f"{task_context}, line={line_number}",
-                )
-                doc_id = int(instance_row["doc_id"])
-                instance_key = (recipe, params, seed_value, step, task, doc_id)
-                if instance_key in seen_instance_keys:
-                    raise ValueError(
-                        f"duplicate OLMES detail instance row in {task_context}: "
-                        f"doc_id={doc_id}"
-                    )
-                seen_instance_keys.add(instance_key)
-                instance_rows.append(instance_row)
-
-                for choice_row in _build_choice_rows(
-                    prediction,
+            task_rows.append(
+                _build_task_row(
+                    metrics_payload,
                     recipe=recipe,
                     params=params,
                     seed_value=seed_value,
                     step=step,
                     task=task,
                     contract=contract,
-                    context=f"{task_context}, line={line_number}",
-                ):
-                    choice_key = (
-                        recipe,
-                        params,
-                        seed_value,
-                        step,
-                        task,
-                        doc_id,
-                        int(choice_row["choice_index"]),
-                    )
-                    if choice_key in seen_choice_keys:
-                        raise ValueError(
-                            f"duplicate OLMES detail choice row in {task_context}: "
-                            f"doc_id={doc_id}, choice_index={choice_row['choice_index']}"
-                        )
-                    seen_choice_keys.add(choice_key)
-                    choice_rows.append(choice_row)
-                parsed_instances += 1
-
-            if parsed_instances != declared_instances:
-                raise ValueError(
-                    f"instance count mismatch in {task_context}: "
-                    f"declared={declared_instances}, predictions={parsed_instances}"
+                    context=task_context,
                 )
-
-    return task_rows, instance_rows, choice_rows
+            )
+            predictions[task] = predictions_file.read()
+    return _CheckpointPayload(tuple(task_rows), predictions)
 
 
 def _parse_checkpoint_member_path(
@@ -723,120 +386,727 @@ def _parse_checkpoint_member_path(
             f"unexpected recipe in checkpoint member {member_name!r}: "
             f"expected {expected_recipe!r}"
         )
-    params = match.group("params")
-    seed_value = int(match.group("seed_value"))
-    step = _normalize_step(match.group("step"), row_index=0)
-    return recipe, params, seed_value, step
+    return (
+        recipe,
+        match.group("params"),
+        int(match.group("seed_value")),
+        _normalize_step(match.group("step"), row_index=0),
+    )
 
 
-def stream_detail_rows(
+def _identifier(value: str) -> str:
+    return f'"{value.replace(chr(34), chr(34) * 2)}"'
+
+
+def _sql_literal(value: str | Path) -> str:
+    return "'" + str(value).replace("'", "''") + "'"
+
+
+def _duckdb_type(logical_type: _LogicalType) -> str:
+    return {
+        "string": "VARCHAR",
+        "int64": "BIGINT",
+        "float64": "DOUBLE",
+        "bool": "BOOLEAN",
+    }[logical_type]
+
+
+def _create_data_table(
+    connection: duckdb.DuckDBPyConnection,
+    *,
+    name: str,
+    contract: OLMESTableContract,
+) -> None:
+    definitions = []
+    for column in contract.columns:
+        nullable = "" if column.nullable else " NOT NULL"
+        definitions.append(
+            f"{_identifier(column.name)} {_duckdb_type(column.logical_type)}{nullable}"
+        )
+    connection.execute(
+        f"CREATE TABLE IF NOT EXISTS {_identifier(name)} ({', '.join(definitions)})"
+    )
+
+
+def _contract_fingerprint(contract: OLMESContract) -> str:
+    payload = orjson.dumps(
+        contract.model_dump(mode="json"),
+        option=orjson.OPT_NON_STR_KEYS | orjson.OPT_SORT_KEYS,
+    )
+    return hashlib.sha256(payload).hexdigest()
+
+
+def _staging_database_path(tasks_path: Path) -> Path:
+    return tasks_path.parent / _STAGING_FILENAME
+
+
+def _initialize_staging_database(
+    connection: duckdb.DuckDBPyConnection,
+    *,
+    staging_path: Path,
     input_path: Path,
     recipe: str,
-    *,
-    contract: OLMESContract | None = None,
-) -> tuple[
-    list[dict[str, object]],
-    list[dict[str, object]],
-    list[dict[str, object]],
-    int,
-]:
-    contract = contract or load_olmes_contract()
-    _assert_all_detailed_schema_parity(contract)
-
-    if not input_path.is_file():
-        raise FileNotFoundError(f"OLMES detail archive not found: {input_path}")
-
-    task_rows: list[dict[str, object]] = []
-    instance_rows: list[dict[str, object]] = []
-    choice_rows: list[dict[str, object]] = []
-    seen_task_keys: set[tuple[str, str, int, int, str]] = set()
-    seen_instance_keys: set[tuple[str, str, int, int, str, int]] = set()
-    seen_choice_keys: set[tuple[str, str, int, int, str, int, int]] = set()
-    checkpoint_count = 0
-
-    with tarfile.open(input_path, mode="r:gz") as outer:
-        for member in outer:
-            if not member.isfile():
-                continue
-            parsed = _parse_checkpoint_member_path(member.name, expected_recipe=recipe)
-            if parsed is None:
-                continue
-            _, params, seed_value, step = parsed
-            inner_file = outer.extractfile(member)
-            if inner_file is None:
-                raise ValueError(
-                    f"unable to read checkpoint member from {input_path}: "
-                    f"{member.name!r}"
-                )
-            checkpoint_tasks, checkpoint_instances, checkpoint_choices = (
-                _process_checkpoint_tar(
-                    inner_file.read(),
-                    recipe=recipe,
-                    params=params,
-                    seed_value=seed_value,
-                    step=step,
-                    contract=contract,
-                    seen_task_keys=seen_task_keys,
-                    seen_instance_keys=seen_instance_keys,
-                    seen_choice_keys=seen_choice_keys,
-                )
+    contract: OLMESContract,
+) -> set[tuple[str, str, int, int]]:
+    source = input_path.resolve()
+    source_stat = source.stat()
+    expected_metadata = (
+        recipe,
+        str(source),
+        source_stat.st_size,
+        source_stat.st_mtime_ns,
+        _contract_fingerprint(contract),
+    )
+    connection.execute("BEGIN TRANSACTION")
+    try:
+        connection.execute(
+            """
+            CREATE TABLE IF NOT EXISTS processing_metadata (
+                recipe VARCHAR NOT NULL,
+                source_path VARCHAR NOT NULL,
+                source_size UBIGINT NOT NULL,
+                source_mtime_ns UBIGINT NOT NULL,
+                contract_sha256 VARCHAR NOT NULL
             )
-            task_rows.extend(checkpoint_tasks)
-            instance_rows.extend(checkpoint_instances)
-            choice_rows.extend(checkpoint_choices)
-            checkpoint_count += 1
-
-    task_rows.sort(
-        key=lambda row: tuple(
-            row[name] for name in contract.tables.detailed_tasks.sort_key
+            """
         )
-    )
-    instance_rows.sort(
-        key=lambda row: tuple(
-            row[name] for name in contract.tables.detailed_instances.sort_key
+        metadata = connection.execute(
+            """
+            SELECT recipe, source_path, source_size, source_mtime_ns, contract_sha256
+            FROM processing_metadata
+            """
+        ).fetchall()
+        if not metadata:
+            connection.execute(
+                "INSERT INTO processing_metadata VALUES (?, ?, ?, ?, ?)",
+                expected_metadata,
+            )
+        elif metadata != [expected_metadata]:
+            raise ValueError(
+                f"OLMES detail staging database does not match the current input: "
+                f"{staging_path}; remove it before processing a different source"
+            )
+        for name, table in (
+            ("tasks", contract.tables.detailed_tasks),
+            ("instances", contract.tables.detailed_instances),
+            ("choices", contract.tables.detailed_choices),
+        ):
+            _create_data_table(connection, name=name, contract=table)
+        connection.execute(
+            """
+            CREATE TABLE IF NOT EXISTS completed_checkpoints (
+                recipe VARCHAR NOT NULL,
+                params VARCHAR NOT NULL,
+                seed_value BIGINT NOT NULL,
+                step BIGINT NOT NULL,
+                member_name VARCHAR NOT NULL,
+                task_count BIGINT NOT NULL,
+                instance_count BIGINT NOT NULL,
+                choice_count BIGINT NOT NULL,
+                PRIMARY KEY (recipe, params, seed_value, step)
+            )
+            """
         )
-    )
-    choice_rows.sort(
-        key=lambda row: tuple(
-            row[name] for name in contract.tables.detailed_choices.sort_key
-        )
-    )
-    return task_rows, instance_rows, choice_rows, checkpoint_count
+        connection.execute("COMMIT")
+    except BaseException:
+        connection.execute("ROLLBACK")
+        raise
+    return {
+        (row[0], row[1], row[2], row[3])
+        for row in connection.execute(
+            "SELECT recipe, params, seed_value, step FROM completed_checkpoints"
+        ).fetchall()
+    }
 
 
-def stream_detail_task_rows(
-    input_path: Path,
+def _json_text(expression: str) -> str:
+    return f"json_extract_string({expression}, '$')"
+
+
+def _valid_json_value(
+    expression: str,
+    *,
+    logical_type: _LogicalType,
+    nullable: bool,
+) -> str:
+    text = _json_text(expression)
+    if logical_type == "string":
+        valid = f"json_type({expression}) = 'VARCHAR'"
+    elif logical_type == "bool":
+        valid = f"json_type({expression}) = 'BOOLEAN'"
+    elif logical_type == "float64":
+        valid = (
+            f"json_type({expression}) IN ('BIGINT', 'UBIGINT', 'DOUBLE', 'VARCHAR') "
+            f"AND try_cast({text} AS DOUBLE) IS NOT NULL "
+            f"AND isfinite(try_cast({text} AS DOUBLE))"
+        )
+    else:
+        decimal_value = f"try_cast({text} AS DECIMAL(38, 18))"
+        double_value = f"try_cast({text} AS DOUBLE)"
+        valid = (
+            f"json_type({expression}) IN ('BIGINT', 'UBIGINT', 'DOUBLE', 'VARCHAR') "
+            f"AND {decimal_value} IS NOT NULL "
+            f"AND {decimal_value} = trunc({decimal_value}) "
+            f"AND {double_value} IS NOT NULL "
+            f"AND isfinite({double_value}) "
+            f"AND {double_value} = trunc({double_value}) "
+            f"AND try_cast({text} AS BIGINT) IS NOT NULL"
+        )
+    if nullable:
+        return f"({expression} IS NULL OR ({valid}))"
+    return f"({expression} IS NOT NULL AND ({valid}))"
+
+
+def _cast_json_value(
+    expression: str,
+    logical_type: _LogicalType,
+) -> str:
+    return f"CAST({_json_text(expression)} AS {_duckdb_type(logical_type)})"
+
+
+def _prediction_json_columns(contract: OLMESContract) -> dict[str, str]:
+    instance_metrics = ", ".join(
+        f"{_identifier(name)} JSON" for name in contract.metrics.detailed_instances
+    )
+    choice_metrics = ", ".join(
+        f"{_identifier(name)} JSON" for name in contract.metrics.detailed_choices
+    )
+    return {
+        "doc_id": "JSON",
+        "native_id": "JSON",
+        "metrics": f"STRUCT({instance_metrics})",
+        "model_output": f"STRUCT({choice_metrics})[]",
+        "label": "JSON",
+        "task_hash": "JSON",
+        "model_hash": "JSON",
+    }
+
+
+def _validation_case(
+    fields: list[tuple[str, str, _LogicalType, bool]],
+) -> str:
+    clauses = [
+        f"WHEN NOT {_valid_json_value(expression, logical_type=logical_type, nullable=nullable)} "
+        f"THEN {_sql_literal(name)}"
+        for name, expression, logical_type, nullable in fields
+    ]
+    return "CASE " + " ".join(clauses) + " END"
+
+
+def _raise_invalid_prediction_value(
+    connection: duckdb.DuckDBPyConnection,
+    *,
+    contract: OLMESContract,
+    context: str,
+) -> None:
+    instance_meta = {
+        column.name: column for column in contract.tables.detailed_instances.columns
+    }
+    instance_fields = cast(
+        list[tuple[str, str, _LogicalType, bool]],
+        [
+            ("doc_id", "p.doc_id", _INT64_LOGICAL_TYPE, False),
+            ("label", "p.label", _INT64_LOGICAL_TYPE, False),
+            ("task_hash", "p.task_hash", _STRING_LOGICAL_TYPE, False),
+            ("model_hash", "p.model_hash", _STRING_LOGICAL_TYPE, False),
+        ],
+    )
+    instance_fields.extend(
+        (
+            name,
+            f"p.metrics.{_identifier(name)}",
+            instance_meta[name].logical_type,
+            instance_meta[name].nullable,
+        )
+        for name in contract.metrics.detailed_instances
+    )
+    instance_case = _validation_case(instance_fields)
+    invalid_instance = connection.execute(
+        f"""
+        SELECT p.task, p.filename, {instance_case} AS invalid_field
+        FROM _checkpoint_predictions AS p
+        WHERE p.metrics IS NULL
+           OR p.model_output IS NULL
+           OR {instance_case} IS NOT NULL
+           OR NOT (
+                p.native_id IS NULL
+                OR json_type(p.native_id) IN ('VARCHAR', 'BIGINT', 'UBIGINT')
+           )
+        LIMIT 1
+        """
+    ).fetchone()
+    if invalid_instance is not None:
+        task, filename, field = invalid_instance
+        field = field or "metrics, model_output, or native_id"
+        raise ValueError(
+            f"invalid OLMES detail prediction field {field!r} in {context}, "
+            f"task={task!r}, file={filename!r}"
+        )
+
+    choice_meta = {
+        column.name: column for column in contract.tables.detailed_choices.columns
+    }
+    choice_fields = [
+        (
+            name,
+            f"u.choice.{_identifier(name)}",
+            choice_meta[name].logical_type,
+            choice_meta[name].nullable,
+        )
+        for name in contract.metrics.detailed_choices
+    ]
+    choice_case = _validation_case(choice_fields)
+    invalid_choice = connection.execute(
+        f"""
+        SELECT p.task, p.filename, u.ordinality - 1 AS choice_index,
+               {choice_case} AS invalid_field
+        FROM _checkpoint_predictions AS p,
+             UNNEST(p.model_output) WITH ORDINALITY AS u(choice, ordinality)
+        WHERE {choice_case} IS NOT NULL
+        LIMIT 1
+        """
+    ).fetchone()
+    if invalid_choice is not None:
+        task, filename, choice_index, field = invalid_choice
+        raise ValueError(
+            f"invalid OLMES detail choice field {field!r} in {context}, "
+            f"task={task!r}, choice_index={choice_index}, file={filename!r}"
+        )
+
+
+def _validate_checkpoint_predictions(
+    connection: duckdb.DuckDBPyConnection,
+    *,
     recipe: str,
-    *,
-    contract: OLMESContract | None = None,
-) -> tuple[list[dict[str, object]], int]:
-    task_rows, _, _, checkpoint_count = stream_detail_rows(
-        input_path, recipe, contract=contract
+    params: str,
+    seed_value: int,
+    step: int,
+    contract: OLMESContract,
+) -> None:
+    context = (
+        f"recipe={recipe!r}, params={params!r}, seed_value={seed_value}, step={step}"
     )
-    return task_rows, checkpoint_count
+    _raise_invalid_prediction_value(connection, contract=contract, context=context)
+    hash_mismatch = connection.execute(
+        """
+        SELECT p.task, p.filename
+        FROM _checkpoint_predictions AS p
+        JOIN tasks AS t
+          ON t.recipe = ? AND t.params = ? AND t.seed_value = ? AND t.step = ?
+         AND t.task = p.task
+        WHERE json_extract_string(p.task_hash, '$') IS DISTINCT FROM t.task_hash
+           OR json_extract_string(p.model_hash, '$') IS DISTINCT FROM t.model_hash
+        LIMIT 1
+        """,
+        [recipe, params, seed_value, step],
+    ).fetchone()
+    if hash_mismatch is not None:
+        raise ValueError(
+            f"hash mismatch in {context}, task={hash_mismatch[0]!r}, "
+            f"file={hash_mismatch[1]!r}"
+        )
+    doc_id = _cast_json_value("p.doc_id", "int64")
+    duplicate = connection.execute(
+        f"""
+        SELECT p.task, {doc_id} AS doc_id
+        FROM _checkpoint_predictions AS p
+        GROUP BY p.task, {doc_id}
+        HAVING count(*) > 1
+        LIMIT 1
+        """
+    ).fetchone()
+    if duplicate is not None:
+        raise ValueError(
+            f"duplicate OLMES detail instance row in {context}, "
+            f"task={duplicate[0]!r}: doc_id={duplicate[1]}"
+        )
+    count_mismatch = connection.execute(
+        """
+        SELECT t.task, t.num_instances, count(p.doc_id)
+        FROM tasks AS t
+        LEFT JOIN _checkpoint_predictions AS p ON p.task = t.task
+        WHERE t.recipe = ? AND t.params = ? AND t.seed_value = ? AND t.step = ?
+        GROUP BY t.task, t.num_instances
+        HAVING t.num_instances <> count(p.doc_id)
+        LIMIT 1
+        """,
+        [recipe, params, seed_value, step],
+    ).fetchone()
+    if count_mismatch is not None:
+        raise ValueError(
+            f"instance count mismatch in {context}, task={count_mismatch[0]!r}: "
+            f"declared={count_mismatch[1]}, predictions={count_mismatch[2]}"
+        )
 
 
-def _write_sorted_parquet_from_temp(
-    temp_path: Path,
+def _insert_task_rows(
+    connection: duckdb.DuckDBPyConnection,
     *,
-    output_path: Path,
-    sort_key: tuple[str, ...],
-    table: OLMESTableContract,
-    columns: tuple[str, ...],
-) -> int:
-    if not temp_path.is_file():
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        empty_df = _typed_output_dataframe([], table=table, columns=columns)
-        empty_df.to_parquet(output_path, index=False)
-        return 0
+    rows: tuple[dict[str, object], ...],
+    contract: OLMESContract,
+) -> None:
+    columns = _output_columns(contract, "detailed_tasks")
+    placeholders = ", ".join("?" for _ in columns)
+    column_sql = ", ".join(_identifier(column) for column in columns)
+    connection.executemany(
+        f"INSERT INTO tasks ({column_sql}) VALUES ({placeholders})",
+        [[row.get(column) for column in columns] for row in rows],
+    )
 
-    frame = pd.read_parquet(temp_path)
-    if not frame.empty:
-        frame = frame.sort_values(list(sort_key), kind="mergesort")
+
+def _instance_select_sql(contract: OLMESContract) -> str:
+    metric_meta = {
+        column.name: column for column in contract.tables.detailed_instances.columns
+    }
+    expressions = {
+        "recipe": "t.recipe",
+        "data": "t.data",
+        "params": "t.params",
+        "seed_value": "t.seed_value",
+        "seed": "t.seed",
+        "step": "t.step",
+        "task": "t.task",
+        "task_hash": "t.task_hash",
+        "model_hash": "t.model_hash",
+        "doc_id": _cast_json_value("p.doc_id", "int64"),
+        "native_id": (
+            "CASE WHEN p.native_id IS NULL THEN NULL "
+            "ELSE json_extract_string(p.native_id, '$') END"
+        ),
+        "native_id_kind": (
+            "CASE json_type(p.native_id) "
+            "WHEN 'VARCHAR' THEN 'string' "
+            "WHEN 'BIGINT' THEN 'integer' "
+            "WHEN 'UBIGINT' THEN 'integer' "
+            "ELSE 'null' END"
+        ),
+        "label": _cast_json_value("p.label", "int64"),
+    }
+    expressions.update(
+        {
+            name: _cast_json_value(
+                f"p.metrics.{_identifier(name)}", metric_meta[name].logical_type
+            )
+            for name in contract.metrics.detailed_instances
+        }
+    )
+    columns = _output_columns(contract, "detailed_instances")
+    select_list = ",\n               ".join(
+        f"{expressions[name]} AS {_identifier(name)}" for name in columns
+    )
+    return f"""
+        SELECT {select_list}
+        FROM _checkpoint_predictions AS p
+        JOIN tasks AS t
+          ON t.recipe = ? AND t.params = ? AND t.seed_value = ? AND t.step = ?
+         AND t.task = p.task
+    """
+
+
+def _choice_select_sql(contract: OLMESContract) -> str:
+    metric_meta = {
+        column.name: column for column in contract.tables.detailed_choices.columns
+    }
+    expressions = {
+        "recipe": "t.recipe",
+        "data": "t.data",
+        "params": "t.params",
+        "seed_value": "t.seed_value",
+        "seed": "t.seed",
+        "step": "t.step",
+        "task": "t.task",
+        "doc_id": _cast_json_value("p.doc_id", "int64"),
+        "choice_index": "u.ordinality - 1",
+    }
+    expressions.update(
+        {
+            name: _cast_json_value(
+                f"u.choice.{_identifier(name)}", metric_meta[name].logical_type
+            )
+            for name in contract.metrics.detailed_choices
+        }
+    )
+    columns = _output_columns(contract, "detailed_choices")
+    select_list = ",\n               ".join(
+        f"{expressions[name]} AS {_identifier(name)}" for name in columns
+    )
+    return f"""
+        SELECT {select_list}
+        FROM _checkpoint_predictions AS p
+        JOIN tasks AS t
+          ON t.recipe = ? AND t.params = ? AND t.seed_value = ? AND t.step = ?
+         AND t.task = p.task
+        CROSS JOIN UNNEST(p.model_output) WITH ORDINALITY AS u(choice, ordinality)
+    """
+
+
+def _drop_checkpoint_relations(connection: duckdb.DuckDBPyConnection) -> None:
+    connection.execute("DROP VIEW IF EXISTS _checkpoint_json")
+    connection.execute("DROP TABLE IF EXISTS _checkpoint_predictions")
+    connection.execute("DROP TABLE IF EXISTS _checkpoint_files")
+
+
+def _empty_checkpoint_predictions_sql(contract: OLMESContract) -> str:
+    fields = [
+        "CAST(NULL AS VARCHAR) AS task",
+        "CAST(NULL AS JSON) AS doc_id",
+        "CAST(NULL AS JSON) AS native_id",
+    ]
+    instance_metrics = ", ".join(
+        f"{_identifier(name)} JSON" for name in contract.metrics.detailed_instances
+    )
+    choice_metrics = ", ".join(
+        f"{_identifier(name)} JSON" for name in contract.metrics.detailed_choices
+    )
+    fields.extend(
+        (
+            f"CAST(NULL AS STRUCT({instance_metrics})) AS metrics",
+            f"CAST(NULL AS STRUCT({choice_metrics})[]) AS model_output",
+            "CAST(NULL AS JSON) AS label",
+            "CAST(NULL AS JSON) AS task_hash",
+            "CAST(NULL AS JSON) AS model_hash",
+            "CAST(NULL AS VARCHAR) AS filename",
+        )
+    )
+    return "SELECT " + ", ".join(fields) + " WHERE false"
+
+
+def _ingest_checkpoint(
+    connection: duckdb.DuckDBPyConnection,
+    memory_filesystem: MemoryFileSystem,
+    *,
+    payload: _CheckpointPayload,
+    recipe: str,
+    params: str,
+    seed_value: int,
+    step: int,
+    member_name: str,
+    contract: OLMESContract,
+) -> tuple[int, int, int]:
+    checkpoint_token = uuid4().hex
+    file_rows: list[tuple[str, str]] = []
+    memory_paths: list[str] = []
+    for index, (task, prediction_bytes) in enumerate(
+        payload.predictions_by_task.items()
+    ):
+        memory_path = f"{_MEMORY_ROOT}/{checkpoint_token}/{index}.jsonl"
+        memory_url = f"memory://{memory_path}"
+        memory_filesystem.pipe_file(memory_path, prediction_bytes)
+        memory_paths.append(memory_path)
+        file_rows.append((memory_url, task))
+
+    instance_count = 0
+    choice_count = 0
+    connection.execute("BEGIN TRANSACTION")
+    try:
+        _drop_checkpoint_relations(connection)
+        _insert_task_rows(connection, rows=payload.task_rows, contract=contract)
+        connection.execute(
+            """
+            CREATE TEMP TABLE _checkpoint_files (
+                filename VARCHAR PRIMARY KEY,
+                task VARCHAR NOT NULL
+            )
+            """
+        )
+        if file_rows:
+            connection.executemany(
+                "INSERT INTO _checkpoint_files VALUES (?, ?)", file_rows
+            )
+            relation = connection.read_json(
+                cast(Any, [filename for filename, _ in file_rows]),
+                columns=_prediction_json_columns(contract),
+                format="newline_delimited",
+                filename=True,
+            )
+            relation.create_view("_checkpoint_json", replace=True)
+            connection.execute(
+                """
+                CREATE TEMP TABLE _checkpoint_predictions AS
+                SELECT files.task, raw.*
+                FROM _checkpoint_json AS raw
+                JOIN _checkpoint_files AS files USING (filename)
+                """
+            )
+        else:
+            connection.execute(
+                "CREATE TEMP TABLE _checkpoint_predictions AS "
+                + _empty_checkpoint_predictions_sql(contract)
+            )
+
+        _validate_checkpoint_predictions(
+            connection,
+            recipe=recipe,
+            params=params,
+            seed_value=seed_value,
+            step=step,
+            contract=contract,
+        )
+        parameters = [recipe, params, seed_value, step]
+        connection.execute(
+            f"INSERT INTO instances {_instance_select_sql(contract)}", parameters
+        )
+        connection.execute(
+            f"INSERT INTO choices {_choice_select_sql(contract)}", parameters
+        )
+        counts = connection.execute(
+            """
+            SELECT count(*), coalesce(sum(len(model_output)), 0)
+            FROM _checkpoint_predictions
+            """
+        ).fetchone()
+        assert counts is not None
+        instance_count, choice_count = counts
+        task_count = len(payload.task_rows)
+        connection.execute(
+            """
+            INSERT INTO completed_checkpoints
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            [
+                recipe,
+                params,
+                seed_value,
+                step,
+                member_name,
+                task_count,
+                instance_count,
+                choice_count,
+            ],
+        )
+        connection.execute("COMMIT")
+    except BaseException as exc:
+        connection.execute("ROLLBACK")
+        if isinstance(exc, duckdb.Error):
+            context = (
+                f"recipe={recipe!r}, params={params!r}, "
+                f"seed_value={seed_value}, step={step}"
+            )
+            raise ValueError(
+                f"invalid OLMES detail checkpoint data in {context}: {exc}"
+            ) from exc
+        raise
+    finally:
+        _drop_checkpoint_relations(connection)
+        for memory_path in memory_paths:
+            if memory_filesystem.isfile(memory_path):
+                memory_filesystem.rm_file(memory_path)
+    return task_count, int(instance_count), int(choice_count)
+
+
+def _validate_staging_counts(connection: duckdb.DuckDBPyConnection) -> None:
+    actual = connection.execute(
+        """
+        SELECT
+            (SELECT count(*) FROM tasks),
+            (SELECT count(*) FROM instances),
+            (SELECT count(*) FROM choices)
+        """
+    ).fetchone()
+    expected = connection.execute(
+        """
+        SELECT
+            coalesce(sum(task_count), 0),
+            coalesce(sum(instance_count), 0),
+            coalesce(sum(choice_count), 0)
+        FROM completed_checkpoints
+        """
+    ).fetchone()
+    if actual != expected:
+        raise ValueError(
+            "OLMES detail staging counts do not match committed checkpoints: "
+            f"expected={expected!r}, actual={actual!r}"
+        )
+
+
+def _remove_owned_file(path: Path) -> None:
+    if not path.exists() and not path.is_symlink():
+        return
+    if path.is_dir() and not path.is_symlink():
+        raise ValueError(f"expected an owned file but found a directory: {path}")
+    path.unlink()
+
+
+def _export_parquet(
+    connection: duckdb.DuckDBPyConnection,
+    *,
+    table_name: str,
+    table: OLMESTableContract,
+    output_path: Path,
+) -> tuple[Path, int]:
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    frame.to_parquet(output_path, index=False)
-    temp_path.unlink(missing_ok=True)
-    return len(frame)
+    temp_path = output_path.with_name(f".{output_path.name}.tmp")
+    _remove_owned_file(temp_path)
+    columns = ", ".join(_identifier(column.name) for column in table.columns)
+    sort_key = ", ".join(_identifier(column) for column in table.sort_key)
+    connection.execute(
+        f"""
+        COPY (
+            SELECT {columns}
+            FROM {_identifier(table_name)}
+            ORDER BY {sort_key}
+        )
+        TO {_sql_literal(temp_path)}
+        (FORMAT PARQUET, COMPRESSION ZSTD)
+        """
+    )
+    count_row = connection.execute(
+        "SELECT count(*) FROM read_parquet(?)", [str(temp_path)]
+    ).fetchone()
+    assert count_row is not None
+    row_count = count_row[0]
+    return temp_path, row_count
+
+
+def _finalize_outputs(
+    connection: duckdb.DuckDBPyConnection,
+    *,
+    contract: OLMESContract,
+    tasks_path: Path,
+    instances_path: Path,
+    choices_path: Path,
+) -> tuple[int, int, int]:
+    _validate_staging_counts(connection)
+    exports = (
+        _export_parquet(
+            connection,
+            table_name="tasks",
+            table=contract.tables.detailed_tasks,
+            output_path=tasks_path,
+        ),
+        _export_parquet(
+            connection,
+            table_name="instances",
+            table=contract.tables.detailed_instances,
+            output_path=instances_path,
+        ),
+        _export_parquet(
+            connection,
+            table_name="choices",
+            table=contract.tables.detailed_choices,
+            output_path=choices_path,
+        ),
+    )
+    for (temp_path, _), output_path in zip(
+        exports, (tasks_path, instances_path, choices_path), strict=True
+    ):
+        os.replace(temp_path, output_path)
+    return tuple(row_count for _, row_count in exports)
+
+
+def _remove_completed_staging_database(staging_path: Path) -> None:
+    for path in (
+        staging_path,
+        staging_path.with_name(f"{staging_path.name}.wal"),
+    ):
+        _remove_owned_file(path)
+    temporary_directory = Path(f"{staging_path}.tmp")
+    if temporary_directory.exists():
+        if temporary_directory.is_symlink() or not temporary_directory.is_dir():
+            raise ValueError(
+                f"unexpected DuckDB temporary path type: {temporary_directory}"
+            )
+        temporary_directory.rmdir()
 
 
 def preprocess_olmes_details(
@@ -852,36 +1122,39 @@ def preprocess_olmes_details(
 ) -> OlmesDetailsPreprocessResult:
     contract = contract or load_olmes_contract()
     _assert_all_detailed_schema_parity(contract)
-
     resolved_input = input_path or _recipe_tar_path(paths, recipe)
     resolved_tasks = output_tasks_path or paths.olmes_details_tasks_path(recipe)
     resolved_instances = output_instances_path or paths.olmes_details_instances_path(
         recipe
     )
     resolved_choices = output_choices_path or paths.olmes_details_choices_path(recipe)
-
-    task_columns = _output_columns(contract, "detailed_tasks")
-    instance_columns = _output_columns(contract, "detailed_instances")
-    choice_columns = _output_columns(contract, "detailed_choices")
-
-    temp_tasks = resolved_tasks.with_suffix(".tmp.parquet")
-    temp_instances = resolved_instances.with_suffix(".tmp.parquet")
-    temp_choices = resolved_choices.with_suffix(".tmp.parquet")
-    resolved_tasks.parent.mkdir(parents=True, exist_ok=True)
-
-    task_writer: pq.ParquetWriter | None = None
-    instance_writer: pq.ParquetWriter | None = None
-    choice_writer: pq.ParquetWriter | None = None
-
-    seen_task_keys: set[tuple[str, str, int, int, str]] = set()
-    seen_instance_keys: set[tuple[str, str, int, int, str, int]] = set()
-    seen_choice_keys: set[tuple[str, str, int, int, str, int, int]] = set()
-    checkpoint_count = 0
-
     if not resolved_input.is_file():
         raise FileNotFoundError(f"OLMES detail archive not found: {resolved_input}")
 
+    resolved_tasks.parent.mkdir(parents=True, exist_ok=True)
+    staging_path = _staging_database_path(resolved_tasks)
+    connection = duckdb.connect(str(staging_path))
+    memory_filesystem = MemoryFileSystem()
+    connection.register_filesystem(memory_filesystem)
+    completed_successfully = False
+    started = time.monotonic()
     try:
+        completed = _initialize_staging_database(
+            connection,
+            staging_path=staging_path,
+            input_path=resolved_input,
+            recipe=recipe,
+            contract=contract,
+        )
+        initial_completed_count = len(completed)
+        if verbose and initial_completed_count:
+            print(
+                f"olmes-details resuming after {initial_completed_count} "
+                "committed checkpoints"
+            )
+
+        seen_checkpoints: set[tuple[str, str, int, int]] = set()
+        processed_count = 0
         with tarfile.open(resolved_input, mode="r:gz") as outer:
             for member in outer:
                 if not member.isfile():
@@ -891,100 +1164,79 @@ def preprocess_olmes_details(
                 )
                 if parsed is None:
                     continue
-                _, params, seed_value, step = parsed
+                checkpoint_key = parsed
+                if checkpoint_key in seen_checkpoints:
+                    _, params, seed_value, step = checkpoint_key
+                    raise ValueError(
+                        "duplicate OLMES detail task row in "
+                        f"recipe={recipe!r}, params={params!r}, "
+                        f"seed_value={seed_value}, step={step}"
+                    )
+                seen_checkpoints.add(checkpoint_key)
+                if checkpoint_key in completed:
+                    continue
+
+                _, params, seed_value, step = checkpoint_key
                 inner_file = outer.extractfile(member)
                 if inner_file is None:
                     raise ValueError(
                         f"unable to read checkpoint member from {resolved_input}: "
                         f"{member.name!r}"
                     )
-                checkpoint_tasks, checkpoint_instances, checkpoint_choices = (
-                    _process_checkpoint_tar(
-                        inner_file.read(),
-                        recipe=recipe,
-                        params=params,
-                        seed_value=seed_value,
-                        step=step,
-                        contract=contract,
-                        seen_task_keys=seen_task_keys,
-                        seen_instance_keys=seen_instance_keys,
-                        seen_choice_keys=seen_choice_keys,
-                    )
+                payload = _read_checkpoint_payload(
+                    inner_file.read(),
+                    recipe=recipe,
+                    params=params,
+                    seed_value=seed_value,
+                    step=step,
+                    contract=contract,
                 )
+                _ingest_checkpoint(
+                    connection,
+                    memory_filesystem,
+                    payload=payload,
+                    recipe=recipe,
+                    params=params,
+                    seed_value=seed_value,
+                    step=step,
+                    member_name=member.name,
+                    contract=contract,
+                )
+                completed.add(checkpoint_key)
+                processed_count += 1
+                if verbose and (processed_count == 1 or processed_count % 10 == 0):
+                    elapsed = time.monotonic() - started
+                    print(
+                        f"olmes-details committed {processed_count} new checkpoints "
+                        f"({len(completed)} total) in {elapsed:.1f}s"
+                    )
 
-                for rows, table, columns, writer_attr in (
-                    (
-                        checkpoint_tasks,
-                        contract.tables.detailed_tasks,
-                        task_columns,
-                        "task_writer",
-                    ),
-                    (
-                        checkpoint_instances,
-                        contract.tables.detailed_instances,
-                        instance_columns,
-                        "instance_writer",
-                    ),
-                    (
-                        checkpoint_choices,
-                        contract.tables.detailed_choices,
-                        choice_columns,
-                        "choice_writer",
-                    ),
-                ):
-                    if not rows:
-                        continue
-                    frame = _typed_output_dataframe(rows, table=table, columns=columns)
-                    table_data = pa.Table.from_pandas(frame, preserve_index=False)
-                    if writer_attr == "task_writer":
-                        if task_writer is None:
-                            task_writer = pq.ParquetWriter(
-                                temp_tasks, table_data.schema
-                            )
-                        task_writer.write_table(table_data)
-                    elif writer_attr == "instance_writer":
-                        if instance_writer is None:
-                            instance_writer = pq.ParquetWriter(
-                                temp_instances, table_data.schema
-                            )
-                        instance_writer.write_table(table_data)
-                    else:
-                        if choice_writer is None:
-                            choice_writer = pq.ParquetWriter(
-                                temp_choices, table_data.schema
-                            )
-                        choice_writer.write_table(table_data)
-
-                checkpoint_count += 1
+        stored_checkpoints = {
+            (row[0], row[1], row[2], row[3])
+            for row in connection.execute(
+                "SELECT recipe, params, seed_value, step FROM completed_checkpoints"
+            ).fetchall()
+        }
+        if stored_checkpoints != seen_checkpoints:
+            missing = sorted(stored_checkpoints - seen_checkpoints)
+            raise ValueError(
+                "OLMES detail staging database contains checkpoints absent from "
+                f"the source archive: {missing[:5]!r}"
+            )
+        task_count, instance_count, choice_count = _finalize_outputs(
+            connection,
+            contract=contract,
+            tasks_path=resolved_tasks,
+            instances_path=resolved_instances,
+            choices_path=resolved_choices,
+        )
+        checkpoint_count = len(stored_checkpoints)
+        completed_successfully = True
     finally:
-        if task_writer is not None:
-            task_writer.close()
-        if instance_writer is not None:
-            instance_writer.close()
-        if choice_writer is not None:
-            choice_writer.close()
+        connection.close()
 
-    task_count = _write_sorted_parquet_from_temp(
-        temp_tasks,
-        output_path=resolved_tasks,
-        sort_key=contract.tables.detailed_tasks.sort_key,
-        table=contract.tables.detailed_tasks,
-        columns=task_columns,
-    )
-    instance_count = _write_sorted_parquet_from_temp(
-        temp_instances,
-        output_path=resolved_instances,
-        sort_key=contract.tables.detailed_instances.sort_key,
-        table=contract.tables.detailed_instances,
-        columns=instance_columns,
-    )
-    choice_count = _write_sorted_parquet_from_temp(
-        temp_choices,
-        output_path=resolved_choices,
-        sort_key=contract.tables.detailed_choices.sort_key,
-        table=contract.tables.detailed_choices,
-        columns=choice_columns,
-    )
+    if completed_successfully:
+        _remove_completed_staging_database(staging_path)
 
     result = OlmesDetailsPreprocessResult(
         recipe=recipe,
@@ -1007,4 +1259,5 @@ def preprocess_olmes_details(
         print(f"olmes-details instance rows: {result.instance_count}")
         print(f"olmes-details choice rows: {result.choice_count}")
         print(f"olmes-details checkpoints: {result.checkpoint_count}")
+        print(f"olmes-details elapsed seconds: {time.monotonic() - started:.3f}")
     return result

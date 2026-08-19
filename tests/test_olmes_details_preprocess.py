@@ -5,6 +5,7 @@ import tarfile
 from pathlib import Path
 from unittest.mock import patch
 
+import duckdb
 import numpy as np
 import orjson
 import pandas as pd
@@ -13,13 +14,13 @@ import pytest
 from datadec.config import load_olmes_contract
 from datadec.data.ingest.enums import DataRecipeName, ModelSizeName, Seed
 from datadec.data.paths import DataDecidePaths
+from datadec.data.preprocess import olmes_details as olmes_details_module
 from datadec.data.preprocess.olmes_details import (
+    OlmesDetailsPreprocessResult,
     _assert_detailed_choices_schema_parity,
     _assert_detailed_instances_schema_parity,
     _assert_detailed_tasks_schema_parity,
     preprocess_olmes_details,
-    stream_detail_rows,
-    stream_detail_task_rows,
 )
 from datadec.data.preprocess.olmes_verify import verify_detail_counts
 
@@ -230,6 +231,23 @@ def _write_recipe_tar(
         archive.addfile(member, io.BytesIO(checkpoint_bytes))
 
 
+def _build_two_checkpoint_archive(tmp_path: Path) -> Path:
+    checkpoints: list[tuple[int, bytes]] = []
+    for step in (STEP, STEP + 1):
+        checkpoint_path = tmp_path / f"checkpoint-{step}.tar.gz"
+        _write_checkpoint_tar(checkpoint_path, step=step)
+        checkpoints.append((step, checkpoint_path.read_bytes()))
+    recipe_tar = tmp_path / f"{RECIPE}.tar.gz"
+    with tarfile.open(recipe_tar, mode="w:gz") as archive:
+        for step, checkpoint_bytes in checkpoints:
+            member = tarfile.TarInfo(
+                name=f"{RECIPE}/{PARAMS}/seed-{SEED_VALUE}/step-{step}.tar.gz"
+            )
+            member.size = len(checkpoint_bytes)
+            archive.addfile(member, io.BytesIO(checkpoint_bytes))
+    return recipe_tar
+
+
 def _build_fixture_archive(
     tmp_path: Path,
     *,
@@ -278,12 +296,25 @@ def _install_fixture_archive(tmp_path: Path, archive: Path) -> None:
     destination.write_bytes(archive.read_bytes())
 
 
+def _preprocess_fixture(
+    tmp_path: Path, archive: Path
+) -> tuple[OlmesDetailsPreprocessResult, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    result = preprocess_olmes_details(
+        DataDecidePaths(tmp_path), RECIPE, input_path=archive, contract=CONTRACT
+    )
+    return (
+        result,
+        pd.read_parquet(result.output_tasks_path),
+        pd.read_parquet(result.output_instances_path),
+        pd.read_parquet(result.output_choices_path),
+    )
+
+
 def test_exact_output_schema_mapping_types_and_path_identity(tmp_path: Path) -> None:
     archive = _build_fixture_archive(tmp_path)
-    rows, checkpoint_count = stream_detail_task_rows(archive, RECIPE, contract=CONTRACT)
-    output = pd.DataFrame(rows)[list(OUTPUT_COLUMNS)]
+    result, output, _, _ = _preprocess_fixture(tmp_path, archive)
 
-    assert checkpoint_count == 1
+    assert result.checkpoint_count == 1
     assert tuple(output.columns) == OUTPUT_COLUMNS
     assert output.loc[
         0, ["recipe", "params", "seed_value", "seed", "step", "task"]
@@ -308,10 +339,7 @@ def test_instance_and_choice_schema_types_and_nullability(tmp_path: Path) -> Non
         native_ids=["example", 7],
         include_byte=False,
     )
-    _, instances, choices, _ = stream_detail_rows(archive, RECIPE, contract=CONTRACT)
-
-    instance_df = pd.DataFrame(instances)[list(INSTANCE_COLUMNS)]
-    choice_df = pd.DataFrame(choices)[list(CHOICE_COLUMNS)]
+    _, _, instance_df, choice_df = _preprocess_fixture(tmp_path, archive)
 
     assert tuple(instance_df.columns) == INSTANCE_COLUMNS
     assert tuple(choice_df.columns) == CHOICE_COLUMNS
@@ -330,69 +358,57 @@ def test_null_native_id_kind(tmp_path: Path) -> None:
         num_instances=1,
         native_ids=[None],
     )
-    _, instances, _, _ = stream_detail_rows(archive, RECIPE, contract=CONTRACT)
-    assert instances[0]["native_id"] is None
-    assert instances[0]["native_id_kind"] == "null"
+    _, _, instances, _ = _preprocess_fixture(tmp_path, archive)
+    assert pd.isna(instances.loc[0, "native_id"])
+    assert instances.loc[0, "native_id_kind"] == "null"
 
 
 def test_absent_byte_fields_are_nullable(tmp_path: Path) -> None:
     archive = _build_fixture_archive(tmp_path, include_byte=False, num_instances=1)
-    _, instances, choices, _ = stream_detail_rows(archive, RECIPE, contract=CONTRACT)
-    assert instances[0]["predicted_index_per_byte"] is None
-    assert instances[0]["acc_per_byte"] is None
-    assert choices[0]["logits_per_byte"] is None
+    _, _, instances, choices = _preprocess_fixture(tmp_path, archive)
+    assert pd.isna(instances.loc[0, "predicted_index_per_byte"])
+    assert pd.isna(instances.loc[0, "acc_per_byte"])
+    assert pd.isna(choices.loc[0, "logits_per_byte"])
 
 
 def test_present_byte_fields_are_populated(tmp_path: Path) -> None:
     archive = _build_fixture_archive(tmp_path, include_byte=True, num_instances=1)
-    _, instances, choices, _ = stream_detail_rows(archive, RECIPE, contract=CONTRACT)
-    assert instances[0]["predicted_index_per_byte"] == 1
-    assert instances[0]["acc_per_byte"] == 0
-    assert choices[0]["logits_per_byte"] == pytest.approx(2.896762867130736)
+    _, _, instances, choices = _preprocess_fixture(tmp_path, archive)
+    assert instances.loc[0, "predicted_index_per_byte"] == 1
+    assert instances.loc[0, "acc_per_byte"] == 0
+    assert choices.loc[0, "logits_per_byte"] == pytest.approx(2.896762867130736)
 
 
 def test_choice_explosion_uses_zero_based_indices(tmp_path: Path) -> None:
     archive = _build_fixture_archive(tmp_path, num_instances=1)
-    _, _, choices, _ = stream_detail_rows(archive, RECIPE, contract=CONTRACT)
-    assert [row["choice_index"] for row in choices] == [0, 1, 2, 3]
+    _, _, _, choices = _preprocess_fixture(tmp_path, archive)
+    assert choices["choice_index"].tolist() == [0, 1, 2, 3]
 
 
 def test_output_rows_are_sorted_by_contract_sort_keys(tmp_path: Path) -> None:
     archive = _build_fixture_archive(tmp_path, num_instances=2)
-    tasks, instances, choices, _ = stream_detail_rows(
-        archive, RECIPE, contract=CONTRACT
-    )
-    assert [row["doc_id"] for row in instances] == [0, 1]
-    assert tasks == sorted(
-        tasks,
-        key=lambda row: tuple(
-            row[name] for name in CONTRACT.tables.detailed_tasks.sort_key
-        ),
-    )
-    assert instances == sorted(
-        instances,
-        key=lambda row: tuple(
-            row[name] for name in CONTRACT.tables.detailed_instances.sort_key
-        ),
-    )
-    assert choices == sorted(
-        choices,
-        key=lambda row: tuple(
-            row[name] for name in CONTRACT.tables.detailed_choices.sort_key
-        ),
-    )
+    _, tasks, instances, choices = _preprocess_fixture(tmp_path, archive)
+    assert instances["doc_id"].tolist() == [0, 1]
+    for frame, table in (
+        (tasks, CONTRACT.tables.detailed_tasks),
+        (instances, CONTRACT.tables.detailed_instances),
+        (choices, CONTRACT.tables.detailed_choices),
+    ):
+        assert frame.reset_index(drop=True).equals(
+            frame.sort_values(list(table.sort_key)).reset_index(drop=True)
+        )
 
 
 def test_config_json_is_canonical_sorted_string(tmp_path: Path) -> None:
     archive = _build_fixture_archive(tmp_path)
-    rows, _ = stream_detail_task_rows(archive, RECIPE, contract=CONTRACT)
-    model_config = orjson.loads(str(rows[0]["model_config"]))
+    _, tasks, _, _ = _preprocess_fixture(tmp_path, archive)
+    model_config = orjson.loads(str(tasks.loc[0, "model_config"]))
     expected = orjson.loads(
         orjson.dumps(model_config, option=orjson.OPT_SORT_KEYS).decode()
     )
     assert model_config == expected
     assert (
-        str(rows[0]["model_config"])
+        str(tasks.loc[0, "model_config"])
         == orjson.dumps(model_config, option=orjson.OPT_SORT_KEYS).decode()
     )
 
@@ -410,7 +426,9 @@ def test_duplicate_task_primary_key_is_rejected(tmp_path: Path) -> None:
             archive.addfile(member, io.BytesIO(checkpoint_bytes))
 
     with pytest.raises(ValueError, match="duplicate OLMES detail task row"):
-        stream_detail_task_rows(recipe_tar, RECIPE, contract=CONTRACT)
+        preprocess_olmes_details(
+            DataDecidePaths(tmp_path), RECIPE, input_path=recipe_tar, contract=CONTRACT
+        )
 
 
 def test_duplicate_instance_primary_key_is_rejected(tmp_path: Path) -> None:
@@ -422,19 +440,50 @@ def test_duplicate_instance_primary_key_is_rejected(tmp_path: Path) -> None:
         custom_predictions=custom_predictions,
     )
     with pytest.raises(ValueError, match="duplicate OLMES detail instance row"):
-        stream_detail_rows(archive, RECIPE, contract=CONTRACT)
+        preprocess_olmes_details(
+            DataDecidePaths(tmp_path), RECIPE, input_path=archive, contract=CONTRACT
+        )
+
+
+def test_invalid_prediction_rolls_back_checkpoint(tmp_path: Path) -> None:
+    prediction = _prediction_record(0)
+    prediction["label"] = True
+    archive = _build_fixture_archive(
+        tmp_path,
+        num_instances=1,
+        custom_predictions=orjson.dumps(prediction) + b"\n",
+    )
+    paths = DataDecidePaths(tmp_path)
+
+    with pytest.raises(ValueError, match="prediction field 'label'"):
+        preprocess_olmes_details(paths, RECIPE, input_path=archive, contract=CONTRACT)
+
+    staging_path = (
+        paths.olmes_details_tasks_path(RECIPE).parent / ".olmes-details.duckdb"
+    )
+    with duckdb.connect(str(staging_path), read_only=True) as connection:
+        assert connection.execute(
+            "SELECT count(*) FROM completed_checkpoints"
+        ).fetchone() == (0,)
+        assert connection.execute("SELECT count(*) FROM tasks").fetchone() == (0,)
+        assert connection.execute("SELECT count(*) FROM instances").fetchone() == (0,)
+        assert connection.execute("SELECT count(*) FROM choices").fetchone() == (0,)
 
 
 def test_missing_predictions_are_rejected(tmp_path: Path) -> None:
     archive = _build_fixture_archive(tmp_path, include_predictions=False)
     with pytest.raises(ValueError, match="unpaired OLMES detail task files"):
-        stream_detail_task_rows(archive, RECIPE, contract=CONTRACT)
+        preprocess_olmes_details(
+            DataDecidePaths(tmp_path), RECIPE, input_path=archive, contract=CONTRACT
+        )
 
 
 def test_instance_count_mismatch_is_rejected(tmp_path: Path) -> None:
     archive = _build_fixture_archive(tmp_path, num_instances=3, prediction_lines=2)
     with pytest.raises(ValueError, match="instance count mismatch"):
-        stream_detail_task_rows(archive, RECIPE, contract=CONTRACT)
+        preprocess_olmes_details(
+            DataDecidePaths(tmp_path), RECIPE, input_path=archive, contract=CONTRACT
+        )
 
 
 def test_task_name_mismatch_is_rejected(tmp_path: Path) -> None:
@@ -442,7 +491,9 @@ def test_task_name_mismatch_is_rejected(tmp_path: Path) -> None:
     payload["task_name"] = "boolq"
     archive = _build_fixture_archive(tmp_path, metrics_payload=payload)
     with pytest.raises(ValueError, match="task identity mismatch"):
-        stream_detail_task_rows(archive, RECIPE, contract=CONTRACT)
+        preprocess_olmes_details(
+            DataDecidePaths(tmp_path), RECIPE, input_path=archive, contract=CONTRACT
+        )
 
 
 def test_checkpoint_not_in_aggregate_still_succeeds(tmp_path: Path) -> None:
@@ -499,26 +550,62 @@ def test_preprocess_writes_typed_output(tmp_path: Path) -> None:
         instances_df=instances,
         choices_df=choices,
     )
-    assert tasks.dtypes.to_dict() == {
-        "recipe": pd.StringDtype(),
-        "data": pd.StringDtype(),
-        "params": pd.StringDtype(),
-        "seed_value": np.dtype("int64"),
-        "seed": pd.StringDtype(),
-        "step": np.dtype("int64"),
-        "task": pd.StringDtype(),
-        "task_hash": pd.StringDtype(),
-        "model_hash": pd.StringDtype(),
-        "model_config": pd.StringDtype(),
-        "task_config": pd.StringDtype(),
-        "compute_config": pd.StringDtype(),
-        "processing_time": np.dtype("float64"),
-        "current_date": pd.StringDtype(),
-        "num_instances": np.dtype("int64"),
-        "task_idx": np.dtype("int64"),
-        "primary_metric": pd.StringDtype(),
-        **{field: np.dtype("float64") for field in DETAILED_TASK_METRICS},
-    }
+    for column in CONTRACT.tables.detailed_tasks.columns:
+        dtype = tasks.dtypes[column.name]
+        if column.logical_type == "string":
+            assert pd.api.types.is_string_dtype(dtype)
+        elif column.logical_type == "int64":
+            assert dtype == np.dtype("int64")
+        elif column.logical_type == "float64":
+            assert dtype == np.dtype("float64")
+        else:
+            assert dtype == np.dtype("bool")
+    assert not (result.output_tasks_path.parent / ".olmes-details.duckdb").exists()
+
+
+def test_preprocess_resumes_after_committed_checkpoint(tmp_path: Path) -> None:
+    archive = _build_two_checkpoint_archive(tmp_path)
+    paths = DataDecidePaths(tmp_path)
+    original_ingest = olmes_details_module._ingest_checkpoint
+
+    def fail_on_second_checkpoint(*args, **kwargs):
+        if kwargs["step"] == STEP + 1:
+            raise RuntimeError("simulated process termination")
+        return original_ingest(*args, **kwargs)
+
+    with (
+        patch.object(
+            olmes_details_module,
+            "_ingest_checkpoint",
+            side_effect=fail_on_second_checkpoint,
+        ),
+        pytest.raises(RuntimeError, match="simulated process termination"),
+    ):
+        preprocess_olmes_details(paths, RECIPE, input_path=archive, contract=CONTRACT)
+
+    staging_path = (
+        paths.olmes_details_tasks_path(RECIPE).parent / ".olmes-details.duckdb"
+    )
+    assert staging_path.is_file()
+    with duckdb.connect(str(staging_path), read_only=True) as connection:
+        assert connection.execute(
+            "SELECT count(*) FROM completed_checkpoints"
+        ).fetchone() == (1,)
+        assert connection.execute("SELECT count(*) FROM tasks").fetchone() == (1,)
+
+    with patch.object(
+        olmes_details_module, "_ingest_checkpoint", wraps=original_ingest
+    ) as resumed_ingest:
+        result = preprocess_olmes_details(
+            paths, RECIPE, input_path=archive, contract=CONTRACT
+        )
+
+    assert [call.kwargs["step"] for call in resumed_ingest.call_args_list] == [STEP + 1]
+    assert result.checkpoint_count == 2
+    assert result.row_count == 2
+    assert result.instance_count == 4
+    assert result.choice_count == 16
+    assert not staging_path.exists()
 
 
 def test_preprocess_does_not_download_or_upload(tmp_path: Path) -> None:
