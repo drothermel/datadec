@@ -4,10 +4,10 @@ from typing import Self
 
 from pydantic import BaseModel, ConfigDict, model_validator
 
-from datadec.ingest.checkpoint import EvalCheckpoint
-from datadec.ingest.enums import DataRecipeName, ModelSizeName, Seed
-from datadec.ingest.registries.model_details import ModelDetails
-from datadec.ingest.registries.recipe_details import RecipeDetails
+from datadec.data.ingest.checkpoint import EvalCheckpoint
+from datadec.data.ingest.enums import DataRecipeName, ModelSizeName, Seed
+from datadec.data.ingest.registries.model_details import ModelDetails
+from datadec.data.ingest.registries.recipe_details import RecipeDetails
 
 
 class TrainingRun(BaseModel):

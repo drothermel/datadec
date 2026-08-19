@@ -1,4 +1,4 @@
-from datadec.wandb_eval import (
+from datadec.data.wandb import (
     analysis_helpers,
     wandb_constants,
 )

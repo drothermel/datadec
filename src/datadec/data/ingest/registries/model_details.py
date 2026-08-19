@@ -3,8 +3,8 @@ from __future__ import annotations
 import pandas as pd
 from pydantic import BaseModel, ConfigDict
 
-from datadec import model_utils
-from datadec.ingest.enums import ModelSizeName
+from datadec.data import model_utils
+from datadec.data.ingest.enums import ModelSizeName
 
 
 class ModelDetails(BaseModel):

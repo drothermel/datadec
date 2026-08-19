@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from datadec.ingest.registries.model_details import (
+from datadec.data.ingest.registries.model_details import (
     ModelDetails,
     ModelRegistry,
     load_model_registry,
 )
-from datadec.ingest.registries.recipe_details import (
+from datadec.data.ingest.registries.recipe_details import (
     RecipeDetails,
     RecipeRegistry,
     load_recipe_registry,

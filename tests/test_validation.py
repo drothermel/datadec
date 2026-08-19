@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from datadec.validation import (
+from datadec.data.validation import (
     _choices_valid,
     _select_choices,
     _validated_select,

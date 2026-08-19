@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-from datadec import constants as consts
+from datadec.data import constants as consts
 
 FILTER_TYPES = ["max_steps", "ppl", "olmes"]
 METRIC_TYPES = ["ppl", "olmes"]

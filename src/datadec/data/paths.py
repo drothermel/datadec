@@ -2,6 +2,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from importlib.resources.abc import Traversable
+
+from datadec.data.resources import DATASET_FEATURES_CSV
+
 DEFAULT_DATA_DIR = "./data"
 
 
@@ -26,8 +30,7 @@ class DataDecidePaths:
             "mean_eval_melted": "mean_eval_melted",
         }
 
-        package_root = Path(__file__).parent
-        self.ds_details_csv_path = package_root / "data" / "dataset_features.csv"
+        self.ds_details_csv_path: Traversable = DATASET_FEATURES_CSV
 
     @property
     def available_dataframes(self) -> list[str]:

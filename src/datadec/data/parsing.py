@@ -3,8 +3,8 @@ from typing import List, Optional
 import orjson
 import pandas as pd
 
-from datadec import constants as consts
-from datadec import model_utils
+from datadec.data import constants as consts
+from datadec.data import model_utils
 
 
 def reorder_df_cols(df: pd.DataFrame, prefix_order: List[str]) -> pd.DataFrame:

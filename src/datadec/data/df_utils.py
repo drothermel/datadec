@@ -2,8 +2,8 @@ from typing import List, Optional, Tuple
 
 import pandas as pd
 
-from datadec import constants as consts
-from datadec import validation
+from datadec.data import constants as consts
+from datadec.data import validation
 
 
 def print_shape(df: pd.DataFrame, msg: str = "", verbose: bool = False):

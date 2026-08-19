@@ -4,7 +4,7 @@ from typing import Any
 
 import pandas as pd
 
-from datadec.wandb_eval import wandb_constants as wconsts
+from datadec.data.wandb import wandb_constants as wconsts
 
 DEFAULT_PANDAS_OPTIONS = {
     "display.max_columns": None,

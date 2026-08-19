@@ -4,9 +4,9 @@ import json
 
 import pandas as pd
 
-from datadec.data import DataDecide
-from datadec.wandb_eval import wandb_constants as wconsts
-from datadec.wandb_eval.wandb_transforms import (
+from datadec.data.access import DataDecide
+from datadec.data.wandb import wandb_constants as wconsts
+from datadec.data.wandb.wandb_transforms import (
     add_datadecide_columns,
     convert_objects_and_normalize_dtypes,
     drop_wandb_constant_ignored_cols,

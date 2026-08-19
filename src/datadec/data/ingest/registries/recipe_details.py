@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from pathlib import Path
+from importlib.resources.abc import Traversable
 
 from pydantic import BaseModel, ConfigDict
 
-from datadec.ingest.enums import DataRecipeName
-from datadec.recipe_details import get_data_recipe_details_df, get_data_recipe_family
+from datadec.data.ingest.enums import DataRecipeName
+from datadec.data.recipe_details import get_data_recipe_details_df, get_data_recipe_family
 
 
 class RecipeDetails(BaseModel):
@@ -44,7 +44,7 @@ class RecipeRegistry(BaseModel):
         return len(self.details_by_recipe)
 
 
-def load_recipe_registry(csv_path: Path) -> RecipeRegistry:
+def load_recipe_registry(csv_path: Traversable) -> RecipeRegistry:
     df = get_data_recipe_details_df(csv_path)
     details_by_recipe: dict[DataRecipeName, RecipeDetails] = {}
     for row in df.to_dict(orient="records"):

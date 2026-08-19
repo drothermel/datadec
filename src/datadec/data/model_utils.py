@@ -6,7 +6,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from datadec import constants as consts
+from datadec.data import constants as consts
 
 
 def round_value_by_multiple(value: float, multiple: int) -> int:

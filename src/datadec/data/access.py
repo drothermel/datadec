@@ -6,11 +6,11 @@ from typing import Union
 
 import pandas as pd
 
-from datadec import constants as consts
-from datadec import df_utils, model_utils, validation
-from datadec.paths import DataDecidePaths
-from datadec.pipeline import DataPipeline, verbose_print
-from datadec.recipe_details import get_data_recipe_details_df, get_data_recipe_family
+from datadec.data import constants as consts
+from datadec.data import df_utils, model_utils, validation
+from datadec.data.paths import DataDecidePaths
+from datadec.data.pipeline import DataPipeline, verbose_print
+from datadec.data.recipe_details import get_data_recipe_details_df, get_data_recipe_family
 
 __all__ = [
     "DataDecide",

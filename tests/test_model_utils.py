@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from datadec import constants as consts
-from datadec.model_utils import (
+from datadec.data import constants as consts
+from datadec.data.model_utils import (
     calc_batch_size,
     calc_lr_max,
     calc_total_tokens_from_str,

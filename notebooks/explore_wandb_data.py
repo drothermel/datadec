@@ -43,8 +43,8 @@
 
 
 from datadec import wandb_store
-from datadec.wandb_eval import wandb_constants as wconsts
-from datadec import analysis_helpers
+from datadec.data.wandb import wandb_constants as wconsts
+from datadec.data.wandb import analysis_helpers
 import pandas as pd
 
 PARAMS_TO_DROP = [

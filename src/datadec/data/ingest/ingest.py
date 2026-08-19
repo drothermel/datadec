@@ -8,21 +8,21 @@ import orjson
 import pandas as pd
 import srsly
 
-from datadec.ingest.checkpoint import EvalCheckpoint
+from datadec.data.ingest.checkpoint import EvalCheckpoint
 from dr_ds import coerce_int
-from datadec.ingest.enums import DataRecipeName, ModelSizeName, Seed, Task
-from datadec.ingest.metrics import PerplexityMetrics, TaskEvalMetrics
-from datadec.ingest.registries.model_details import (
+from datadec.data.ingest.enums import DataRecipeName, ModelSizeName, Seed, Task
+from datadec.data.ingest.metrics import PerplexityMetrics, TaskEvalMetrics
+from datadec.data.ingest.registries.model_details import (
     ModelRegistry,
     load_model_registry,
 )
-from datadec.ingest.registries.recipe_details import (
+from datadec.data.ingest.registries.recipe_details import (
     RecipeRegistry,
     load_recipe_registry,
 )
-from datadec.ingest.run import TrainingRun
-from datadec.paths import DataDecidePaths
-from datadec.pipeline import DataPipeline
+from datadec.data.ingest.run import TrainingRun
+from datadec.data.paths import DataDecidePaths
+from datadec.data.pipeline import DataPipeline
 
 type RunKey = tuple[ModelSizeName, DataRecipeName, Seed]
 type PplRowsByKey = dict[RunKey, dict[int, PerplexityMetrics]]

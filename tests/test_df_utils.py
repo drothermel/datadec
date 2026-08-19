@@ -3,8 +3,8 @@ from __future__ import annotations
 import pandas as pd
 import pytest
 
-from datadec import constants as consts
-from datadec.df_utils import (
+from datadec.data import constants as consts
+from datadec.data.df_utils import (
     create_mean_std_df,
     filter_by_max_step_to_use,
     filter_olmes_rows,

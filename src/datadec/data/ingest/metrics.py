@@ -6,7 +6,7 @@ from pydantic import BaseModel, ConfigDict, model_validator
 
 from dr_ds import coerce_float
 
-from datadec import constants as consts
+from datadec.data import constants as consts
 
 RAW_PPL_TO_FIELD: dict[str, str] = {
     "eval/wikitext_103-validation/Perplexity": "wikitext_103_valppl",

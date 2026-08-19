@@ -4,7 +4,7 @@ from typing import Any
 
 import pandas as pd
 
-from datadec.constants import (
+from datadec.data.constants import (
     BASE_AND_QC,
     BASE_RECIPES,
     BILLION,

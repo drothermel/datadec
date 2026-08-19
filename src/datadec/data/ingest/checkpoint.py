@@ -4,16 +4,16 @@ from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel, ConfigDict, PrivateAttr, computed_field
 
-from datadec import model_utils
-from datadec.ingest.enums import MMLU_SUBJECT_TASKS, Task
-from datadec.ingest.metrics import (
+from datadec.data import model_utils
+from datadec.data.ingest.enums import MMLU_SUBJECT_TASKS, Task
+from datadec.data.ingest.metrics import (
     PerplexityMetrics,
     TaskEvalMetrics,
     average_task_metrics,
 )
 
 if TYPE_CHECKING:
-    from datadec.ingest.run import TrainingRun
+    from datadec.data.ingest.run import TrainingRun
 
 
 class EvalCheckpoint(BaseModel):

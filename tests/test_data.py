@@ -6,8 +6,8 @@ from unittest.mock import MagicMock, patch
 import pandas as pd
 import pytest
 
-from datadec import constants as consts
-from datadec.data import (
+from datadec.data import constants as consts
+from datadec.data.access import (
     DataDecide,
     DataFrameLoader,
     get_data_recipe_details_df,

@@ -3,8 +3,8 @@
 %load_ext autoreload
 %autoreload 2
 
-from datadec import DataDecide
-import datadec.constants as consts
+from datadec.data import DataDecide
+import datadec.data.constants as consts
 
 # %%
 data_dir = "../outputs/example_data"

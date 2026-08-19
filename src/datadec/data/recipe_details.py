@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from pathlib import Path
+from importlib.resources import as_file
+from importlib.resources.abc import Traversable
 
 import pandas as pd
 
-from datadec import constants as consts
+from datadec.data import constants as consts
 
 
 def get_data_recipe_family(
@@ -19,8 +20,9 @@ def get_data_recipe_family(
     return "unknown"
 
 
-def get_data_recipe_details_df(ds_details_path: Path) -> pd.DataFrame:
-    df = pd.read_csv(ds_details_path).rename(columns={"dataset": "data"})
+def get_data_recipe_details_df(ds_details_path: Traversable) -> pd.DataFrame:
+    with as_file(ds_details_path) as csv_path:
+        df = pd.read_csv(csv_path).rename(columns={"dataset": "data"})
 
     df["data"] = (
         df["data"]

@@ -3,10 +3,10 @@ from __future__ import annotations
 import pandas as pd
 from dr_hf import download_dataset
 
-from datadec import df_utils, model_utils, parsing
-from datadec.hf_locations import HF_DATASET_LOCATIONS, HF_DATASET_SPLIT
-from datadec.paths import DataDecidePaths
-from datadec.recipe_details import get_data_recipe_details_df
+from datadec.data import df_utils, model_utils, parsing
+from datadec.data.hf_locations import HF_DATASET_LOCATIONS, HF_DATASET_SPLIT
+from datadec.data.paths import DataDecidePaths
+from datadec.data.recipe_details import get_data_recipe_details_df
 
 
 def verbose_print(msg: str, verbose: bool = False) -> None:

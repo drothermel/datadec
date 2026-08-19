@@ -6,8 +6,8 @@ from typing import Any
 
 import pandas as pd
 
-from datadec import constants as consts
-from datadec.wandb_eval import wandb_constants as wconsts
+from datadec.data import constants as consts
+from datadec.data.wandb import wandb_constants as wconsts
 
 
 def extract_dataset_from_model_path(model_path: Any) -> str | None:
