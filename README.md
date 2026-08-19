@@ -17,11 +17,15 @@ Artifacts live under `data/` by default:
 | `reference/published-results/{source path}` | Google Drive: 131 published result artifacts preserving their source-relative paths |
 | `processed/ppl.parquet` | Typed PPL output |
 | `processed/olmes.parquet` | Typed aggregate OLMES output |
+| `processed/scaling-law/evaluations.parquet` | Typed, precedence-resolved scaling-law task evaluations |
+| `processed/scaling-law/checkpoint-losses.parquet` | Typed, reconciled scaling-law checkpoint losses and throughput |
 | `processed/olmes-details/{recipe}/tasks.parquet` | Detail task summaries |
 | `processed/olmes-details/{recipe}/instances.parquet` | Per-instance detail rows |
 | `processed/olmes-details/{recipe}/choices.parquet` | Per-choice detail rows |
 
-Table schemas are declared in [`configs/olmes.toml`](configs/olmes.toml).
+OLMES table schemas are declared in [`configs/olmes.toml`](configs/olmes.toml).
+Scaling-law source precedence, aliases, seed policy, and table schemas are
+declared in [`configs/scaling_law.toml`](configs/scaling_law.toml).
 
 ## Download vs preprocess
 
@@ -40,10 +44,17 @@ uv run python scripts/download.py --published-results
 # Preprocess aggregate sources
 uv run python scripts/preprocess_ppl.py
 uv run python scripts/preprocess_olmes.py
+uv run python scripts/preprocess_scaling_law.py
 
 # Preprocess OLMES detail archives (tasks + instances + choices)
 uv run python scripts/preprocess_olmes_details.py --recipe dolma1.7-no-math-no-code
 ```
+
+Scaling-law preprocessing requires all three local raw CSVs. It validates the
+fixed source schema, excludes only the recorded blank/6198 legacy-seed rows,
+resolves overlaps by the configured source precedence, and writes both output
+tables only after both temporary parquet files validate successfully. It does
+not download or upload data.
 
 Select both Drive-backed options to reconstruct all 134 files (11.92 GB). The
 downloads use a pinned inventory from the public Drive folder rather than

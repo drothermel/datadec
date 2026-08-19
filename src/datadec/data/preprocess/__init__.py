@@ -5,6 +5,11 @@ from datadec.data.preprocess.ppl import (
     group_perplexity_rows,
     preprocess_ppl,
 )
+from datadec.data.preprocess.scaling_law import (
+    RAW_COLUMNS as SCALING_LAW_RAW_COLUMNS,
+    ScalingLawPreprocessResult,
+    preprocess_scaling_law,
+)
 
 _OLMES_EXPORTS = {
     "OlmesDetailsPreprocessResult",
@@ -22,6 +27,9 @@ __all__ = [
     "flatten_perplexity_rows",
     "group_perplexity_rows",
     "preprocess_ppl",
+    "preprocess_scaling_law",
+    "SCALING_LAW_RAW_COLUMNS",
+    "ScalingLawPreprocessResult",
 ]
 
 
