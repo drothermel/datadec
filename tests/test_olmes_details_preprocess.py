@@ -28,7 +28,9 @@ OUTPUT_COLUMNS = tuple(column.name for column in CONTRACT.tables.detailed_tasks.
 INSTANCE_COLUMNS = tuple(
     column.name for column in CONTRACT.tables.detailed_instances.columns
 )
-CHOICE_COLUMNS = tuple(column.name for column in CONTRACT.tables.detailed_choices.columns)
+CHOICE_COLUMNS = tuple(
+    column.name for column in CONTRACT.tables.detailed_choices.columns
+)
 DETAILED_TASK_METRICS = CONTRACT.metrics.detailed_tasks
 DETAILED_INSTANCE_METRICS = CONTRACT.metrics.detailed_instances
 DETAILED_CHOICE_METRICS = CONTRACT.metrics.detailed_choices
@@ -90,7 +92,9 @@ def _metrics_payload(*, task: str = TASK, num_instances: int = 2) -> dict[str, o
     }
 
 
-def _choice_metrics(*, include_byte: bool = True, include_uncond: bool = True) -> dict[str, object]:
+def _choice_metrics(
+    *, include_byte: bool = True, include_uncond: bool = True
+) -> dict[str, object]:
     metrics: dict[str, object] = {
         "sum_logits": -66.26013946533203,
         "num_tokens": 6,
@@ -107,7 +111,9 @@ def _choice_metrics(*, include_byte: bool = True, include_uncond: bool = True) -
     return metrics
 
 
-def _instance_metrics(*, include_byte: bool = False, include_uncond: bool = True) -> dict[str, object]:
+def _instance_metrics(
+    *, include_byte: bool = False, include_uncond: bool = True
+) -> dict[str, object]:
     metrics: dict[str, object] = {
         "predicted_index_raw": 1,
         "predicted_index_per_token": 1,
@@ -353,11 +359,15 @@ def test_choice_explosion_uses_zero_based_indices(tmp_path: Path) -> None:
 
 def test_output_rows_are_sorted_by_contract_sort_keys(tmp_path: Path) -> None:
     archive = _build_fixture_archive(tmp_path, num_instances=2)
-    tasks, instances, choices, _ = stream_detail_rows(archive, RECIPE, contract=CONTRACT)
+    tasks, instances, choices, _ = stream_detail_rows(
+        archive, RECIPE, contract=CONTRACT
+    )
     assert [row["doc_id"] for row in instances] == [0, 1]
     assert tasks == sorted(
         tasks,
-        key=lambda row: tuple(row[name] for name in CONTRACT.tables.detailed_tasks.sort_key),
+        key=lambda row: tuple(
+            row[name] for name in CONTRACT.tables.detailed_tasks.sort_key
+        ),
     )
     assert instances == sorted(
         instances,
@@ -581,5 +591,7 @@ def test_choice_schema_drift_guard_rejects_mismatched_metric_columns() -> None:
         }
     )
 
-    with pytest.raises(AssertionError, match="OLMES detail choice metric columns drift"):
+    with pytest.raises(
+        AssertionError, match="OLMES detail choice metric columns drift"
+    ):
         _assert_detailed_choices_schema_parity(broken)

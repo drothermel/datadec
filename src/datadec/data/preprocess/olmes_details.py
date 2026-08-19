@@ -228,8 +228,7 @@ def _normalize_bool_field(value: Any, *, context: str, field: str) -> bool:
     if isinstance(value, (bool, np.bool_)):
         return bool(value)
     raise ValueError(
-        f"invalid OLMES detail {field} in {context}: {value!r}; "
-        "expected a bool value"
+        f"invalid OLMES detail {field} in {context}: {value!r}; expected a bool value"
     )
 
 
@@ -459,9 +458,7 @@ def _validate_prediction_payload(
         raise ValueError(
             f"invalid OLMES detail prediction JSON in {context}: expected object"
         )
-    missing = [
-        key for key in _PREDICTION_REQUIRED_KEYS if key not in prediction
-    ]
+    missing = [key for key in _PREDICTION_REQUIRED_KEYS if key not in prediction]
     if missing:
         raise ValueError(
             f"invalid OLMES detail prediction JSON in {context}: "
@@ -473,8 +470,7 @@ def _validate_prediction_payload(
         )
     if not isinstance(prediction["model_output"], list):
         raise ValueError(
-            f"invalid OLMES detail prediction model_output in {context}: "
-            "expected array"
+            f"invalid OLMES detail prediction model_output in {context}: expected array"
         )
     return prediction
 
@@ -495,9 +491,7 @@ def _build_instance_row(
     doc_id = _normalize_int64_field(
         prediction["doc_id"], context=context, field="doc_id"
     )
-    label = _normalize_int64_field(
-        prediction["label"], context=context, field="label"
-    )
+    label = _normalize_int64_field(prediction["label"], context=context, field="label")
     native_id, native_id_kind = _normalize_native_id(
         prediction.get("native_id"), context=context
     )
@@ -793,7 +787,9 @@ def stream_detail_rows(
             checkpoint_count += 1
 
     task_rows.sort(
-        key=lambda row: tuple(row[name] for name in contract.tables.detailed_tasks.sort_key)
+        key=lambda row: tuple(
+            row[name] for name in contract.tables.detailed_tasks.sort_key
+        )
     )
     instance_rows.sort(
         key=lambda row: tuple(
@@ -938,13 +934,13 @@ def preprocess_olmes_details(
                 ):
                     if not rows:
                         continue
-                    frame = _typed_output_dataframe(
-                        rows, table=table, columns=columns
-                    )
+                    frame = _typed_output_dataframe(rows, table=table, columns=columns)
                     table_data = pa.Table.from_pandas(frame, preserve_index=False)
                     if writer_attr == "task_writer":
                         if task_writer is None:
-                            task_writer = pq.ParquetWriter(temp_tasks, table_data.schema)
+                            task_writer = pq.ParquetWriter(
+                                temp_tasks, table_data.schema
+                            )
                         task_writer.write_table(table_data)
                     elif writer_attr == "instance_writer":
                         if instance_writer is None:

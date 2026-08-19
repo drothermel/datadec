@@ -20,7 +20,8 @@ def main(
         Path | None, typer.Option("--input", help="Override raw OLMES parquet input")
     ] = None,
     output_path: Annotated[
-        Path | None, typer.Option("--output", help="Override processed OLMES parquet output")
+        Path | None,
+        typer.Option("--output", help="Override processed OLMES parquet output"),
     ] = None,
 ) -> None:
     """Preprocess the local raw OLMES parquet artifact."""

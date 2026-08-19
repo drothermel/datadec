@@ -25,7 +25,9 @@ class OlmesVerificationResult:
 
 
 def _seed_name_to_value(contract: OLMESContract) -> dict[str, int]:
-    return {seed_name: seed_value for seed_value, seed_name in contract.seed_map.items()}
+    return {
+        seed_name: seed_value for seed_value, seed_name in contract.seed_map.items()
+    }
 
 
 def detail_checkpoint_keys(
@@ -119,7 +121,9 @@ def verify_cross_source_parity(
         zip(detail["params"], detail["seed_value"], detail["step"], strict=True)
     )
     aggregate["checkpoint_key"] = list(
-        zip(aggregate["params"], aggregate["seed_value"], aggregate["step"], strict=True)
+        zip(
+            aggregate["params"], aggregate["seed_value"], aggregate["step"], strict=True
+        )
     )
 
     detail = detail[detail["checkpoint_key"].isin(overlap)]
@@ -221,7 +225,9 @@ def verify_reconstructed_task_metrics(
         atol=atol,
         equal_nan=True,
     ):
-        raise AssertionError("reconstructed primary_score mismatch from instance metrics")
+        raise AssertionError(
+            "reconstructed primary_score mismatch from instance metrics"
+        )
 
     return len(reconstructed)
 
@@ -239,7 +245,9 @@ def verify_detail_counts(
     if tasks_df[task_key].duplicated().any():
         raise AssertionError("duplicate task primary keys in detailed tasks output")
     if instances_df[instance_key].duplicated().any():
-        raise AssertionError("duplicate instance primary keys in detailed instances output")
+        raise AssertionError(
+            "duplicate instance primary keys in detailed instances output"
+        )
     if choices_df[choice_key].duplicated().any():
         raise AssertionError("duplicate choice primary keys in detailed choices output")
 
@@ -271,9 +279,7 @@ def verify_olmes_details(
     )
 
     archive = detail_archive or (
-        paths.data_dir
-        / "raw/olmes-details/models"
-        / f"{recipe}.tar.gz"
+        paths.data_dir / "raw/olmes-details/models" / f"{recipe}.tar.gz"
     )
     overlap = overlapping_checkpoints(
         recipe=recipe,

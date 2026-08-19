@@ -30,7 +30,8 @@ def main(
         typer.Option("--output-instances", help="Override instances parquet path"),
     ] = None,
     output_choices: Annotated[
-        Path | None, typer.Option("--output-choices", help="Override choices parquet path")
+        Path | None,
+        typer.Option("--output-choices", help="Override choices parquet path"),
     ] = None,
 ) -> None:
     """Preprocess local OLMES detail archives into typed task/instance/choice parquet."""
