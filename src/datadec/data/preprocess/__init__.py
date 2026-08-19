@@ -7,10 +7,12 @@ from datadec.data.preprocess.ppl import (
 )
 
 _OLMES_EXPORTS = {
+    "OlmesDetailsPreprocessResult",
     "OlmesPreprocessResult",
     "flatten_olmes_rows",
     "group_olmes_rows",
     "preprocess_olmes",
+    "preprocess_olmes_details",
 }
 
 __all__ = [

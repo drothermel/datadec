@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from datadec.config import load_source_manifest
+from datadec.config import load_olmes_contract, load_source_manifest
 
 DEFAULT_DATA_DIR = "./data"
 
@@ -55,3 +55,9 @@ class DataDecidePaths:
 
     def dataset_path(self, max_params_str: str) -> Path:
         return self.dataset_dir / f"dataset_{max_params_str}.pkl"
+
+    def olmes_details_tasks_path(self, recipe: str) -> Path:
+        template = load_olmes_contract().tables.detailed_tasks.path_template
+        if template is None:
+            raise ValueError("OLMES detailed_tasks table has no path_template")
+        return self.data_dir / template.format(recipe=recipe)
