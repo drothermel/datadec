@@ -20,6 +20,7 @@ def test_data_paths_use_exact_root_and_raw_outputs(tmp_path: Path) -> None:
     assert paths.get_path("ppl_raw") == tmp_path / "raw/ppl.parquet"
     assert paths.get_path("dwn_raw") == tmp_path / "raw/olmes.parquet"
     assert paths.get_path("ppl_processed") == tmp_path / "processed/ppl.parquet"
+    assert paths.get_path("olmes_processed") == tmp_path / "processed/olmes.parquet"
     assert paths.get_path("ppl_parsed") == tmp_path / "ppl_eval_parsed.parquet"
     assert paths.get_path("full_eval") == tmp_path / "full_eval.parquet"
     assert paths.dataset_path("4M") == tmp_path / "datasets/dataset_4M.pkl"

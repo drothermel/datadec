@@ -20,6 +20,7 @@ class DataDecidePaths:
             "dwn_metrics_expanded": "dwn_metrics_expanded.parquet",
             "ppl_dwn_merged": "ppl_dwn_merged.parquet",
             "ppl_processed": "processed/ppl.parquet",
+            "olmes_processed": "processed/olmes.parquet",
             "ppl_parsed": "ppl_eval_parsed.parquet",
             "dwn_parsed": "downstream_eval_parsed.parquet",
             "full_eval_raw": "full_eval_raw.parquet",

@@ -1,0 +1,90 @@
+from __future__ import annotations
+
+import importlib.util
+from pathlib import Path
+import sys
+from unittest.mock import patch
+
+import pandas as pd
+from typer.testing import CliRunner
+
+from datadec.data.pipeline import DataPipeline
+
+SCRIPT_PATH = Path(__file__).parents[1] / "scripts/preprocess_olmes.py"
+SCRIPT_MODULE = "datadec_preprocess_olmes_script"
+spec = importlib.util.spec_from_file_location(SCRIPT_MODULE, SCRIPT_PATH)
+assert spec is not None and spec.loader is not None
+script = importlib.util.module_from_spec(spec)
+sys.modules[SCRIPT_MODULE] = script
+spec.loader.exec_module(script)
+
+DEFAULT_DATA_DIR = script.DEFAULT_DATA_DIR
+app = script.app
+
+runner = CliRunner()
+
+
+def test_cli_default_is_repo_data_independent_of_cwd(
+    tmp_path: Path, monkeypatch
+) -> None:
+    paths = object()
+    monkeypatch.chdir(tmp_path)
+    with (
+        patch.object(script, "DataDecidePaths", return_value=paths) as path_type,
+        patch.object(script, "preprocess_olmes") as preprocess,
+    ):
+        result = runner.invoke(app, [])
+
+    assert result.exit_code == 0
+    path_type.assert_called_once_with(DEFAULT_DATA_DIR)
+    preprocess.assert_called_once_with(paths, verbose=True)
+    assert DEFAULT_DATA_DIR == Path(__file__).resolve().parents[1] / "data"
+
+
+def test_cli_data_dir_reads_raw_and_writes_only_processed_olmes(tmp_path: Path) -> None:
+    input_path = tmp_path / "raw/olmes.parquet"
+    output_path = tmp_path / "processed/olmes.parquet"
+    input_path.parent.mkdir(parents=True)
+    pd.DataFrame(
+        [
+            {
+                "params": "4M",
+                "data": "C4",
+                "seed": "default",
+                "step": 1250.0,
+                "task": "arc_challenge",
+                "chinchilla": "1x",
+                "tokens": 1000,
+                "compute": 1.5,
+                "metrics": {"acc_uncond": 0.42},
+            }
+        ]
+    ).to_parquet(input_path, index=False)
+
+    with (
+        patch("datadec.data.download.download_sources") as download_sources,
+        patch.object(DataPipeline, "download_raw_data") as pipeline_download,
+        patch("datadec.data.ingest.ingest.load_model_registry") as model_registry,
+    ):
+        result = runner.invoke(app, ["--data-dir", str(tmp_path)])
+
+    assert result.exit_code == 0
+    assert output_path.is_file()
+    assert not (tmp_path / "raw/ppl.parquet").exists()
+    output = pd.read_parquet(output_path)
+    assert output.loc[0, ["params", "data", "seed", "step", "task"]].tolist() == [
+        "4M",
+        "C4",
+        "default",
+        1250,
+        "arc_challenge",
+    ]
+    assert result.output == (
+        f"olmes input: {input_path}\n"
+        f"olmes output: {output_path}\n"
+        "olmes rows: 1\n"
+        "olmes training runs: 1\n"
+    )
+    download_sources.assert_not_called()
+    pipeline_download.assert_not_called()
+    model_registry.assert_not_called()
