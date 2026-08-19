@@ -107,10 +107,28 @@ class DataDecideCatalog(ConfigModel):
 
 class DatasetSource(ConfigModel):
     id: str
-    provider: Literal["huggingface_dataset"]
+    provider: Literal["datasets"]
     repo_id: str
-    split: str = "train"
-    output: str | None = None
+    revision: str
+    split: str
+    output: str
+
+
+class DetailSource(ConfigModel):
+    id: str
+    provider: Literal["huggingface_hub"]
+    repo_type: Literal["dataset"]
+    repo_id: str
+    revision: str
+    filename_template: str
+    output_root: str
+    recipes: tuple[str, ...]
+
+    @model_validator(mode="after")
+    def validate_unique_recipes(self) -> Self:
+        if len(self.recipes) != len(set(self.recipes)):
+            raise ValueError("OLMES detail recipes must be unique")
+        return self
 
 
 class ArchiveSource(ConfigModel):
@@ -121,37 +139,10 @@ class ArchiveSource(ConfigModel):
 
 
 class SourceManifest(ConfigModel):
-    profiles: dict[str, list[str]]
-    datasets: list[DatasetSource]
-    archives: list[ArchiveSource]
-
-    @model_validator(mode="after")
-    def validate_profiles(self) -> Self:
-        datasets_by_id = {source.id: source for source in self.datasets}
-        if len(datasets_by_id) != len(self.datasets):
-            raise ValueError("dataset source ids must be unique")
-        for profile, source_ids in self.profiles.items():
-            for source_id in source_ids:
-                if source_id not in datasets_by_id:
-                    raise ValueError(
-                        f"profile {profile!r} references unknown source {source_id!r}"
-                    )
-                if datasets_by_id[source_id].output is None:
-                    raise ValueError(
-                        f"profile {profile!r} source {source_id!r} has no output"
-                    )
-        return self
-
-    def sources_for_profile(self, profile: str) -> list[DatasetSource]:
-        try:
-            source_ids = self.profiles[profile]
-        except KeyError as exc:
-            available = ", ".join(sorted(self.profiles))
-            raise ValueError(
-                f"unknown source profile {profile!r}; available: {available}"
-            ) from exc
-        datasets_by_id = {source.id: source for source in self.datasets}
-        return [datasets_by_id[source_id] for source_id in source_ids]
+    ppl: DatasetSource
+    olmes: DatasetSource
+    olmes_details: DetailSource
+    archives: tuple[ArchiveSource, ...]
 
 
 def config_file(filename: str) -> Traversable:
@@ -187,6 +178,7 @@ __all__ = [
     "ArchiveSource",
     "DataDecideCatalog",
     "DatasetSource",
+    "DetailSource",
     "SourceManifest",
     "config_file",
     "load_catalog",

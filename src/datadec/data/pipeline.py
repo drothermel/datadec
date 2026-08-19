@@ -47,7 +47,7 @@ class DataPipeline:
         self.pipeline_stage_fxns[stage_name](verbose=verbose)
 
     def download_raw_data(self, verbose: bool = False) -> None:
-        download_sources(self.paths, verbose=verbose)
+        download_sources(self.paths, ppl=True, olmes=True, verbose=verbose)
 
     def expand_dwn_metrics_column(self, verbose: bool = False) -> None:
         verbose_print("Expanding downstream metrics column", verbose)
