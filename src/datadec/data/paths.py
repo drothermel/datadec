@@ -57,7 +57,18 @@ class DataDecidePaths:
         return self.dataset_dir / f"dataset_{max_params_str}.pkl"
 
     def olmes_details_tasks_path(self, recipe: str) -> Path:
-        template = load_olmes_contract().tables.detailed_tasks.path_template
+        return self._olmes_details_table_path("detailed_tasks", recipe)
+
+    def olmes_details_instances_path(self, recipe: str) -> Path:
+        return self._olmes_details_table_path("detailed_instances", recipe)
+
+    def olmes_details_choices_path(self, recipe: str) -> Path:
+        return self._olmes_details_table_path("detailed_choices", recipe)
+
+    def _olmes_details_table_path(self, table_name: str, recipe: str) -> Path:
+        contract = load_olmes_contract()
+        table = getattr(contract.tables, table_name)
+        template = table.path_template
         if template is None:
-            raise ValueError("OLMES detailed_tasks table has no path_template")
+            raise ValueError(f"OLMES {table_name} table has no path_template")
         return self.data_dir / template.format(recipe=recipe)

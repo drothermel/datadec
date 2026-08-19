@@ -225,22 +225,24 @@ def flatten_olmes_rows(
 def preprocess_olmes(
     paths: DataDecidePaths,
     *,
+    input_path: Path | None = None,
+    output_path: Path | None = None,
     verbose: bool = False,
 ) -> OlmesPreprocessResult:
     contract = load_olmes_contract()
-    input_path = paths.get_path("dwn_raw")
-    output_path = paths.get_path("olmes_processed")
+    resolved_input = input_path or paths.get_path("dwn_raw")
+    resolved_output = output_path or paths.get_path("olmes_processed")
 
-    olmes_df = pd.read_parquet(input_path)
+    olmes_df = pd.read_parquet(resolved_input)
     grouped = group_olmes_rows(olmes_df, contract=contract)
     output_df = flatten_olmes_rows(grouped, contract=contract)
 
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_df.to_parquet(output_path, index=False)
+    resolved_output.parent.mkdir(parents=True, exist_ok=True)
+    output_df.to_parquet(resolved_output, index=False)
 
     result = OlmesPreprocessResult(
-        input_path=input_path,
-        output_path=output_path,
+        input_path=resolved_input,
+        output_path=resolved_output,
         row_count=len(output_df),
         training_run_count=len(grouped),
     )

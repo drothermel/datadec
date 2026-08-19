@@ -16,9 +16,20 @@ app = typer.Typer()
 @app.command()
 def main(
     data_dir: Annotated[Path, typer.Option("--data-dir")] = DEFAULT_DATA_DIR,
+    input_path: Annotated[
+        Path | None, typer.Option("--input", help="Override raw OLMES parquet input")
+    ] = None,
+    output_path: Annotated[
+        Path | None, typer.Option("--output", help="Override processed OLMES parquet output")
+    ] = None,
 ) -> None:
     """Preprocess the local raw OLMES parquet artifact."""
-    preprocess_olmes(DataDecidePaths(data_dir), verbose=True)
+    preprocess_olmes(
+        DataDecidePaths(data_dir),
+        input_path=input_path,
+        output_path=output_path,
+        verbose=True,
+    )
 
 
 if __name__ == "__main__":

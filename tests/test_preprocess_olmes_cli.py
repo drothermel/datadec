@@ -37,14 +37,19 @@ def test_cli_default_is_repo_data_independent_of_cwd(
 
     assert result.exit_code == 0
     path_type.assert_called_once_with(DEFAULT_DATA_DIR)
-    preprocess.assert_called_once_with(paths, verbose=True)
+    preprocess.assert_called_once_with(
+        paths,
+        input_path=None,
+        output_path=None,
+        verbose=True,
+    )
     assert DEFAULT_DATA_DIR == Path(__file__).resolve().parents[1] / "data"
 
 
 def test_cli_data_dir_reads_raw_and_writes_only_processed_olmes(tmp_path: Path) -> None:
     input_path = tmp_path / "raw/olmes.parquet"
     output_path = tmp_path / "processed/olmes.parquet"
-    input_path.parent.mkdir(parents=True)
+    input_path.parent.mkdir(parents=True, exist_ok=True)
     pd.DataFrame(
         [
             {
@@ -88,3 +93,47 @@ def test_cli_data_dir_reads_raw_and_writes_only_processed_olmes(tmp_path: Path) 
     download_sources.assert_not_called()
     pipeline_download.assert_not_called()
     model_registry.assert_not_called()
+
+
+def test_cli_input_and_output_overrides(tmp_path: Path) -> None:
+    input_path = tmp_path / "custom-raw.parquet"
+    output_path = tmp_path / "custom-processed.parquet"
+    input_path.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(
+        [
+            {
+                "params": "4M",
+                "data": "C4",
+                "seed": "default",
+                "step": 1250.0,
+                "task": "arc_challenge",
+                "chinchilla": "1x",
+                "tokens": 1000,
+                "compute": 1.5,
+                "metrics": {"acc_uncond": 0.42},
+            }
+        ]
+    ).to_parquet(input_path, index=False)
+
+    with patch("datadec.data.download.download_sources") as download_sources:
+        result = runner.invoke(
+            app,
+            [
+                "--data-dir",
+                str(tmp_path),
+                "--input",
+                str(input_path),
+                "--output",
+                str(output_path),
+            ],
+        )
+
+    assert result.exit_code == 0
+    assert output_path.is_file()
+    assert result.output == (
+        f"olmes input: {input_path}\n"
+        f"olmes output: {output_path}\n"
+        "olmes rows: 1\n"
+        "olmes training runs: 1\n"
+    )
+    download_sources.assert_not_called()

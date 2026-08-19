@@ -27,7 +27,10 @@ __all__ = [
 
 def __getattr__(name: str):
     if name in _OLMES_EXPORTS:
-        from datadec.data.preprocess import olmes as olmes_module
+        if name in {"preprocess_olmes_details", "OlmesDetailsPreprocessResult"}:
+            from datadec.data.preprocess import olmes_details as olmes_module
+        else:
+            from datadec.data.preprocess import olmes as olmes_module
 
         return getattr(olmes_module, name)
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
