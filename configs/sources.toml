@@ -1,0 +1,28 @@
+[profiles]
+processing = ["perplexity_results", "evaluation_results"]
+
+[[datasets]]
+id = "perplexity_results"
+provider = "huggingface_dataset"
+repo_id = "allenai/DataDecide-ppl-results"
+split = "train"
+output = "ppl_raw"
+
+[[datasets]]
+id = "evaluation_results"
+provider = "huggingface_dataset"
+repo_id = "allenai/DataDecide-eval-results"
+split = "train"
+output = "dwn_raw"
+
+[[datasets]]
+id = "evaluation_instances"
+provider = "huggingface_dataset"
+repo_id = "allenai/DataDecide-eval-instances"
+split = "train"
+
+[[archives]]
+id = "published_results"
+provider = "google_drive_folder"
+url = "https://drive.google.com/drive/folders/1weYlEOlHrA_fzT2OsRa40uLc4EKTGz1D"
+downloaded_on = 2025-09-19

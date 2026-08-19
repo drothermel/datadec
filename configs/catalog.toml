@@ -1,0 +1,497 @@
+mmlu_tasks = [
+  "mmlu_abstract_algebra",
+  "mmlu_anatomy",
+  "mmlu_astronomy",
+  "mmlu_average",
+  "mmlu_business_ethics",
+  "mmlu_clinical_knowledge",
+  "mmlu_college_biology",
+  "mmlu_college_chemistry",
+  "mmlu_college_computer_science",
+  "mmlu_college_mathematics",
+  "mmlu_college_medicine",
+  "mmlu_college_physics",
+  "mmlu_computer_security",
+  "mmlu_conceptual_physics",
+  "mmlu_econometrics",
+  "mmlu_electrical_engineering",
+  "mmlu_elementary_mathematics",
+  "mmlu_formal_logic",
+  "mmlu_global_facts",
+  "mmlu_high_school_biology",
+  "mmlu_high_school_chemistry",
+  "mmlu_high_school_computer_science",
+  "mmlu_high_school_european_history",
+  "mmlu_high_school_geography",
+  "mmlu_high_school_government_and_politics",
+  "mmlu_high_school_macroeconomics",
+  "mmlu_high_school_mathematics",
+  "mmlu_high_school_microeconomics",
+  "mmlu_high_school_physics",
+  "mmlu_high_school_psychology",
+  "mmlu_high_school_statistics",
+  "mmlu_high_school_us_history",
+  "mmlu_high_school_world_history",
+  "mmlu_human_aging",
+  "mmlu_human_sexuality",
+  "mmlu_international_law",
+  "mmlu_jurisprudence",
+  "mmlu_logical_fallacies",
+  "mmlu_machine_learning",
+  "mmlu_management",
+  "mmlu_marketing",
+  "mmlu_medical_genetics",
+  "mmlu_miscellaneous",
+  "mmlu_moral_disputes",
+  "mmlu_moral_scenarios",
+  "mmlu_nutrition",
+  "mmlu_philosophy",
+  "mmlu_prehistory",
+  "mmlu_professional_accounting",
+  "mmlu_professional_law",
+  "mmlu_professional_medicine",
+  "mmlu_professional_psychology",
+  "mmlu_public_relations",
+  "mmlu_security_studies",
+  "mmlu_sociology",
+  "mmlu_us_foreign_policy",
+  "mmlu_virology",
+  "mmlu_world_religions",
+]
+
+olmes_tasks = [
+  "mmlu_average",
+  "arc_challenge",
+  "arc_easy",
+  "boolq",
+  "csqa",
+  "hellaswag",
+  "openbookqa",
+  "piqa",
+  "socialiqa",
+  "winogrande",
+]
+
+metric_names = [
+  "correct_choice",
+  "acc_raw",
+  "acc_per_token",
+  "acc_per_char",
+  "acc_per_byte",
+  "acc_uncond",
+  "no_answer",
+  "sum_logits_corr",
+  "logits_per_token_corr",
+  "logits_per_char_corr",
+  "bits_per_byte_corr",
+  "correct_prob",
+  "correct_prob_per_token",
+  "correct_prob_per_char",
+  "margin",
+  "margin_per_token",
+  "margin_per_char",
+  "total_prob",
+  "total_prob_per_token",
+  "total_prob_per_char",
+  "uncond_correct_prob",
+  "uncond_correct_prob_per_token",
+  "uncond_correct_prob_per_char",
+  "uncond_total_prob",
+  "norm_correct_prob",
+  "norm_correct_prob_per_token",
+  "norm_correct_prob_per_char",
+  "primary_metric",
+]
+
+drop_metrics = [
+  "predicted_index_raw",
+  "predicted_index_per_token",
+  "predicted_index_per_char",
+  "predicted_index_per_byte",
+  "predicted_index_uncond",
+  "logits_per_byte_corr",
+]
+
+[training]
+max_sequence_length = 2048
+token_length_multiplier = 20
+model_size_normalization = 108000000
+learning_rate_exponent = -0.3333333333333333
+learning_rate_base = 0.0047
+final_learning_rate_ratio = 0.01
+batch_size_coefficient = 160
+batch_size_exponent = 0.6666666666666666
+gpus_per_node = 8
+microbatch_size = 4
+
+[model_defaults]
+default_seed = 6198
+length_str = "5xC"
+lr_warmup_start = 0.0
+d_model = 768
+n_heads = 12
+n_layers = 12
+mlp_ratio = 8
+weight_tying = false
+alibi = false
+rope = true
+flash_attention = true
+attention_dropout = 0.0
+attention_layer_norm = false
+include_bias = false
+layer_norm_type = "rms"
+layer_norm_with_affine = true
+layer_norm_eps = 1e-6
+bias_for_layer_norm = false
+attention_layer_norm_with_affine = false
+activation_type = "swiglu"
+residual_dropout = 0.0
+embedding_dropout = 0.0
+max_sequence_length = 2048
+vocab_size = 50280
+embedding_size = 50304
+eos_token_id = 50279
+pad_token_id = 1
+init_device = "cuda"
+init_fn = "normal"
+init_std = 0.02
+init_cutoff_factor = 3
+
+[[models]]
+name = "4M"
+d_model = 64
+n_heads = 8
+n_layers = 8
+mlp_ratio = 8
+true_size = 3744832
+max_step = 5725
+
+[[models]]
+name = "6M"
+d_model = 96
+n_heads = 8
+n_layers = 8
+mlp_ratio = 8
+true_size = 6010464
+max_step = 9182
+
+[[models]]
+name = "8M"
+d_model = 128
+n_heads = 8
+n_layers = 8
+mlp_ratio = 8
+true_size = 8538240
+max_step = 13039
+
+[[models]]
+name = "10M"
+d_model = 144
+n_heads = 8
+n_layers = 8
+mlp_ratio = 8
+true_size = 9900432
+max_step = 15117
+
+[[models]]
+name = "14M"
+d_model = 192
+n_heads = 8
+n_layers = 8
+mlp_ratio = 8
+true_size = 14380224
+max_step = 21953
+
+[[models]]
+name = "16M"
+d_model = 208
+n_heads = 8
+n_layers = 8
+mlp_ratio = 8
+true_size = 16004560
+max_step = 24432
+
+[[models]]
+name = "20M"
+d_model = 192
+n_heads = 8
+n_layers = 16
+mlp_ratio = 8
+true_size = 19101888
+max_step = 14584
+
+[[models]]
+name = "60M"
+d_model = 384
+n_heads = 12
+n_layers = 16
+mlp_ratio = 8
+true_size = 57078144
+max_step = 29042
+
+[[models]]
+name = "90M"
+d_model = 528
+n_heads = 12
+n_layers = 16
+mlp_ratio = 8
+true_size = 97946640
+max_step = 29901
+
+[[models]]
+name = "150M"
+d_model = 768
+n_heads = 12
+n_layers = 12
+mlp_ratio = 8
+true_size = 150000000
+max_step = 37500
+
+[[models]]
+name = "300M"
+d_model = 1024
+n_heads = 16
+n_layers = 16
+mlp_ratio = 8
+true_size = 300000000
+max_step = 45000
+
+[[models]]
+name = "530M"
+d_model = 1344
+n_heads = 16
+n_layers = 16
+mlp_ratio = 8
+true_size = 530000000
+max_step = 51250
+
+[[models]]
+name = "750M"
+d_model = 1536
+n_heads = 16
+n_layers = 16
+mlp_ratio = 8
+true_size = 750000000
+max_step = 62500
+
+[[models]]
+name = "1B"
+d_model = 2048
+n_heads = 16
+n_layers = 16
+mlp_ratio = 8
+true_size = 1000000000
+max_step = 67500
+
+[data_recipe_families]
+dolma17 = [
+  "Dolma1.7",
+  "Dolma1.7 (no code)",
+  "Dolma1.7 (no math, code)",
+  "Dolma1.7 (no Reddit)",
+  "Dolma1.7 (no Flan)",
+]
+dolma16pp = ["Dolma1.6++"]
+c4 = ["C4"]
+fineweb = ["FineWeb-Pro", "FineWeb-Edu"]
+falcon = ["Falcon"]
+falcon_cc = [
+  "Falcon+CC",
+  "Falcon+CC (QC 10%)",
+  "Falcon+CC (QC 20%)",
+  "Falcon+CC (QC Orig 10%)",
+  "Falcon+CC (QC Tulu 10%)",
+]
+dclm = [
+  "DCLM-Baseline",
+  "DCLM-Baseline (QC 10%)",
+  "DCLM-Baseline (QC 20%)",
+  "DCLM-Baseline (QC 7%, FW3)",
+  "DCLM-Baseline (QC 7%, FW2)",
+  "DCLM-Baseline (QC FW 3%)",
+  "DCLM-Baseline (QC FW 10%)",
+]
+mix = [
+  "DCLM-Baseline 25% / Dolma 75%",
+  "DCLM-Baseline 50% / Dolma 50%",
+  "DCLM-Baseline 75% / Dolma 25%",
+]
+
+[seed_map]
+default = 0
+"small aux 2" = 1
+"small aux 3" = 2
+"large aux 2" = 3
+"large aux 3" = 4
+
+[perplexity_name_map]
+"eval/wikitext_103-validation/Perplexity" = "wikitext_103-valppl"
+"eval/pile-validation/Perplexity" = "pile-valppl"
+"eval/c4_en-validation/Perplexity" = "c4_en-valppl"
+"eval/m2d2_s2orc-validation/Perplexity" = "m2d2_s2orc-valppl"
+"eval/ice-validation/Perplexity" = "ice-valppl"
+"eval/dolma_wiki-validation/Perplexity" = "dolma_wiki-valppl"
+"eval/dolma_stack-validation/Perplexity" = "dolma_stack-valppl"
+"eval/dolma_reddit-validation/Perplexity" = "dolma_reddit-valppl"
+"eval/dolma_pes2o-validation/Perplexity" = "dolma_pes2o-valppl"
+"eval/dolma_common-crawl-validation/Perplexity" = "dolma_common-crawl-valppl"
+"eval/dolma_books-validation/Perplexity" = "dolma_books-valppl"
+
+[recipe_groups]
+base_recipes = [
+  "C4",
+  "Falcon",
+  "Falcon+CC",
+  "Dolma1.6++",
+  "Dolma1.7",
+  "FineWeb-Pro",
+  "FineWeb-Edu",
+  "DCLM-Baseline",
+]
+base_and_quality_control = [
+  "C4",
+  "Falcon",
+  "Falcon+CC",
+  "Falcon+CC (QC 10%)",
+  "Falcon+CC (QC 20%)",
+  "Falcon+CC (QC Orig 10%)",
+  "Falcon+CC (QC Tulu 10%)",
+  "Dolma1.6++",
+  "Dolma1.7",
+  "DCLM-Baseline 25% / Dolma 75%",
+  "DCLM-Baseline 50% / Dolma 50%",
+  "DCLM-Baseline 75% / Dolma 25%",
+  "FineWeb-Pro",
+  "FineWeb-Edu",
+  "DCLM-Baseline",
+  "DCLM-Baseline (QC 10%)",
+  "DCLM-Baseline (QC 20%)",
+  "DCLM-Baseline (QC 7%, FW3)",
+  "DCLM-Baseline (QC 7%, FW2)",
+  "DCLM-Baseline (QC FW 3%)",
+  "DCLM-Baseline (QC FW 10%)",
+]
+without_ablations = [
+  "C4",
+  "Falcon",
+  "Falcon+CC",
+  "Falcon+CC (QC 10%)",
+  "Falcon+CC (QC 20%)",
+  "Falcon+CC (QC Orig 10%)",
+  "Falcon+CC (QC Tulu 10%)",
+  "Dolma1.6++",
+  "Dolma1.7",
+  "FineWeb-Pro",
+  "FineWeb-Edu",
+  "DCLM-Baseline",
+  "DCLM-Baseline (QC 10%)",
+  "DCLM-Baseline (QC 20%)",
+  "DCLM-Baseline (QC 7%, FW3)",
+  "DCLM-Baseline (QC 7%, FW2)",
+  "DCLM-Baseline (QC FW 3%)",
+  "DCLM-Baseline (QC FW 10%)",
+]
+
+[recipe_groups.custom_families]
+core_datasets = ["C4", "Falcon", "Dolma1.6++"]
+dolma17_variants = [
+  "Dolma1.7",
+  "Dolma1.7 (no code)",
+  "Dolma1.7 (no math, code)",
+  "Dolma1.7 (no Reddit)",
+  "Dolma1.7 (no Flan)",
+]
+dclm_variants = [
+  "DCLM-Baseline",
+  "DCLM-Baseline (QC 10%)",
+  "DCLM-Baseline (QC 20%)",
+  "DCLM-Baseline (QC 7%, FW3)",
+  "DCLM-Baseline (QC 7%, FW2)",
+  "DCLM-Baseline (QC FW 3%)",
+  "DCLM-Baseline (QC FW 10%)",
+]
+falcon_cc_variants = [
+  "Falcon+CC",
+  "Falcon+CC (QC 10%)",
+  "Falcon+CC (QC 20%)",
+  "Falcon+CC (QC Orig 10%)",
+  "Falcon+CC (QC Tulu 10%)",
+]
+fineweb_variants = ["FineWeb-Pro", "FineWeb-Edu"]
+mix_with_baselines = [
+  "Dolma1.7",
+  "DCLM-Baseline 25% / Dolma 75%",
+  "DCLM-Baseline 50% / Dolma 50%",
+  "DCLM-Baseline 75% / Dolma 25%",
+  "DCLM-Baseline",
+]
+
+[recipe_groups.perplexity_performance]
+best_ppl_performance = [
+  "DCLM-Baseline 25% / Dolma 75%",
+  "Dolma1.7 (no code)",
+  "Dolma1.7",
+  "Dolma1.7 (no Flan)",
+  "DCLM-Baseline 50% / Dolma 50%",
+  "Dolma1.6++",
+  "Dolma1.7 (no Reddit)",
+]
+good_ppl_performance = [
+  "DCLM-Baseline 75% / Dolma 25%",
+  "Dolma1.7 (no math, code)",
+  "Falcon+CC (QC Tulu 10%)",
+  "Falcon+CC (QC 20%)",
+  "Falcon+CC",
+  "Falcon+CC (QC Orig 10%)",
+]
+medium_ppl_performance = [
+  "DCLM-Baseline",
+  "Falcon+CC (QC 10%)",
+  "DCLM-Baseline (QC 20%)",
+  "DCLM-Baseline (QC 7%, FW2)",
+  "Falcon",
+  "DCLM-Baseline (QC 10%)",
+]
+poor_ppl_performance = [
+  "DCLM-Baseline (QC FW 10%)",
+  "DCLM-Baseline (QC 7%, FW3)",
+  "FineWeb-Edu",
+  "FineWeb-Pro",
+  "DCLM-Baseline (QC FW 3%)",
+  "C4",
+]
+
+[recipe_groups.olmes_performance]
+best_olmes_performance = [
+  "DCLM-Baseline (QC 7%, FW2)",
+  "DCLM-Baseline (QC FW 10%)",
+  "DCLM-Baseline (QC 20%)",
+  "DCLM-Baseline (QC 10%)",
+  "Falcon+CC (QC Orig 10%)",
+  "DCLM-Baseline (QC 7%, FW3)",
+  "Falcon+CC (QC 10%)",
+]
+good_olmes_performance = [
+  "FineWeb-Pro",
+  "FineWeb-Edu",
+  "DCLM-Baseline",
+  "Falcon+CC (QC 20%)",
+  "Falcon+CC (QC Tulu 10%)",
+  "DCLM-Baseline (QC FW 3%)",
+]
+medium_olmes_performance = [
+  "DCLM-Baseline 25% / Dolma 75%",
+  "DCLM-Baseline 75% / Dolma 25%",
+  "C4",
+  "Dolma1.7 (no code)",
+  "Dolma1.7 (no Reddit)",
+  "Falcon",
+]
+poor_olmes_performance = [
+  "Dolma1.7 (no math, code)",
+  "Dolma1.7 (no Flan)",
+  "DCLM-Baseline 50% / Dolma 50%",
+  "Falcon+CC",
+  "Dolma1.7",
+  "Dolma1.6++",
+]

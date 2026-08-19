@@ -4,7 +4,7 @@ from pathlib import Path
 
 from importlib.resources.abc import Traversable
 
-from datadec.data.resources import DATASET_FEATURES_CSV
+from datadec.config import DATASET_FEATURES_CSV
 
 DEFAULT_DATA_DIR = "./data"
 

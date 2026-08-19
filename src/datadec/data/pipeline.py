@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 import pandas as pd
-from dr_hf import download_dataset
 
 from datadec.data import df_utils, model_utils, parsing
-from datadec.data.hf_locations import HF_DATASET_LOCATIONS, HF_DATASET_SPLIT
+from datadec.data.download import download_sources
 from datadec.data.paths import DataDecidePaths
 from datadec.data.recipe_details import get_data_recipe_details_df
 
@@ -48,15 +47,7 @@ class DataPipeline:
         self.pipeline_stage_fxns[stage_name](verbose=verbose)
 
     def download_raw_data(self, verbose: bool = False) -> None:
-        for raw_metric_type in ["ppl", "dwn"]:
-            verbose_print(f"Downloading {raw_metric_type} raw data", verbose)
-            download_path = self.paths.get_path(f"{raw_metric_type}_raw")
-            download_dataset(
-                path=download_path,
-                repo_id=HF_DATASET_LOCATIONS[f"{raw_metric_type}_eval_ds"].repo_id,
-                split=HF_DATASET_SPLIT,
-            )
-            verbose_print(f"Wrote to {download_path}", verbose)
+        download_sources(self.paths, verbose=verbose)
 
     def expand_dwn_metrics_column(self, verbose: bool = False) -> None:
         verbose_print("Expanding downstream metrics column", verbose)
