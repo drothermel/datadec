@@ -25,7 +25,8 @@ def test_cli_requires_an_explicit_selection() -> None:
     result = runner.invoke(app, [])
 
     assert result.exit_code == 2
-    assert "select --ppl, --olmes, or --olmes-details" in result.output
+    assert "select --ppl, --olmes, --olmes-details, --scaling-law" in result.output
+    assert "--published-results" in result.output
 
 
 def test_cli_forwards_mixed_repeatable_options_and_force(tmp_path: Path) -> None:
@@ -43,6 +44,8 @@ def test_cli_forwards_mixed_repeatable_options_and_force(tmp_path: Path) -> None
                 "fineweb-pro",
                 "--olmes-details",
                 "c4",
+                "--scaling-law",
+                "--published-results",
                 "--force",
                 "--data-dir",
                 str(tmp_path),
@@ -56,6 +59,8 @@ def test_cli_forwards_mixed_repeatable_options_and_force(tmp_path: Path) -> None
         ppl=True,
         olmes=True,
         olmes_details=["fineweb-pro", "c4"],
+        scaling_law=True,
+        published_results=True,
         force=True,
         verbose=True,
     )

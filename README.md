@@ -11,6 +11,8 @@ Artifacts live under `data/` by default:
 | `raw/ppl.parquet` | Raw perplexity export |
 | `raw/olmes.parquet` | Raw aggregate OLMES export |
 | `raw/olmes-details/models/{recipe}.tar.gz` | Per-recipe OLMES detail archives |
+| `raw/scaling-law/{file}.csv` | Three raw scaling-law CSV inputs |
+| `reference/published-results/{source path}` | Published result artifacts with their Drive-relative paths |
 | `processed/ppl.parquet` | Typed PPL output |
 | `processed/olmes.parquet` | Typed aggregate OLMES output |
 | `processed/olmes-details/{recipe}/tasks.parquet` | Detail task summaries |
@@ -27,6 +29,12 @@ Download and preprocess are separate steps. Preprocess scripts read local files 
 # Download selected sources
 uv run python scripts/download.py --ppl --olmes --olmes-details dolma1.7-no-math-no-code
 
+# Download the three raw scaling-law CSVs (2.86 GB)
+uv run python scripts/download.py --scaling-law
+
+# Download the other 131 published artifacts (9.06 GB)
+uv run python scripts/download.py --published-results
+
 # Preprocess aggregate sources
 uv run python scripts/preprocess_ppl.py
 uv run python scripts/preprocess_olmes.py
@@ -34,6 +42,10 @@ uv run python scripts/preprocess_olmes.py
 # Preprocess OLMES detail archives (tasks + instances + choices)
 uv run python scripts/preprocess_olmes_details.py --recipe dolma1.7-no-math-no-code
 ```
+
+Select both Drive-backed options to reconstruct all 134 files (11.92 GB). The
+downloads use a pinned inventory from the public Drive folder rather than
+crawling its current contents.
 
 All preprocess CLIs accept `--data-dir` (default: repo `data/`). Override paths explicitly when needed:
 

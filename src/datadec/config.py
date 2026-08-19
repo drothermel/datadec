@@ -5,10 +5,10 @@ from datetime import date
 from functools import cache
 from importlib.resources import files
 from importlib.resources.abc import Traversable
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Literal, Self
 
-from pydantic import BaseModel, ConfigDict, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 _CONFIG_PACKAGE = "datadec"
 _SOURCE_CONFIGS_DIR = Path(__file__).parents[2] / "configs"
@@ -143,6 +143,45 @@ class SourceManifest(ConfigModel):
     olmes: DatasetSource
     olmes_details: DetailSource
     archives: tuple[ArchiveSource, ...]
+
+
+class PublishedResultFile(ConfigModel):
+    id: str
+    path: str
+    expected_size: int = Field(gt=0)
+    category: Literal["scaling_law", "published_results"]
+
+    @model_validator(mode="after")
+    def validate_path_and_category(self) -> Self:
+        path = PurePosixPath(self.path)
+        if (
+            not path.parts
+            or path.is_absolute()
+            or path.as_posix() != self.path
+            or ".." in path.parts
+        ):
+            raise ValueError("published result paths must be normalized relative paths")
+        is_raw = path.parts[0] == "raw_data"
+        if is_raw != (self.category == "scaling_law"):
+            raise ValueError("only raw_data files may use the scaling_law category")
+        return self
+
+
+class PublishedResultsManifest(ConfigModel):
+    folder_url: Literal[
+        "https://drive.google.com/drive/folders/1weYlEOlHrA_fzT2OsRa40uLc4EKTGz1D"
+    ]
+    files: tuple[PublishedResultFile, ...]
+
+    @model_validator(mode="after")
+    def validate_unique_files(self) -> Self:
+        ids = [file.id for file in self.files]
+        if len(ids) != len(set(ids)):
+            raise ValueError("published result Google Drive file IDs must be unique")
+        paths = [file.path for file in self.files]
+        if len(paths) != len(set(paths)):
+            raise ValueError("published result paths must be unique")
+        return self
 
 
 class OLMESColumnContract(ConfigModel):
@@ -374,6 +413,11 @@ def load_source_manifest() -> SourceManifest:
 
 
 @cache
+def load_published_results_manifest() -> PublishedResultsManifest:
+    return PublishedResultsManifest.model_validate(_load_toml("published_results.toml"))
+
+
+@cache
 def load_olmes_contract() -> OLMESContract:
     contract = OLMESContract.model_validate(_load_toml("olmes.toml"))
     return contract.validate_references(
@@ -393,9 +437,12 @@ __all__ = [
     "OLMESMetricContract",
     "OLMESTableContract",
     "OLMESTables",
+    "PublishedResultFile",
+    "PublishedResultsManifest",
     "SourceManifest",
     "config_file",
     "load_catalog",
     "load_olmes_contract",
+    "load_published_results_manifest",
     "load_source_manifest",
 ]

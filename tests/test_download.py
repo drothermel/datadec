@@ -3,14 +3,69 @@ from __future__ import annotations
 import inspect
 from pathlib import Path
 from unittest.mock import MagicMock, call, patch
+from urllib.request import Request
 
 import pytest
 
-from datadec.config import load_source_manifest
+from datadec.config import (
+    PublishedResultFile,
+    PublishedResultsManifest,
+    load_source_manifest,
+)
 from datadec.data import download
 from datadec.data.download import download_sources, resolve_olmes_detail_recipes
 from datadec.data.paths import DataDecidePaths
 from datadec.data.pipeline import DataPipeline
+
+PUBLISHED_RESULTS_FOLDER_URL = (
+    "https://drive.google.com/drive/folders/1weYlEOlHrA_fzT2OsRa40uLc4EKTGz1D"
+)
+
+
+class FakeResponse:
+    def __init__(
+        self,
+        *chunks: bytes,
+        status: int = 200,
+        headers: dict[str, str] | None = None,
+        error: Exception | None = None,
+    ) -> None:
+        self.status = status
+        self.headers = headers or {}
+        self._chunks = list(chunks)
+        self._error = error
+
+    def __enter__(self) -> FakeResponse:
+        return self
+
+    def __exit__(self, *args: object) -> None:
+        return None
+
+    def read(self, _size: int) -> bytes:
+        if self._chunks:
+            return self._chunks.pop(0)
+        if self._error is not None:
+            error = self._error
+            self._error = None
+            raise error
+        return b""
+
+
+def published_file(
+    *,
+    path: str = "outputs2/example.csv",
+    expected_size: int = 6,
+    category: str = "published_results",
+    file_id: str = "drive-file-id",
+) -> PublishedResultFile:
+    return PublishedResultFile.model_validate(
+        {
+            "id": file_id,
+            "path": path,
+            "expected_size": expected_size,
+            "category": category,
+        }
+    )
 
 
 def test_data_paths_use_exact_root_and_raw_outputs(tmp_path: Path) -> None:
@@ -195,3 +250,235 @@ def test_pipeline_explicitly_selects_ppl_and_olmes(tmp_path: Path) -> None:
 
 def test_download_implementation_does_not_use_snapshot_download() -> None:
     assert "snapshot_download" not in inspect.getsource(download)
+
+
+def test_published_result_destinations_preserve_category_mapping(
+    tmp_path: Path,
+) -> None:
+    paths = DataDecidePaths(tmp_path)
+    raw = published_file(path="raw_data/results_ladder.csv", category="scaling_law")
+    reference = published_file(path="per_task_out/arc/figure.pdf")
+
+    assert download._published_result_destination(paths, raw) == (
+        tmp_path / "raw/scaling-law/results_ladder.csv"
+    )
+    assert download._published_result_destination(paths, reference) == (
+        tmp_path / "reference/published-results/per_task_out/arc/figure.pdf"
+    )
+
+
+def test_fresh_published_result_download_streams_and_atomically_completes(
+    tmp_path: Path,
+) -> None:
+    source = published_file()
+    response = FakeResponse(b"abc", b"def")
+    with patch("datadec.data.download.urlopen", return_value=response) as open_url:
+        result = download._download_published_result_file(
+            DataDecidePaths(tmp_path), source, force=False
+        )
+
+    destination = tmp_path / "reference/published-results/outputs2/example.csv"
+    request = open_url.call_args.args[0]
+    assert isinstance(request, Request)
+    assert request.full_url == (
+        "https://drive.usercontent.google.com/download?id=drive-file-id"
+        "&export=download&confirm=t"
+    )
+    assert open_url.call_args.kwargs == {"timeout": download._DOWNLOAD_TIMEOUT_SECONDS}
+    assert request.get_header("Range") is None
+    assert destination.read_bytes() == b"abcdef"
+    assert not destination.with_name("example.csv.part").exists()
+    assert result == download.DownloadResult(
+        "published-results:outputs2/example.csv", destination, "downloaded"
+    )
+
+
+def test_published_result_download_resumes_valid_partial_with_range(
+    tmp_path: Path,
+) -> None:
+    source = published_file()
+    destination = tmp_path / "reference/published-results/outputs2/example.csv"
+    partial = destination.with_name("example.csv.part")
+    partial.parent.mkdir(parents=True)
+    partial.write_bytes(b"abc")
+    response = FakeResponse(
+        b"def",
+        status=206,
+        headers={"Content-Range": "bytes 3-5/6"},
+    )
+
+    with patch("datadec.data.download.urlopen", return_value=response) as open_url:
+        download._download_published_result_file(
+            DataDecidePaths(tmp_path), source, force=False
+        )
+
+    request = open_url.call_args.args[0]
+    assert request.get_header("Range") == "bytes=3-"
+    assert destination.read_bytes() == b"abcdef"
+    assert not partial.exists()
+
+
+def test_published_result_download_restarts_when_server_ignores_range(
+    tmp_path: Path,
+) -> None:
+    source = published_file()
+    destination = tmp_path / "reference/published-results/outputs2/example.csv"
+    partial = destination.with_name("example.csv.part")
+    partial.parent.mkdir(parents=True)
+    partial.write_bytes(b"old")
+
+    with patch(
+        "datadec.data.download.urlopen",
+        return_value=FakeResponse(b"abcdef", status=200),
+    ):
+        download._download_published_result_file(
+            DataDecidePaths(tmp_path), source, force=False
+        )
+
+    assert destination.read_bytes() == b"abcdef"
+
+
+def test_published_result_reuses_expected_size_and_force_redownloads(
+    tmp_path: Path,
+) -> None:
+    source = published_file()
+    destination = tmp_path / "reference/published-results/outputs2/example.csv"
+    destination.parent.mkdir(parents=True)
+    destination.write_bytes(b"stored")
+
+    with patch("datadec.data.download.urlopen") as open_url:
+        reused = download._download_published_result_file(
+            DataDecidePaths(tmp_path), source, force=False
+        )
+    open_url.assert_not_called()
+    assert reused.status == "reused"
+
+    with patch(
+        "datadec.data.download.urlopen",
+        return_value=FakeResponse(b"forced"),
+    ):
+        forced = download._download_published_result_file(
+            DataDecidePaths(tmp_path), source, force=True
+        )
+    assert forced.status == "downloaded"
+    assert destination.read_bytes() == b"forced"
+
+
+def test_published_result_rejects_mismatched_complete_file(
+    tmp_path: Path,
+) -> None:
+    source = published_file()
+    destination = tmp_path / "reference/published-results/outputs2/example.csv"
+    destination.parent.mkdir(parents=True)
+    destination.write_bytes(b"wrong")
+
+    with patch("datadec.data.download.urlopen") as open_url:
+        with pytest.raises(ValueError, match="existing file has unexpected size"):
+            download._download_published_result_file(
+                DataDecidePaths(tmp_path), source, force=False
+            )
+
+    open_url.assert_not_called()
+    assert destination.read_bytes() == b"wrong"
+
+
+def test_published_result_size_mismatch_keeps_only_partial_file(
+    tmp_path: Path,
+) -> None:
+    source = published_file()
+    with patch("datadec.data.download.urlopen", return_value=FakeResponse(b"short")):
+        with pytest.raises(RuntimeError, match="failed to download") as exc_info:
+            download._download_published_result_file(
+                DataDecidePaths(tmp_path), source, force=False
+            )
+
+    destination = tmp_path / "reference/published-results/outputs2/example.csv"
+    assert isinstance(exc_info.value.__cause__, ValueError)
+    assert not destination.exists()
+    assert destination.with_name("example.csv.part").read_bytes() == b"short"
+
+
+def test_published_result_failure_preserves_cause_and_completed_destination(
+    tmp_path: Path,
+) -> None:
+    source = published_file()
+    destination = tmp_path / "reference/published-results/outputs2/example.csv"
+    destination.parent.mkdir(parents=True)
+    destination.write_bytes(b"stored")
+    network_error = OSError("connection lost")
+    response = FakeResponse(b"new", error=network_error)
+
+    with patch("datadec.data.download.urlopen", return_value=response):
+        with pytest.raises(RuntimeError) as exc_info:
+            download._download_published_result_file(
+                DataDecidePaths(tmp_path), source, force=True
+            )
+
+    assert exc_info.value.__cause__ is network_error
+    assert destination.read_bytes() == b"stored"
+    assert destination.with_name("example.csv.part").read_bytes() == b"new"
+
+
+def test_drive_selectors_are_disjoint_complete_and_deterministic(
+    tmp_path: Path,
+) -> None:
+    files = (
+        published_file(
+            path="raw_data/second.csv",
+            expected_size=1,
+            category="scaling_law",
+            file_id="raw-2",
+        ),
+        published_file(
+            path="outputs2/second.csv", expected_size=1, file_id="published-2"
+        ),
+        published_file(
+            path="raw_data/first.csv",
+            expected_size=1,
+            category="scaling_law",
+            file_id="raw-1",
+        ),
+        published_file(
+            path="outputs2/first.csv", expected_size=1, file_id="published-1"
+        ),
+    )
+    manifest = PublishedResultsManifest(
+        folder_url=PUBLISHED_RESULTS_FOLDER_URL, files=files
+    )
+    for file in files:
+        destination = download._published_result_destination(
+            DataDecidePaths(tmp_path), file
+        )
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(b"x")
+
+    scaling = download_sources(
+        DataDecidePaths(tmp_path),
+        scaling_law=True,
+        published_results_manifest=manifest,
+    )
+    published = download_sources(
+        DataDecidePaths(tmp_path),
+        published_results=True,
+        published_results_manifest=manifest,
+    )
+    combined = download_sources(
+        DataDecidePaths(tmp_path),
+        scaling_law=True,
+        published_results=True,
+        published_results_manifest=manifest,
+    )
+
+    assert [result.source for result in scaling] == [
+        "scaling-law:raw_data/second.csv",
+        "scaling-law:raw_data/first.csv",
+    ]
+    assert [result.source for result in published] == [
+        "published-results:outputs2/second.csv",
+        "published-results:outputs2/first.csv",
+    ]
+    assert [result.source for result in combined] == [
+        *[result.source for result in scaling],
+        *[result.source for result in published],
+    ]
+    assert len({result.destination for result in combined}) == 4

@@ -1,15 +1,32 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from pathlib import Path
+from pathlib import Path, PurePosixPath
+import re
 from typing import Literal, Sequence
+from urllib.request import Request, urlopen
 
 from datasets import load_dataset
 from huggingface_hub import hf_hub_download
 
-from datadec.config import DatasetSource, DetailSource, SourceManifest
-from datadec.config import load_source_manifest
+from datadec.config import (
+    DatasetSource,
+    DetailSource,
+    PublishedResultFile,
+    PublishedResultsManifest,
+    SourceManifest,
+    load_published_results_manifest,
+    load_source_manifest,
+)
 from datadec.data.paths import DataDecidePaths
+
+_GOOGLE_DRIVE_DOWNLOAD_URL = (
+    "https://drive.usercontent.google.com/download?id={file_id}"
+    "&export=download&confirm=t"
+)
+_DOWNLOAD_CHUNK_SIZE = 1024 * 1024
+_DOWNLOAD_TIMEOUT_SECONDS = 60
+_CONTENT_RANGE_PATTERN = re.compile(r"bytes (\d+)-(\d+)/(\d+)")
 
 
 @dataclass(frozen=True, slots=True)
@@ -88,32 +105,152 @@ def _download_detail_source(
     return DownloadResult(result_source, destination, "downloaded")
 
 
+def _published_result_destination(
+    paths: DataDecidePaths, source: PublishedResultFile
+) -> Path:
+    relative_path = PurePosixPath(source.path)
+    if source.category == "scaling_law":
+        return paths.data_dir / "raw" / "scaling-law" / relative_path.name
+    return (
+        paths.data_dir / "reference" / "published-results" / Path(*relative_path.parts)
+    )
+
+
+def _response_status(response: object) -> int:
+    status = getattr(response, "status", None)
+    if status is not None:
+        return int(status)
+    getcode = getattr(response, "getcode")
+    return int(getcode())
+
+
+def _download_published_result_file(
+    paths: DataDecidePaths,
+    source: PublishedResultFile,
+    *,
+    force: bool,
+) -> DownloadResult:
+    destination = _published_result_destination(paths, source)
+    result_source = f"{source.category.replace('_', '-')}:{source.path}"
+    if destination.exists() and not force:
+        actual_size = destination.stat().st_size
+        if actual_size != source.expected_size:
+            raise ValueError(
+                f"existing file has unexpected size for {source.path}: "
+                f"{destination} has {actual_size} bytes, expected "
+                f"{source.expected_size}"
+            )
+        return DownloadResult(result_source, destination, "reused")
+
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    partial = destination.with_name(f"{destination.name}.part")
+    partial_size = 0 if force or not partial.exists() else partial.stat().st_size
+    if partial_size > source.expected_size:
+        raise ValueError(
+            f"partial file has unexpected size for {source.path}: {partial} has "
+            f"{partial_size} bytes, expected at most {source.expected_size}"
+        )
+    if partial_size == source.expected_size and not force:
+        partial.replace(destination)
+        return DownloadResult(result_source, destination, "downloaded")
+
+    request = Request(
+        _GOOGLE_DRIVE_DOWNLOAD_URL.format(file_id=source.id),
+        headers={"Range": f"bytes={partial_size}-"} if partial_size else {},
+    )
+    try:
+        with urlopen(  # noqa: S310 - pinned HTTPS endpoint
+            request, timeout=_DOWNLOAD_TIMEOUT_SECONDS
+        ) as response:
+            status = _response_status(response)
+            mode = "wb"
+            if partial_size:
+                if status == 206:
+                    content_range = response.headers.get("Content-Range", "")
+                    match = _CONTENT_RANGE_PATTERN.fullmatch(content_range)
+                    if (
+                        match is None
+                        or int(match.group(1)) != partial_size
+                        or int(match.group(2)) != source.expected_size - 1
+                        or int(match.group(3)) != source.expected_size
+                    ):
+                        raise ValueError(
+                            f"invalid Content-Range for resume: {content_range!r}"
+                        )
+                    mode = "ab"
+                elif status != 200:
+                    raise ValueError(f"unexpected HTTP status {status} while resuming")
+            elif status != 200:
+                raise ValueError(f"unexpected HTTP status {status}")
+
+            with partial.open(mode) as file:
+                while chunk := response.read(_DOWNLOAD_CHUNK_SIZE):
+                    file.write(chunk)
+
+        actual_size = partial.stat().st_size
+        if actual_size != source.expected_size:
+            raise ValueError(
+                f"downloaded {actual_size} bytes, expected {source.expected_size}"
+            )
+        partial.replace(destination)
+    except Exception as exc:
+        raise RuntimeError(
+            f"failed to download {source.path} to {destination}"
+        ) from exc
+
+    return DownloadResult(result_source, destination, "downloaded")
+
+
 def download_sources(
     paths: DataDecidePaths,
     *,
     ppl: bool = False,
     olmes: bool = False,
     olmes_details: Sequence[str] = (),
+    scaling_law: bool = False,
+    published_results: bool = False,
     force: bool = False,
     verbose: bool = False,
     manifest: SourceManifest | None = None,
+    published_results_manifest: PublishedResultsManifest | None = None,
 ) -> list[DownloadResult]:
-    if not ppl and not olmes and not olmes_details:
+    if (
+        not ppl
+        and not olmes
+        and not olmes_details
+        and not scaling_law
+        and not published_results
+    ):
         raise ValueError("select at least one source to download")
 
     manifest = manifest or load_source_manifest()
     detail_recipes = resolve_olmes_detail_recipes(olmes_details, manifest.olmes_details)
     results: list[DownloadResult] = []
+
+    def record(result: DownloadResult) -> None:
+        results.append(result)
+        if verbose:
+            print(f"{result.source}: {result.status} -> {result.destination}")
+
     if ppl:
-        results.append(_download_dataset_source(paths, manifest.ppl, force=force))
+        record(_download_dataset_source(paths, manifest.ppl, force=force))
     if olmes:
-        results.append(_download_dataset_source(paths, manifest.olmes, force=force))
+        record(_download_dataset_source(paths, manifest.olmes, force=force))
     for recipe in detail_recipes:
-        results.append(
+        record(
             _download_detail_source(paths, manifest.olmes_details, recipe, force=force)
         )
 
-    if verbose:
-        for result in results:
-            print(f"{result.source}: {result.status} -> {result.destination}")
+    if scaling_law or published_results:
+        drive_manifest = published_results_manifest or load_published_results_manifest()
+        categories = []
+        if scaling_law:
+            categories.append("scaling_law")
+        if published_results:
+            categories.append("published_results")
+        for category in categories:
+            for source in drive_manifest.files:
+                if source.category == category:
+                    record(_download_published_result_file(paths, source, force=force))
+
     return results

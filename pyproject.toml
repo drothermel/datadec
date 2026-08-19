@@ -32,6 +32,7 @@ packages = ["src/datadec"]
 [tool.hatch.build.targets.wheel.force-include]
 "configs/catalog.toml" = "datadec/configs/catalog.toml"
 "configs/olmes.toml" = "datadec/configs/olmes.toml"
+"configs/published_results.toml" = "datadec/configs/published_results.toml"
 "configs/sources.toml" = "datadec/configs/sources.toml"
 
 [tool.ruff]
