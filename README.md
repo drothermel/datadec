@@ -11,8 +11,10 @@ Artifacts live under `data/` by default:
 | `raw/ppl.parquet` | Raw perplexity export |
 | `raw/olmes.parquet` | Raw aggregate OLMES export |
 | `raw/olmes-details/models/{recipe}.tar.gz` | Per-recipe OLMES detail archives |
-| `raw/scaling-law/{file}.csv` | Three raw scaling-law CSV inputs |
-| `reference/published-results/{source path}` | Published result artifacts with their Drive-relative paths |
+| `raw/scaling-law/results_ladder_5xC_seeds.csv` | Google Drive: main raw scaling-law results |
+| `raw/scaling-law/results_ladder_5xC_small_seed_extras.csv` | Google Drive: additional small-model seed results |
+| `raw/scaling-law/results_ladder_5xC_small_seeds_extra_real.csv` | Google Drive: additional 6M-16M model results |
+| `reference/published-results/{source path}` | Google Drive: 131 published result artifacts preserving their source-relative paths |
 | `processed/ppl.parquet` | Typed PPL output |
 | `processed/olmes.parquet` | Typed aggregate OLMES output |
 | `processed/olmes-details/{recipe}/tasks.parquet` | Detail task summaries |
