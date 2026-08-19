@@ -3,17 +3,27 @@ from __future__ import annotations
 from collections import defaultdict
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
+import json
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, TypeAlias
 
+import duckdb
 import numpy as np
 import orjson
 import pandas as pd
+import pyarrow.parquet as pq
 from dr_ds import coerce_float
 
 from datadec.config import OLMESContract, load_olmes_contract
 from datadec.data import constants as consts
 from datadec.data.paths import DataDecidePaths
+from datadec.data.preprocess.duckdb import (
+    duckdb_type,
+    prepare_parquet_export,
+    quote_identifier,
+    replace_parquet_exports,
+    sql_literal,
+)
 from datadec.data.preprocess.ppl import _normalize_step
 
 if TYPE_CHECKING:
@@ -95,6 +105,13 @@ def _assert_output_schema_parity(contract: OLMESContract) -> None:
         raise AssertionError(
             "OLMES identity columns drift from contract: "
             f"expected={expected_identity!r}, actual={identity!r}"
+        )
+
+    expected_columns = (*expected_identity, *contract.metrics.aggregate)
+    if expected != expected_columns:
+        raise AssertionError(
+            "OLMES aggregate columns drift from contract metrics: "
+            f"expected={expected_columns!r}, actual={expected!r}"
         )
 
     source_metrics = _source_metric_columns(contract)
@@ -230,21 +247,69 @@ def preprocess_olmes(
     verbose: bool = False,
 ) -> OlmesPreprocessResult:
     contract = load_olmes_contract()
+    _assert_output_schema_parity(contract)
     resolved_input = input_path or paths.get_path("dwn_raw")
     resolved_output = output_path or paths.get_path("olmes_processed")
 
-    olmes_df = pd.read_parquet(resolved_input)
-    grouped = group_olmes_rows(olmes_df, contract=contract)
-    output_df = flatten_olmes_rows(grouped, contract=contract)
+    from datadec.data.ingest.enums import DataRecipeName, ModelSizeName, Seed
 
-    resolved_output.parent.mkdir(parents=True, exist_ok=True)
-    output_df.to_parquet(resolved_output, index=False)
+    parquet_file = pq.ParquetFile(resolved_input)
+    connection = duckdb.connect()
+    try:
+        if parquet_file.metadata.num_rows == 0:
+            select_sql = _empty_output_select_sql(contract)
+            training_run_count = 0
+        else:
+            raw_columns = set(parquet_file.schema_arrow.names)
+            row_index_column = "_datadec_row_index"
+            while row_index_column in raw_columns:
+                row_index_column = f"_{row_index_column}"
+            connection.execute(
+                f"""
+                CREATE TEMP VIEW _olmes_raw AS
+                SELECT *, row_number() OVER () - 1
+                    AS {quote_identifier(row_index_column)}
+                FROM read_parquet({sql_literal(resolved_input)})
+                """
+            )
+            _validate_raw_olmes(
+                connection,
+                contract=contract,
+                raw_columns=raw_columns,
+                row_index_column=row_index_column,
+                model_sizes=tuple(item.value for item in ModelSizeName),
+                data_recipes=tuple(item.value for item in DataRecipeName),
+                seeds=tuple(item.value for item in Seed),
+            )
+            select_sql = _output_select_sql(contract)
+            training_run_count_row = connection.execute(
+                """
+                SELECT count(DISTINCT (
+                    CAST(params AS VARCHAR),
+                    CAST(data AS VARCHAR),
+                    CAST(seed AS VARCHAR)
+                ))
+                FROM _olmes_raw
+                """
+            ).fetchone()
+            assert training_run_count_row is not None
+            training_run_count = training_run_count_row[0]
+
+        export = prepare_parquet_export(
+            connection,
+            select_sql=select_sql,
+            output_path=resolved_output,
+            key_value_metadata={"pandas": _pandas_parquet_metadata(contract)},
+        )
+        replace_parquet_exports((export,))
+    finally:
+        connection.close()
 
     result = OlmesPreprocessResult(
         input_path=resolved_input,
         output_path=resolved_output,
-        row_count=len(output_df),
-        training_run_count=len(grouped),
+        row_count=export.row_count,
+        training_run_count=training_run_count,
     )
     if verbose:
         print(f"olmes input: {result.input_path}")
@@ -252,6 +317,313 @@ def preprocess_olmes(
         print(f"olmes rows: {result.row_count}")
         print(f"olmes training runs: {result.training_run_count}")
     return result
+
+
+def _pandas_parquet_metadata(contract: OLMESContract) -> str:
+    columns = []
+    for column in contract.tables.aggregate.columns:
+        pandas_type = numpy_type = column.logical_type
+        if column.logical_type == "string":
+            pandas_type = "object"
+            numpy_type = "string"
+        columns.append(
+            {
+                "name": column.name,
+                "field_name": column.name,
+                "pandas_type": pandas_type,
+                "numpy_type": numpy_type,
+                "metadata": None,
+            }
+        )
+    return json.dumps(
+        {
+            "index_columns": [],
+            "column_indexes": [],
+            "columns": columns,
+            "attributes": {},
+            "creator": {"library": "duckdb"},
+            "pandas_version": pd.__version__,
+        },
+        separators=(",", ":"),
+    )
+
+
+def _metrics_json_sql() -> str:
+    metrics = quote_identifier("metrics")
+    return (
+        "CASE "
+        f"WHEN typeof({metrics}) IN ('VARCHAR', 'BLOB') "
+        f"THEN replace(CAST({metrics} AS VARCHAR), "
+        f"{sql_literal(chr(39))}, {sql_literal(chr(34))}) "
+        f"ELSE CAST(to_json({metrics}) AS VARCHAR) END"
+    )
+
+
+def _normalized_int64_sql(column: str) -> str:
+    text = f"trim(CAST({quote_identifier(column)} AS VARCHAR))"
+    return f"CAST({text} AS BIGINT)"
+
+
+def _validate_raw_olmes(
+    connection: duckdb.DuckDBPyConnection,
+    *,
+    contract: OLMESContract,
+    raw_columns: set[str],
+    row_index_column: str,
+    model_sizes: tuple[str, ...],
+    data_recipes: tuple[str, ...],
+    seeds: tuple[str, ...],
+) -> None:
+    required_columns = (*_identity_columns(contract), "metrics")
+    missing = [column for column in required_columns if column not in raw_columns]
+    if missing:
+        raise ValueError(f"missing required OLMES input columns: {missing!r}")
+
+    row_index = quote_identifier(row_index_column)
+    conditions: list[tuple[str, str]] = []
+    for column, allowed in (
+        ("params", model_sizes),
+        ("data", data_recipes),
+        ("seed", seeds),
+    ):
+        identifier = quote_identifier(column)
+        allowed_sql = ", ".join(sql_literal(value) for value in allowed)
+        conditions.append(
+            (
+                column,
+                f"{identifier} IS NULL "
+                f"OR CAST({identifier} AS VARCHAR) NOT IN ({allowed_sql})",
+            )
+        )
+
+    for column in ("task", "chinchilla"):
+        identifier = quote_identifier(column)
+        conditions.append(
+            (
+                column,
+                f"{identifier} IS NULL OR isnan(try_cast({identifier} AS DOUBLE))",
+            )
+        )
+
+    for column in ("step", "tokens"):
+        identifier = quote_identifier(column)
+        text = f"trim(CAST({identifier} AS VARCHAR))"
+        decimal_value = f"try_cast({text} AS DECIMAL(38, 18))"
+        conditions.append(
+            (
+                column,
+                f"{identifier} IS NULL "
+                f"OR typeof({identifier}) = 'BOOLEAN' "
+                f"OR {decimal_value} IS NULL "
+                f"OR {decimal_value} <> trunc({decimal_value}) "
+                f"OR try_cast({text} AS BIGINT) IS NULL",
+            )
+        )
+
+    compute = quote_identifier("compute")
+    compute_value = f"try_cast(trim(CAST({compute} AS VARCHAR)) AS DOUBLE)"
+    conditions.append(
+        (
+            "compute",
+            f"{compute} IS NULL "
+            f"OR typeof({compute}) = 'BOOLEAN' "
+            f"OR {compute_value} IS NULL "
+            f"OR NOT isfinite({compute_value})",
+        )
+    )
+
+    metrics_json = quote_identifier("_datadec_metrics_json")
+    conditions.extend(
+        (
+            (
+                "metrics_json",
+                f"{metrics_json} IS NULL OR NOT json_valid({metrics_json})",
+            ),
+            (
+                "metrics_object",
+                f"json_type(try_cast({metrics_json} AS JSON)) <> 'OBJECT'",
+            ),
+        )
+    )
+    invalid_kind = (
+        "CASE "
+        + " ".join(
+            f"WHEN {condition} THEN {sql_literal(kind)}"
+            for kind, condition in conditions
+        )
+        + " END"
+    )
+    invalid = connection.execute(
+        f"""
+        SELECT {row_index}, invalid_kind
+        FROM (
+            SELECT *, {invalid_kind} AS invalid_kind
+            FROM (
+                SELECT *, {_metrics_json_sql()} AS {metrics_json}
+                FROM _olmes_raw
+            )
+        )
+        WHERE invalid_kind IS NOT NULL
+        ORDER BY {row_index}
+        LIMIT 1
+        """
+    ).fetchone()
+    if invalid is not None:
+        invalid_row_index, kind = invalid
+        source_column = "metrics" if kind.startswith("metrics_") else kind
+        value_row = connection.execute(
+            f"""
+            SELECT {quote_identifier(source_column)}
+            FROM _olmes_raw
+            WHERE {row_index} = ?
+            """,
+            [invalid_row_index],
+        ).fetchone()
+        assert value_row is not None
+        value = value_row[0]
+        if kind == "metrics_json":
+            raise ValueError(
+                f"invalid OLMES metrics at row {invalid_row_index}: {value!r}; "
+                "expected a valid JSON or Python-dict object"
+            )
+        if kind == "metrics_object":
+            raise ValueError(
+                f"invalid OLMES metrics at row {invalid_row_index}: {value!r}; "
+                "expected an object payload"
+            )
+        if kind in {"params", "data", "seed"}:
+            raise ValueError(
+                f"unknown OLMES {kind} at row {invalid_row_index}: {value!r}"
+            )
+        if kind in {"task", "chinchilla"}:
+            raise ValueError(
+                f"invalid OLMES {kind} at row {invalid_row_index}: {value!r}; "
+                "expected a non-null string"
+            )
+        if kind == "step":
+            raise ValueError(
+                f"invalid PPL step at row {invalid_row_index}: {value!r}; "
+                "expected a finite integral int64 value"
+            )
+        if kind == "tokens":
+            raise ValueError(
+                f"invalid OLMES tokens at row {invalid_row_index}: {value!r}; "
+                "expected a finite integral int64 value"
+            )
+        assert kind == "compute"
+        raise ValueError(
+            f"invalid OLMES compute at row {invalid_row_index}: {value!r}; "
+            "expected a finite float64 value"
+        )
+
+    normalized_step = _normalized_int64_sql("step")
+    duplicate = connection.execute(
+        f"""
+        SELECT {row_index}, params, data, seed, normalized_step, task
+        FROM (
+            SELECT
+                {row_index},
+                CAST(params AS VARCHAR) AS params,
+                CAST(data AS VARCHAR) AS data,
+                CAST(seed AS VARCHAR) AS seed,
+                {normalized_step} AS normalized_step,
+                CAST(task AS VARCHAR) AS task,
+                row_number() OVER (
+                    PARTITION BY params, data, seed, {normalized_step}, task
+                    ORDER BY {row_index}
+                ) AS duplicate_ordinal
+            FROM _olmes_raw
+        )
+        WHERE duplicate_ordinal > 1
+        ORDER BY {row_index}
+        LIMIT 1
+        """
+    ).fetchone()
+    if duplicate is not None:
+        row_index_value, params, data, seed, step, task = duplicate
+        raise ValueError(
+            f"duplicate OLMES row at row {row_index_value}: "
+            f"params={params!r}, data={data!r}, seed={seed!r}, "
+            f"step={step}, task={task!r}"
+        )
+
+
+def _empty_output_select_sql(contract: OLMESContract) -> str:
+    expressions = [
+        f"CAST(NULL AS {duckdb_type(column.logical_type)}) "
+        f"AS {quote_identifier(column.name)}"
+        for column in contract.tables.aggregate.columns
+    ]
+    return f"SELECT {', '.join(expressions)} WHERE false"
+
+
+def _coerced_metric_sql(metrics_identifier: str, field: str) -> str:
+    raw_value = f"{metrics_identifier}.{quote_identifier(field)}"
+    converted = f"try_cast(trim({raw_value}) AS DOUBLE)"
+    return f"CASE WHEN isfinite({converted}) THEN {converted} ELSE NULL END"
+
+
+def _output_select_sql(contract: OLMESContract) -> str:
+    source_metric_columns = _source_metric_columns(contract)
+    metrics_schema = json.dumps(
+        {field: "VARCHAR" for field in source_metric_columns},
+        separators=(",", ":"),
+    )
+    parsed_metrics = quote_identifier("_datadec_metrics")
+    identity_expressions = [
+        f"CAST({quote_identifier(column)} AS {duckdb_type('string')}) "
+        f"AS {quote_identifier(column)}"
+        for column in ("params", "data", "seed")
+    ]
+    identity_expressions.extend(
+        (
+            f"{_normalized_int64_sql('step')} AS step",
+            f"CAST(task AS {duckdb_type('string')}) AS task",
+            f"CAST(chinchilla AS {duckdb_type('string')}) AS chinchilla",
+            f"{_normalized_int64_sql('tokens')} AS tokens",
+            f"CAST(trim(CAST(compute AS VARCHAR)) AS {duckdb_type('float64')}) "
+            "AS compute",
+        )
+    )
+    metric_expressions = [
+        f"{_coerced_metric_sql(parsed_metrics, field)} AS {quote_identifier(field)}"
+        for field in source_metric_columns
+    ]
+    policy = contract.metrics.aggregate_primary_metric.model_dump()
+    primary_cases = [
+        f"WHEN starts_with(task, 'mmlu_') THEN {quote_identifier(policy['mmlu'])}"
+    ]
+    primary_cases.extend(
+        f"WHEN task = {sql_literal(task)} THEN {quote_identifier(metric)}"
+        for task, metric in policy.items()
+        if task != "mmlu"
+    )
+    primary_metric = "CASE " + " ".join(primary_cases) + " ELSE NULL END"
+    non_primary_output_columns = ", ".join(
+        quote_identifier(column) for column in _output_columns(contract)[:-1]
+    )
+    sort_key = ", ".join(
+        quote_identifier(column) for column in contract.tables.aggregate.sort_key
+    )
+    return f"""
+        WITH parsed AS (
+            SELECT
+                *,
+                from_json({_metrics_json_sql()}, {sql_literal(metrics_schema)})
+                    AS {parsed_metrics}
+            FROM _olmes_raw
+        ),
+        coerced AS (
+            SELECT
+                {", ".join(identity_expressions)},
+                {", ".join(metric_expressions)}
+            FROM parsed
+        )
+        SELECT {non_primary_output_columns},
+               {primary_metric} AS primary_metric
+        FROM coerced
+        ORDER BY {sort_key}
+    """
 
 
 def _parse_metrics_payload(raw: Any) -> dict[str, Any]:

@@ -4,6 +4,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 import numpy as np
+import orjson
 import pandas as pd
 import pytest
 
@@ -238,6 +239,191 @@ def test_empty_input_writes_exact_typed_schema(tmp_path: Path) -> None:
         "compute": np.dtype("float64"),
         **{field: np.dtype("float64") for field in AGGREGATE_METRICS},
     }
+
+
+def test_preprocess_projects_sorts_and_counts_without_grouping_helpers(
+    tmp_path: Path,
+) -> None:
+    paths = DataDecidePaths(tmp_path)
+    input_path = paths.get_path("dwn_raw")
+    input_path.parent.mkdir(parents=True)
+    records = [
+        _raw_record(
+            params="4M",
+            data="C4",
+            seed="default",
+            step=200,
+            task="arc_challenge",
+            metrics={
+                "correct_choice": True,
+                "acc_raw": "0.31",
+                "acc_per_token": None,
+                "acc_per_char": "not numeric",
+                "acc_per_byte": {},
+                "acc_uncond": 0.42,
+                "no_answer": "NaN",
+                "sum_logits_corr": "Infinity",
+                "predicted_index_raw": 3,
+            },
+        ),
+        _raw_record(
+            params="10M",
+            data="C4",
+            seed="small aux 2",
+            step=300,
+            task="mmlu_college_biology",
+            metrics={"acc_raw": "0.55", "acc_uncond": 0.44},
+        ),
+        _raw_record(
+            params="4M",
+            data="C4",
+            seed="default",
+            step=100,
+            task="boolq",
+            metrics={"acc_raw": 0.61},
+        ),
+    ]
+    records[0]["metrics"] = orjson.dumps(records[0]["metrics"]).decode()
+    records[1]["metrics"] = repr(records[1]["metrics"])
+    records[2]["metrics"] = repr(records[2]["metrics"])
+    pd.DataFrame(records).to_parquet(input_path, index=False)
+
+    with (
+        patch(
+            "datadec.data.preprocess.olmes.group_olmes_rows",
+            side_effect=AssertionError("preprocessing must use DuckDB"),
+        ),
+        patch(
+            "datadec.data.preprocess.olmes.flatten_olmes_rows",
+            side_effect=AssertionError("preprocessing must use DuckDB"),
+        ),
+    ):
+        result = preprocess_olmes(paths)
+
+    output_path = paths.get_path("olmes_processed")
+    output = pd.read_parquet(output_path)
+    assert result.row_count == 3
+    assert result.training_run_count == 2
+    assert tuple(output.columns) == OUTPUT_COLUMNS
+    assert output.dtypes.to_dict() == {
+        "params": pd.StringDtype(),
+        "data": pd.StringDtype(),
+        "seed": pd.StringDtype(),
+        "step": np.dtype("int64"),
+        "task": pd.StringDtype(),
+        "chinchilla": pd.StringDtype(),
+        "tokens": np.dtype("int64"),
+        "compute": np.dtype("float64"),
+        **{field: np.dtype("float64") for field in AGGREGATE_METRICS},
+    }
+    assert list(
+        output.loc[:, ["params", "data", "seed", "step", "task"]].itertuples(
+            index=False, name=None
+        )
+    ) == [
+        ("10M", "C4", "small aux 2", 300, "mmlu_college_biology"),
+        ("4M", "C4", "default", 100, "boolq"),
+        ("4M", "C4", "default", 200, "arc_challenge"),
+    ]
+    assert output.loc[0, "primary_metric"] == 0.55
+    assert output.loc[2, "acc_raw"] == 0.31
+    assert output.loc[2, "acc_uncond"] == 0.42
+    assert output.loc[2, "primary_metric"] == 0.42
+    for field in (
+        "correct_choice",
+        "acc_per_token",
+        "acc_per_char",
+        "acc_per_byte",
+        "no_answer",
+        "sum_logits_corr",
+    ):
+        assert pd.isna(output.loc[2, field])
+    assert "predicted_index_raw" not in output.columns
+    assert not output_path.with_name(f".{output_path.name}.tmp").exists()
+
+
+@pytest.mark.parametrize(
+    ("metrics", "expected"),
+    [
+        ("{'acc_raw':", "expected a valid JSON or Python-dict object"),
+        ("[]", "expected an object payload"),
+        ("null", "expected an object payload"),
+        ("1", "expected an object payload"),
+    ],
+    ids=["malformed", "array", "null", "scalar"],
+)
+def test_preprocess_rejects_malformed_or_non_object_metrics_with_row_context(
+    tmp_path: Path,
+    metrics: str,
+    expected: str,
+) -> None:
+    paths = DataDecidePaths(tmp_path)
+    input_path = paths.get_path("dwn_raw")
+    input_path.parent.mkdir(parents=True)
+    pd.DataFrame([_raw_record(metrics={}) | {"metrics": metrics}]).to_parquet(
+        input_path, index=False
+    )
+
+    with pytest.raises(ValueError) as exc_info:
+        preprocess_olmes(paths)
+
+    message = str(exc_info.value)
+    assert "invalid OLMES metrics at row 0" in message
+    assert repr(metrics) in message
+    assert expected in message
+
+
+@pytest.mark.parametrize(
+    ("field", "value", "message"),
+    [
+        ("step", 1.5, "invalid PPL step at row 0"),
+        ("tokens", np.inf, "invalid OLMES tokens at row 0"),
+        ("tokens", 2**63, "invalid OLMES tokens at row 0"),
+        ("compute", np.nan, "invalid OLMES compute at row 0"),
+        ("compute", np.inf, "invalid OLMES compute at row 0"),
+        ("compute", "malformed", "invalid OLMES compute at row 0"),
+    ],
+)
+def test_preprocess_rejects_invalid_numeric_boundaries_with_row_context(
+    tmp_path: Path,
+    field: str,
+    value: object,
+    message: str,
+) -> None:
+    paths = DataDecidePaths(tmp_path)
+    input_path = paths.get_path("dwn_raw")
+    input_path.parent.mkdir(parents=True)
+    record = _raw_record()
+    record[field] = value
+    record["metrics"] = repr(record["metrics"])
+    pd.DataFrame([record]).to_parquet(input_path, index=False)
+
+    with pytest.raises(ValueError) as exc_info:
+        preprocess_olmes(paths)
+
+    assert message in str(exc_info.value)
+    expected_value = None if isinstance(value, float) and np.isnan(value) else value
+    assert repr(expected_value) in str(exc_info.value)
+
+
+def test_preprocess_rejects_duplicate_normalized_primary_key(tmp_path: Path) -> None:
+    paths = DataDecidePaths(tmp_path)
+    input_path = paths.get_path("dwn_raw")
+    input_path.parent.mkdir(parents=True)
+    records = [
+        _raw_record(step=1250, task="boolq"),
+        _raw_record(step=1250.0, task="boolq"),
+    ]
+    for record in records:
+        record["metrics"] = repr(record["metrics"])
+    pd.DataFrame(records).to_parquet(input_path, index=False)
+
+    with pytest.raises(ValueError, match="duplicate OLMES row at row 1") as exc:
+        preprocess_olmes(paths)
+
+    assert "params='4M', data='C4', seed='default', step=1250, task='boolq'" in str(
+        exc.value
+    )
 
 
 def test_schema_drift_guard_rejects_mismatched_identity_columns() -> None:
