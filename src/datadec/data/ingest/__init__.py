@@ -12,10 +12,7 @@ from datadec.data.ingest.metrics import PerplexityMetrics, TaskEvalMetrics
 from datadec.data.ingest.registries import (
     ModelDetails,
     ModelRegistry,
-    RecipeDetails,
-    RecipeRegistry,
     load_model_registry,
-    load_recipe_registry,
 )
 from datadec.data.ingest.run import TrainingRun
 
@@ -26,8 +23,6 @@ __all__ = [
     "ModelRegistry",
     "ModelSizeName",
     "PerplexityMetrics",
-    "RecipeDetails",
-    "RecipeRegistry",
     "Seed",
     "Task",
     "TaskEvalMetrics",
@@ -37,5 +32,4 @@ __all__ = [
     "ingest_from_hf",
     "load_from_cache",
     "load_model_registry",
-    "load_recipe_registry",
 ]

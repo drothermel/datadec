@@ -5,7 +5,6 @@ import pandas as pd
 from datadec.data import df_utils, model_utils, parsing
 from datadec.data.download import download_sources
 from datadec.data.paths import DataDecidePaths
-from datadec.data.recipe_details import get_data_recipe_details_df
 
 
 def verbose_print(msg: str, verbose: bool = False) -> None:
@@ -73,14 +72,11 @@ class DataPipeline:
         verbose_print(f"Wrote to {ppl_parsed_path}", verbose)
 
     def merge_datasets(self, verbose: bool = False) -> None:
-        verbose_print("Merging ppl, dwn, dataset and model detail dfs", verbose)
+        verbose_print("Merging ppl, dwn, and model detail dfs", verbose)
         full_eval_raw = parsing.merge_all_dfs(
             dwn_raw_df=pd.read_parquet(self.paths.get_path("dwn_raw")),
             ppl_parsed_df=pd.read_parquet(self.paths.get_path("ppl_parsed")),
             dwn_parsed_df=pd.read_parquet(self.paths.get_path("dwn_parsed")),
-            dataset_details_df=get_data_recipe_details_df(
-                self.paths.ds_details_csv_path
-            ),
             model_details_df=model_utils.get_model_details_df(),
             add_token_compute=True,
         )

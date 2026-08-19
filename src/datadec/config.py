@@ -171,10 +171,7 @@ def load_source_manifest() -> SourceManifest:
     return SourceManifest.model_validate(_load_toml("sources.toml"))
 
 
-DATASET_FEATURES_CSV: Traversable = config_file("dataset_features.csv")
-
 __all__ = [
-    "DATASET_FEATURES_CSV",
     "ArchiveSource",
     "DataDecideCatalog",
     "DatasetSource",

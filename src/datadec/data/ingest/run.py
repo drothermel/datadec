@@ -7,7 +7,6 @@ from pydantic import BaseModel, ConfigDict, model_validator
 from datadec.data.ingest.checkpoint import EvalCheckpoint
 from datadec.data.ingest.enums import DataRecipeName, ModelSizeName, Seed
 from datadec.data.ingest.registries.model_details import ModelDetails
-from datadec.data.ingest.registries.recipe_details import RecipeDetails
 
 
 class TrainingRun(BaseModel):
@@ -17,7 +16,6 @@ class TrainingRun(BaseModel):
     data: DataRecipeName
     seed: Seed
     model_details: ModelDetails
-    recipe_details: RecipeDetails
     checkpoints: list[EvalCheckpoint]
 
     @model_validator(mode="after")

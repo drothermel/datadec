@@ -1,13 +1,8 @@
 from __future__ import annotations
 
 from datetime import date
-from importlib.resources import as_file
-
-import pandas as pd
 
 from datadec.config import (
-    DATASET_FEATURES_CSV,
-    config_file,
     load_catalog,
     load_source_manifest,
 )
@@ -96,12 +91,3 @@ def test_source_manifest_identifies_download_inputs_and_provenance() -> None:
         "recipes": OLMES_DETAIL_RECIPES,
     }
     assert manifest.archives[0].downloaded_on == date(2025, 9, 19)
-
-
-def test_dataset_features_csv_loads_from_configs() -> None:
-    assert config_file("dataset_features.csv") == DATASET_FEATURES_CSV
-    with as_file(DATASET_FEATURES_CSV) as csv_path:
-        features = pd.read_csv(csv_path)
-
-    assert len(features) == 25
-    assert features.iloc[0]["dataset"] == "Dolma1.7"

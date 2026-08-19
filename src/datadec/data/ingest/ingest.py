@@ -16,10 +16,6 @@ from datadec.data.ingest.registries.model_details import (
     ModelRegistry,
     load_model_registry,
 )
-from datadec.data.ingest.registries.recipe_details import (
-    RecipeRegistry,
-    load_recipe_registry,
-)
 from datadec.data.ingest.run import TrainingRun
 from datadec.data.paths import DataDecidePaths
 from datadec.data.pipeline import DataPipeline
@@ -41,7 +37,6 @@ def ingest_from_hf(
     dwn_df = pd.read_parquet(paths.get_path("dwn_raw"))
 
     model_registry = load_model_registry(dwn_df)
-    recipe_registry = load_recipe_registry(paths.ds_details_csv_path)
 
     if verbose:
         print(f">> ppl rows: {len(ppl_df)}")
@@ -66,7 +61,6 @@ def ingest_from_hf(
                 data=data,
                 seed=seed,
                 model_details=model_registry[params],
-                recipe_details=recipe_registry[data],
                 checkpoints=checkpoints,
             )
         )
@@ -173,7 +167,6 @@ def cache_to_jsonl(runs: list[TrainingRun], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     exclude_spec: Any = {
         "model_details": True,
-        "recipe_details": True,
         "checkpoints": {"__all__": _CHECKPOINT_COMPUTED_FIELDS},
     }
     payloads = [run.model_dump(mode="json", exclude=exclude_spec) for run in runs]
@@ -184,13 +177,10 @@ def load_from_cache(
     path: Path,
     *,
     model_registry: ModelRegistry,
-    recipe_registry: RecipeRegistry,
 ) -> list[TrainingRun]:
     runs: list[TrainingRun] = []
     for payload in srsly.read_jsonl(path):
         params = ModelSizeName(payload["params"])
-        data = DataRecipeName(payload["data"])
         payload["model_details"] = model_registry[params].model_dump()
-        payload["recipe_details"] = recipe_registry[data].model_dump()
         runs.append(TrainingRun.model_validate(payload))
     return runs

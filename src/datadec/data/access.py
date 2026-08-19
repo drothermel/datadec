@@ -10,13 +10,10 @@ from datadec.data import constants as consts
 from datadec.data import df_utils, model_utils, validation
 from datadec.data.paths import DataDecidePaths
 from datadec.data.pipeline import DataPipeline, verbose_print
-from datadec.data.recipe_details import get_data_recipe_details_df, get_data_recipe_family
 
 __all__ = [
     "DataDecide",
     "DataFrameLoader",
-    "get_data_recipe_details_df",
-    "get_data_recipe_family",
 ]
 
 
@@ -86,10 +83,6 @@ class DataDecide:
         self.loader.set_name(
             consts.MODEL_DETAILS_DF_NAME,
             model_utils.get_model_details_df(),
-        )
-        self.loader.set_name(
-            consts.DATASET_DETAILS_DF_NAME,
-            get_data_recipe_details_df(self.paths.ds_details_csv_path),
         )
         verbose_print("Finished setting up DataDecide.", verbose)
 

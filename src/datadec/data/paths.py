@@ -2,9 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from importlib.resources.abc import Traversable
-
-from datadec.config import DATASET_FEATURES_CSV, load_source_manifest
+from datadec.config import load_source_manifest
 
 DEFAULT_DATA_DIR = "./data"
 
@@ -30,8 +28,6 @@ class DataDecidePaths:
             "full_eval_melted": "full_eval_melted.parquet",
             "mean_eval_melted": "mean_eval_melted.parquet",
         }
-
-        self.ds_details_csv_path: Traversable = DATASET_FEATURES_CSV
 
     @property
     def available_dataframes(self) -> list[str]:

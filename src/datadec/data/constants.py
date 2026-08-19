@@ -6,7 +6,6 @@ from itertools import product
 from datadec.config import load_catalog
 
 MODEL_DETAILS_DF_NAME = "model_details"
-DATASET_DETAILS_DF_NAME = "dataset_details"
 
 THOUSAND = 1000
 MILLION = 1e6

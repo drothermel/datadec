@@ -117,7 +117,6 @@ def merge_all_dfs(
     dwn_raw_df: pd.DataFrame,
     ppl_parsed_df: pd.DataFrame,
     dwn_parsed_df: pd.DataFrame,
-    dataset_details_df: Optional[pd.DataFrame] = None,
     model_details_df: Optional[pd.DataFrame] = None,
     add_token_compute: bool = True,
 ) -> pd.DataFrame:
@@ -125,9 +124,6 @@ def merge_all_dfs(
 
     if add_token_compute:
         df = make_and_merge_step_to_token_compute_df(dwn_raw_df, df)
-
-    if dataset_details_df is not None:
-        df = df.merge(dataset_details_df, on="data", how="left")
 
     if model_details_df is not None:
         df = df.merge(model_details_df, on="params", how="left")

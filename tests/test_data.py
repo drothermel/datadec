@@ -10,42 +10,7 @@ from datadec.data import constants as consts
 from datadec.data.access import (
     DataDecide,
     DataFrameLoader,
-    get_data_recipe_details_df,
-    get_data_recipe_family,
 )
-
-
-class TestGetDataRecipeFamily:
-    def test_finds_family_for_known_recipe(self) -> None:
-        for family, names in consts.DATA_RECIPE_FAMILIES.items():
-            for name in names:
-                result = get_data_recipe_family(name)
-                assert result == family
-
-    def test_unknown_recipe_returns_unknown(self) -> None:
-        result = get_data_recipe_family("completely_unknown_recipe")
-        assert result == "unknown"
-
-    def test_custom_families_dict(self) -> None:
-        custom_families = {"test_family": ["recipe_a", "recipe_b"]}
-        result = get_data_recipe_family("recipe_a", custom_families)
-        assert result == "test_family"
-
-
-class TestGetDataRecipeDetailsDF:
-    def test_returns_dataframe(self, tmp_path: Path) -> None:
-        csv_path = tmp_path / "ds_details.csv"
-        csv_path.write_text("dataset,col1,col2\ntest_data,1,2\n")
-        result = get_data_recipe_details_df(csv_path)
-        assert isinstance(result, pd.DataFrame)
-        assert "data" in result.columns
-        assert "dataset" not in result.columns
-
-    def test_renames_dataset_column(self, tmp_path: Path) -> None:
-        csv_path = tmp_path / "ds_details.csv"
-        csv_path.write_text("dataset,value\ntest,1\n")
-        result = get_data_recipe_details_df(csv_path)
-        assert "data" in result.columns
 
 
 class TestDataFrameLoader:
