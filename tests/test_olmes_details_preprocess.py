@@ -20,6 +20,7 @@ from datadec.data.preprocess.olmes_details import (
     _assert_detailed_choices_schema_parity,
     _assert_detailed_instances_schema_parity,
     _assert_detailed_tasks_schema_parity,
+    _parse_checkpoint_member_path,
     preprocess_olmes_details,
 )
 from datadec.data.preprocess.olmes_verify import verify_detail_counts
@@ -43,6 +44,21 @@ STEP = 1250
 TASK = "arc_challenge"
 TASK_HASH = "da4d61b1b678cfae04369e8a9c4bed3a"
 MODEL_HASH = "340b80e23a591f476ccad7b6073239ac"
+
+
+def test_checkpoint_member_recipe_matching_is_case_insensitive() -> None:
+    assert _parse_checkpoint_member_path(
+        "Dolma1.7-no-math-no-code/150M/seed-14/step-1250.tar.gz",
+        expected_recipe=RECIPE,
+    ) == (RECIPE, PARAMS, SEED_VALUE, STEP)
+
+
+def test_checkpoint_member_recipe_matching_rejects_different_recipe() -> None:
+    with pytest.raises(ValueError, match="unexpected recipe"):
+        _parse_checkpoint_member_path(
+            "different-recipe/150M/seed-14/step-1250.tar.gz",
+            expected_recipe=RECIPE,
+        )
 
 
 def _metrics_payload(*, task: str = TASK, num_instances: int = 2) -> dict[str, object]:

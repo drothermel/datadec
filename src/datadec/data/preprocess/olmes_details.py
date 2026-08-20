@@ -399,13 +399,13 @@ def _parse_checkpoint_member_path(
     if match is None:
         return None
     recipe = match.group("recipe")
-    if recipe != expected_recipe:
+    if recipe.casefold() != expected_recipe.casefold():
         raise ValueError(
             f"unexpected recipe in checkpoint member {member_name!r}: "
             f"expected {expected_recipe!r}"
         )
     return (
-        recipe,
+        expected_recipe,
         match.group("params"),
         int(match.group("seed_value")),
         _normalize_step(match.group("step"), row_index=0),
