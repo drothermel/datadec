@@ -24,6 +24,13 @@ SOURCE_PRECEDENCE = (
     "results_ladder_5xC_small_seeds_extra_real.csv",
 )
 
+EXCLUDED_SOURCE_GROUPS = (
+    "DCLM-baseline-25p",
+    "DCLM-baseline-4M-5xC",
+    "DCLM-baseline-50p",
+    "DCLM-baseline-75p",
+)
+
 SOURCE_GROUP_MAP = {
     "DCLM-baseline": "dclm-baseline",
     "c4": "c4",
@@ -96,6 +103,8 @@ def test_scaling_law_contract_pins_inputs_aliases_models_and_seed_policy() -> No
     assert contract.raw_directory == "raw/scaling-law"
     assert contract.source_precedence == SOURCE_PRECEDENCE
     assert contract.models == tuple(model.name for model in catalog.models)
+    assert contract.excluded_source_groups == EXCLUDED_SOURCE_GROUPS
+    assert contract.source_group_aliases == {"baseline": "dolma17"}
     assert contract.source_group_map == SOURCE_GROUP_MAP
     assert set(contract.source_group_map.values()) == set(olmes.recipe_map)
     assert {
@@ -191,6 +200,21 @@ def test_scaling_law_paths_follow_contract_without_creating_directories(
                 {"c4": raw["source_group_map"]["DCLM-baseline"]}
             ),
             "source group mappings must be unique",
+        ),
+        (
+            lambda raw: raw["source_group_aliases"].update(
+                {"legacy": "not-a-canonical-group"}
+            ),
+            "aliases must reference canonical groups",
+        ),
+        (
+            lambda raw: raw.update(
+                {
+                    "excluded_source_groups": raw["excluded_source_groups"]
+                    + ("DCLM-baseline-25p",)
+                }
+            ),
+            "excluded source groups must be unique",
         ),
         (
             lambda raw: raw["seed_policy"].update({"excluded_legacy_values": (2,)}),

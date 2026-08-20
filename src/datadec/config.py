@@ -457,6 +457,8 @@ class ScalingLawContract(ConfigModel):
     raw_directory: str
     source_precedence: tuple[str, ...]
     models: tuple[str, ...]
+    excluded_source_groups: tuple[str, ...]
+    source_group_aliases: dict[str, str]
     source_group_map: dict[str, str]
     seed_map: dict[int, str]
     seed_policy: ScalingLawSeedPolicy
@@ -485,6 +487,7 @@ class ScalingLawContract(ConfigModel):
                 raise ValueError("scaling-law sources must be bare filenames")
 
         for name, mapping in (
+            ("source group alias", self.source_group_aliases),
             ("source group", self.source_group_map),
             ("seed", self.seed_map),
         ):
@@ -492,6 +495,30 @@ class ScalingLawContract(ConfigModel):
                 raise ValueError(f"scaling-law {name} mapping must not be empty")
             if len(mapping.values()) != len(set(mapping.values())):
                 raise ValueError(f"scaling-law {name} mappings must be unique")
+
+        if len(self.excluded_source_groups) != len(set(self.excluded_source_groups)):
+            raise ValueError("scaling-law excluded source groups must be unique")
+        configured_source_groups = (
+            set(self.source_group_map)
+            | set(self.source_group_aliases)
+            | set(self.excluded_source_groups)
+        )
+        if len(configured_source_groups) != (
+            len(self.source_group_map)
+            + len(self.source_group_aliases)
+            + len(self.excluded_source_groups)
+        ):
+            raise ValueError(
+                "scaling-law canonical, aliased, and excluded source groups "
+                "must be disjoint"
+            )
+        unknown_alias_targets = set(self.source_group_aliases.values()).difference(
+            self.source_group_map
+        )
+        if unknown_alias_targets:
+            raise ValueError(
+                "scaling-law source group aliases must reference canonical groups"
+            )
 
         if set(self.seed_map).intersection(self.seed_policy.excluded_legacy_values):
             raise ValueError("clean and excluded scaling-law seeds must be disjoint")

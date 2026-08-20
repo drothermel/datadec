@@ -97,7 +97,7 @@ def test_cli_data_dir_prints_stable_evidence_without_network_calls(
         + f"scaling-law checkpoint losses output: {checkpoints_path}\n"
         + "scaling-law input rows: 1\n"
         + "scaling-law clean rows: 1\n"
-        + "scaling-law excluded legacy rows: 0\n"
+        + "scaling-law excluded policy rows: 0\n"
         + "scaling-law superseded rows: 0\n"
         + "scaling-law evaluations: 1\n"
         + "scaling-law checkpoints: 1\n"

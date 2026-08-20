@@ -202,7 +202,7 @@ def preprocess_scaling_law(
         )
         print(f"scaling-law input rows: {result.input_row_count}")
         print(f"scaling-law clean rows: {result.clean_row_count}")
-        print(f"scaling-law excluded legacy rows: {result.excluded_row_count}")
+        print(f"scaling-law excluded policy rows: {result.excluded_row_count}")
         print(f"scaling-law superseded rows: {result.superseded_row_count}")
         print(f"scaling-law evaluations: {result.evaluation_count}")
         print(f"scaling-law checkpoints: {result.checkpoint_count}")
@@ -399,6 +399,9 @@ def _validate_and_normalize_rows(
     excluded_seed_sql = ", ".join(
         str(value) for value in contract.seed_policy.excluded_legacy_values
     )
+    excluded_group_sql = ", ".join(
+        sql_literal(value) for value in contract.excluded_source_groups
+    )
     connection.execute(
         f"""
         CREATE TEMP VIEW _scaling_clean_raw AS
@@ -406,13 +409,21 @@ def _validate_and_normalize_rows(
         FROM _scaling_raw
         WHERE {seed_expression} IS NOT NULL
           AND {seed_expression} NOT IN ({excluded_seed_sql})
+          AND {quote_identifier("group")} NOT IN ({excluded_group_sql})
         """
     )
 
+    source_group_map = {
+        **contract.source_group_map,
+        **{
+            alias: contract.source_group_map[canonical]
+            for alias, canonical in contract.source_group_aliases.items()
+        },
+    }
     _validate_known_string(
         connection,
         column="group",
-        allowed=tuple(contract.source_group_map),
+        allowed=tuple(source_group_map),
     )
     _validate_known_string(connection, column="model", allowed=contract.models)
     _validate_nonblank_string(connection, column="task")
@@ -423,14 +434,12 @@ def _validate_and_normalize_rows(
     for raw_column in tuple(RAW_CHECKPOINT_FIELDS.values())[2:]:
         _validate_optional_float64(connection, column=raw_column)
 
-    recipe_case = _mapping_case_sql(
-        quote_identifier("group"), contract.source_group_map
-    )
+    recipe_case = _mapping_case_sql(quote_identifier("group"), source_group_map)
     data_case = _mapping_case_sql(
         quote_identifier("group"),
         {
             source_group: olmes_contract.recipe_map[recipe]
-            for source_group, recipe in contract.source_group_map.items()
+            for source_group, recipe in source_group_map.items()
         },
     )
     seed_case = _mapping_case_sql(

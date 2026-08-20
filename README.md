@@ -51,10 +51,11 @@ uv run python scripts/preprocess_olmes_details.py --recipe dolma1.7-no-math-no-c
 ```
 
 Scaling-law preprocessing requires all three local raw CSVs. It validates the
-fixed source schema, excludes only the recorded blank/6198 legacy-seed rows,
-resolves overlaps by the configured source precedence, and writes both output
-tables only after both temporary parquet files validate successfully. It does
-not download or upload data.
+fixed source schema, excludes the recorded blank/6198 legacy-seed rows and
+invalid source groups, resolves the historical `baseline` alias and source
+overlaps by configured policy, and writes both output tables only after both
+temporary parquet files validate successfully. It does not download or upload
+data.
 
 Select both Drive-backed options to reconstruct all 134 files (11.92 GB). The
 downloads use a pinned inventory from the public Drive folder rather than

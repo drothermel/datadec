@@ -20,6 +20,15 @@ models = [
   "750M",
   "1B",
 ]
+excluded_source_groups = [
+  "DCLM-baseline-25p",
+  "DCLM-baseline-4M-5xC",
+  "DCLM-baseline-50p",
+  "DCLM-baseline-75p",
+]
+
+[source_group_aliases]
+baseline = "dolma17"
 
 [source_group_map]
 DCLM-baseline = "dclm-baseline"

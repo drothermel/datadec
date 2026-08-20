@@ -76,6 +76,13 @@ def test_preprocess_resolves_precedence_normalizes_and_writes_typed_sorted_outpu
     source_zero = [
         _row(task="arc_easy", metrics=_metrics(acc_per_char=0.4)),
         _row(task="boolq", metrics=_metrics(acc_raw=0.1)),
+        _row(
+            group="baseline",
+            model="6M",
+            task="csqa",
+            metrics=_metrics(acc_raw=0.6),
+        ),
+        _row(group="DCLM-baseline-25p", metrics="not parsed"),
         _row(seed="", group="retired", metrics="not parsed"),
         _row(seed="6198", model="retired", metrics="not parsed"),
     ]
@@ -123,12 +130,12 @@ def test_preprocess_resolves_precedence_normalizes_and_writes_typed_sorted_outpu
     evaluations = pd.read_parquet(result.evaluations_output_path)
     checkpoints = pd.read_parquet(result.checkpoint_losses_output_path)
     contract = load_scaling_law_contract()
-    assert result.input_row_count == 7
-    assert result.clean_row_count == 5
-    assert result.excluded_row_count == 2
+    assert result.input_row_count == 9
+    assert result.clean_row_count == 6
+    assert result.excluded_row_count == 3
     assert result.superseded_row_count == 2
-    assert result.evaluation_count == 3
-    assert result.checkpoint_count == 2
+    assert result.evaluation_count == 4
+    assert result.checkpoint_count == 3
     assert tuple(evaluations.columns) == tuple(
         column.name for column in contract.tables.evaluations.columns
     )
@@ -151,6 +158,7 @@ def test_preprocess_resolves_precedence_normalizes_and_writes_typed_sorted_outpu
         ("c4", "4M", 2, 100, "arc_easy"),
         ("c4", "4M", 2, 100, "boolq"),
         ("dclm-baseline", "6M", 14, 0, "mmlu_world_religions"),
+        ("dolma1.7", "6M", 2, 100, "csqa"),
     ]
     boolq = evaluations[evaluations["task"] == "boolq"].iloc[0]
     assert boolq["source_file"] == paths.scaling_law_raw_paths()[2].name
@@ -168,6 +176,9 @@ def test_preprocess_resolves_precedence_normalizes_and_writes_typed_sorted_outpu
     assert step_zero["tokens"] == 0
     assert step_zero["compute"] == 0.0
     assert step_zero["primary_metric"] == 0.7
+    baseline_alias = evaluations[evaluations["task"] == "csqa"].iloc[0]
+    assert baseline_alias["recipe"] == "dolma1.7"
+    assert baseline_alias["data"] == "Dolma1.7"
     c4_checkpoint = checkpoints[checkpoints["recipe"] == "c4"].iloc[0]
     assert c4_checkpoint["source_file"] == paths.scaling_law_raw_paths()[1].name
     assert c4_checkpoint["c4_en_validation_cross_entropy"] == 2.1
