@@ -105,8 +105,10 @@ def create_model_enrichment_table(
         for params, step in checkpoints
     ]
     schema = pa.schema(
-        [pa.field("params", pa.string(), nullable=False),
-         pa.field("step", pa.int64(), nullable=False)]
+        [
+            pa.field("params", pa.string(), nullable=False),
+            pa.field("step", pa.int64(), nullable=False),
+        ]
         + [
             pa.field(name, _ARROW_TYPES[logical_type], nullable=False)
             for name, logical_type in CHECKPOINT_ENRICHMENT_TYPES

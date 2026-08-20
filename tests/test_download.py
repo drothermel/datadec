@@ -5,6 +5,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, call, patch
 from urllib.request import Request
 
+import pandas as pd
 import pytest
 
 from datadec.config import (
@@ -15,11 +16,14 @@ from datadec.config import (
 from datadec.data import download
 from datadec.data.download import download_sources, resolve_olmes_detail_recipes
 from datadec.data.paths import DataDecidePaths
-from datadec.data.pipeline import DataPipeline
 
 PUBLISHED_RESULTS_FOLDER_URL = (
     "https://drive.google.com/drive/folders/1weYlEOlHrA_fzT2OsRa40uLc4EKTGz1D"
 )
+
+
+def _write_dataset_parquet(path: Path) -> None:
+    pd.DataFrame({"value": [1]}).to_parquet(path, index=False)
 
 
 class FakeResponse:
@@ -76,9 +80,6 @@ def test_data_paths_use_exact_root_and_raw_outputs(tmp_path: Path) -> None:
     assert paths.get_path("dwn_raw") == tmp_path / "raw/olmes.parquet"
     assert paths.get_path("ppl_processed") == tmp_path / "processed/ppl.parquet"
     assert paths.get_path("olmes_processed") == tmp_path / "processed/olmes.parquet"
-    assert paths.get_path("ppl_parsed") == tmp_path / "ppl_eval_parsed.parquet"
-    assert paths.get_path("full_eval") == tmp_path / "full_eval.parquet"
-    assert paths.dataset_path("4M") == tmp_path / "datasets/dataset_4M.pkl"
 
 
 def test_download_sources_preserves_ppl_olmes_then_detail_order(
@@ -87,6 +88,8 @@ def test_download_sources_preserves_ppl_olmes_then_detail_order(
     paths = DataDecidePaths(tmp_path)
     ppl_dataset = MagicMock()
     olmes_dataset = MagicMock()
+    ppl_dataset.to_parquet.side_effect = _write_dataset_parquet
+    olmes_dataset.to_parquet.side_effect = _write_dataset_parquet
     with (
         patch(
             "datadec.data.download.load_dataset",
@@ -123,8 +126,16 @@ def test_download_sources_preserves_ppl_olmes_then_detail_order(
             cache_dir=cache_dir,
         ),
     ]
-    ppl_dataset.to_parquet.assert_called_once_with(tmp_path / "raw/ppl.parquet")
-    olmes_dataset.to_parquet.assert_called_once_with(tmp_path / "raw/olmes.parquet")
+    ppl_temporary = ppl_dataset.to_parquet.call_args.args[0]
+    olmes_temporary = olmes_dataset.to_parquet.call_args.args[0]
+    assert ppl_temporary.parent == tmp_path / "raw"
+    assert olmes_temporary.parent == tmp_path / "raw"
+    assert ppl_temporary.name.startswith(".ppl.parquet.")
+    assert olmes_temporary.name.startswith(".olmes.parquet.")
+    assert not ppl_temporary.exists()
+    assert not olmes_temporary.exists()
+    assert pd.read_parquet(tmp_path / "raw/ppl.parquet")["value"].tolist() == [1]
+    assert pd.read_parquet(tmp_path / "raw/olmes.parquet")["value"].tolist() == [1]
     assert hf_hub_download.call_args_list == [
         call(
             repo_id="allenai/DataDecide-eval-instances",
@@ -154,7 +165,10 @@ def test_existing_outputs_are_reused_without_network_calls(tmp_path: Path) -> No
         tmp_path / "raw/olmes.parquet",
         tmp_path / "raw/olmes-details/models/c4.tar.gz",
     ]
-    for output in outputs:
+    for output in outputs[:2]:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        _write_dataset_parquet(output)
+    for output in outputs[2:]:
         output.parent.mkdir(parents=True, exist_ok=True)
         output.touch()
 
@@ -173,6 +187,7 @@ def test_existing_outputs_are_reused_without_network_calls(tmp_path: Path) -> No
 def test_force_propagates_to_dataset_and_detail_downloads(tmp_path: Path) -> None:
     paths = DataDecidePaths(tmp_path)
     dataset = MagicMock()
+    dataset.to_parquet.side_effect = _write_dataset_parquet
     with (
         patch("datadec.data.download.load_dataset", return_value=dataset) as load,
         patch("datadec.data.download.hf_hub_download") as hf_download,
@@ -195,6 +210,45 @@ def test_force_propagates_to_dataset_and_detail_downloads(tmp_path: Path) -> Non
         local_dir=tmp_path / "raw/olmes-details",
         force_download=True,
     )
+
+
+def test_invalid_existing_dataset_output_is_redownloaded(tmp_path: Path) -> None:
+    paths = DataDecidePaths(tmp_path)
+    output = paths.get_path("ppl_raw")
+    output.parent.mkdir(parents=True)
+    output.touch()
+    dataset = MagicMock()
+    dataset.to_parquet.side_effect = _write_dataset_parquet
+
+    with patch("datadec.data.download.load_dataset", return_value=dataset):
+        result = download_sources(paths, ppl=True)
+
+    assert result[0].status == "downloaded"
+    assert pd.read_parquet(output)["value"].tolist() == [1]
+
+
+def test_failed_forced_dataset_export_preserves_existing_output(
+    tmp_path: Path,
+) -> None:
+    paths = DataDecidePaths(tmp_path)
+    output = paths.get_path("ppl_raw")
+    output.parent.mkdir(parents=True)
+    pd.DataFrame({"value": [7]}).to_parquet(output, index=False)
+    dataset = MagicMock()
+
+    def fail_after_partial_write(path: Path) -> None:
+        path.write_bytes(b"partial")
+        raise RuntimeError("interrupted export")
+
+    dataset.to_parquet.side_effect = fail_after_partial_write
+    with (
+        patch("datadec.data.download.load_dataset", return_value=dataset),
+        pytest.raises(RuntimeError, match="interrupted export"),
+    ):
+        download_sources(paths, ppl=True, force=True)
+
+    assert pd.read_parquet(output)["value"].tolist() == [7]
+    assert list(output.parent.glob(f".{output.name}.*.tmp")) == []
 
 
 def test_all_detail_recipes_use_config_order() -> None:
@@ -230,22 +284,11 @@ def test_verbose_status_identifies_source_destination_and_reuse(
 ) -> None:
     output = tmp_path / "raw/ppl.parquet"
     output.parent.mkdir(parents=True)
-    output.touch()
+    _write_dataset_parquet(output)
 
     download_sources(DataDecidePaths(tmp_path), ppl=True, verbose=True)
 
     assert capsys.readouterr().out == f"ppl: reused -> {output}\n"
-
-
-def test_pipeline_explicitly_selects_ppl_and_olmes(tmp_path: Path) -> None:
-    pipeline = DataPipeline(DataDecidePaths(tmp_path))
-
-    with patch("datadec.data.pipeline.download_sources") as download_sources_mock:
-        pipeline.download_raw_data(verbose=True)
-
-    download_sources_mock.assert_called_once_with(
-        pipeline.paths, ppl=True, olmes=True, verbose=True
-    )
 
 
 def test_download_implementation_does_not_use_snapshot_download() -> None:

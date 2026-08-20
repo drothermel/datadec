@@ -213,7 +213,6 @@ def test_scaling_law_paths_follow_contract_without_creating_directories(
     assert paths.scaling_law_checkpoint_losses_path() == (
         tmp_path / "processed/scaling-law/checkpoint-losses.parquet"
     )
-    assert paths.dataset_path("4M") == tmp_path / "datasets/dataset_4M.pkl"
     assert list(tmp_path.iterdir()) == []
 
 

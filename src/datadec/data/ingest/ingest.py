@@ -9,6 +9,7 @@ import pandas as pd
 import srsly
 from dr_ds import coerce_int
 
+from datadec.data.download import download_sources
 from datadec.data.ingest.checkpoint import EvalCheckpoint
 from datadec.data.ingest.enums import DataRecipeName, ModelSizeName, Seed, Task
 from datadec.data.ingest.metrics import PerplexityMetrics, TaskEvalMetrics
@@ -18,7 +19,6 @@ from datadec.data.ingest.registries.model_details import (
 )
 from datadec.data.ingest.run import TrainingRun
 from datadec.data.paths import DataDecidePaths
-from datadec.data.pipeline import DataPipeline
 from datadec.data.preprocess.ppl import group_perplexity_rows
 
 type RunKey = tuple[ModelSizeName, DataRecipeName, Seed]
@@ -79,7 +79,7 @@ def _ensure_raw_parquets_exist(paths: DataDecidePaths, *, verbose: bool) -> None
         return
     if verbose:
         print(f">> missing raw parquets for {missing_types}; downloading")
-    DataPipeline(paths).download_raw_data(verbose=verbose)
+    download_sources(paths, ppl=True, olmes=True, verbose=verbose)
 
 
 def _group_task_rows(dwn_df: pd.DataFrame) -> TaskRowsByKey:

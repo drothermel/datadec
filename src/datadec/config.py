@@ -75,7 +75,6 @@ class ModelDefinition(ConfigModel):
     nominal_parameter_count: int = Field(gt=0)
     training_parameter_count: int = Field(gt=0)
     exact_parameter_count: int = Field(gt=0)
-    max_step: int
 
     @model_validator(mode="after")
     def validate_nominal_parameter_count(self) -> Self:
@@ -88,9 +87,7 @@ class ModelDefinition(ConfigModel):
                 "model names must encode nominal parameter counts with M or B"
             ) from None
         if self.nominal_parameter_count != expected:
-            raise ValueError(
-                "model nominal_parameter_count must match its model name"
-            )
+            raise ValueError("model nominal_parameter_count must match its model name")
         return self
 
 
@@ -104,8 +101,6 @@ class RecipeGroups(ConfigModel):
 
 
 class DataDecideCatalog(ConfigModel):
-    mmlu_tasks: list[str]
-    olmes_tasks: list[str]
     metric_names: list[str]
     drop_metrics: list[str]
     training: TrainingConstants
@@ -113,7 +108,6 @@ class DataDecideCatalog(ConfigModel):
     models: list[ModelDefinition]
     data_recipe_families: dict[str, list[str]]
     seed_map: dict[str, int]
-    perplexity_name_map: dict[str, str]
     recipe_groups: RecipeGroups
 
     @model_validator(mode="after")

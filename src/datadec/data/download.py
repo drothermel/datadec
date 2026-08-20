@@ -1,11 +1,16 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import os
 from pathlib import Path, PurePosixPath
 import re
+import tempfile
+from typing import Protocol, cast
 from typing import Literal, Sequence
 from urllib.request import Request, urlopen
 
+import pyarrow as pa
+import pyarrow.parquet as pq
 from datasets import load_dataset
 from huggingface_hub import hf_hub_download
 
@@ -36,6 +41,18 @@ class DownloadResult:
     status: Literal["downloaded", "reused"]
 
 
+class _ParquetDataset(Protocol):
+    def to_parquet(self, path: Path) -> object: ...
+
+
+def _is_valid_dataset_parquet(path: Path) -> bool:
+    try:
+        metadata = pq.ParquetFile(path).metadata
+    except (OSError, pa.ArrowInvalid):
+        return False
+    return metadata.num_rows > 0 and metadata.num_columns > 0
+
+
 def _download_dataset_source(
     paths: DataDecidePaths,
     source: DatasetSource,
@@ -43,7 +60,7 @@ def _download_dataset_source(
     force: bool,
 ) -> DownloadResult:
     destination = paths.data_dir / source.output
-    if destination.exists() and not force:
+    if destination.exists() and not force and _is_valid_dataset_parquet(destination):
         return DownloadResult(source.id, destination, "reused")
 
     destination.parent.mkdir(parents=True, exist_ok=True)
@@ -56,8 +73,23 @@ def _download_dataset_source(
     }
     if force:
         load_kwargs["download_mode"] = "force_redownload"
-    dataset = load_dataset(source.repo_id, **load_kwargs)
-    dataset.to_parquet(destination)
+    dataset = cast(_ParquetDataset, load_dataset(source.repo_id, **load_kwargs))
+    descriptor, temporary_name = tempfile.mkstemp(
+        dir=destination.parent,
+        prefix=f".{destination.name}.",
+        suffix=".tmp",
+    )
+    os.close(descriptor)
+    temporary_path = Path(temporary_name)
+    try:
+        dataset.to_parquet(temporary_path)
+        if not _is_valid_dataset_parquet(temporary_path):
+            raise ValueError(
+                f"downloaded dataset is not a non-empty Parquet: {source.id}"
+            )
+        os.replace(temporary_path, destination)
+    finally:
+        temporary_path.unlink(missing_ok=True)
     return DownloadResult(source.id, destination, "downloaded")
 
 

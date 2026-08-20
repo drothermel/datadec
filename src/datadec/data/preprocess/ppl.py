@@ -354,8 +354,7 @@ def _empty_output_select_sql() -> str:
     ]
     expressions.append(f"CAST(NULL AS {duckdb_type('int64')}) AS step")
     expressions.extend(
-        f"CAST(NULL AS {duckdb_type(logical_type)}) "
-        f"AS {quote_identifier(column)}"
+        f"CAST(NULL AS {duckdb_type(logical_type)}) AS {quote_identifier(column)}"
         for column, logical_type in CHECKPOINT_ENRICHMENT_TYPES
     )
     expressions.extend(
@@ -376,9 +375,7 @@ def _output_select_sql(
         f"AS {quote_identifier(column)}"
         for column in PPL_IDENTITY_COLUMNS[:3]
     ]
-    identity_expressions.append(
-        f"CAST({step_text} AS {duckdb_type('int64')}) AS step"
-    )
+    identity_expressions.append(f"CAST({step_text} AS {duckdb_type('int64')}) AS step")
     metric_expressions = []
     raw_by_field = {field: raw for raw, field in raw_metric_to_field.items()}
     for field in PPL_METRIC_COLUMNS:
@@ -397,16 +394,13 @@ def _output_select_sql(
             )
         metric_expressions.append(f"{value} AS {quote_identifier(field)}")
     identity_columns = ", ".join(
-        f"normalized.{quote_identifier(column)}"
-        for column in PPL_IDENTITY_COLUMNS
+        f"normalized.{quote_identifier(column)}" for column in PPL_IDENTITY_COLUMNS
     )
     metric_columns = ", ".join(
-        f"normalized.{quote_identifier(column)}"
-        for column in PPL_METRIC_COLUMNS
+        f"normalized.{quote_identifier(column)}" for column in PPL_METRIC_COLUMNS
     )
     sort_key = ", ".join(
-        f"normalized.{quote_identifier(column)}"
-        for column in PPL_IDENTITY_COLUMNS
+        f"normalized.{quote_identifier(column)}" for column in PPL_IDENTITY_COLUMNS
     )
     return f"""
         WITH normalized AS (

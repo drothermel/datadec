@@ -4,7 +4,6 @@ import json
 
 import pandas as pd
 
-from datadec.data.access import DataDecide
 from datadec.data.wandb import wandb_constants as wconsts
 from datadec.data.wandb.wandb_transforms import (
     add_datadecide_columns,
@@ -325,139 +324,6 @@ def rebuild_run_df(filtered_df: pd.DataFrame, categorized_cols: dict) -> pd.Data
     return result_df
 
 
-def fix_oe_metrics_to_final_step_only(df: pd.DataFrame) -> pd.DataFrame:
-    df = df.copy()
-    oe_cols = [col for col in df.columns if col.startswith("oe_")]
-    if not oe_cols:
-        return df
-    for run_id in df["run_id"].unique():
-        run_mask = df["run_id"] == run_id
-        run_data = df[run_mask]
-        if len(run_data) > 1:
-            max_step = run_data["step"].max()
-            non_final_mask = run_mask & (df["step"] != max_step)
-            df.loc[non_final_mask, oe_cols] = pd.NA
-    return df
-
-
-def copy_final_oe_to_pretraining_metrics(
-    df: pd.DataFrame, pretraining_df: pd.DataFrame
-) -> pd.DataFrame:
-    df = df.copy()
-    wandb_eval_cols = [col for col in df.columns if col.startswith("oe_")]
-    pretrain_eval_cols = [
-        col
-        for col in pretraining_df.columns
-        if any(col == wandb_col[3:] for wandb_col in wandb_eval_cols)
-    ]
-    metric_mapping: dict[str, str] = {}
-    for wandb_col in wandb_eval_cols:
-        pretrain_equivalent = wandb_col[3:]
-        if pretrain_equivalent in pretrain_eval_cols:
-            metric_mapping[wandb_col] = pretrain_equivalent
-    print(
-        f"Found {len(metric_mapping)} matching metric pairs for continuous scaling curves"
-    )
-    for pretrain_col in metric_mapping.values():
-        if pretrain_col not in df.columns:
-            df[pretrain_col] = pd.NA
-    for run_id in df["run_id"].unique():
-        run_mask = df["run_id"] == run_id
-        run_data = df[run_mask]
-        final_row = run_data[
-            run_data[[col for col in wandb_eval_cols if col in run_data.columns]]
-            .notna()
-            .any(axis=1)
-        ]
-        if len(final_row) > 0:
-            final_row = final_row.iloc[-1]
-            for wandb_col, pretrain_col in metric_mapping.items():
-                if wandb_col in final_row and pd.notna(final_row[wandb_col]):
-                    final_step_mask = run_mask & (df.index == final_row.name)
-                    df.loc[final_step_mask, pretrain_col] = final_row[wandb_col]
-    return df
-
-
-def integrate_pretraining_data(unified_df: pd.DataFrame) -> pd.DataFrame:
-    dd = DataDecide()
-    pretraining_df = dd.mean_eval
-    pretrain_max = (
-        pretraining_df.groupby(["params", "data"])
-        .agg({"tokens": "max", "compute": "max"})
-        .reset_index()
-    )
-    pretrain_max.columns = [
-        "params",
-        "data",
-        "pretrain_tokens_max",
-        "pretrain_compute_max",
-    ]
-    result_df = unified_df.merge(pretrain_max, on=["params", "data"], how="left")
-    result_df["pretraining"] = result_df["pretrain_tokens_max"].notna()
-    result_df["cumulative_tokens"] = result_df["pretrain_tokens_max"].fillna(
-        0
-    ) + result_df["total_tokens"].fillna(0)
-    if "total_compute_est" in result_df.columns:
-        result_df["cumulative_compute"] = result_df["pretrain_compute_max"].fillna(
-            0
-        ) + result_df["total_compute_est"].fillna(0)
-    result_df = fix_oe_metrics_to_final_step_only(result_df)
-    result_df = copy_final_oe_to_pretraining_metrics(result_df, pretraining_df)
-    result_df = add_pretraining_progression_rows(result_df, pretraining_df)
-    return result_df
-
-
-def add_pretraining_progression_rows(
-    finetuning_df: pd.DataFrame, pretraining_df: pd.DataFrame
-) -> pd.DataFrame:
-    pretrain_combinations = pretraining_df[["params", "data"]].drop_duplicates()
-    pretraining_rows = []
-    for _, combo in pretrain_combinations.iterrows():
-        params = combo["params"]
-        data = combo["data"]
-        matching_runs = finetuning_df[
-            (finetuning_df["params"] == params)
-            & (finetuning_df["data"] == data)
-            & (finetuning_df["pretraining"])
-        ]
-        if len(matching_runs) == 0:
-            continue
-        pretrain_progression = pretraining_df[
-            (pretraining_df["params"] == params) & (pretraining_df["data"] == data)
-        ].copy()
-        unique_runs = matching_runs["run_id"].unique()
-        for run_id in unique_runs:
-            run_metadata = matching_runs[matching_runs["run_id"] == run_id].iloc[0]
-            for _, pretrain_row in pretrain_progression.iterrows():
-                new_row = run_metadata.copy()
-                new_row["total_tokens"] = pretrain_row["tokens"]
-                new_row["cumulative_tokens"] = pretrain_row["tokens"]
-                new_row["step"] = pretrain_row["step"]
-                if "compute" in pretrain_row:
-                    new_row["total_compute_est"] = pretrain_row["compute"]
-                    new_row["cumulative_compute"] = pretrain_row["compute"]
-                for col in pretrain_row.index:
-                    if col in ["params", "data", "step", "tokens", "compute"]:
-                        continue
-                    if col in new_row.index:
-                        new_row[col] = pretrain_row[col]
-                oe_cols = [col for col in new_row.index if col.startswith("oe_")]
-                for col in oe_cols:
-                    new_row[col] = pd.NA
-                new_row["pretraining_phase"] = True
-                pretraining_rows.append(new_row)
-
-    if pretraining_rows:
-        pretrain_df_new = pd.DataFrame(pretraining_rows)
-        finetuning_df["pretraining_phase"] = False
-        combined_df = pd.concat([pretrain_df_new, finetuning_df], ignore_index=True)
-        print(f"Added {len(pretrain_df_new)} pretraining progression rows")
-        return combined_df
-    else:
-        finetuning_df["pretraining_phase"] = False
-        return finetuning_df
-
-
 def create_unified_df(runs_df: pd.DataFrame, history_df: pd.DataFrame) -> pd.DataFrame:
     result = parse_and_clean_runs_df(runs_df)
     filtered_df = result["filtered_df"]
@@ -467,10 +333,3 @@ def create_unified_df(runs_df: pd.DataFrame, history_df: pd.DataFrame) -> pd.Dat
     unified_df = history_clean.merge(parsed_runs_df, on="run_id", how="inner")
     unified_df = add_datadecide_columns(unified_df)
     return unified_df
-
-
-def create_unified_df_with_pretraining(
-    runs_df: pd.DataFrame, history_df: pd.DataFrame
-) -> pd.DataFrame:
-    unified_df = create_unified_df(runs_df, history_df)
-    return integrate_pretraining_data(unified_df)

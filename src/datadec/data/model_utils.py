@@ -6,7 +6,6 @@ from functools import cache
 from typing import Any
 
 import numpy as np
-import pandas as pd
 
 from datadec.data import constants as consts
 
@@ -235,9 +234,7 @@ def create_model_config(model_size_str: str, **kwargs: Any) -> dict[str, Any]:
     config.update(consts.MODEL_SHAPES[model_size_str])
 
     config[consts.PARAM_NUMERIC_COL] = param_to_numeric(model_size_str)
-    config["nominal_parameter_count"] = consts.NOMINAL_PARAMETER_COUNTS[
-        model_size_str
-    ]
+    config["nominal_parameter_count"] = consts.NOMINAL_PARAMETER_COUNTS[model_size_str]
     config["training_parameter_count"] = consts.TRAINING_PARAMETER_COUNTS[
         model_size_str
     ]
@@ -245,9 +242,7 @@ def create_model_config(model_size_str: str, **kwargs: Any) -> dict[str, Any]:
     config["batch_size"] = calc_batch_size(model_size_str)
     length_str = config["length_str"]
     assert isinstance(length_str, str)
-    config["total_tokens"] = calc_total_tokens_from_str(
-        length_str, model_size_str
-    )
+    config["total_tokens"] = calc_total_tokens_from_str(length_str, model_size_str)
     config["warmup_tokens"] = calc_warmup_tokens(model_size_str)
     config["lr_max"] = calc_lr_max(model_size_str)
     config["lr_final"] = consts.LR_FINAL_RATIO * config["lr_max"]
@@ -271,15 +266,6 @@ def create_all_model_configs() -> dict[str, dict[str, Any]]:
         model_size: create_model_config(model_size)
         for model_size in consts.ALL_MODEL_SIZE_STRS
     }
-
-
-def get_model_details_df() -> pd.DataFrame:
-    configs = create_all_model_configs()
-    return (
-        pd.DataFrame.from_dict(configs, orient="index")
-        .reset_index()
-        .rename(columns={"index": "params"})
-    )
 
 
 def numerical_cosine_integral(

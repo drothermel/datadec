@@ -149,6 +149,6 @@ Full-recipe detail preprocessing and verification can take a long time and requi
 
 ```bash
 uv run ruff check src scripts tests
-uv run ty src
+uv run ty check src
 uv run pytest
 ```

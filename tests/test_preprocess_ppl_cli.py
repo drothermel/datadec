@@ -8,8 +8,6 @@ from unittest.mock import patch
 import pandas as pd
 from typer.testing import CliRunner
 
-from datadec.data.pipeline import DataPipeline
-
 SCRIPT_PATH = Path(__file__).parents[1] / "scripts/preprocess_ppl.py"
 SCRIPT_MODULE = "datadec_preprocess_ppl_script"
 spec = importlib.util.spec_from_file_location(SCRIPT_MODULE, SCRIPT_PATH)
@@ -59,7 +57,6 @@ def test_cli_data_dir_reads_raw_and_writes_only_processed_ppl(tmp_path: Path) ->
 
     with (
         patch("datadec.data.download.download_sources") as download_sources,
-        patch.object(DataPipeline, "download_raw_data") as pipeline_download,
         patch("datadec.data.ingest.ingest.load_model_registry") as model_registry,
     ):
         result = runner.invoke(app, ["--data-dir", str(tmp_path)])
@@ -81,5 +78,4 @@ def test_cli_data_dir_reads_raw_and_writes_only_processed_ppl(tmp_path: Path) ->
         "ppl training runs: 1\n"
     )
     download_sources.assert_not_called()
-    pipeline_download.assert_not_called()
     model_registry.assert_not_called()

@@ -67,9 +67,6 @@ def test_catalog_loads_model_and_recipe_configuration() -> None:
         "1B",
     ]
     assert catalog.data_recipe_families["c4"] == ["C4"]
-    assert catalog.perplexity_name_map["eval/pile-validation/Perplexity"] == (
-        "pile-valppl"
-    )
     one_billion = catalog.models[-1]
     assert one_billion.nominal_parameter_count == 1_000_000_000
     assert one_billion.training_parameter_count == 1_000_000_000

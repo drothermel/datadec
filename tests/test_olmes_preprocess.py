@@ -257,8 +257,8 @@ def test_empty_input_writes_exact_typed_schema(tmp_path: Path) -> None:
         "seed": pd.StringDtype(),
         "step": np.dtype("int64"),
         "task": pd.StringDtype(),
-            "chinchilla": pd.StringDtype(),
-            **CHECKPOINT_DTYPES,
+        "chinchilla": pd.StringDtype(),
+        **CHECKPOINT_DTYPES,
         **{field: np.dtype("float64") for field in AGGREGATE_METRICS},
     }
 
@@ -467,14 +467,10 @@ def test_preprocess_does_not_download_or_upload(tmp_path: Path) -> None:
     input_path.parent.mkdir(parents=True)
     pd.DataFrame([_raw_record()]).to_parquet(input_path, index=False)
 
-    with (
-        patch("datadec.data.download.download_sources") as download_sources,
-        patch("datadec.data.pipeline.download_sources") as pipeline_download_sources,
-    ):
+    with patch("datadec.data.download.download_sources") as download_sources:
         preprocess_olmes(paths)
 
     download_sources.assert_not_called()
-    pipeline_download_sources.assert_not_called()
     assert paths.get_path("olmes_processed").is_file()
 
 

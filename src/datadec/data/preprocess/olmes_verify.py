@@ -219,8 +219,8 @@ def verify_reconstructed_task_metrics(
         primary_rows.append(float(group[primary_metric].mean()))
         primary_expected.append(float(group["primary_score"].iloc[0]))
     if primary_rows and not np.allclose(
-        primary_expected,
-        primary_rows,
+        np.asarray(primary_expected, dtype=np.float64),
+        np.asarray(primary_rows, dtype=np.float64),
         rtol=rtol,
         atol=atol,
         equal_nan=True,

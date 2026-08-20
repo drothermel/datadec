@@ -181,21 +181,25 @@ def _verify_schedule_table(
     if expect_full_enrichment and present_enrichment != enrichment_columns:
         missing_enrichment = sorted(enrichment_columns.difference(columns))
         raise ValueError(
-            f"{name} is missing checkpoint enrichment columns: "
-            f"{missing_enrichment!r}"
+            f"{name} is missing checkpoint enrichment columns: {missing_enrichment!r}"
         )
 
     token_evidence = "count(x.tokens)" if "tokens" in columns else "0"
     token_mismatches = (
-        "count(*) FILTER (WHERE x.tokens IS NOT NULL "
-        "AND x.tokens <> enrichment.tokens)"
+        "count(*) FILTER (WHERE x.tokens IS NULL OR x.tokens <> enrichment.tokens)"
+        if expect_full_enrichment
+        else "count(*) FILTER (WHERE x.tokens IS NOT NULL AND x.tokens <> enrichment.tokens)"
         if "tokens" in columns
         else "0"
     )
     expected_compute = "enrichment.compute"
     compute_evidence = "count(x.compute)" if "compute" in columns else "0"
     compute_mismatches = (
-        "count(*) FILTER (WHERE x.compute IS NOT NULL AND "
+        "count(*) FILTER (WHERE x.compute IS NULL OR "
+        + _compute_mismatch_sql("x.compute::DOUBLE", expected_compute)
+        + ")"
+        if expect_full_enrichment
+        else "count(*) FILTER (WHERE x.compute IS NOT NULL AND "
         + _compute_mismatch_sql("x.compute::DOUBLE", expected_compute)
         + ")"
         if "compute" in columns
@@ -205,7 +209,8 @@ def _verify_schedule_table(
     for field, logical_type in MODEL_DETAIL_TYPES:
         if logical_type == "float64":
             model_mismatch_conditions.append(
-                _compute_mismatch_sql(
+                f"x.{field} IS NULL OR "
+                + _compute_mismatch_sql(
                     f"x.{field}::DOUBLE",
                     f"enrichment.{field}::DOUBLE",
                 )
@@ -216,14 +221,13 @@ def _verify_schedule_table(
             )
     model_detail_evidence = "count(*)" if expect_full_enrichment else "0"
     model_detail_mismatches = (
-        "count(*) FILTER (WHERE "
-        + " OR ".join(model_mismatch_conditions)
-        + ")"
+        "count(*) FILTER (WHERE " + " OR ".join(model_mismatch_conditions) + ")"
         if expect_full_enrichment
         else "0"
     )
     lr_mismatch_conditions = " OR ".join(
-        _compute_mismatch_sql(
+        f"x.{field} IS NULL OR "
+        + _compute_mismatch_sql(
             f"x.{field}::DOUBLE",
             f"enrichment.{field}::DOUBLE",
         )
@@ -276,12 +280,8 @@ def _verify_scaling_raw(
         "* schedule.nominal_parameter_count::DOUBLE "
         "* schedule.flops_per_token_per_parameter::DOUBLE"
     )
-    exact_mismatch = _compute_mismatch_sql(
-        "compute_value", expected_exact_compute
-    )
-    nominal_mismatch = _compute_mismatch_sql(
-        "compute_value", expected_nominal_compute
-    )
+    exact_mismatch = _compute_mismatch_sql("compute_value", expected_exact_compute)
+    nominal_mismatch = _compute_mismatch_sql("compute_value", expected_nominal_compute)
     row = connection.execute(
         f"""
         WITH raw AS (
@@ -374,10 +374,7 @@ def verify_preprocessed_derivations(
             "scaling-law checkpoint losses",
             paths.scaling_law_checkpoint_losses_path(),
         ),
-        *(
-            (f"OLMES detail tasks {path.parent.name}", path)
-            for path in detail_paths
-        ),
+        *((f"OLMES detail tasks {path.parent.name}", path) for path in detail_paths),
     )
     required_paths = tuple(path for _, path in processed) + (
         paths.get_path("dwn_raw"),
@@ -422,8 +419,7 @@ def verify_preprocessed_derivations(
                 paths=paths.scaling_law_raw_paths(),
             ),
             detail_tasks=tuple(
-                _verify_detail_tasks(connection, path=path)
-                for path in detail_paths
+                _verify_detail_tasks(connection, path=path) for path in detail_paths
             ),
         )
     finally:

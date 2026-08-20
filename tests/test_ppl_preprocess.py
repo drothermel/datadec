@@ -285,3 +285,18 @@ def test_typed_ingest_calls_the_shared_perplexity_grouping_helper(
         assert ingest_module.ingest_from_hf(DataDecidePaths(tmp_path)) == []
 
     shared_group.assert_called_once_with(ppl_df)
+
+
+def test_typed_ingest_downloads_missing_raw_sources_directly(tmp_path: Path) -> None:
+    ingest_module = importlib.import_module("datadec.data.ingest.ingest")
+    paths = DataDecidePaths(tmp_path)
+
+    with patch.object(ingest_module, "download_sources") as download_sources:
+        ingest_module._ensure_raw_parquets_exist(paths, verbose=True)
+
+    download_sources.assert_called_once_with(
+        paths,
+        ppl=True,
+        olmes=True,
+        verbose=True,
+    )

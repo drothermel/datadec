@@ -127,3 +127,28 @@ def test_verification_identifies_nominal_raw_compute_semantics(
     assert result.contradiction_count == 3
     assert result.raw_scaling_law.exact_compute_mismatch_count == 3
     assert result.raw_scaling_law.nominal_compute_mismatch_count == 0
+
+
+def test_verification_rejects_null_required_checkpoint_derivations(
+    tmp_path: Path,
+) -> None:
+    paths = _verification_paths(
+        tmp_path,
+        raw_scaling_uses_nominal_compute=False,
+    )
+    ppl = pd.read_parquet(paths.get_path("ppl_processed"))
+    ppl.loc[0, "tokens"] = None
+    ppl.loc[0, "compute"] = None
+    ppl.loc[0, "lr_max"] = None
+    ppl.loc[0, "lr_at_step"] = None
+    ppl.to_parquet(paths.get_path("ppl_processed"), index=False)
+
+    result = verify_preprocessed_derivations(paths)
+    verification = result.processed_outputs[0]
+
+    assert verification.token_evidence_count == 0
+    assert verification.token_mismatch_count == 1
+    assert verification.compute_evidence_count == 0
+    assert verification.exact_compute_mismatch_count == 1
+    assert verification.model_detail_mismatch_count == 1
+    assert verification.lr_mismatch_count == 1

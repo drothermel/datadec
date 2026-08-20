@@ -478,6 +478,31 @@ def test_missing_predictions_are_rejected(tmp_path: Path) -> None:
         )
 
 
+def test_archive_without_checkpoints_preserves_existing_outputs(tmp_path: Path) -> None:
+    archive = tmp_path / "empty.tar.gz"
+    with tarfile.open(archive, mode="w:gz"):
+        pass
+    paths = DataDecidePaths(tmp_path)
+    outputs = (
+        paths.olmes_details_tasks_path(RECIPE),
+        paths.olmes_details_instances_path(RECIPE),
+        paths.olmes_details_choices_path(RECIPE),
+    )
+    for output in outputs:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_bytes(b"existing")
+
+    with pytest.raises(ValueError, match="contains no recognized checkpoints"):
+        preprocess_olmes_details(
+            paths,
+            RECIPE,
+            input_path=archive,
+            contract=CONTRACT,
+        )
+
+    assert [output.read_bytes() for output in outputs] == [b"existing"] * 3
+
+
 def test_instance_count_mismatch_is_rejected(tmp_path: Path) -> None:
     archive = _build_fixture_archive(tmp_path, num_instances=3, prediction_lines=2)
     with pytest.raises(ValueError, match="instance count mismatch"):
@@ -613,14 +638,10 @@ def test_preprocess_does_not_download_or_upload(tmp_path: Path) -> None:
     archive = _build_fixture_archive(tmp_path)
     _install_fixture_archive(tmp_path, archive)
 
-    with (
-        patch("datadec.data.download.download_sources") as download_sources,
-        patch("datadec.data.pipeline.download_sources") as pipeline_download_sources,
-    ):
+    with patch("datadec.data.download.download_sources") as download_sources:
         preprocess_olmes_details(paths, RECIPE)
 
     download_sources.assert_not_called()
-    pipeline_download_sources.assert_not_called()
     assert paths.olmes_details_tasks_path(RECIPE).is_file()
     assert paths.olmes_details_instances_path(RECIPE).is_file()
     assert paths.olmes_details_choices_path(RECIPE).is_file()

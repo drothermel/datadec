@@ -77,9 +77,7 @@ class TestCalcTotalTokensFromStr:
     def test_computes_tokens(self) -> None:
         result = calc_total_tokens_from_str("20xC", "4M")
         expected = (
-            20
-            * consts.TOKEN_LEN_XC_MULTIPLIER
-            * consts.TRAINING_PARAMETER_COUNTS["4M"]
+            20 * consts.TOKEN_LEN_XC_MULTIPLIER * consts.TRAINING_PARAMETER_COUNTS["4M"]
         )
         assert result == expected
 

@@ -1192,6 +1192,12 @@ def preprocess_olmes_details(
                         f"({len(completed)} total) in {elapsed:.1f}s"
                     )
 
+        if not seen_checkpoints:
+            raise ValueError(
+                "OLMES detail archive contains no recognized checkpoints: "
+                f"{resolved_input}"
+            )
+
         stored_checkpoints = {
             (row[0], row[1], row[2], row[3])
             for row in connection.execute(
