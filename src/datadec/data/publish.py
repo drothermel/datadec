@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 import hashlib
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Literal
 
 import pyarrow as pa
@@ -17,10 +17,13 @@ from huggingface_hub import HfApi
 
 from datadec.config import (
     OLMESTableContract,
+    PublishedResultFile,
+    PublishedResultsManifest,
     PublishingContract,
     PublishingTarget,
     ScalingLawTableContract,
     load_olmes_contract,
+    load_published_results_manifest,
     load_publishing_contract,
     load_scaling_law_contract,
     load_source_manifest,
@@ -29,6 +32,10 @@ from datadec.data.download import resolve_olmes_detail_recipes
 from datadec.data.paths import DataDecidePaths
 from datadec.data.preprocess.model_enrichment import CHECKPOINT_ENRICHMENT_TYPES
 from datadec.data.preprocess.ppl import PPL_IDENTITY_COLUMNS, PPL_METRIC_COLUMNS
+from datadec.data.preprocess.published_results import (
+    PUBLISHED_RESULT_SCHEMAS,
+    resolve_published_result_units,
+)
 
 type ParquetLogicalType = Literal["string", "int64", "float64", "bool"]
 
@@ -230,6 +237,70 @@ def olmes_details_publication_unit(
     )
 
 
+def published_results_publication_units(
+    paths: DataDecidePaths,
+    *,
+    units: Sequence[str] = (),
+    contract: PublishingContract | None = None,
+    manifest: PublishedResultsManifest | None = None,
+) -> tuple[PublicationUnit, ...]:
+    publishing = contract or load_publishing_contract()
+    published_results = manifest or load_published_results_manifest()
+    selected_units = resolve_published_result_units(units, published_results)
+    publication_units: list[PublicationUnit] = []
+    for unit in selected_units:
+        sources = tuple(
+            source
+            for source in published_results.files
+            if source.category == "published_results"
+            and source.publication_unit == unit
+        )
+        publication_units.append(
+            PublicationUnit(
+                name=f"published-results:{unit}",
+                files=tuple(
+                    _published_result_publication_file(
+                        paths,
+                        source,
+                        remote_root=publishing.published_results.remote_root,
+                    )
+                    for source in sources
+                ),
+                commit_message=(
+                    publishing.published_results.commit_message_template.format(
+                        unit=unit
+                    )
+                ),
+                cleanup_paths=tuple(
+                    paths.published_result_source_path(source) for source in sources
+                ),
+            )
+        )
+    return tuple(publication_units)
+
+
+def _published_result_publication_file(
+    paths: DataDecidePaths,
+    source: PublishedResultFile,
+    *,
+    remote_root: str,
+) -> PublicationFile:
+    schema_name = source.schema
+    if schema_name is None:
+        raise ValueError(f"published result has no schema: {source.path}")
+    schema = PUBLISHED_RESULT_SCHEMAS[schema_name]
+    return PublicationFile(
+        local_path=paths.published_result_output_path(source),
+        remote_path=(
+            PurePosixPath(remote_root) / source.parquet_relative_path()
+        ).as_posix(),
+        expected_schema=tuple(
+            PublicationColumn(column.name, column.logical_type, column.nullable)
+            for column in schema.columns
+        ),
+    )
+
+
 def _validate_local_file(file: PublicationFile) -> _ValidatedLocalFile:
     path = file.local_path
     if not path.is_file():
@@ -417,10 +488,17 @@ def publish_existing_outputs(
     olmes: bool = False,
     olmes_details: Sequence[str] = (),
     scaling_law: bool = False,
+    published_results: bool = False,
     keep_sources: bool = False,
     hf_token: str | None = None,
 ) -> list[PublicationResult]:
-    if not ppl and not olmes and not olmes_details and not scaling_law:
+    if (
+        not ppl
+        and not olmes
+        and not olmes_details
+        and not scaling_law
+        and not published_results
+    ):
         raise ValueError("select at least one output to publish")
 
     publishing = load_publishing_contract()
@@ -434,6 +512,8 @@ def publish_existing_outputs(
         units.append(olmes_publication_unit(paths, contract=publishing))
     if scaling_law:
         units.append(scaling_law_publication_unit(paths, contract=publishing))
+    if published_results:
+        units.extend(published_results_publication_units(paths, contract=publishing))
     units.extend(
         olmes_details_publication_unit(paths, recipe, contract=publishing)
         for recipe in recipes
@@ -457,6 +537,7 @@ __all__ = [
     "olmes_details_publication_unit",
     "olmes_publication_unit",
     "ppl_publication_unit",
+    "published_results_publication_units",
     "publish_existing_outputs",
     "publish_unit",
     "scaling_law_publication_unit",

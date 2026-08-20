@@ -59,6 +59,7 @@ def test_cli_forwards_repeatable_detail_selection_and_cleanup_policy(
         olmes=False,
         olmes_details=["c4", "fineweb-pro"],
         scaling_law=False,
+        published_results=False,
         keep_sources=True,
     )
 
@@ -79,9 +80,27 @@ def test_cli_all_expands_all_supported_existing_outputs(tmp_path: Path) -> None:
         "olmes": True,
         "olmes_details": ["all"],
         "scaling_law": True,
+        "published_results": True,
         "keep_sources": False,
     }
     assert result.output == "ppl: verified no-op at commit-oid\n"
+
+
+def test_cli_selects_all_existing_published_results(tmp_path: Path) -> None:
+    with patch.object(script, "publish_existing_outputs", return_value=[]) as publish:
+        result = runner.invoke(
+            app, ["--published-results", "--data-dir", str(tmp_path)]
+        )
+
+    assert result.exit_code == 0
+    assert publish.call_args.kwargs == {
+        "ppl": False,
+        "olmes": False,
+        "olmes_details": [],
+        "scaling_law": False,
+        "published_results": True,
+        "keep_sources": False,
+    }
 
 
 def test_cli_reports_unknown_recipe_as_usage_error() -> None:

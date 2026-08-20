@@ -9,7 +9,10 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 import pytest
 
-from datadec.config import load_publishing_contract
+from datadec.config import (
+    load_published_results_manifest,
+    load_publishing_contract,
+)
 from datadec.data.paths import DataDecidePaths
 from datadec.data.publish import (
     PublicationColumn,
@@ -19,8 +22,10 @@ from datadec.data.publish import (
     ppl_publication_unit,
     publish_existing_outputs,
     publish_unit,
+    published_results_publication_units,
     scaling_law_publication_unit,
 )
+from datadec.data.preprocess.published_results import PUBLISHED_RESULT_SCHEMAS
 
 
 def _write_parquet(path: Path, values: list[int] | None = None) -> None:
@@ -358,6 +363,75 @@ def test_scaling_factory_is_atomic_and_cleans_only_three_configured_sources(
     )
 
 
+def test_published_results_factory_maps_all_manifest_units_exactly(
+    tmp_path: Path,
+) -> None:
+    paths = DataDecidePaths(tmp_path)
+    manifest = load_published_results_manifest()
+    units = published_results_publication_units(paths, manifest=manifest)
+    expected_unit_names = (
+        "cheap-decisions",
+        "new-eval-intermediates",
+        "outputs2",
+        "per-task-arc-challenge",
+        "per-task-arc-easy",
+        "per-task-boolq",
+        "per-task-csqa",
+        "per-task-hellaswag",
+        "per-task-mmlu",
+        "per-task-openbookqa",
+        "per-task-piqa",
+        "per-task-socialiqa",
+        "per-task-winogrande",
+        "processed-data-current",
+        "processed-data-pre-extra-real",
+    )
+
+    assert tuple(unit.name for unit in units) == tuple(
+        f"published-results:{name}" for name in expected_unit_names
+    )
+    assert len(units) == 15
+    for unit_name, unit in zip(expected_unit_names, units, strict=True):
+        sources = tuple(
+            source
+            for source in manifest.files
+            if source.category == "published_results"
+            and source.publication_unit == unit_name
+        )
+        assert tuple(file.local_path for file in unit.files) == tuple(
+            paths.published_result_output_path(source) for source in sources
+        )
+        assert tuple(file.remote_path for file in unit.files) == tuple(
+            f"published-results/{source.parquet_relative_path().as_posix()}"
+            for source in sources
+        )
+        assert unit.cleanup_paths == tuple(
+            paths.published_result_source_path(source) for source in sources
+        )
+        assert unit.commit_message == f"Publish published results for {unit_name}"
+        for file, source in zip(unit.files, sources, strict=True):
+            assert source.schema is not None
+            assert file.expected_schema == tuple(
+                PublicationColumn(column.name, column.logical_type, column.nullable)
+                for column in PUBLISHED_RESULT_SCHEMAS[source.schema].columns
+            )
+            assert file.remote_path.endswith(".parquet")
+
+
+def test_published_results_factory_selects_units_in_manifest_order(
+    tmp_path: Path,
+) -> None:
+    units = published_results_publication_units(
+        DataDecidePaths(tmp_path),
+        units=("per-task-winogrande", "outputs2"),
+    )
+
+    assert tuple(unit.name for unit in units) == (
+        "published-results:outputs2",
+        "published-results:per-task-winogrande",
+    )
+
+
 def test_detail_factory_cleanup_is_isolated_to_one_recipe(tmp_path: Path) -> None:
     paths = DataDecidePaths(tmp_path)
     c4 = olmes_details_publication_unit(paths, "c4")
@@ -441,6 +515,62 @@ def test_existing_final_output_can_be_republished_without_raw_or_preprocessing(
     assert results[0].created is False
     assert output.is_file()
     assert not (tmp_path / "raw").exists()
+
+
+def test_existing_published_results_can_be_retried_without_sources_or_preprocessing(
+    tmp_path: Path,
+) -> None:
+    paths = DataDecidePaths(tmp_path)
+    results = [SimpleNamespace(unit_name=f"unit-{index}") for index in range(15)]
+    with patch(
+        "datadec.data.publish.publish_unit", side_effect=results
+    ) as publish_selected_unit:
+        actual = publish_existing_outputs(paths, published_results=True)
+
+    assert actual == results
+    units = tuple(call.args[0] for call in publish_selected_unit.call_args_list)
+    assert len(units) == 15
+    assert all(unit.name.startswith("published-results:") for unit in units)
+    assert not (tmp_path / "reference/published-results").exists()
+
+
+def test_published_results_stop_after_failed_unit_without_retry(
+    tmp_path: Path,
+) -> None:
+    units = tuple(
+        PublicationUnit(
+            name=f"unit-{index}",
+            files=(PublicationFile(tmp_path / f"{index}.parquet", f"{index}.parquet"),),
+            commit_message=f"Publish unit {index}",
+            cleanup_paths=(tmp_path / f"source-{index}.csv",),
+        )
+        for index in range(3)
+    )
+    for unit in units:
+        unit.cleanup_paths[0].write_text("source")
+
+    def publish_or_fail(unit: PublicationUnit, **_: object) -> object:
+        if unit is units[1]:
+            raise RuntimeError("second unit failed")
+        unit.cleanup_paths[0].unlink()
+        return SimpleNamespace(unit_name=unit.name)
+
+    with (
+        patch(
+            "datadec.data.publish.published_results_publication_units",
+            return_value=units,
+        ),
+        patch(
+            "datadec.data.publish.publish_unit", side_effect=publish_or_fail
+        ) as publish_selected_unit,
+        pytest.raises(RuntimeError, match="second unit failed"),
+    ):
+        publish_existing_outputs(DataDecidePaths(tmp_path), published_results=True)
+
+    assert publish_selected_unit.call_count == 2
+    assert not units[0].cleanup_paths[0].exists()
+    assert units[1].cleanup_paths[0].is_file()
+    assert units[2].cleanup_paths[0].is_file()
 
 
 def test_existing_output_publication_rejects_no_selection(tmp_path: Path) -> None:
