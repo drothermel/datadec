@@ -20,6 +20,7 @@ def main(
     olmes_details: Annotated[list[str] | None, typer.Option("--olmes-details")] = None,
     scaling_law: Annotated[bool, typer.Option("--scaling-law")] = False,
     published_results: Annotated[bool, typer.Option("--published-results")] = False,
+    published_figures: Annotated[bool, typer.Option("--published-figures")] = False,
     force: Annotated[bool, typer.Option("--force")] = False,
     data_dir: Annotated[Path, typer.Option("--data-dir")] = DEFAULT_DATA_DIR,
 ) -> None:
@@ -31,10 +32,11 @@ def main(
         and not details
         and not scaling_law
         and not published_results
+        and not published_figures
     ):
         raise typer.BadParameter(
             "select --ppl, --olmes, --olmes-details, --scaling-law, or "
-            "--published-results"
+            "--published-results, or --published-figures"
         )
     try:
         download_sources(
@@ -44,6 +46,7 @@ def main(
             olmes_details=details,
             scaling_law=scaling_law,
             published_results=published_results,
+            published_figures=published_figures,
             force=force,
             verbose=True,
         )

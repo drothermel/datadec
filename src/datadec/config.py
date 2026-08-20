@@ -159,11 +159,130 @@ class SourceManifest(ConfigModel):
     archives: tuple[ArchiveSource, ...]
 
 
+type PublishedResultCategory = Literal[
+    "scaling_law", "published_results", "published_figures"
+]
+type PublishedResultSchema = Literal[
+    "transformed",
+    "prediction_model_scale",
+    "processed_ladder",
+    "cheap_decisions",
+    "new_eval_decision_accuracy",
+    "new_eval_means",
+    "target_pairs",
+]
+type PublishedResultUnit = Literal[
+    "cheap-decisions",
+    "new-eval-intermediates",
+    "outputs2",
+    "per-task-arc-challenge",
+    "per-task-arc-easy",
+    "per-task-boolq",
+    "per-task-csqa",
+    "per-task-hellaswag",
+    "per-task-mmlu",
+    "per-task-openbookqa",
+    "per-task-piqa",
+    "per-task-socialiqa",
+    "per-task-winogrande",
+    "processed-data-current",
+    "processed-data-pre-extra-real",
+]
+
+
+_SCHEMA_FILENAMES: dict[PublishedResultSchema, frozenset[str]] = {
+    "transformed": frozenset({"1_metric_transformed.csv", "1_primary_transformed.csv"}),
+    "prediction_model_scale": frozenset({"2_prediction_model_scale.csv"}),
+    "processed_ladder": frozenset(
+        {
+            "results_ladder_5xC_seeds_cleaned_correct_params.csv",
+            "results_ladder_5xC_seeds_cleaned_correct_params_pre_extra_real.csv",
+            "results_ladder_5xC_seeds_dirty_correct_params.csv",
+            "results_ladder_5xC_seeds_dirty_correct_params_pre_extra_real.csv",
+        }
+    ),
+    "cheap_decisions": frozenset({"cheap_decisions_stacked_rc_pred_all.csv"}),
+    "new_eval_decision_accuracy": frozenset({"davidh_new_evals_decision_accuracy.csv"}),
+    "new_eval_means": frozenset({"davidh_new_evals_means_df.csv"}),
+    "target_pairs": frozenset({"0_target_pairs.json"}),
+}
+
+
+def _published_result_unit_for_path(path: PurePosixPath) -> PublishedResultUnit:
+    if path.as_posix() == "cheap_decisions_stacked_rc_pred_all.csv":
+        return "cheap-decisions"
+    if path.parts[0] == "new_eval_intermediates":
+        return "new-eval-intermediates"
+    if path.parts[0] == "outputs2":
+        return "outputs2"
+    if len(path.parts) >= 2 and path.parts[0] == "per_task_out":
+        task_units: dict[str, PublishedResultUnit] = {
+            "arc_challenge_out": "per-task-arc-challenge",
+            "arc_easy_out": "per-task-arc-easy",
+            "boolq_out": "per-task-boolq",
+            "csqa_out": "per-task-csqa",
+            "hellaswag_out": "per-task-hellaswag",
+            "mmlu_out": "per-task-mmlu",
+            "openbookqa_out": "per-task-openbookqa",
+            "piqa_out": "per-task-piqa",
+            "socialiqa_out": "per-task-socialiqa",
+            "winogrande_out": "per-task-winogrande",
+        }
+        try:
+            return task_units[path.parts[1]]
+        except KeyError:
+            pass
+    if path.parts[0] == "processed_data":
+        if path.name.endswith("_pre_extra_real.csv"):
+            return "processed-data-pre-extra-real"
+        return "processed-data-current"
+    raise ValueError("structured published result path has no publication unit")
+
+
+def _published_result_schema_for_path(path: PurePosixPath) -> PublishedResultSchema:
+    if path.as_posix() == "cheap_decisions_stacked_rc_pred_all.csv":
+        return "cheap_decisions"
+    if path.parts[0] == "new_eval_intermediates":
+        schemas: dict[str, PublishedResultSchema] = {
+            "davidh_new_evals_decision_accuracy.csv": "new_eval_decision_accuracy",
+            "davidh_new_evals_means_df.csv": "new_eval_means",
+        }
+        try:
+            return schemas[path.name]
+        except KeyError:
+            pass
+    if (
+        path.parts[0] == "processed_data"
+        and path.name in _SCHEMA_FILENAMES["processed_ladder"]
+    ):
+        return "processed_ladder"
+    if path.parts[0] == "outputs2" or (
+        len(path.parts) >= 2 and path.parts[0] == "per_task_out"
+    ):
+        for schema in ("target_pairs", "transformed", "prediction_model_scale"):
+            if path.name in _SCHEMA_FILENAMES[schema]:
+                return schema
+    raise ValueError("structured published result path has no schema family")
+
+
 class PublishedResultFile(ConfigModel):
+    model_config = ConfigDict(
+        extra="forbid",
+        frozen=True,
+        populate_by_name=True,
+        serialize_by_alias=True,
+    )
+
     id: str
     path: str
     expected_size: int = Field(gt=0)
-    category: Literal["scaling_law", "published_results"]
+    category: PublishedResultCategory
+    publication_unit: PublishedResultUnit | None = None
+    schema_: PublishedResultSchema | None = Field(default=None, alias="schema")
+
+    @property
+    def schema(self) -> PublishedResultSchema | None:
+        return self.schema_
 
     @model_validator(mode="after")
     def validate_path_and_category(self) -> Self:
@@ -175,10 +294,54 @@ class PublishedResultFile(ConfigModel):
             or ".." in path.parts
         ):
             raise ValueError("published result paths must be normalized relative paths")
+        suffix = path.suffix.lower()
         is_raw = path.parts[0] == "raw_data"
         if is_raw != (self.category == "scaling_law"):
             raise ValueError("only raw_data files may use the scaling_law category")
+        expected_extensions = {
+            "scaling_law": {".csv"},
+            "published_results": {".csv", ".json"},
+            "published_figures": {".pdf", ".png"},
+        }
+        if suffix not in expected_extensions[self.category]:
+            raise ValueError(
+                f"invalid extension for published result category {self.category}"
+            )
+        is_structured = self.category == "published_results"
+        if is_structured != (
+            self.publication_unit is not None and self.schema is not None
+        ):
+            raise ValueError(
+                "structured published results require publication_unit and schema; "
+                "other categories must omit both"
+            )
+        if is_structured:
+            try:
+                expected_schema = _published_result_schema_for_path(path)
+            except ValueError:
+                raise ValueError(
+                    "published result schema does not match its source path"
+                ) from None
+            if self.schema != expected_schema:
+                raise ValueError(
+                    "published result schema does not match its source path"
+                )
+            try:
+                expected_unit = _published_result_unit_for_path(path)
+            except ValueError:
+                raise ValueError(
+                    "published result publication_unit does not match its source path"
+                ) from None
+            if self.publication_unit != expected_unit:
+                raise ValueError(
+                    "published result publication_unit does not match its source path"
+                )
         return self
+
+    def parquet_relative_path(self) -> PurePosixPath:
+        if self.category != "published_results":
+            raise ValueError("only structured published results have Parquet outputs")
+        return PurePosixPath(self.path).with_suffix(".parquet")
 
 
 class PublishedResultsManifest(ConfigModel):
@@ -195,6 +358,13 @@ class PublishedResultsManifest(ConfigModel):
         paths = [file.path for file in self.files]
         if len(paths) != len(set(paths)):
             raise ValueError("published result paths must be unique")
+        outputs = [
+            file.parquet_relative_path().as_posix()
+            for file in self.files
+            if file.category == "published_results"
+        ]
+        if len(outputs) != len(set(outputs)):
+            raise ValueError("published result Parquet output paths must be unique")
         return self
 
 
@@ -958,6 +1128,9 @@ __all__ = [
     "OLMESTables",
     "OLMESDetailsPublishingContract",
     "PublishedResultFile",
+    "PublishedResultCategory",
+    "PublishedResultSchema",
+    "PublishedResultUnit",
     "PublishedResultsManifest",
     "PublishedResultsPublishingContract",
     "PublishingContract",

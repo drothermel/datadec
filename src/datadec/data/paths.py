@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from datadec.config import (
+    PublishedResultFile,
     load_olmes_contract,
     load_scaling_law_contract,
     load_source_manifest,
@@ -43,6 +44,15 @@ class DataDecidePaths:
     def scaling_law_checkpoint_losses_path(self) -> Path:
         contract = load_scaling_law_contract()
         return self.data_dir / contract.tables.checkpoint_losses.path
+
+    def published_result_source_path(self, source: PublishedResultFile) -> Path:
+        if source.category != "published_results":
+            raise ValueError("only structured published results have source paths")
+        return self.data_dir / "reference" / "published-results" / source.path
+
+    def published_result_output_path(self, source: PublishedResultFile) -> Path:
+        relative_path = source.parquet_relative_path()
+        return self.data_dir / "processed" / "published-results" / relative_path
 
     def olmes_details_tasks_path(self, recipe: str) -> Path:
         return self._olmes_details_table_path("detailed_tasks", recipe)

@@ -241,6 +241,7 @@ def download_sources(
     olmes_details: Sequence[str] = (),
     scaling_law: bool = False,
     published_results: bool = False,
+    published_figures: bool = False,
     force: bool = False,
     verbose: bool = False,
     manifest: SourceManifest | None = None,
@@ -252,6 +253,7 @@ def download_sources(
         and not olmes_details
         and not scaling_law
         and not published_results
+        and not published_figures
     ):
         raise ValueError("select at least one source to download")
 
@@ -273,13 +275,15 @@ def download_sources(
             _download_detail_source(paths, manifest.olmes_details, recipe, force=force)
         )
 
-    if scaling_law or published_results:
+    if scaling_law or published_results or published_figures:
         drive_manifest = published_results_manifest or load_published_results_manifest()
         categories = []
         if scaling_law:
             categories.append("scaling_law")
         if published_results:
             categories.append("published_results")
+        if published_figures:
+            categories.append("published_figures")
         for category in categories:
             for source in drive_manifest.files:
                 if source.category == category:

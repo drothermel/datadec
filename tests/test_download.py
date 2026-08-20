@@ -11,6 +11,7 @@ import pytest
 from datadec.config import (
     PublishedResultFile,
     PublishedResultsManifest,
+    load_published_results_manifest,
     load_source_manifest,
 )
 from datadec.data import download
@@ -57,17 +58,20 @@ class FakeResponse:
 
 def published_file(
     *,
-    path: str = "outputs2/example.csv",
+    path: str = "outputs2/1_metric_transformed.csv",
     expected_size: int = 6,
     category: str = "published_results",
     file_id: str = "drive-file-id",
 ) -> PublishedResultFile:
+    structured = category == "published_results"
     return PublishedResultFile.model_validate(
         {
             "id": file_id,
             "path": path,
             "expected_size": expected_size,
             "category": category,
+            "publication_unit": "outputs2" if structured else None,
+            "schema": "transformed" if structured else None,
         }
     )
 
@@ -300,7 +304,9 @@ def test_published_result_destinations_preserve_category_mapping(
 ) -> None:
     paths = DataDecidePaths(tmp_path)
     raw = published_file(path="raw_data/results_ladder.csv", category="scaling_law")
-    reference = published_file(path="per_task_out/arc/figure.pdf")
+    reference = published_file(
+        path="per_task_out/arc/figure.pdf", category="published_figures"
+    )
 
     assert download._published_result_destination(paths, raw) == (
         tmp_path / "raw/scaling-law/results_ladder.csv"
@@ -320,7 +326,9 @@ def test_fresh_published_result_download_streams_and_atomically_completes(
             DataDecidePaths(tmp_path), source, force=False
         )
 
-    destination = tmp_path / "reference/published-results/outputs2/example.csv"
+    destination = (
+        tmp_path / "reference/published-results/outputs2/1_metric_transformed.csv"
+    )
     request = open_url.call_args.args[0]
     assert isinstance(request, Request)
     assert request.full_url == (
@@ -330,9 +338,11 @@ def test_fresh_published_result_download_streams_and_atomically_completes(
     assert open_url.call_args.kwargs == {"timeout": download._DOWNLOAD_TIMEOUT_SECONDS}
     assert request.get_header("Range") is None
     assert destination.read_bytes() == b"abcdef"
-    assert not destination.with_name("example.csv.part").exists()
+    assert not destination.with_name("1_metric_transformed.csv.part").exists()
     assert result == download.DownloadResult(
-        "published-results:outputs2/example.csv", destination, "downloaded"
+        "published-results:outputs2/1_metric_transformed.csv",
+        destination,
+        "downloaded",
     )
 
 
@@ -340,8 +350,10 @@ def test_published_result_download_resumes_valid_partial_with_range(
     tmp_path: Path,
 ) -> None:
     source = published_file()
-    destination = tmp_path / "reference/published-results/outputs2/example.csv"
-    partial = destination.with_name("example.csv.part")
+    destination = (
+        tmp_path / "reference/published-results/outputs2/1_metric_transformed.csv"
+    )
+    partial = destination.with_name("1_metric_transformed.csv.part")
     partial.parent.mkdir(parents=True)
     partial.write_bytes(b"abc")
     response = FakeResponse(
@@ -365,8 +377,10 @@ def test_published_result_download_restarts_when_server_ignores_range(
     tmp_path: Path,
 ) -> None:
     source = published_file()
-    destination = tmp_path / "reference/published-results/outputs2/example.csv"
-    partial = destination.with_name("example.csv.part")
+    destination = (
+        tmp_path / "reference/published-results/outputs2/1_metric_transformed.csv"
+    )
+    partial = destination.with_name("1_metric_transformed.csv.part")
     partial.parent.mkdir(parents=True)
     partial.write_bytes(b"old")
 
@@ -385,7 +399,9 @@ def test_published_result_reuses_expected_size_and_force_redownloads(
     tmp_path: Path,
 ) -> None:
     source = published_file()
-    destination = tmp_path / "reference/published-results/outputs2/example.csv"
+    destination = (
+        tmp_path / "reference/published-results/outputs2/1_metric_transformed.csv"
+    )
     destination.parent.mkdir(parents=True)
     destination.write_bytes(b"stored")
 
@@ -411,7 +427,9 @@ def test_published_result_rejects_mismatched_complete_file(
     tmp_path: Path,
 ) -> None:
     source = published_file()
-    destination = tmp_path / "reference/published-results/outputs2/example.csv"
+    destination = (
+        tmp_path / "reference/published-results/outputs2/1_metric_transformed.csv"
+    )
     destination.parent.mkdir(parents=True)
     destination.write_bytes(b"wrong")
 
@@ -435,17 +453,23 @@ def test_published_result_size_mismatch_keeps_only_partial_file(
                 DataDecidePaths(tmp_path), source, force=False
             )
 
-    destination = tmp_path / "reference/published-results/outputs2/example.csv"
+    destination = (
+        tmp_path / "reference/published-results/outputs2/1_metric_transformed.csv"
+    )
     assert isinstance(exc_info.value.__cause__, ValueError)
     assert not destination.exists()
-    assert destination.with_name("example.csv.part").read_bytes() == b"short"
+    assert (
+        destination.with_name("1_metric_transformed.csv.part").read_bytes() == b"short"
+    )
 
 
 def test_published_result_failure_preserves_cause_and_completed_destination(
     tmp_path: Path,
 ) -> None:
     source = published_file()
-    destination = tmp_path / "reference/published-results/outputs2/example.csv"
+    destination = (
+        tmp_path / "reference/published-results/outputs2/1_metric_transformed.csv"
+    )
     destination.parent.mkdir(parents=True)
     destination.write_bytes(b"stored")
     network_error = OSError("connection lost")
@@ -459,7 +483,7 @@ def test_published_result_failure_preserves_cause_and_completed_destination(
 
     assert exc_info.value.__cause__ is network_error
     assert destination.read_bytes() == b"stored"
-    assert destination.with_name("example.csv.part").read_bytes() == b"new"
+    assert destination.with_name("1_metric_transformed.csv.part").read_bytes() == b"new"
 
 
 def test_drive_selectors_are_disjoint_complete_and_deterministic(
@@ -473,7 +497,9 @@ def test_drive_selectors_are_disjoint_complete_and_deterministic(
             file_id="raw-2",
         ),
         published_file(
-            path="outputs2/second.csv", expected_size=1, file_id="published-2"
+            path="outputs2/1_primary_transformed.csv",
+            expected_size=1,
+            file_id="published-2",
         ),
         published_file(
             path="raw_data/first.csv",
@@ -482,7 +508,15 @@ def test_drive_selectors_are_disjoint_complete_and_deterministic(
             file_id="raw-1",
         ),
         published_file(
-            path="outputs2/first.csv", expected_size=1, file_id="published-1"
+            path="outputs2/1_metric_transformed.csv",
+            expected_size=1,
+            file_id="published-1",
+        ),
+        published_file(
+            path="per_task_out/arc/figure.pdf",
+            expected_size=1,
+            category="published_figures",
+            file_id="figure-1",
         ),
     )
     manifest = PublishedResultsManifest(
@@ -511,17 +545,76 @@ def test_drive_selectors_are_disjoint_complete_and_deterministic(
         published_results=True,
         published_results_manifest=manifest,
     )
+    figures = download_sources(
+        DataDecidePaths(tmp_path),
+        published_figures=True,
+        published_results_manifest=manifest,
+    )
 
     assert [result.source for result in scaling] == [
         "scaling-law:raw_data/second.csv",
         "scaling-law:raw_data/first.csv",
     ]
     assert [result.source for result in published] == [
-        "published-results:outputs2/second.csv",
-        "published-results:outputs2/first.csv",
+        "published-results:outputs2/1_primary_transformed.csv",
+        "published-results:outputs2/1_metric_transformed.csv",
     ]
     assert [result.source for result in combined] == [
         *[result.source for result in scaling],
         *[result.source for result in published],
     ]
     assert len({result.destination for result in combined}) == 4
+    assert [result.source for result in figures] == [
+        "published-figures:per_task_out/arc/figure.pdf"
+    ]
+    assert {result.destination for result in combined}.isdisjoint(
+        result.destination for result in figures
+    )
+
+
+def test_real_manifest_drive_selectors_pin_counts_bytes_and_use_no_network(
+    tmp_path: Path,
+) -> None:
+    manifest = load_published_results_manifest()
+
+    def selected_result(
+        paths: DataDecidePaths, source: PublishedResultFile, *, force: bool
+    ) -> download.DownloadResult:
+        assert force is False
+        return download.DownloadResult(
+            source.category,
+            download._published_result_destination(paths, source),
+            "reused",
+        )
+
+    with (
+        patch(
+            "datadec.data.download._download_published_result_file",
+            side_effect=selected_result,
+        ) as download_file,
+        patch("datadec.data.download.urlopen") as urlopen,
+    ):
+        structured = download_sources(
+            DataDecidePaths(tmp_path),
+            published_results=True,
+            published_results_manifest=manifest,
+        )
+        figures = download_sources(
+            DataDecidePaths(tmp_path),
+            published_figures=True,
+            published_results_manifest=manifest,
+        )
+
+    structured_sources = [
+        call.args[1] for call in download_file.call_args_list[: len(structured)]
+    ]
+    figure_sources = [
+        call.args[1] for call in download_file.call_args_list[len(structured) :]
+    ]
+    assert len(structured) == 51
+    assert len(figures) == 80
+    assert sum(source.expected_size for source in structured_sources) == 8_974_174_175
+    assert sum(source.expected_size for source in figure_sources) == 83_178_155
+    assert {source.category for source in structured_sources} == {"published_results"}
+    assert {source.category for source in figure_sources} == {"published_figures"}
+    urlopen.assert_not_called()

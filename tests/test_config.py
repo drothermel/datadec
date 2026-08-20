@@ -112,14 +112,53 @@ def test_published_results_inventory_pins_public_folder_contract() -> None:
     published_results = [
         file for file in manifest.files if file.category == "published_results"
     ]
+    published_figures = [
+        file for file in manifest.files if file.category == "published_figures"
+    ]
 
     assert manifest.folder_url == PUBLISHED_RESULTS_FOLDER_URL
     assert len(manifest.files) == 134
     assert len(scaling_law) == 3
-    assert len(published_results) == 131
+    assert len(published_results) == 51
+    assert len(published_figures) == 80
     assert sum(file.expected_size for file in manifest.files) == 11_919_102_101
     assert sum(file.expected_size for file in scaling_law) == 2_861_749_771
-    assert sum(file.expected_size for file in published_results) == 9_057_352_330
+    assert sum(file.expected_size for file in published_results) == 8_974_174_175
+    assert sum(file.expected_size for file in published_figures) == 83_178_155
+    assert all(
+        file.publication_unit is not None and file.schema is not None
+        for file in published_results
+    )
+    assert all(
+        file.publication_unit is None and file.schema is None
+        for file in (*scaling_law, *published_figures)
+    )
+    assert Counter(file.schema for file in published_results) == {
+        "transformed": 22,
+        "prediction_model_scale": 11,
+        "target_pairs": 11,
+        "processed_ladder": 4,
+        "cheap_decisions": 1,
+        "new_eval_decision_accuracy": 1,
+        "new_eval_means": 1,
+    }
+    assert Counter(file.publication_unit for file in published_results) == {
+        "cheap-decisions": 1,
+        "new-eval-intermediates": 2,
+        "outputs2": 4,
+        "per-task-arc-challenge": 4,
+        "per-task-arc-easy": 4,
+        "per-task-boolq": 4,
+        "per-task-csqa": 4,
+        "per-task-hellaswag": 4,
+        "per-task-mmlu": 4,
+        "per-task-openbookqa": 4,
+        "per-task-piqa": 4,
+        "per-task-socialiqa": 4,
+        "per-task-winogrande": 4,
+        "processed-data-current": 2,
+        "processed-data-pre-extra-real": 2,
+    }
     assert {file.path: file.expected_size for file in scaling_law} == (
         SCALING_LAW_FILES
     )
@@ -131,7 +170,7 @@ def test_published_results_inventory_is_disjoint_and_unique() -> None:
     paths = [file.path for file in manifest.files]
     category_paths = {
         category: {file.path for file in manifest.files if file.category == category}
-        for category in ("scaling_law", "published_results")
+        for category in ("scaling_law", "published_results", "published_figures")
     }
     destinations = [
         (
@@ -146,6 +185,9 @@ def test_published_results_inventory_is_disjoint_and_unique() -> None:
     assert len(paths) == len(set(paths))
     assert len(destinations) == len(set(destinations))
     assert category_paths["scaling_law"].isdisjoint(category_paths["published_results"])
+    assert category_paths["published_results"].isdisjoint(
+        category_paths["published_figures"]
+    )
     assert Counter(path.rsplit(".", 1)[-1] for path in paths) == {
         "csv": 43,
         "json": 11,
