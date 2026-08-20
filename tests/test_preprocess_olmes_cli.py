@@ -8,6 +8,7 @@ from unittest.mock import patch
 import pandas as pd
 from typer.testing import CliRunner
 
+from datadec.data.model_utils import checkpoint_enrichment
 from datadec.data.pipeline import DataPipeline
 
 SCRIPT_PATH = Path(__file__).parents[1] / "scripts/preprocess_olmes.py"
@@ -22,6 +23,21 @@ DEFAULT_DATA_DIR = script.DEFAULT_DATA_DIR
 app = script.app
 
 runner = CliRunner()
+
+
+def _raw_row() -> dict[str, object]:
+    enrichment = checkpoint_enrichment("4M", 1250)
+    return {
+        "params": "4M",
+        "data": "C4",
+        "seed": "default",
+        "step": 1250.0,
+        "task": "arc_challenge",
+        "chinchilla": "1x",
+        "tokens": enrichment["tokens"],
+        "compute": enrichment["compute"],
+        "metrics": {"acc_uncond": 0.42},
+    }
 
 
 def test_cli_default_is_repo_data_independent_of_cwd(
@@ -50,21 +66,7 @@ def test_cli_data_dir_reads_raw_and_writes_only_processed_olmes(tmp_path: Path) 
     input_path = tmp_path / "raw/olmes.parquet"
     output_path = tmp_path / "processed/olmes.parquet"
     input_path.parent.mkdir(parents=True, exist_ok=True)
-    pd.DataFrame(
-        [
-            {
-                "params": "4M",
-                "data": "C4",
-                "seed": "default",
-                "step": 1250.0,
-                "task": "arc_challenge",
-                "chinchilla": "1x",
-                "tokens": 1000,
-                "compute": 1.5,
-                "metrics": {"acc_uncond": 0.42},
-            }
-        ]
-    ).to_parquet(input_path, index=False)
+    pd.DataFrame([_raw_row()]).to_parquet(input_path, index=False)
 
     with (
         patch("datadec.data.download.download_sources") as download_sources,
@@ -99,21 +101,7 @@ def test_cli_input_and_output_overrides(tmp_path: Path) -> None:
     input_path = tmp_path / "custom-raw.parquet"
     output_path = tmp_path / "custom-processed.parquet"
     input_path.parent.mkdir(parents=True, exist_ok=True)
-    pd.DataFrame(
-        [
-            {
-                "params": "4M",
-                "data": "C4",
-                "seed": "default",
-                "step": 1250.0,
-                "task": "arc_challenge",
-                "chinchilla": "1x",
-                "tokens": 1000,
-                "compute": 1.5,
-                "metrics": {"acc_uncond": 0.42},
-            }
-        ]
-    ).to_parquet(input_path, index=False)
+    pd.DataFrame([_raw_row()]).to_parquet(input_path, index=False)
 
     with patch("datadec.data.download.download_sources") as download_sources:
         result = runner.invoke(

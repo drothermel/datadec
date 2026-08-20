@@ -26,6 +26,19 @@ Artifacts live under `data/` by default:
 OLMES table schemas are declared in [`configs/olmes.toml`](configs/olmes.toml).
 Scaling-law source precedence, aliases, seed policy, and table schemas are
 declared in [`configs/scaling_law.toml`](configs/scaling_law.toml).
+Model definitions and training constants are declared in
+[`configs/catalog.toml`](configs/catalog.toml). Each model distinguishes its
+nominal parameter count (the size label), training parameter count (the value
+used to scale batch size and learning-rate schedules), and exact architectural
+parameter count (the value used for FLOP estimates). The configured
+`flops_per_token_per_parameter` constant owns the compute multiplier.
+
+Every checkpoint-bearing processed table except the detail instance and choice
+tables carries the canonical checkpoint derivations directly, without a later
+join: tokens, exact-parameter FLOP compute, model architecture/training details,
+`lr_at_step`, and `cumulative_lr`. These fields are present in PPL, aggregate
+OLMES, both scaling-law tables, and OLMES detail tasks. Instances and choices
+remain evaluation-detail tables keyed to their parent task checkpoint.
 
 ## Download vs preprocess
 
@@ -100,7 +113,35 @@ Nullable byte/unconditional fields remain null when absent in the source checkpo
 ```bash
 uv run python scripts/preprocess_olmes_details.py --recipe dolma1.7-no-math-no-code
 uv run python scripts/verify_olmes_details.py --recipe dolma1.7-no-math-no-code
+uv run python scripts/verify_preprocessed_derivations.py
 ```
+
+The derivation verifier covers PPL, aggregate OLMES, scaling-law evaluations,
+scaling-law checkpoint losses, and OLMES detail task outputs. It excludes the
+instance and choice tables. It checks every available raw token/compute value
+against the canonical schedule and reports when a raw source instead encodes
+nominal-parameter compute. No current preprocessing source records learning-rate
+schedule values, so LR derivations can be checked for internal consistency but
+not independently confirmed against raw evidence.
+
+The 2026-08-19 full-data validation produced zero token, exact-compute,
+model-detail, or LR contradictions in all five processed outputs: 22,709 PPL
+rows; 1,410,750 aggregate OLMES rows; 1,788,996 scaling-law evaluation rows;
+27,106 scaling-law checkpoint-loss rows; and 35,772 OLMES detail task rows.
+The aggregate OLMES raw source also had zero token or exact-compute
+contradictions across 1,410,750 rows. Of 2,245,848 raw Google Drive scaling-law
+rows, 489,258 contained token and compute evidence: their token values all
+matched, their compute values all matched nominal-parameter compute, and all
+therefore differed from the standardized exact-parameter compute. Embedded
+OLMES detail model configuration had zero contradictions across 35,772 task
+rows. Because the raw Google Drive distinction is intentional evidence rather
+than a standardized-output failure, the verifier reports those 489,258 raw
+exact-compute differences and exits nonzero.
+
+Measured full local preprocessing wall times for that validation were 0.78s
+for PPL, 30.58s for aggregate OLMES, 228.94s for scaling-law, and 863.36s for
+the 542-checkpoint OLMES detail archive. The detail run wrote 20,423,644
+instance rows and 74,384,622 choice rows in addition to its task rows.
 
 Full-recipe detail preprocessing and verification can take a long time and require multi-GB local data; they are intentionally excluded from the default test suite.
 

@@ -19,6 +19,7 @@ from fsspec.implementations.memory import MemoryFileSystem
 
 from datadec.config import OLMESContract, OLMESTableContract, load_olmes_contract
 from datadec.config import load_source_manifest
+from datadec.data.model_utils import checkpoint_enrichment
 from datadec.data.paths import DataDecidePaths
 from datadec.data.preprocess.duckdb import (
     DuckDbLogicalType,
@@ -250,6 +251,13 @@ def _build_task_row(
         field: coerce_float(metrics_block[field]) if field in metrics_block else None
         for field in contract.metrics.detailed_tasks
     }
+    enrichment = checkpoint_enrichment(params, step)
+    if model_config.get("max_length") != enrichment["max_sequence_length"]:
+        raise ValueError(
+            f"model max_length contradicts canonical model details in {context}: "
+            f"raw={model_config.get('max_length')!r}, "
+            f"expected={enrichment['max_sequence_length']!r}"
+        )
     return {
         "recipe": recipe,
         "data": contract.recipe_map[recipe],
@@ -257,6 +265,7 @@ def _build_task_row(
         "seed_value": seed_value,
         "seed": contract.seed_map[seed_value],
         "step": step,
+        **enrichment,
         "task": task,
         "task_hash": _require_hash(
             metrics_payload.get("task_hash"), context=context, field="task_hash"

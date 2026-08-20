@@ -18,9 +18,18 @@ from datadec.data.preprocess.ppl import (
     group_perplexity_rows,
     preprocess_ppl,
 )
+from datadec.data.preprocess.model_enrichment import CHECKPOINT_ENRICHMENT_TYPES
 
 WIKITEXT_RAW = "eval/wikitext_103-validation/Perplexity"
 PILE_RAW = "eval/pile-validation/Perplexity"
+CHECKPOINT_DTYPES = {
+    field: (
+        pd.StringDtype()
+        if logical_type == "string"
+        else np.dtype("bool" if logical_type == "bool" else logical_type)
+    )
+    for field, logical_type in CHECKPOINT_ENRICHMENT_TYPES
+}
 
 
 def _raw_record(
@@ -61,6 +70,7 @@ def test_exact_output_schema_mapping_types_and_enum_values() -> None:
         "data": pd.StringDtype(),
         "seed": pd.StringDtype(),
         "step": np.dtype("int64"),
+        **CHECKPOINT_DTYPES,
         **{field: np.dtype("float64") for field in PPL_METRIC_COLUMNS},
     }
 
@@ -155,6 +165,7 @@ def test_empty_input_writes_exact_typed_schema(tmp_path: Path) -> None:
         "data": pd.StringDtype(),
         "seed": pd.StringDtype(),
         "step": np.dtype("int64"),
+        **CHECKPOINT_DTYPES,
         **{field: np.dtype("float64") for field in PPL_METRIC_COLUMNS},
     }
 
@@ -202,6 +213,7 @@ def test_preprocess_projects_sorts_and_counts_without_grouping_helpers(
         "data": pd.StringDtype(),
         "seed": pd.StringDtype(),
         "step": np.dtype("int64"),
+        **CHECKPOINT_DTYPES,
         **{field: np.dtype("float64") for field in PPL_METRIC_COLUMNS},
     }
     assert list(

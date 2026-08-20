@@ -12,6 +12,7 @@ from datadec.config import (
     load_olmes_contract,
     load_source_manifest,
 )
+from datadec.data.preprocess.model_enrichment import CHECKPOINT_ENRICHMENT_TYPES
 
 EXPECTED_RECIPE_MAP = {
     "c4": "C4",
@@ -128,6 +129,10 @@ EXPECTED_TABLES = {
             ("chinchilla", "string", False),
             ("tokens", "int64", False),
             ("compute", "float64", False),
+            *(
+                (name, logical_type, False)
+                for name, logical_type in CHECKPOINT_ENRICHMENT_TYPES[2:]
+            ),
             *((name, "float64", True) for name in AGGREGATE_METRICS),
         ),
     },
@@ -141,6 +146,10 @@ EXPECTED_TABLES = {
             ("seed_value", "int64", False),
             ("seed", "string", False),
             ("step", "int64", False),
+            *(
+                (name, logical_type, False)
+                for name, logical_type in CHECKPOINT_ENRICHMENT_TYPES
+            ),
             ("task", "string", False),
             ("task_hash", "string", False),
             ("model_hash", "string", False),

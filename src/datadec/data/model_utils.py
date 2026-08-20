@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import math
+from dataclasses import dataclass
+from functools import cache
 from typing import Any
 
 import numpy as np
@@ -9,12 +11,83 @@ import pandas as pd
 from datadec.data import constants as consts
 
 
+@dataclass(frozen=True, slots=True)
+class ModelSchedule:
+    params: str
+    nominal_parameter_count: int
+    training_parameter_count: int
+    exact_parameter_count: int
+    tokens_per_step: int
+    flops_per_token_per_parameter: int
+
+    def tokens_at_step(self, step: int) -> int:
+        return step * self.tokens_per_step
+
+    def compute_at_step(self, step: int) -> float:
+        return float(
+            self.tokens_at_step(step)
+            * self.exact_parameter_count
+            * self.flops_per_token_per_parameter
+        )
+
+
+MODEL_DETAIL_COLUMNS: tuple[str, ...] = (
+    "default_seed",
+    "length_str",
+    "lr_warmup_start",
+    "d_model",
+    "n_heads",
+    "n_layers",
+    "mlp_ratio",
+    "weight_tying",
+    "alibi",
+    "rope",
+    "flash_attention",
+    "attention_dropout",
+    "attention_layer_norm",
+    "include_bias",
+    "layer_norm_type",
+    "layer_norm_with_affine",
+    "layer_norm_eps",
+    "bias_for_layer_norm",
+    "attention_layer_norm_with_affine",
+    "activation_type",
+    "residual_dropout",
+    "embedding_dropout",
+    "max_sequence_length",
+    "vocab_size",
+    "embedding_size",
+    "eos_token_id",
+    "pad_token_id",
+    "init_device",
+    "init_fn",
+    "init_std",
+    "init_cutoff_factor",
+    "nominal_parameter_count",
+    "training_parameter_count",
+    "exact_parameter_count",
+    "batch_size",
+    "total_tokens",
+    "warmup_tokens",
+    "lr_max",
+    "lr_final",
+    "total_steps",
+    "total_seqs",
+    "warmup_perc",
+    "warmup_steps",
+    "lr_decay_tokens",
+    "lr_decay_steps",
+    "tokens_per_step",
+    "compute_per_step",
+)
+
+
 def round_value_by_multiple(value: float, multiple: int) -> int:
     return int(round(value / multiple) * multiple)
 
 
-def model_size_str_to_true_int(size_str: str) -> int:
-    return consts.HARDCODED_SIZE_MAPPING[size_str]
+def model_size_str_to_training_parameter_count(size_str: str) -> int:
+    return consts.TRAINING_PARAMETER_COUNTS[size_str]
 
 
 def param_to_numeric(param_str: str) -> float:
@@ -31,7 +104,7 @@ def param_to_numeric(param_str: str) -> float:
 
 def calc_batch_size(model_size_str: str) -> int:
     assert consts.MAX_SEQ_LEN == 2_048
-    model_size = model_size_str_to_true_int(model_size_str)
+    model_size = model_size_str_to_training_parameter_count(model_size_str)
     batch_size = (
         consts.BS_COEFFICIENT
         * (model_size / consts.MODEL_SIZE_NORM_VALUE) ** consts.BS_EXPONENT
@@ -41,7 +114,7 @@ def calc_batch_size(model_size_str: str) -> int:
 
 
 def calc_total_tokens_from_str(length_str: str, model_size_str: str) -> int:
-    model_size = model_size_str_to_true_int(model_size_str)
+    model_size = model_size_str_to_training_parameter_count(model_size_str)
     length_in_tokens, length_unit = consts.NUMBER_UNIT_RE.match(
         length_str.strip().upper()
     ).groups()  # type: ignore
@@ -50,13 +123,13 @@ def calc_total_tokens_from_str(length_str: str, model_size_str: str) -> int:
 
 
 def calc_warmup_tokens(model_size_str: str) -> int:
-    model_size = model_size_str_to_true_int(model_size_str)
+    model_size = model_size_str_to_training_parameter_count(model_size_str)
     batch_size = calc_batch_size(model_size_str)
     return round(model_size / (batch_size / consts.MAX_SEQ_LEN))
 
 
 def calc_lr_max(model_size_str: str) -> float:
-    model_size = model_size_str_to_true_int(model_size_str)
+    model_size = model_size_str_to_training_parameter_count(model_size_str)
     return (
         consts.LR_MAX_BASE
         * (model_size / consts.MODEL_SIZE_NORM_VALUE) ** consts.LR_EXPONENT
@@ -65,6 +138,85 @@ def calc_lr_max(model_size_str: str) -> float:
 
 def calc_tokens_per_step(batch_size: int) -> int:
     return batch_size * consts.MAX_SEQ_LEN
+
+
+def calc_compute(tokens: int, model_size_str: str) -> float:
+    return float(
+        tokens
+        * consts.EXACT_PARAMETER_COUNTS[model_size_str]
+        * consts.FLOPS_PER_TOKEN_PER_PARAMETER
+    )
+
+
+def create_model_schedules() -> tuple[ModelSchedule, ...]:
+    return tuple(
+        ModelSchedule(
+            params=model_size,
+            nominal_parameter_count=consts.NOMINAL_PARAMETER_COUNTS[model_size],
+            training_parameter_count=consts.TRAINING_PARAMETER_COUNTS[model_size],
+            exact_parameter_count=consts.EXACT_PARAMETER_COUNTS[model_size],
+            tokens_per_step=calc_tokens_per_step(calc_batch_size(model_size)),
+            flops_per_token_per_parameter=consts.FLOPS_PER_TOKEN_PER_PARAMETER,
+        )
+        for model_size in consts.ALL_MODEL_SIZE_STRS
+    )
+
+
+@cache
+def create_persisted_model_details(model_size_str: str) -> dict[str, object]:
+    config = create_model_config(model_size_str)
+    config.pop(consts.PARAM_NUMERIC_COL)
+    schedule = next(
+        schedule
+        for schedule in create_model_schedules()
+        if schedule.params == model_size_str
+    )
+    config["tokens_per_step"] = schedule.tokens_per_step
+    config["compute_per_step"] = schedule.compute_at_step(1)
+    actual = tuple(config)
+    if actual != MODEL_DETAIL_COLUMNS:
+        raise AssertionError(
+            "persisted model detail columns drift from model config: "
+            f"expected={MODEL_DETAIL_COLUMNS!r}, actual={actual!r}"
+        )
+    return config
+
+
+def checkpoint_enrichment(model_size_str: str, step: int) -> dict[str, object]:
+    if step < 0:
+        raise ValueError(f"checkpoint step must be non-negative: {step}")
+    details = create_persisted_model_details(model_size_str)
+    schedule = next(
+        schedule
+        for schedule in create_model_schedules()
+        if schedule.params == model_size_str
+    )
+    lr_warmup_start = float(details["lr_warmup_start"])
+    lr_max = float(details["lr_max"])
+    lr_final = float(details["lr_final"])
+    warmup_steps = int(details["warmup_steps"])
+    lr_decay_steps = int(details["lr_decay_steps"])
+    return {
+        "tokens": schedule.tokens_at_step(step),
+        "compute": schedule.compute_at_step(step),
+        **details,
+        "lr_at_step": get_lr_at_step(
+            step=step,
+            lr_warmup_start=lr_warmup_start,
+            lr_max=lr_max,
+            lr_final=lr_final,
+            warmup_steps=warmup_steps,
+            lr_decay_steps=lr_decay_steps,
+        ),
+        "cumulative_lr": calculate_cumulative_lr(
+            step=step,
+            lr_warmup_start=lr_warmup_start,
+            lr_max=lr_max,
+            lr_final=lr_final,
+            warmup_steps=warmup_steps,
+            lr_decay_steps=lr_decay_steps,
+        ),
+    }
 
 
 def calc_total_steps_from_tokens(total_tokens: int, batch_size: int) -> int:
@@ -83,10 +235,18 @@ def create_model_config(model_size_str: str, **kwargs: Any) -> dict[str, Any]:
     config.update(consts.MODEL_SHAPES[model_size_str])
 
     config[consts.PARAM_NUMERIC_COL] = param_to_numeric(model_size_str)
-    config["true_model_size"] = consts.HARDCODED_SIZE_MAPPING[model_size_str]
+    config["nominal_parameter_count"] = consts.NOMINAL_PARAMETER_COUNTS[
+        model_size_str
+    ]
+    config["training_parameter_count"] = consts.TRAINING_PARAMETER_COUNTS[
+        model_size_str
+    ]
+    config["exact_parameter_count"] = consts.EXACT_PARAMETER_COUNTS[model_size_str]
     config["batch_size"] = calc_batch_size(model_size_str)
+    length_str = config["length_str"]
+    assert isinstance(length_str, str)
     config["total_tokens"] = calc_total_tokens_from_str(
-        config["length_str"], model_size_str
+        length_str, model_size_str
     )
     config["warmup_tokens"] = calc_warmup_tokens(model_size_str)
     config["lr_max"] = calc_lr_max(model_size_str)

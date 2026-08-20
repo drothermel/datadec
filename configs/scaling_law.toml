@@ -69,25 +69,6 @@ excluded_legacy_values = [6198]
 missing = "exclude_legacy_input"
 unknown_non_null = "error"
 
-[checkpoint_schedule]
-flops_per_token_per_parameter = 6
-
-[checkpoint_schedule.model_parameter_counts]
-4M = 3744832
-6M = 6010464
-8M = 8538240
-10M = 9900432
-14M = 14380224
-16M = 16004560
-20M = 19101888
-60M = 57078144
-90M = 97946640
-150M = 151898880
-300M = 319980544
-530M = 530074944
-750M = 681297408
-1B = 1176832000
-
 [tables.evaluations]
 path = "processed/scaling-law/evaluations.parquet"
 primary_key = ["recipe", "params", "seed_value", "step", "task"]
@@ -145,6 +126,251 @@ nullable = false
 
 [[tables.evaluations.columns]]
 name = "compute"
+logical_type = "float64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "default_seed"
+logical_type = "int64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "length_str"
+logical_type = "string"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "lr_warmup_start"
+logical_type = "float64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "d_model"
+logical_type = "int64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "n_heads"
+logical_type = "int64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "n_layers"
+logical_type = "int64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "mlp_ratio"
+logical_type = "int64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "weight_tying"
+logical_type = "bool"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "alibi"
+logical_type = "bool"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "rope"
+logical_type = "bool"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "flash_attention"
+logical_type = "bool"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "attention_dropout"
+logical_type = "float64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "attention_layer_norm"
+logical_type = "bool"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "include_bias"
+logical_type = "bool"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "layer_norm_type"
+logical_type = "string"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "layer_norm_with_affine"
+logical_type = "bool"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "layer_norm_eps"
+logical_type = "float64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "bias_for_layer_norm"
+logical_type = "bool"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "attention_layer_norm_with_affine"
+logical_type = "bool"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "activation_type"
+logical_type = "string"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "residual_dropout"
+logical_type = "float64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "embedding_dropout"
+logical_type = "float64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "max_sequence_length"
+logical_type = "int64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "vocab_size"
+logical_type = "int64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "embedding_size"
+logical_type = "int64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "eos_token_id"
+logical_type = "int64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "pad_token_id"
+logical_type = "int64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "init_device"
+logical_type = "string"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "init_fn"
+logical_type = "string"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "init_std"
+logical_type = "float64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "init_cutoff_factor"
+logical_type = "int64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "nominal_parameter_count"
+logical_type = "int64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "training_parameter_count"
+logical_type = "int64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "exact_parameter_count"
+logical_type = "int64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "batch_size"
+logical_type = "int64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "total_tokens"
+logical_type = "int64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "warmup_tokens"
+logical_type = "int64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "lr_max"
+logical_type = "float64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "lr_final"
+logical_type = "float64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "total_steps"
+logical_type = "int64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "total_seqs"
+logical_type = "int64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "warmup_perc"
+logical_type = "float64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "warmup_steps"
+logical_type = "int64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "lr_decay_tokens"
+logical_type = "int64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "lr_decay_steps"
+logical_type = "int64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "tokens_per_step"
+logical_type = "int64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "compute_per_step"
+logical_type = "float64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "lr_at_step"
+logical_type = "float64"
+nullable = false
+
+[[tables.evaluations.columns]]
+name = "cumulative_lr"
 logical_type = "float64"
 nullable = false
 
@@ -345,6 +571,251 @@ nullable = false
 
 [[tables.checkpoint_losses.columns]]
 name = "compute"
+logical_type = "float64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "default_seed"
+logical_type = "int64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "length_str"
+logical_type = "string"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "lr_warmup_start"
+logical_type = "float64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "d_model"
+logical_type = "int64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "n_heads"
+logical_type = "int64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "n_layers"
+logical_type = "int64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "mlp_ratio"
+logical_type = "int64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "weight_tying"
+logical_type = "bool"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "alibi"
+logical_type = "bool"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "rope"
+logical_type = "bool"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "flash_attention"
+logical_type = "bool"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "attention_dropout"
+logical_type = "float64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "attention_layer_norm"
+logical_type = "bool"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "include_bias"
+logical_type = "bool"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "layer_norm_type"
+logical_type = "string"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "layer_norm_with_affine"
+logical_type = "bool"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "layer_norm_eps"
+logical_type = "float64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "bias_for_layer_norm"
+logical_type = "bool"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "attention_layer_norm_with_affine"
+logical_type = "bool"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "activation_type"
+logical_type = "string"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "residual_dropout"
+logical_type = "float64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "embedding_dropout"
+logical_type = "float64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "max_sequence_length"
+logical_type = "int64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "vocab_size"
+logical_type = "int64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "embedding_size"
+logical_type = "int64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "eos_token_id"
+logical_type = "int64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "pad_token_id"
+logical_type = "int64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "init_device"
+logical_type = "string"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "init_fn"
+logical_type = "string"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "init_std"
+logical_type = "float64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "init_cutoff_factor"
+logical_type = "int64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "nominal_parameter_count"
+logical_type = "int64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "training_parameter_count"
+logical_type = "int64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "exact_parameter_count"
+logical_type = "int64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "batch_size"
+logical_type = "int64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "total_tokens"
+logical_type = "int64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "warmup_tokens"
+logical_type = "int64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "lr_max"
+logical_type = "float64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "lr_final"
+logical_type = "float64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "total_steps"
+logical_type = "int64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "total_seqs"
+logical_type = "int64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "warmup_perc"
+logical_type = "float64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "warmup_steps"
+logical_type = "int64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "lr_decay_tokens"
+logical_type = "int64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "lr_decay_steps"
+logical_type = "int64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "tokens_per_step"
+logical_type = "int64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "compute_per_step"
+logical_type = "float64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "lr_at_step"
+logical_type = "float64"
+nullable = false
+
+[[tables.checkpoint_losses.columns]]
+name = "cumulative_lr"
 logical_type = "float64"
 nullable = false
 

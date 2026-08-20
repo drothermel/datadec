@@ -49,7 +49,9 @@ class ModelDetails(BaseModel):
     init_cutoff_factor: int
 
     params_numeric: float
-    true_model_size: int
+    nominal_parameter_count: int
+    training_parameter_count: int
+    exact_parameter_count: int
     batch_size: int
     total_tokens: int
     warmup_tokens: int

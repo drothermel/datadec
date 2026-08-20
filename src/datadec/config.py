@@ -29,6 +29,7 @@ class TrainingConstants(ConfigModel):
     batch_size_exponent: float
     gpus_per_node: int
     microbatch_size: int
+    flops_per_token_per_parameter: int = Field(gt=0)
 
 
 class ModelDefaults(ConfigModel):
@@ -71,8 +72,26 @@ class ModelDefinition(ConfigModel):
     n_heads: int
     n_layers: int
     mlp_ratio: int
-    true_size: int
+    nominal_parameter_count: int = Field(gt=0)
+    training_parameter_count: int = Field(gt=0)
+    exact_parameter_count: int = Field(gt=0)
     max_step: int
+
+    @model_validator(mode="after")
+    def validate_nominal_parameter_count(self) -> Self:
+        suffix_multipliers = {"M": 1_000_000, "B": 1_000_000_000}
+        suffix = self.name[-1:]
+        try:
+            expected = int(self.name[:-1]) * suffix_multipliers[suffix]
+        except (KeyError, ValueError):
+            raise ValueError(
+                "model names must encode nominal parameter counts with M or B"
+            ) from None
+        if self.nominal_parameter_count != expected:
+            raise ValueError(
+                "model nominal_parameter_count must match its model name"
+            )
+        return self
 
 
 class RecipeGroups(ConfigModel):
@@ -404,21 +423,8 @@ class ScalingLawSeedPolicy(ConfigModel):
 
 class ScalingLawColumnContract(ConfigModel):
     name: str
-    logical_type: Literal["string", "int64", "float64"]
+    logical_type: Literal["string", "int64", "float64", "bool"]
     nullable: bool
-
-
-class ScalingLawCheckpointSchedule(ConfigModel):
-    flops_per_token_per_parameter: Literal[6]
-    model_parameter_counts: dict[str, int]
-
-    @model_validator(mode="after")
-    def validate_parameter_counts(self) -> Self:
-        if not self.model_parameter_counts or any(
-            value <= 0 for value in self.model_parameter_counts.values()
-        ):
-            raise ValueError("scaling-law model parameter counts must be positive")
-        return self
 
 
 class ScalingLawTableContract(ConfigModel):
@@ -475,7 +481,6 @@ class ScalingLawContract(ConfigModel):
     source_group_map: dict[str, str]
     seed_map: dict[int, str]
     seed_policy: ScalingLawSeedPolicy
-    checkpoint_schedule: ScalingLawCheckpointSchedule
     tables: ScalingLawTables
 
     @model_validator(mode="after")
@@ -539,10 +544,6 @@ class ScalingLawContract(ConfigModel):
 
         if len(self.models) != len(set(self.models)):
             raise ValueError("scaling-law models must be unique")
-        if set(self.checkpoint_schedule.model_parameter_counts) != set(self.models):
-            raise ValueError(
-                "scaling-law checkpoint parameter counts must exactly cover models"
-            )
 
         expected_keys = {
             "evaluations": ("recipe", "params", "seed_value", "step", "task"),
@@ -603,9 +604,7 @@ class ScalingLawContract(ConfigModel):
                     f"scaling-law {name} identity and provenance columns are invalid"
                 )
 
-        loss_columns = self.tables.checkpoint_losses.columns[
-            len(expected_prefixes["checkpoint_losses"]) :
-        ]
+        loss_columns = self.tables.checkpoint_losses.columns[-len(checkpoint_metrics) :]
         if tuple(column.name for column in loss_columns) != checkpoint_metrics or any(
             column.logical_type != "float64" or not column.nullable
             for column in loss_columns
@@ -662,7 +661,9 @@ class ScalingLawContract(ConfigModel):
         if self.seed_map != olmes_contract.seed_map:
             raise ValueError("scaling-law seed map must exactly match OLMES seeds")
 
-        evaluation_metrics = self.tables.evaluations.columns[11:]
+        evaluation_metrics = self.tables.evaluations.columns[
+            -len(olmes_contract.metrics.aggregate) :
+        ]
         aggregate_columns = {
             column.name: column for column in olmes_contract.tables.aggregate.columns
         }

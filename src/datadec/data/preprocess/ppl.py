@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 import pyarrow.parquet as pq
 
+from datadec.data.model_utils import checkpoint_enrichment
 from datadec.data.paths import DataDecidePaths
 from datadec.data.preprocess.duckdb import (
     duckdb_type,
@@ -19,6 +20,12 @@ from datadec.data.preprocess.duckdb import (
     quote_identifier,
     replace_parquet_exports,
     sql_literal,
+)
+from datadec.data.preprocess.model_enrichment import (
+    CHECKPOINT_ENRICHMENT_COLUMNS,
+    CHECKPOINT_ENRICHMENT_TYPES,
+    create_model_enrichment_table,
+    enrichment_select_expressions,
 )
 
 if TYPE_CHECKING:
@@ -39,7 +46,9 @@ PPL_METRIC_COLUMNS: tuple[str, ...] = (
     "dolma_common_crawl_valppl",
     "dolma_books_valppl",
 )
-PPL_OUTPUT_COLUMNS: tuple[str, ...] = PPL_IDENTITY_COLUMNS + PPL_METRIC_COLUMNS
+PPL_OUTPUT_COLUMNS: tuple[str, ...] = (
+    PPL_IDENTITY_COLUMNS + CHECKPOINT_ENRICHMENT_COLUMNS + PPL_METRIC_COLUMNS
+)
 
 PplRunKey: TypeAlias = tuple["ModelSizeName", "DataRecipeName", "Seed"]
 PplRowsByKey: TypeAlias = dict[
@@ -99,6 +108,7 @@ def flatten_perplexity_rows(grouped: PplRowsByKey) -> pd.DataFrame:
                     "data": data.value,
                     "seed": seed.value,
                     "step": step,
+                    **checkpoint_enrichment(params.value, step),
                     **{field: getattr(metrics, field) for field in PPL_METRIC_COLUMNS},
                 }
             )
@@ -152,6 +162,15 @@ def preprocess_ppl(
                 seeds=tuple(item.value for item in Seed),
                 raw_metric_columns=tuple(RAW_PPL_TO_FIELD),
             )
+            create_model_enrichment_table(
+                connection,
+                checkpoint_select_sql="""
+                    SELECT
+                        CAST(params AS VARCHAR) AS params,
+                        CAST(trim(CAST(step AS VARCHAR)) AS BIGINT) AS step
+                    FROM _ppl_raw
+                """,
+            )
             select_sql = _output_select_sql(
                 raw_columns=raw_columns,
                 raw_metric_to_field=RAW_PPL_TO_FIELD,
@@ -195,8 +214,13 @@ def _pandas_parquet_metadata() -> str:
         if name in PPL_IDENTITY_COLUMNS[:3]:
             pandas_type = "object"
             numpy_type = "string"
-        elif name == "step":
+        elif name == "step" or dict(CHECKPOINT_ENRICHMENT_TYPES).get(name) == "int64":
             pandas_type = numpy_type = "int64"
+        elif dict(CHECKPOINT_ENRICHMENT_TYPES).get(name) == "bool":
+            pandas_type = numpy_type = "bool"
+        elif dict(CHECKPOINT_ENRICHMENT_TYPES).get(name) == "string":
+            pandas_type = "object"
+            numpy_type = "string"
         else:
             pandas_type = numpy_type = "float64"
         columns.append(
@@ -330,6 +354,11 @@ def _empty_output_select_sql() -> str:
     ]
     expressions.append(f"CAST(NULL AS {duckdb_type('int64')}) AS step")
     expressions.extend(
+        f"CAST(NULL AS {duckdb_type(logical_type)}) "
+        f"AS {quote_identifier(column)}"
+        for column, logical_type in CHECKPOINT_ENRICHMENT_TYPES
+    )
+    expressions.extend(
         f"CAST(NULL AS {duckdb_type('float64')}) AS {quote_identifier(column)}"
         for column in PPL_METRIC_COLUMNS
     )
@@ -342,12 +371,15 @@ def _output_select_sql(
     raw_metric_to_field: dict[str, str],
 ) -> str:
     step_text = "trim(CAST(step AS VARCHAR))"
-    expressions = [
+    identity_expressions = [
         f"CAST({quote_identifier(column)} AS {duckdb_type('string')}) "
         f"AS {quote_identifier(column)}"
         for column in PPL_IDENTITY_COLUMNS[:3]
     ]
-    expressions.append(f"CAST({step_text} AS {duckdb_type('int64')}) AS step")
+    identity_expressions.append(
+        f"CAST({step_text} AS {duckdb_type('int64')}) AS step"
+    )
+    metric_expressions = []
     raw_by_field = {field: raw for raw, field in raw_metric_to_field.items()}
     for field in PPL_METRIC_COLUMNS:
         raw_column = raw_by_field[field]
@@ -363,11 +395,32 @@ def _output_select_sql(
                 "THEN NULL "
                 f"ELSE {converted} END"
             )
-        expressions.append(f"{value} AS {quote_identifier(field)}")
-    sort_key = ", ".join(quote_identifier(column) for column in PPL_IDENTITY_COLUMNS)
+        metric_expressions.append(f"{value} AS {quote_identifier(field)}")
+    identity_columns = ", ".join(
+        f"normalized.{quote_identifier(column)}"
+        for column in PPL_IDENTITY_COLUMNS
+    )
+    metric_columns = ", ".join(
+        f"normalized.{quote_identifier(column)}"
+        for column in PPL_METRIC_COLUMNS
+    )
+    sort_key = ", ".join(
+        f"normalized.{quote_identifier(column)}"
+        for column in PPL_IDENTITY_COLUMNS
+    )
     return f"""
-        SELECT {", ".join(expressions)}
-        FROM _ppl_raw
+        WITH normalized AS (
+            SELECT
+                {", ".join(identity_expressions)},
+                {", ".join(metric_expressions)}
+            FROM _ppl_raw
+        )
+        SELECT
+            {identity_columns},
+            {enrichment_select_expressions(table_alias="enrichment")},
+            {metric_columns}
+        FROM normalized
+        INNER JOIN _model_enrichment AS enrichment USING (params, step)
         ORDER BY {sort_key}
     """
 
@@ -425,6 +478,15 @@ def _typed_output_dataframe(rows: list[dict[str, object]]) -> pd.DataFrame:
         "seed": pd.Series(values_by_column["seed"], dtype="string"),
         "step": pd.Series(values_by_column["step"], dtype="int64"),
     }
+    columns.update(
+        {
+            field: pd.Series(
+                values_by_column[field],
+                dtype="string" if logical_type == "string" else logical_type,
+            )
+            for field, logical_type in CHECKPOINT_ENRICHMENT_TYPES
+        }
+    )
     columns.update(
         {
             field: pd.Series(values_by_column[field], dtype="float64")

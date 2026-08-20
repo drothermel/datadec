@@ -5,13 +5,14 @@ import pytest
 from datadec.data import constants as consts
 from datadec.data.model_utils import (
     calc_batch_size,
+    calc_compute,
     calc_lr_max,
     calc_total_tokens_from_str,
     calc_warmup_tokens,
     calculate_cumulative_lr,
     create_model_config,
     get_lr_at_step,
-    model_size_str_to_true_int,
+    model_size_str_to_training_parameter_count,
     numerical_cosine_integral,
     param_to_numeric,
     round_value_by_multiple,
@@ -32,14 +33,14 @@ class TestRoundValueByMultiple:
         assert result == 100
 
 
-class TestModelSizeStrToTrueInt:
+class TestModelSizeStrToTrainingParameterCount:
     def test_valid_model_size(self) -> None:
-        result = model_size_str_to_true_int("4M")
-        assert result == consts.HARDCODED_SIZE_MAPPING["4M"]
+        result = model_size_str_to_training_parameter_count("4M")
+        assert result == consts.TRAINING_PARAMETER_COUNTS["4M"]
 
     def test_another_model_size(self) -> None:
-        result = model_size_str_to_true_int("1B")
-        assert result == consts.HARDCODED_SIZE_MAPPING["1B"]
+        result = model_size_str_to_training_parameter_count("1B")
+        assert result == consts.TRAINING_PARAMETER_COUNTS["1B"]
 
 
 class TestParamToNumeric:
@@ -76,9 +77,24 @@ class TestCalcTotalTokensFromStr:
     def test_computes_tokens(self) -> None:
         result = calc_total_tokens_from_str("20xC", "4M")
         expected = (
-            20 * consts.TOKEN_LEN_XC_MULTIPLIER * consts.HARDCODED_SIZE_MAPPING["4M"]
+            20
+            * consts.TOKEN_LEN_XC_MULTIPLIER
+            * consts.TRAINING_PARAMETER_COUNTS["4M"]
         )
         assert result == expected
+
+
+class TestCalcCompute:
+    def test_uses_exact_parameter_count_and_configured_flop_multiplier(self) -> None:
+        tokens = 1_000
+
+        result = calc_compute(tokens, "1B")
+
+        assert result == float(
+            tokens
+            * consts.EXACT_PARAMETER_COUNTS["1B"]
+            * consts.FLOPS_PER_TOKEN_PER_PARAMETER
+        )
 
 
 class TestCalcWarmupTokens:
@@ -103,6 +119,9 @@ class TestCalcLrMax:
 class TestCreateModelConfig:
     def test_returns_dict_with_expected_keys(self) -> None:
         config = create_model_config("4M")
+        assert config["nominal_parameter_count"] == 4_000_000
+        assert config["training_parameter_count"] == 3_744_832
+        assert config["exact_parameter_count"] == 3_744_832
         assert "batch_size" in config
         assert "total_tokens" in config
         assert "warmup_tokens" in config

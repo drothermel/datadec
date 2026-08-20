@@ -25,6 +25,9 @@ BS_COEFFICIENT = _CATALOG.training.batch_size_coefficient
 BS_EXPONENT = _CATALOG.training.batch_size_exponent
 GPUS_PER_NODE = _CATALOG.training.gpus_per_node
 MICROBATCH_SIZE = _CATALOG.training.microbatch_size
+FLOPS_PER_TOKEN_PER_PARAMETER = (
+    _CATALOG.training.flops_per_token_per_parameter
+)
 
 MODEL_SHAPES: dict[str, dict[str, int]] = {
     model.name: {
@@ -35,8 +38,14 @@ MODEL_SHAPES: dict[str, dict[str, int]] = {
     }
     for model in _CATALOG.models
 }
-HARDCODED_SIZE_MAPPING: dict[str, int] = {
-    model.name: model.true_size for model in _CATALOG.models
+NOMINAL_PARAMETER_COUNTS: dict[str, int] = {
+    model.name: model.nominal_parameter_count for model in _CATALOG.models
+}
+TRAINING_PARAMETER_COUNTS: dict[str, int] = {
+    model.name: model.training_parameter_count for model in _CATALOG.models
+}
+EXACT_PARAMETER_COUNTS: dict[str, int] = {
+    model.name: model.exact_parameter_count for model in _CATALOG.models
 }
 MAX_STEP_TO_USE: dict[str, int] = {
     model.name: model.max_step for model in _CATALOG.models

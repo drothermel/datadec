@@ -16,6 +16,7 @@ from dr_ds import coerce_float
 
 from datadec.config import OLMESContract, load_olmes_contract
 from datadec.data import constants as consts
+from datadec.data.model_utils import checkpoint_enrichment
 from datadec.data.paths import DataDecidePaths
 from datadec.data.preprocess.duckdb import (
     duckdb_type,
@@ -23,6 +24,11 @@ from datadec.data.preprocess.duckdb import (
     quote_identifier,
     replace_parquet_exports,
     sql_literal,
+)
+from datadec.data.preprocess.model_enrichment import (
+    CHECKPOINT_ENRICHMENT_COLUMNS,
+    create_model_enrichment_table,
+    enrichment_select_expressions,
 )
 from datadec.data.preprocess.ppl import _normalize_step
 
@@ -35,6 +41,16 @@ _EXCLUDED_METRIC_KEYS: frozenset[str] = frozenset(
 
 _INT64_MIN = -(2**63)
 _INT64_MAX = 2**63 - 1
+_RAW_IDENTITY_COLUMNS: tuple[str, ...] = (
+    "params",
+    "data",
+    "seed",
+    "step",
+    "task",
+    "chinchilla",
+    "tokens",
+    "compute",
+)
 
 OlmesRunKey: TypeAlias = tuple["ModelSizeName", "DataRecipeName", "Seed"]
 OlmesRowsByKey: TypeAlias = dict[
@@ -98,8 +114,7 @@ def _assert_output_schema_parity(contract: OLMESContract) -> None:
         "step",
         "task",
         "chinchilla",
-        "tokens",
-        "compute",
+        *CHECKPOINT_ENRICHMENT_COLUMNS,
     )
     if identity != expected_identity:
         raise AssertionError(
@@ -218,6 +233,19 @@ def flatten_olmes_rows(
                 primary_metric = _resolve_primary_metric(
                     task, row.metrics, policy=policy
                 )
+                enrichment = checkpoint_enrichment(params.value, step)
+                expected_tokens = int(enrichment["tokens"])
+                expected_compute = float(enrichment["compute"])
+                if row.tokens != expected_tokens or not np.isclose(
+                    row.compute,
+                    expected_compute,
+                    rtol=1e-12,
+                    atol=1e-6,
+                ):
+                    raise ValueError(
+                        "OLMES token/compute values contradict the canonical "
+                        f"schedule for params={params.value!r}, step={step}"
+                    )
                 rows.append(
                     {
                         "params": params.value,
@@ -226,8 +254,7 @@ def flatten_olmes_rows(
                         "step": step,
                         "task": task,
                         "chinchilla": row.chinchilla,
-                        "tokens": row.tokens,
-                        "compute": row.compute,
+                        **enrichment,
                         **{
                             field: row.metrics.get(field)
                             for field in source_metric_columns
@@ -281,6 +308,16 @@ def preprocess_olmes(
                 data_recipes=tuple(item.value for item in DataRecipeName),
                 seeds=tuple(item.value for item in Seed),
             )
+            create_model_enrichment_table(
+                connection,
+                checkpoint_select_sql="""
+                    SELECT
+                        CAST(params AS VARCHAR) AS params,
+                        CAST(trim(CAST(step AS VARCHAR)) AS BIGINT) AS step
+                    FROM _olmes_raw
+                """,
+            )
+            _validate_raw_schedule(connection, row_index_column=row_index_column)
             select_sql = _output_select_sql(contract)
             training_run_count_row = connection.execute(
                 """
@@ -374,7 +411,7 @@ def _validate_raw_olmes(
     data_recipes: tuple[str, ...],
     seeds: tuple[str, ...],
 ) -> None:
-    required_columns = (*_identity_columns(contract), "metrics")
+    required_columns = (*_RAW_IDENTITY_COLUMNS, "metrics")
     missing = [column for column in required_columns if column not in raw_columns]
     if missing:
         raise ValueError(f"missing required OLMES input columns: {missing!r}")
@@ -557,6 +594,45 @@ def _empty_output_select_sql(contract: OLMESContract) -> str:
     return f"SELECT {', '.join(expressions)} WHERE false"
 
 
+def _validate_raw_schedule(
+    connection: duckdb.DuckDBPyConnection,
+    *,
+    row_index_column: str,
+) -> None:
+    row_index = quote_identifier(row_index_column)
+    mismatch = connection.execute(
+        f"""
+        SELECT
+            raw.{row_index},
+            CAST(raw.params AS VARCHAR),
+            CAST(trim(CAST(raw.step AS VARCHAR)) AS BIGINT),
+            CAST(trim(CAST(raw.tokens AS VARCHAR)) AS BIGINT),
+            enrichment.tokens,
+            CAST(trim(CAST(raw.compute AS VARCHAR)) AS DOUBLE),
+            enrichment.compute
+        FROM _olmes_raw AS raw
+        INNER JOIN _model_enrichment AS enrichment
+            ON CAST(raw.params AS VARCHAR) = enrichment.params
+           AND CAST(trim(CAST(raw.step AS VARCHAR)) AS BIGINT) = enrichment.step
+        WHERE CAST(trim(CAST(raw.tokens AS VARCHAR)) AS BIGINT)
+                <> enrichment.tokens
+           OR abs(
+                CAST(trim(CAST(raw.compute AS VARCHAR)) AS DOUBLE)
+                - enrichment.compute
+              ) > greatest(1e-6, 1e-12 * abs(enrichment.compute))
+        ORDER BY raw.{row_index}
+        LIMIT 1
+        """
+    ).fetchone()
+    if mismatch is not None:
+        row, params, step, tokens, expected_tokens, compute, expected_compute = mismatch
+        raise ValueError(
+            f"OLMES schedule contradiction at row {row}: params={params!r}, "
+            f"step={step}, tokens={tokens}, expected_tokens={expected_tokens}, "
+            f"compute={compute}, expected_compute={expected_compute}"
+        )
+
+
 def _coerced_metric_sql(metrics_identifier: str, field: str) -> str:
     raw_value = f"{metrics_identifier}.{quote_identifier(field)}"
     converted = f"try_cast(trim({raw_value}) AS DOUBLE)"
@@ -571,18 +647,16 @@ def _output_select_sql(contract: OLMESContract) -> str:
     )
     parsed_metrics = quote_identifier("_datadec_metrics")
     identity_expressions = [
-        f"CAST({quote_identifier(column)} AS {duckdb_type('string')}) "
+        f"CAST(parsed.{quote_identifier(column)} AS {duckdb_type('string')}) "
         f"AS {quote_identifier(column)}"
         for column in ("params", "data", "seed")
     ]
     identity_expressions.extend(
         (
-            f"{_normalized_int64_sql('step')} AS step",
-            f"CAST(task AS {duckdb_type('string')}) AS task",
-            f"CAST(chinchilla AS {duckdb_type('string')}) AS chinchilla",
-            f"{_normalized_int64_sql('tokens')} AS tokens",
-            f"CAST(trim(CAST(compute AS VARCHAR)) AS {duckdb_type('float64')}) "
-            "AS compute",
+            "CAST(trim(CAST(parsed.step AS VARCHAR)) AS BIGINT) AS step",
+            f"CAST(parsed.task AS {duckdb_type('string')}) AS task",
+            f"CAST(parsed.chinchilla AS {duckdb_type('string')}) AS chinchilla",
+            enrichment_select_expressions(table_alias="enrichment"),
         )
     )
     metric_expressions = [
@@ -618,6 +692,10 @@ def _output_select_sql(contract: OLMESContract) -> str:
                 {", ".join(identity_expressions)},
                 {", ".join(metric_expressions)}
             FROM parsed
+            INNER JOIN _model_enrichment AS enrichment
+                ON CAST(parsed.params AS VARCHAR) = enrichment.params
+               AND CAST(trim(CAST(parsed.step AS VARCHAR)) AS BIGINT)
+                    = enrichment.step
         )
         SELECT {non_primary_output_columns},
                {primary_metric} AS primary_metric

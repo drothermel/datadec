@@ -168,6 +168,251 @@ logical_type = "float64"
 nullable = false
 
 [[tables.aggregate.columns]]
+name = "default_seed"
+logical_type = "int64"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "length_str"
+logical_type = "string"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "lr_warmup_start"
+logical_type = "float64"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "d_model"
+logical_type = "int64"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "n_heads"
+logical_type = "int64"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "n_layers"
+logical_type = "int64"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "mlp_ratio"
+logical_type = "int64"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "weight_tying"
+logical_type = "bool"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "alibi"
+logical_type = "bool"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "rope"
+logical_type = "bool"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "flash_attention"
+logical_type = "bool"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "attention_dropout"
+logical_type = "float64"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "attention_layer_norm"
+logical_type = "bool"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "include_bias"
+logical_type = "bool"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "layer_norm_type"
+logical_type = "string"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "layer_norm_with_affine"
+logical_type = "bool"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "layer_norm_eps"
+logical_type = "float64"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "bias_for_layer_norm"
+logical_type = "bool"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "attention_layer_norm_with_affine"
+logical_type = "bool"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "activation_type"
+logical_type = "string"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "residual_dropout"
+logical_type = "float64"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "embedding_dropout"
+logical_type = "float64"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "max_sequence_length"
+logical_type = "int64"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "vocab_size"
+logical_type = "int64"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "embedding_size"
+logical_type = "int64"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "eos_token_id"
+logical_type = "int64"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "pad_token_id"
+logical_type = "int64"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "init_device"
+logical_type = "string"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "init_fn"
+logical_type = "string"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "init_std"
+logical_type = "float64"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "init_cutoff_factor"
+logical_type = "int64"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "nominal_parameter_count"
+logical_type = "int64"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "training_parameter_count"
+logical_type = "int64"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "exact_parameter_count"
+logical_type = "int64"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "batch_size"
+logical_type = "int64"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "total_tokens"
+logical_type = "int64"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "warmup_tokens"
+logical_type = "int64"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "lr_max"
+logical_type = "float64"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "lr_final"
+logical_type = "float64"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "total_steps"
+logical_type = "int64"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "total_seqs"
+logical_type = "int64"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "warmup_perc"
+logical_type = "float64"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "warmup_steps"
+logical_type = "int64"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "lr_decay_tokens"
+logical_type = "int64"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "lr_decay_steps"
+logical_type = "int64"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "tokens_per_step"
+logical_type = "int64"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "compute_per_step"
+logical_type = "float64"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "lr_at_step"
+logical_type = "float64"
+nullable = false
+
+[[tables.aggregate.columns]]
+name = "cumulative_lr"
+logical_type = "float64"
+nullable = false
+
+[[tables.aggregate.columns]]
 name = "correct_choice"
 logical_type = "float64"
 nullable = true
@@ -345,6 +590,261 @@ nullable = false
 [[tables.detailed_tasks.columns]]
 name = "step"
 logical_type = "int64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "tokens"
+logical_type = "int64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "compute"
+logical_type = "float64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "default_seed"
+logical_type = "int64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "length_str"
+logical_type = "string"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "lr_warmup_start"
+logical_type = "float64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "d_model"
+logical_type = "int64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "n_heads"
+logical_type = "int64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "n_layers"
+logical_type = "int64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "mlp_ratio"
+logical_type = "int64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "weight_tying"
+logical_type = "bool"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "alibi"
+logical_type = "bool"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "rope"
+logical_type = "bool"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "flash_attention"
+logical_type = "bool"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "attention_dropout"
+logical_type = "float64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "attention_layer_norm"
+logical_type = "bool"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "include_bias"
+logical_type = "bool"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "layer_norm_type"
+logical_type = "string"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "layer_norm_with_affine"
+logical_type = "bool"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "layer_norm_eps"
+logical_type = "float64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "bias_for_layer_norm"
+logical_type = "bool"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "attention_layer_norm_with_affine"
+logical_type = "bool"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "activation_type"
+logical_type = "string"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "residual_dropout"
+logical_type = "float64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "embedding_dropout"
+logical_type = "float64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "max_sequence_length"
+logical_type = "int64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "vocab_size"
+logical_type = "int64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "embedding_size"
+logical_type = "int64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "eos_token_id"
+logical_type = "int64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "pad_token_id"
+logical_type = "int64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "init_device"
+logical_type = "string"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "init_fn"
+logical_type = "string"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "init_std"
+logical_type = "float64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "init_cutoff_factor"
+logical_type = "int64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "nominal_parameter_count"
+logical_type = "int64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "training_parameter_count"
+logical_type = "int64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "exact_parameter_count"
+logical_type = "int64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "batch_size"
+logical_type = "int64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "total_tokens"
+logical_type = "int64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "warmup_tokens"
+logical_type = "int64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "lr_max"
+logical_type = "float64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "lr_final"
+logical_type = "float64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "total_steps"
+logical_type = "int64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "total_seqs"
+logical_type = "int64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "warmup_perc"
+logical_type = "float64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "warmup_steps"
+logical_type = "int64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "lr_decay_tokens"
+logical_type = "int64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "lr_decay_steps"
+logical_type = "int64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "tokens_per_step"
+logical_type = "int64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "compute_per_step"
+logical_type = "float64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "lr_at_step"
+logical_type = "float64"
+nullable = false
+
+[[tables.detailed_tasks.columns]]
+name = "cumulative_lr"
+logical_type = "float64"
 nullable = false
 
 [[tables.detailed_tasks.columns]]

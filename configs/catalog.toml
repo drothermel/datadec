@@ -123,6 +123,7 @@ batch_size_coefficient = 160
 batch_size_exponent = 0.6666666666666666
 gpus_per_node = 8
 microbatch_size = 4
+flops_per_token_per_parameter = 6
 
 [model_defaults]
 default_seed = 6198
@@ -163,7 +164,9 @@ d_model = 64
 n_heads = 8
 n_layers = 8
 mlp_ratio = 8
-true_size = 3744832
+nominal_parameter_count = 4000000
+training_parameter_count = 3744832
+exact_parameter_count = 3744832
 max_step = 5725
 
 [[models]]
@@ -172,7 +175,9 @@ d_model = 96
 n_heads = 8
 n_layers = 8
 mlp_ratio = 8
-true_size = 6010464
+nominal_parameter_count = 6000000
+training_parameter_count = 6010464
+exact_parameter_count = 6010464
 max_step = 9182
 
 [[models]]
@@ -181,7 +186,9 @@ d_model = 128
 n_heads = 8
 n_layers = 8
 mlp_ratio = 8
-true_size = 8538240
+nominal_parameter_count = 8000000
+training_parameter_count = 8538240
+exact_parameter_count = 8538240
 max_step = 13039
 
 [[models]]
@@ -190,7 +197,9 @@ d_model = 144
 n_heads = 8
 n_layers = 8
 mlp_ratio = 8
-true_size = 9900432
+nominal_parameter_count = 10000000
+training_parameter_count = 9900432
+exact_parameter_count = 9900432
 max_step = 15117
 
 [[models]]
@@ -199,7 +208,9 @@ d_model = 192
 n_heads = 8
 n_layers = 8
 mlp_ratio = 8
-true_size = 14380224
+nominal_parameter_count = 14000000
+training_parameter_count = 14380224
+exact_parameter_count = 14380224
 max_step = 21953
 
 [[models]]
@@ -208,7 +219,9 @@ d_model = 208
 n_heads = 8
 n_layers = 8
 mlp_ratio = 8
-true_size = 16004560
+nominal_parameter_count = 16000000
+training_parameter_count = 16004560
+exact_parameter_count = 16004560
 max_step = 24432
 
 [[models]]
@@ -217,7 +230,9 @@ d_model = 192
 n_heads = 8
 n_layers = 16
 mlp_ratio = 8
-true_size = 19101888
+nominal_parameter_count = 20000000
+training_parameter_count = 19101888
+exact_parameter_count = 19101888
 max_step = 14584
 
 [[models]]
@@ -226,7 +241,9 @@ d_model = 384
 n_heads = 12
 n_layers = 16
 mlp_ratio = 8
-true_size = 57078144
+nominal_parameter_count = 60000000
+training_parameter_count = 57078144
+exact_parameter_count = 57078144
 max_step = 29042
 
 [[models]]
@@ -235,7 +252,9 @@ d_model = 528
 n_heads = 12
 n_layers = 16
 mlp_ratio = 8
-true_size = 97946640
+nominal_parameter_count = 90000000
+training_parameter_count = 97946640
+exact_parameter_count = 97946640
 max_step = 29901
 
 [[models]]
@@ -244,7 +263,9 @@ d_model = 768
 n_heads = 12
 n_layers = 12
 mlp_ratio = 8
-true_size = 150000000
+nominal_parameter_count = 150000000
+training_parameter_count = 150000000
+exact_parameter_count = 151898880
 max_step = 37500
 
 [[models]]
@@ -253,7 +274,9 @@ d_model = 1024
 n_heads = 16
 n_layers = 16
 mlp_ratio = 8
-true_size = 300000000
+nominal_parameter_count = 300000000
+training_parameter_count = 300000000
+exact_parameter_count = 319980544
 max_step = 45000
 
 [[models]]
@@ -262,7 +285,9 @@ d_model = 1344
 n_heads = 16
 n_layers = 16
 mlp_ratio = 8
-true_size = 530000000
+nominal_parameter_count = 530000000
+training_parameter_count = 530000000
+exact_parameter_count = 530074944
 max_step = 51250
 
 [[models]]
@@ -271,7 +296,9 @@ d_model = 1536
 n_heads = 16
 n_layers = 16
 mlp_ratio = 8
-true_size = 750000000
+nominal_parameter_count = 750000000
+training_parameter_count = 750000000
+exact_parameter_count = 681297408
 max_step = 62500
 
 [[models]]
@@ -280,7 +307,9 @@ d_model = 2048
 n_heads = 16
 n_layers = 16
 mlp_ratio = 8
-true_size = 1000000000
+nominal_parameter_count = 1000000000
+training_parameter_count = 1000000000
+exact_parameter_count = 1176832000
 max_step = 67500
 
 [data_recipe_families]

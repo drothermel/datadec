@@ -17,6 +17,7 @@ from datadec.config import (
     load_scaling_law_contract,
 )
 from datadec.data.paths import DataDecidePaths
+from datadec.data.preprocess.model_enrichment import CHECKPOINT_ENRICHMENT_TYPES
 
 SOURCE_PRECEDENCE = (
     "results_ladder_5xC_seeds.csv",
@@ -139,8 +140,9 @@ def test_scaling_law_contract_pins_inputs_aliases_models_and_seed_policy() -> No
     assert contract.seed_policy.excluded_legacy_values == (6198,)
     assert contract.seed_policy.missing == "exclude_legacy_input"
     assert contract.seed_policy.unknown_non_null == "error"
-    assert contract.checkpoint_schedule.flops_per_token_per_parameter == 6
-    assert contract.checkpoint_schedule.model_parameter_counts == (
+    catalog = load_catalog()
+    assert catalog.training.flops_per_token_per_parameter == 6
+    assert {model.name: model.exact_parameter_count for model in catalog.models} == (
         MODEL_PARAMETER_COUNTS
     )
     with pytest.raises(ValidationError, match="frozen"):
@@ -161,9 +163,15 @@ def test_scaling_law_evaluations_match_olmes_aggregate_metric_contract() -> None
     assert table.primary_key == ("recipe", "params", "seed_value", "step", "task")
     assert table.sort_key == table.primary_key
     assert columns[:11] == EVALUATION_IDENTITY_COLUMNS
-    assert tuple(name for name, _, _ in columns[11:]) == olmes.metrics.aggregate
+    enrichment_columns = tuple(
+        (name, logical_type, False)
+        for name, logical_type in CHECKPOINT_ENRICHMENT_TYPES[2:]
+    )
+    assert columns[11 : 11 + len(enrichment_columns)] == enrichment_columns
+    metric_columns = columns[-len(olmes.metrics.aggregate) :]
+    assert tuple(name for name, _, _ in metric_columns) == olmes.metrics.aggregate
     assert tuple(
-        (logical_type, nullable) for _, logical_type, nullable in columns[11:]
+        (logical_type, nullable) for _, logical_type, nullable in metric_columns
     ) == tuple(aggregate_columns[name] for name in olmes.metrics.aggregate)
     assert columns[-1] == ("primary_metric", "float64", True)
     assert "source_file" not in table.primary_key
@@ -179,7 +187,12 @@ def test_scaling_law_checkpoint_losses_pin_nullable_metrics_and_identity() -> No
     assert columns[:10] == tuple(
         column for column in EVALUATION_IDENTITY_COLUMNS if column[0] != "task"
     )
-    assert columns[10:] == tuple(
+    enrichment_columns = tuple(
+        (name, logical_type, False)
+        for name, logical_type in CHECKPOINT_ENRICHMENT_TYPES[2:]
+    )
+    assert columns[10 : 10 + len(enrichment_columns)] == enrichment_columns
+    assert columns[-len(CHECKPOINT_LOSS_COLUMNS) :] == tuple(
         (name, "float64", True) for name in CHECKPOINT_LOSS_COLUMNS
     )
     assert "source_file" not in table.primary_key
@@ -242,10 +255,6 @@ def test_scaling_law_paths_follow_contract_without_creating_directories(
             "excluded legacy seeds must contain only seed 6198",
         ),
         (
-            lambda raw: raw["checkpoint_schedule"]["model_parameter_counts"].pop("1B"),
-            "parameter counts must exactly cover models",
-        ),
-        (
             lambda raw: raw["tables"]["evaluations"].update(
                 {"primary_key": ("recipe", "params", "seed", "step", "task")}
             ),
@@ -300,7 +309,6 @@ def test_scaling_law_contract_rejects_invalid_external_references(
         manifest = PublishedResultsManifest.model_validate(manifest_raw)
     elif reference == "models":
         scaling_raw["models"] = scaling_raw["models"][:-1]
-        scaling_raw["checkpoint_schedule"]["model_parameter_counts"].pop("1B")
     elif reference == "recipes":
         del scaling_raw["source_group_map"]["c4"]
     elif reference == "seeds":

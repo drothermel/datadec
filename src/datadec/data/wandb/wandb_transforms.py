@@ -30,7 +30,7 @@ def map_wandb_model_size_to_datadecide(model_size: Any) -> str | None:
         return None
     closest_param = None
     min_diff = float("inf")
-    for param_str, numeric_val in consts.HARDCODED_SIZE_MAPPING.items():
+    for param_str, numeric_val in consts.EXACT_PARAMETER_COUNTS.items():
         diff = abs(numeric_val - model_size)
         if diff < min_diff:
             min_diff = diff

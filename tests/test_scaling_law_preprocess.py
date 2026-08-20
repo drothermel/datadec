@@ -11,7 +11,12 @@ import pyarrow.parquet as pq
 import pytest
 
 from datadec.config import load_scaling_law_contract
-from datadec.data.constants import HARDCODED_SIZE_MAPPING, MAX_SEQ_LEN
+from datadec.data.constants import (
+    FLOPS_PER_TOKEN_PER_PARAMETER,
+    MAX_SEQ_LEN,
+    NOMINAL_PARAMETER_COUNTS,
+    TRAINING_PARAMETER_COUNTS,
+)
 from datadec.data.model_utils import calc_batch_size
 from datadec.data.paths import DataDecidePaths
 from datadec.data.preprocess import scaling_law as scaling_law_module
@@ -52,13 +57,17 @@ def _row(**overrides: object) -> dict[str, object]:
     }
     row.update(overrides)
     model = str(row["model"])
-    schedule_model = model if model in HARDCODED_SIZE_MAPPING else "4M"
+    schedule_model = model if model in TRAINING_PARAMETER_COUNTS else "4M"
     step = int(float(str(row["step"])))
     tokens = step * calc_batch_size(schedule_model) * MAX_SEQ_LEN
     if "tokens" not in overrides:
         row["tokens"] = str(tokens)
     if "compute" not in overrides:
-        row["compute"] = str(tokens * HARDCODED_SIZE_MAPPING[schedule_model] * 6)
+        row["compute"] = str(
+            tokens
+            * NOMINAL_PARAMETER_COUNTS[schedule_model]
+            * FLOPS_PER_TOKEN_PER_PARAMETER
+        )
     return row
 
 
@@ -155,6 +164,7 @@ def test_preprocess_resolves_precedence_normalizes_and_writes_typed_sorted_outpu
             "string": pa.string(),
             "int64": pa.int64(),
             "float64": pa.float64(),
+            "bool": pa.bool_(),
         }[column.logical_type]
         for column in contract.tables.evaluations.columns
     ]
@@ -353,7 +363,7 @@ def test_compute_uses_exact_parameter_count_instead_of_raw_value(
     assert checkpoint["compute"] == 1_018_048_177_766_400_000.0
 
 
-def test_present_checkpoint_schedule_values_must_match_catalog(tmp_path: Path) -> None:
+def test_present_token_schedule_values_must_match_catalog(tmp_path: Path) -> None:
     paths = _write_sources(tmp_path, ([_row(tokens="100")], [], []))
 
     with pytest.raises(ValueError, match="checkpoint schedule mismatch"):

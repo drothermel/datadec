@@ -18,9 +18,8 @@ from datadec.config import (
     load_olmes_contract,
     load_scaling_law_contract,
 )
+from datadec.data.model_utils import create_model_schedules
 from datadec.data.paths import DataDecidePaths
-from datadec.data.constants import MAX_SEQ_LEN
-from datadec.data.model_utils import calc_batch_size
 from datadec.data.preprocess.duckdb import (
     PendingParquetExport,
     duckdb_type,
@@ -29,6 +28,10 @@ from datadec.data.preprocess.duckdb import (
     remove_owned_file,
     replace_parquet_exports,
     sql_literal,
+)
+from datadec.data.preprocess.model_enrichment import (
+    CHECKPOINT_ENRICHMENT_COLUMNS,
+    create_model_enrichment_table,
 )
 
 RAW_COLUMNS: tuple[str, ...] = (
@@ -138,6 +141,10 @@ def preprocess_scaling_law(
         _reject_same_priority_evaluation_duplicates(connection)
         _build_selected_checkpoints(connection, contract=contract)
         checkpoint_count = _count(connection, "_scaling_checkpoints")
+        create_model_enrichment_table(
+            connection,
+            checkpoint_select_sql="SELECT params, step FROM _scaling_checkpoints",
+        )
         _build_selected_evaluations(
             connection,
             contract=contract,
@@ -645,13 +652,15 @@ def _build_selected_checkpoints(
     *,
     contract: ScalingLawContract,
 ) -> None:
+    schedules = {schedule.params: schedule for schedule in create_model_schedules()}
     model_schedule_rows = ", ".join(
         "("
         + ", ".join(
             (
                 sql_literal(model),
-                str(calc_batch_size(model) * MAX_SEQ_LEN),
-                str(contract.checkpoint_schedule.model_parameter_counts[model]),
+                str(schedules[model].tokens_per_step),
+                str(schedules[model].exact_parameter_count),
+                str(schedules[model].flops_per_token_per_parameter),
             )
         )
         + ")"
@@ -662,11 +671,13 @@ def _build_selected_checkpoints(
         CREATE TEMP TABLE _scaling_model_schedule AS
         SELECT *
         FROM (VALUES {model_schedule_rows}) AS schedule(
-            params, tokens_per_step, true_size
+            params,
+            tokens_per_step,
+            exact_parameter_count,
+            flops_per_token_per_parameter
         )
         """
     )
-    flop_multiplier = contract.checkpoint_schedule.flops_per_token_per_parameter
     schedule_mismatch = connection.execute(
         """
         SELECT
@@ -798,8 +809,8 @@ def _build_selected_checkpoints(
             chinchilla,
             step * tokens_per_step::BIGINT AS tokens,
             (
-                step::DOUBLE * tokens_per_step * true_size::DOUBLE
-                * {flop_multiplier}
+                step::DOUBLE * tokens_per_step * exact_parameter_count::DOUBLE
+                * flops_per_token_per_parameter
             )::DOUBLE AS compute,
             {selected_fields}
         FROM _scaling_ranked_checkpoint_sources AS checkpoints
@@ -863,6 +874,7 @@ def _build_selected_evaluations(
         "chinchilla",
         "tokens",
         "compute",
+        *CHECKPOINT_ENRICHMENT_COLUMNS[2:],
         *source_metrics,
         "primary_metric",
     )
@@ -900,13 +912,22 @@ def _table_export_sql(
     source_table: str,
     table: ScalingLawTableContract,
 ) -> str:
+    enrichment_columns = set(CHECKPOINT_ENRICHMENT_COLUMNS[2:])
     expressions = ", ".join(
-        f"CAST({quote_identifier(column.name)} AS {duckdb_type(column.logical_type)}) "
+        f"CAST({('enrichment' if column.name in enrichment_columns else 'source')}."
+        f"{quote_identifier(column.name)} AS {duckdb_type(column.logical_type)}) "
         f"AS {quote_identifier(column.name)}"
         for column in table.columns
     )
-    sort_key = ", ".join(quote_identifier(column) for column in table.sort_key)
-    return f"SELECT {expressions} FROM {source_table} ORDER BY {sort_key}"
+    sort_key = ", ".join(
+        f"source.{quote_identifier(column)}" for column in table.sort_key
+    )
+    return f"""
+        SELECT {expressions}
+        FROM {quote_identifier(source_table)} AS source
+        INNER JOIN _model_enrichment AS enrichment USING (params, step)
+        ORDER BY {sort_key}
+    """
 
 
 def _validate_pending_export(

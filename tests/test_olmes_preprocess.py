@@ -10,6 +10,7 @@ import pytest
 
 from datadec.config import load_olmes_contract
 from datadec.data.ingest.enums import DataRecipeName, ModelSizeName, Seed
+from datadec.data.model_utils import checkpoint_enrichment
 from datadec.data.paths import DataDecidePaths
 from datadec.data.preprocess.olmes import (
     _assert_output_schema_parity,
@@ -18,11 +19,21 @@ from datadec.data.preprocess.olmes import (
     group_olmes_rows,
     preprocess_olmes,
 )
+from datadec.data.preprocess.model_enrichment import CHECKPOINT_ENRICHMENT_TYPES
 
 CONTRACT = load_olmes_contract()
 OUTPUT_COLUMNS = tuple(column.name for column in CONTRACT.tables.aggregate.columns)
 SOURCE_METRIC_COLUMNS = _source_metric_columns(CONTRACT)
 AGGREGATE_METRICS = CONTRACT.metrics.aggregate
+CHECKPOINT_DTYPES = {
+    field: (
+        pd.StringDtype()
+        if logical_type == "string"
+        else np.dtype("bool" if logical_type == "bool" else logical_type)
+    )
+    for field, logical_type in CHECKPOINT_ENRICHMENT_TYPES
+}
+_DEFAULT = object()
 
 
 def _raw_record(
@@ -33,10 +44,22 @@ def _raw_record(
     step: object = 100,
     task: object = "arc_challenge",
     chinchilla: object = "1x",
-    tokens: object = 1000,
-    compute: object = 1.5,
+    tokens: object = _DEFAULT,
+    compute: object = _DEFAULT,
     metrics: dict[str, object] | None = None,
 ) -> dict[str, object]:
+    if tokens is _DEFAULT or compute is _DEFAULT:
+        try:
+            normalized_step = int(step)
+            if float(step) != normalized_step:
+                raise ValueError
+            enrichment = checkpoint_enrichment(str(params), normalized_step)
+        except (KeyError, OverflowError, TypeError, ValueError):
+            enrichment = {"tokens": 1000, "compute": 1.5}
+        if tokens is _DEFAULT:
+            tokens = enrichment["tokens"]
+        if compute is _DEFAULT:
+            compute = enrichment["compute"]
     return {
         "params": params,
         "data": data,
@@ -73,8 +96,9 @@ def test_exact_output_schema_mapping_types_and_enum_values() -> None:
         "1x",
     ]
     assert output.loc[0, "step"] == 1250
-    assert output.loc[0, "tokens"] == 1000
-    assert output.loc[0, "compute"] == 1.5
+    enrichment = checkpoint_enrichment("4M", 1250)
+    assert output.loc[0, "tokens"] == enrichment["tokens"]
+    assert output.loc[0, "compute"] == enrichment["compute"]
     assert output.loc[0, "acc_uncond"] == 0.42
     assert output.loc[0, "primary_metric"] == 0.42
     assert output.loc[0, "bits_per_byte_corr"] == 0.1
@@ -87,8 +111,7 @@ def test_exact_output_schema_mapping_types_and_enum_values() -> None:
         "step": np.dtype("int64"),
         "task": pd.StringDtype(),
         "chinchilla": pd.StringDtype(),
-        "tokens": np.dtype("int64"),
-        "compute": np.dtype("float64"),
+        **CHECKPOINT_DTYPES,
         **{field: np.dtype("float64") for field in AGGREGATE_METRICS},
     }
 
@@ -234,9 +257,8 @@ def test_empty_input_writes_exact_typed_schema(tmp_path: Path) -> None:
         "seed": pd.StringDtype(),
         "step": np.dtype("int64"),
         "task": pd.StringDtype(),
-        "chinchilla": pd.StringDtype(),
-        "tokens": np.dtype("int64"),
-        "compute": np.dtype("float64"),
+            "chinchilla": pd.StringDtype(),
+            **CHECKPOINT_DTYPES,
         **{field: np.dtype("float64") for field in AGGREGATE_METRICS},
     }
 
@@ -312,8 +334,7 @@ def test_preprocess_projects_sorts_and_counts_without_grouping_helpers(
         "step": np.dtype("int64"),
         "task": pd.StringDtype(),
         "chinchilla": pd.StringDtype(),
-        "tokens": np.dtype("int64"),
-        "compute": np.dtype("float64"),
+        **CHECKPOINT_DTYPES,
         **{field: np.dtype("float64") for field in AGGREGATE_METRICS},
     }
     assert list(
