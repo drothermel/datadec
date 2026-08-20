@@ -50,15 +50,11 @@ RAW_COLUMNS: tuple[str, ...] = (
 RAW_CHECKPOINT_FIELDS: dict[str, str] = {
     "tokens": "tokens",
     "compute": "compute",
-    "c4_en_validation_cross_entropy": (
-        "eval/c4_en-validation/CrossEntropyLoss"
-    ),
+    "c4_en_validation_cross_entropy": ("eval/c4_en-validation/CrossEntropyLoss"),
     "dolma_common_crawl_validation_cross_entropy": (
         "eval/dolma_common-crawl-validation/CrossEntropyLoss"
     ),
-    "pile_validation_cross_entropy": (
-        "eval/pile-validation/CrossEntropyLoss"
-    ),
+    "pile_validation_cross_entropy": ("eval/pile-validation/CrossEntropyLoss"),
     "wikitext_103_validation_cross_entropy": (
         "eval/wikitext_103-validation/CrossEntropyLoss"
     ),
@@ -281,8 +277,10 @@ def _register_metrics_parser(
                     f"unknown scaling-law metrics key at {context}: {key!r}"
                 )
             numeric_value: float | None = None
-            if value is not None and not isinstance(value, bool) and isinstance(
-                value, (int, float)
+            if (
+                value is not None
+                and not isinstance(value, bool)
+                and isinstance(value, (int, float))
             ):
                 try:
                     numeric_value = float(value)
@@ -377,7 +375,10 @@ def _validate_and_normalize_rows(
             f"{value!r}; expected a finite integral int64 value"
         )
 
-    allowed_seed_values = (*contract.seed_map, *contract.seed_policy.excluded_legacy_values)
+    allowed_seed_values = (
+        *contract.seed_map,
+        *contract.seed_policy.excluded_legacy_values,
+    )
     allowed_seed_sql = ", ".join(str(value) for value in allowed_seed_values)
     unknown_seed = connection.execute(
         f"""
@@ -425,10 +426,13 @@ def _validate_and_normalize_rows(
     recipe_case = _mapping_case_sql(
         quote_identifier("group"), contract.source_group_map
     )
-    data_case = _mapping_case_sql(quote_identifier("group"), {
-        source_group: olmes_contract.recipe_map[recipe]
-        for source_group, recipe in contract.source_group_map.items()
-    })
+    data_case = _mapping_case_sql(
+        quote_identifier("group"),
+        {
+            source_group: olmes_contract.recipe_map[recipe]
+            for source_group, recipe in contract.source_group_map.items()
+        },
+    )
     seed_case = _mapping_case_sql(
         _optional_int64_sql("seed"),
         contract.seed_map,
@@ -490,8 +494,7 @@ def _validate_known_string(
     if invalid is not None:
         source_file, source_row, value = invalid
         raise ValueError(
-            f"unknown scaling-law {column} at {source_file} row {source_row}: "
-            f"{value!r}"
+            f"unknown scaling-law {column} at {source_file} row {source_row}: {value!r}"
         )
 
 
@@ -685,9 +688,7 @@ def _build_selected_checkpoints(connection: duckdb.DuckDBPyConnection) -> None:
 
     conflict_checks = [
         ("chinchilla", "chinchilla_distinct_count"),
-        *(
-            (field, field + "_distinct_count") for field in checkpoint_fields
-        ),
+        *((field, field + "_distinct_count") for field in checkpoint_fields),
     ]
     conflict_condition = " OR ".join(
         f"{quote_identifier(count_field)} > 1" for _, count_field in conflict_checks
@@ -705,9 +706,7 @@ def _build_selected_checkpoints(connection: duckdb.DuckDBPyConnection) -> None:
         columns = [description[0] for description in connection.description]
         record = dict(zip(columns, selected_conflict, strict=True))
         conflicts = [
-            field
-            for field, count_field in conflict_checks
-            if record[count_field] > 1
+            field for field, count_field in conflict_checks if record[count_field] > 1
         ]
         raise ValueError(
             "conflicting checkpoint values in selected scaling-law source "
@@ -801,7 +800,9 @@ def _build_selected_evaluations(
     )
     primary_metric_sql = "CASE " + " ".join(primary_cases) + " ELSE NULL END"
 
-    output_columns = tuple(column.name for column in contract.tables.evaluations.columns)
+    output_columns = tuple(
+        column.name for column in contract.tables.evaluations.columns
+    )
     expected_columns = (
         "source_file",
         "recipe",

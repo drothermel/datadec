@@ -560,7 +560,7 @@ def _empty_output_select_sql(contract: OLMESContract) -> str:
 def _coerced_metric_sql(metrics_identifier: str, field: str) -> str:
     raw_value = f"{metrics_identifier}.{quote_identifier(field)}"
     converted = f"try_cast(trim({raw_value}) AS DOUBLE)"
-    return f"CASE WHEN isfinite({converted}) THEN {converted} ELSE NULL END"
+    return f"CASE WHEN isnan({converted}) THEN NULL ELSE {converted} END"
 
 
 def _output_select_sql(contract: OLMESContract) -> str:

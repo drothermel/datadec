@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import os
 from pathlib import Path
 from unittest.mock import patch
 
@@ -370,6 +371,43 @@ def test_second_export_failure_preserves_outputs_and_cleans_first_temp(
     assert checkpoints_path.read_bytes() == b"old checkpoints"
     assert not evaluations_path.with_name(f".{evaluations_path.name}.tmp").exists()
     assert not checkpoints_path.with_name(f".{checkpoints_path.name}.tmp").exists()
+
+
+def test_second_replace_failure_rolls_back_both_outputs_and_cleans_backups(
+    tmp_path: Path,
+) -> None:
+    paths = _write_sources(tmp_path, ([_row()], [], []))
+    evaluations_path = paths.scaling_law_evaluations_path()
+    checkpoints_path = paths.scaling_law_checkpoint_losses_path()
+    evaluations_path.parent.mkdir(parents=True)
+    evaluations_path.write_bytes(b"old evaluations")
+    checkpoints_path.write_bytes(b"old checkpoints")
+    real_replace = os.replace
+    call_count = 0
+
+    def fail_second_replace(source, destination):
+        nonlocal call_count
+        call_count += 1
+        if call_count == 2:
+            raise OSError("second replace failed")
+        return real_replace(source, destination)
+
+    with (
+        patch.object(os, "replace", side_effect=fail_second_replace),
+        pytest.raises(OSError, match="second replace failed"),
+    ):
+        preprocess_scaling_law(paths)
+
+    assert evaluations_path.read_bytes() == b"old evaluations"
+    assert checkpoints_path.read_bytes() == b"old checkpoints"
+    assert not evaluations_path.with_name(f".{evaluations_path.name}.tmp").exists()
+    assert not checkpoints_path.with_name(f".{checkpoints_path.name}.tmp").exists()
+    assert not evaluations_path.with_name(
+        f".{evaluations_path.name}.backup.tmp"
+    ).exists()
+    assert not checkpoints_path.with_name(
+        f".{checkpoints_path.name}.backup.tmp"
+    ).exists()
 
 
 def test_preprocessing_does_not_download_or_upload(tmp_path: Path) -> None:

@@ -560,8 +560,7 @@ def _cast_json_value(
 
 def _prediction_json_columns(contract: OLMESContract) -> dict[str, str]:
     instance_metrics = ", ".join(
-        f"{quote_identifier(name)} JSON"
-        for name in contract.metrics.detailed_instances
+        f"{quote_identifier(name)} JSON" for name in contract.metrics.detailed_instances
     )
     choice_metrics = ", ".join(
         f"{quote_identifier(name)} JSON" for name in contract.metrics.detailed_choices
@@ -848,8 +847,7 @@ def _empty_checkpoint_predictions_sql(contract: OLMESContract) -> str:
         "CAST(NULL AS JSON) AS native_id",
     ]
     instance_metrics = ", ".join(
-        f"{quote_identifier(name)} JSON"
-        for name in contract.metrics.detailed_instances
+        f"{quote_identifier(name)} JSON" for name in contract.metrics.detailed_instances
     )
     choice_metrics = ", ".join(
         f"{quote_identifier(name)} JSON" for name in contract.metrics.detailed_choices

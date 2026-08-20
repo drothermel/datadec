@@ -78,5 +78,51 @@ def prepare_parquet_export(
 
 
 def replace_parquet_exports(exports: tuple[PendingParquetExport, ...]) -> None:
-    for export in exports:
-        os.replace(export.temporary_path, export.output_path)
+    backup_paths = tuple(
+        export.output_path.with_name(f".{export.output_path.name}.backup.tmp")
+        for export in exports
+    )
+    if len({export.output_path for export in exports}) != len(exports):
+        raise ValueError("parquet export output paths must be unique")
+
+    had_output: list[bool] = []
+    replaced_count = 0
+    preserved_backups: set[Path] = set()
+    try:
+        for export, backup_path in zip(exports, backup_paths, strict=True):
+            remove_owned_file(backup_path)
+            output_exists = (
+                export.output_path.exists() or export.output_path.is_symlink()
+            )
+            had_output.append(output_exists)
+            if output_exists:
+                os.link(export.output_path, backup_path)
+
+        try:
+            for export in exports:
+                os.replace(export.temporary_path, export.output_path)
+                replaced_count += 1
+        except BaseException as replace_error:
+            rollback_errors: list[str] = []
+            for index in range(replaced_count - 1, -1, -1):
+                export = exports[index]
+                try:
+                    if had_output[index]:
+                        os.replace(backup_paths[index], export.output_path)
+                    else:
+                        remove_owned_file(export.output_path)
+                except OSError as rollback_error:
+                    if had_output[index]:
+                        preserved_backups.add(backup_paths[index])
+                    rollback_errors.append(f"{export.output_path}: {rollback_error}")
+            if rollback_errors:
+                details = "; ".join(rollback_errors)
+                raise RuntimeError(
+                    "failed to roll back parquet exports after replacement error; "
+                    f"preserved recoverable backups where available: {details}"
+                ) from replace_error
+            raise
+    finally:
+        for backup_path in backup_paths:
+            if backup_path not in preserved_backups:
+                remove_owned_file(backup_path)

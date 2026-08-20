@@ -291,9 +291,7 @@ def _validate_raw_ppl(
                 f"invalid PPL step at row {row_index}: {value!r}; "
                 "expected a finite integral int64 value"
             )
-        raise ValueError(
-            f"unknown PPL {field} at row {row_index}: {value!r}"
-        )
+        raise ValueError(f"unknown PPL {field} at row {row_index}: {value!r}")
 
     normalized_step = f"CAST({step_text} AS BIGINT)"
     duplicate = connection.execute(
@@ -357,9 +355,7 @@ def _output_select_sql(
             value = f"CAST(NULL AS {duckdb_type('float64')})"
         else:
             raw_identifier = quote_identifier(raw_column)
-            converted = (
-                f"try_cast({raw_identifier} AS {duckdb_type('float64')})"
-            )
+            converted = f"try_cast({raw_identifier} AS {duckdb_type('float64')})"
             value = (
                 "CASE "
                 f"WHEN typeof({raw_identifier}) = 'BOOLEAN' "

@@ -335,9 +335,9 @@ def test_preprocess_projects_sorts_and_counts_without_grouping_helpers(
         "acc_per_char",
         "acc_per_byte",
         "no_answer",
-        "sum_logits_corr",
     ):
         assert pd.isna(output.loc[2, field])
+    assert np.isposinf(output.loc[2, "sum_logits_corr"])
     assert "predicted_index_raw" not in output.columns
     assert not output_path.with_name(f".{output_path.name}.tmp").exists()
 

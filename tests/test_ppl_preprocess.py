@@ -222,9 +222,9 @@ def test_preprocess_rejects_duplicate_normalized_key_with_row_context(
     paths = DataDecidePaths(tmp_path)
     input_path = paths.get_path("ppl_raw")
     input_path.parent.mkdir(parents=True)
-    pd.DataFrame(
-        [_raw_record(step=1250), _raw_record(step=1250.0)]
-    ).to_parquet(input_path, index=False)
+    pd.DataFrame([_raw_record(step=1250), _raw_record(step=1250.0)]).to_parquet(
+        input_path, index=False
+    )
 
     with pytest.raises(ValueError, match="duplicate PPL checkpoint at row 1") as exc:
         preprocess_ppl(paths)
