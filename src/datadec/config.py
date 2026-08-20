@@ -408,6 +408,10 @@ class ScalingLawColumnContract(ConfigModel):
     nullable: bool
 
 
+class ScalingLawCheckpointSchedule(ConfigModel):
+    flops_per_token_per_parameter: Literal[6]
+
+
 class ScalingLawTableContract(ConfigModel):
     path: str
     primary_key: tuple[str, ...]
@@ -462,6 +466,7 @@ class ScalingLawContract(ConfigModel):
     source_group_map: dict[str, str]
     seed_map: dict[int, str]
     seed_policy: ScalingLawSeedPolicy
+    checkpoint_schedule: ScalingLawCheckpointSchedule
     tables: ScalingLawTables
 
     @model_validator(mode="after")

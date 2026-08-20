@@ -19,6 +19,8 @@ from datadec.config import (
     load_scaling_law_contract,
 )
 from datadec.data.paths import DataDecidePaths
+from datadec.data.constants import HARDCODED_SIZE_MAPPING, MAX_SEQ_LEN
+from datadec.data.model_utils import calc_batch_size
 from datadec.data.preprocess.duckdb import (
     PendingParquetExport,
     duckdb_type,
@@ -134,7 +136,7 @@ def preprocess_scaling_law(
         excluded_row_count = input_row_count - clean_row_count
 
         _reject_same_priority_evaluation_duplicates(connection)
-        _build_selected_checkpoints(connection)
+        _build_selected_checkpoints(connection, contract=contract)
         checkpoint_count = _count(connection, "_scaling_checkpoints")
         _build_selected_evaluations(
             connection,
@@ -638,7 +640,77 @@ def _reject_same_priority_evaluation_duplicates(
         )
 
 
-def _build_selected_checkpoints(connection: duckdb.DuckDBPyConnection) -> None:
+def _build_selected_checkpoints(
+    connection: duckdb.DuckDBPyConnection,
+    *,
+    contract: ScalingLawContract,
+) -> None:
+    model_schedule_rows = ", ".join(
+        "("
+        + ", ".join(
+            (
+                sql_literal(model),
+                str(calc_batch_size(model) * MAX_SEQ_LEN),
+                str(HARDCODED_SIZE_MAPPING[model]),
+            )
+        )
+        + ")"
+        for model in contract.models
+    )
+    connection.execute(
+        f"""
+        CREATE TEMP TABLE _scaling_model_schedule AS
+        SELECT *
+        FROM (VALUES {model_schedule_rows}) AS schedule(
+            params, tokens_per_step, true_size
+        )
+        """
+    )
+    flop_multiplier = contract.checkpoint_schedule.flops_per_token_per_parameter
+    schedule_mismatch = connection.execute(
+        f"""
+        SELECT
+            source_file,
+            source_row,
+            c.params,
+            step,
+            tokens,
+            compute,
+            step * tokens_per_step AS expected_tokens,
+            step::DOUBLE * tokens_per_step * true_size::DOUBLE * {flop_multiplier}
+                AS expected_compute
+        FROM _scaling_clean AS c
+        INNER JOIN _scaling_model_schedule AS schedule USING (params)
+        WHERE (tokens IS NOT NULL AND tokens <> step * tokens_per_step)
+           OR (
+                compute IS NOT NULL
+                AND compute <> (
+                    step::DOUBLE * tokens_per_step * true_size::DOUBLE
+                    * {flop_multiplier}
+                )
+           )
+        ORDER BY source_priority, source_row
+        LIMIT 1
+        """
+    ).fetchone()
+    if schedule_mismatch is not None:
+        (
+            source_file,
+            source_row,
+            params,
+            step,
+            tokens,
+            compute,
+            expected_tokens,
+            expected_compute,
+        ) = schedule_mismatch
+        raise ValueError(
+            f"scaling-law checkpoint schedule mismatch at {source_file} row "
+            f"{source_row}: params={params!r}, step={step}, tokens={tokens!r}, "
+            f"compute={compute!r}, expected_tokens={expected_tokens}, "
+            f"expected_compute={expected_compute}"
+        )
+
     checkpoint_fields = tuple(RAW_CHECKPOINT_FIELDS)
     aggregates = [
         "count(DISTINCT chinchilla) AS chinchilla_distinct_count",
@@ -724,26 +796,6 @@ def _build_selected_checkpoints(connection: duckdb.DuckDBPyConnection) -> None:
             f"step={record['step']}, fields={conflicts!r}"
         )
 
-    incomplete = connection.execute(
-        """
-        SELECT source_file, recipe, params, seed_value, step, tokens, compute
-        FROM _scaling_ranked_checkpoint_sources
-        WHERE source_rank = 1
-          AND step <> 0
-          AND (tokens IS NULL OR compute IS NULL)
-        ORDER BY recipe, params, seed_value, step
-        LIMIT 1
-        """
-    ).fetchone()
-    if incomplete is not None:
-        source_file, recipe, params, seed_value, step, tokens, compute = incomplete
-        raise ValueError(
-            "incomplete nonzero scaling-law checkpoint metadata in selected source "
-            f"{source_file!r}: recipe={recipe!r}, params={params!r}, "
-            f"seed_value={seed_value}, step={step}, tokens={tokens!r}, "
-            f"compute={compute!r}"
-        )
-
     selected_fields = ",\n".join(
         quote_identifier(field) for field in checkpoint_fields[2:]
     )
@@ -759,12 +811,14 @@ def _build_selected_checkpoints(connection: duckdb.DuckDBPyConnection) -> None:
             seed,
             step,
             chinchilla,
-            CASE WHEN step = 0 AND tokens IS NULL THEN 0 ELSE tokens END::BIGINT
-                AS tokens,
-            CASE WHEN step = 0 AND compute IS NULL THEN 0.0 ELSE compute END::DOUBLE
-                AS compute,
+            step * tokens_per_step::BIGINT AS tokens,
+            (
+                step::DOUBLE * tokens_per_step * true_size::DOUBLE
+                * {flop_multiplier}
+            )::DOUBLE AS compute,
             {selected_fields}
-        FROM _scaling_ranked_checkpoint_sources
+        FROM _scaling_ranked_checkpoint_sources AS checkpoints
+        INNER JOIN _scaling_model_schedule AS schedule USING (params)
         WHERE source_rank = 1
         """
     )

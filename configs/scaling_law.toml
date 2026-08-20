@@ -69,6 +69,9 @@ excluded_legacy_values = [6198]
 missing = "exclude_legacy_input"
 unknown_non_null = "error"
 
+[checkpoint_schedule]
+flops_per_token_per_parameter = 6
+
 [tables.evaluations]
 path = "processed/scaling-law/evaluations.parquet"
 primary_key = ["recipe", "params", "seed_value", "step", "task"]

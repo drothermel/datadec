@@ -122,6 +122,7 @@ def test_scaling_law_contract_pins_inputs_aliases_models_and_seed_policy() -> No
     assert contract.seed_policy.excluded_legacy_values == (6198,)
     assert contract.seed_policy.missing == "exclude_legacy_input"
     assert contract.seed_policy.unknown_non_null == "error"
+    assert contract.checkpoint_schedule.flops_per_token_per_parameter == 6
     with pytest.raises(ValidationError, match="frozen"):
         setattr(contract, "raw_directory", "elsewhere")
 

@@ -11,6 +11,8 @@ import pyarrow.parquet as pq
 import pytest
 
 from datadec.config import load_scaling_law_contract
+from datadec.data.constants import HARDCODED_SIZE_MAPPING, MAX_SEQ_LEN
+from datadec.data.model_utils import calc_batch_size
 from datadec.data.paths import DataDecidePaths
 from datadec.data.preprocess import scaling_law as scaling_law_module
 from datadec.data.preprocess.scaling_law import RAW_COLUMNS, preprocess_scaling_law
@@ -39,8 +41,6 @@ def _row(**overrides: object) -> dict[str, object]:
         "task": "boolq",
         "chinchilla": "5xC",
         "step": "100",
-        "tokens": "204800",
-        "compute": "1.5e15",
         "metrics": _metrics(),
         "eval/c4_en-validation/CrossEntropyLoss": "2.1",
         "eval/dolma_common-crawl-validation/CrossEntropyLoss": "2.2",
@@ -51,6 +51,14 @@ def _row(**overrides: object) -> dict[str, object]:
         "seed": "2.0",
     }
     row.update(overrides)
+    model = str(row["model"])
+    schedule_model = model if model in HARDCODED_SIZE_MAPPING else "4M"
+    step = int(float(str(row["step"])))
+    tokens = step * calc_batch_size(schedule_model) * MAX_SEQ_LEN
+    if "tokens" not in overrides:
+        row["tokens"] = str(tokens)
+    if "compute" not in overrides:
+        row["compute"] = str(tokens * HARDCODED_SIZE_MAPPING[schedule_model] * 6)
     return row
 
 
@@ -165,8 +173,8 @@ def test_preprocess_resolves_precedence_normalizes_and_writes_typed_sorted_outpu
     assert boolq["seed"] == "default"
     assert boolq["acc_raw"] == 0.3
     assert boolq["primary_metric"] == 0.3
-    assert boolq["tokens"] == 204800
-    assert boolq["compute"] == 1.5e15
+    assert boolq["tokens"] == 6_553_600
+    assert boolq["compute"] == 147_252_785_971_200.0
     arc_easy = evaluations[evaluations["task"] == "arc_easy"].iloc[0]
     assert arc_easy["primary_metric"] == 0.4
     step_zero = evaluations[evaluations["step"] == 0].iloc[0]
@@ -303,8 +311,8 @@ def test_selected_checkpoint_rejects_conflicting_repeated_task_values(
         tmp_path,
         (
             [
-                _row(task="boolq", tokens="100"),
-                _row(task="arc_easy", tokens="101"),
+                _row(task="boolq", **{"train/CrossEntropyLoss": "1.8"}),
+                _row(task="arc_easy", **{"train/CrossEntropyLoss": "1.9"}),
             ],
             [],
             [],
@@ -314,16 +322,26 @@ def test_selected_checkpoint_rejects_conflicting_repeated_task_values(
     with pytest.raises(ValueError, match="conflicting checkpoint values") as exc:
         preprocess_scaling_law(paths)
 
-    assert "tokens" in str(exc.value)
+    assert "train_cross_entropy" in str(exc.value)
 
 
-def test_nonzero_checkpoint_requires_tokens_and_compute(tmp_path: Path) -> None:
+def test_missing_checkpoint_tokens_and_compute_are_derived(tmp_path: Path) -> None:
     paths = _write_sources(
         tmp_path,
         ([_row(tokens="", compute="")], [], []),
     )
 
-    with pytest.raises(ValueError, match="incomplete nonzero"):
+    result = preprocess_scaling_law(paths)
+
+    checkpoint = pd.read_parquet(result.checkpoint_losses_output_path).iloc[0]
+    assert checkpoint["tokens"] == 6_553_600
+    assert checkpoint["compute"] == 147_252_785_971_200.0
+
+
+def test_present_checkpoint_schedule_values_must_match_catalog(tmp_path: Path) -> None:
+    paths = _write_sources(tmp_path, ([_row(tokens="100")], [], []))
+
+    with pytest.raises(ValueError, match="checkpoint schedule mismatch"):
         preprocess_scaling_law(paths)
 
 
