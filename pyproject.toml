@@ -10,6 +10,7 @@ requires-python = ">=3.12"
 dependencies = [
     "datasets>=5.0.1",
     "dr-ds>=0.1.2",
+    "dr-hf==0.1.1",
     "duckdb>=1.5.5",
     "fsspec>=2026.3.0",
     "huggingface-hub>=1.3.5",
@@ -34,6 +35,7 @@ packages = ["src/datadec"]
 [tool.hatch.build.targets.wheel.force-include]
 "configs/catalog.toml" = "datadec/configs/catalog.toml"
 "configs/olmes.toml" = "datadec/configs/olmes.toml"
+"configs/publishing.toml" = "datadec/configs/publishing.toml"
 "configs/published_results.toml" = "datadec/configs/published_results.toml"
 "configs/scaling_law.toml" = "datadec/configs/scaling_law.toml"
 "configs/sources.toml" = "datadec/configs/sources.toml"
