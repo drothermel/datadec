@@ -1,7 +1,7 @@
 [project]
 name = "datadec"
 version = "0.1.0"
-description = "A library to download and process DataDecide datasets from Hugging Face."
+description = "A library to download, process, and publish DataDecide datasets."
 readme = "README.md"
 authors = [
     { name = "Danielle Rothermel", email = "danielle.rothermel@gmail.com" }

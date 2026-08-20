@@ -1,6 +1,7 @@
 # DataDecide
 
-Library and scripts for downloading and preprocessing DataDecide evaluation artifacts locally.
+Library and scripts for downloading, preprocessing, and publishing DataDecide
+evaluation artifacts.
 
 ## Data layout
 
@@ -10,11 +11,10 @@ Artifacts live under `data/` by default:
 |------|-------------|
 | `raw/ppl.parquet` | Raw perplexity export |
 | `raw/olmes.parquet` | Raw aggregate OLMES export |
-| `raw/olmes-details/models/{recipe}.tar.gz` | Per-recipe OLMES detail archives |
-| `raw/scaling-law/results_ladder_5xC_seeds.csv` | Google Drive: main raw scaling-law results |
-| `raw/scaling-law/results_ladder_5xC_small_seed_extras.csv` | Google Drive: additional small-model seed results |
-| `raw/scaling-law/results_ladder_5xC_small_seeds_extra_real.csv` | Google Drive: additional 6M-16M model results |
-| `reference/published-results/{source path}` | Google Drive: 131 published result artifacts preserving their source-relative paths |
+| `raw/olmes-details/models/{recipe}.tar.gz` | Per-recipe OLMES detail archive; removed after verified publication by default |
+| `raw/scaling-law/*.csv` | Three Google Drive scaling-law sources; removed after verified publication by default |
+| `reference/published-results/{structured source path}` | 51 Google Drive CSV/JSON sources; removed per verified publication unit by default |
+| `reference/published-results/{figure path}` | 80 download-only PDF/PNG figures |
 | `processed/ppl.parquet` | Typed PPL output |
 | `processed/olmes.parquet` | Typed aggregate OLMES output |
 | `processed/scaling-law/evaluations.parquet` | Typed, precedence-resolved scaling-law task evaluations |
@@ -22,10 +22,15 @@ Artifacts live under `data/` by default:
 | `processed/olmes-details/{recipe}/tasks.parquet` | Detail task summaries |
 | `processed/olmes-details/{recipe}/instances.parquet` | Per-instance detail rows |
 | `processed/olmes-details/{recipe}/choices.parquet` | Per-choice detail rows |
+| `processed/published-results/{source path with .parquet suffix}` | One-to-one typed conversion of each structured published result |
 
 OLMES table schemas are declared in [`configs/olmes.toml`](configs/olmes.toml).
 Scaling-law source precedence, aliases, seed policy, and table schemas are
 declared in [`configs/scaling_law.toml`](configs/scaling_law.toml).
+Published-result schemas and atomic publication units are declared in
+[`configs/published_results.toml`](configs/published_results.toml). Hugging
+Face destination paths and commit messages are declared in
+[`configs/publishing.toml`](configs/publishing.toml).
 Model definitions and training constants are declared in
 [`configs/catalog.toml`](configs/catalog.toml). Each model distinguishes its
 nominal parameter count (the size label), training parameter count (the value
@@ -40,9 +45,14 @@ join: tokens, exact-parameter FLOP compute, model architecture/training details,
 OLMES, both scaling-law tables, and OLMES detail tasks. Instances and choices
 remain evaluation-detail tables keyed to their parent task checkpoint.
 
-## Download vs preprocess
+## Download, preprocess, and publish
 
-Download and preprocess are separate steps. Preprocess scripts read local files only and never trigger downloads.
+Download and preprocess are separate steps. Preprocess functions read local
+files only and never trigger downloads or network work. Their repository CLIs
+publish final Parquet outputs to `drotherm/dd_parsed` by default after local
+preprocessing succeeds. Pass `--no-upload` for a local-only run or
+`--keep-sources` to retain cleanup-eligible non-Parquet sources after a verified
+upload.
 
 ```bash
 # Download selected sources
@@ -51,16 +61,27 @@ uv run python scripts/download.py --ppl --olmes --olmes-details dolma1.7-no-math
 # Download the three raw scaling-law CSVs (2.86 GB)
 uv run python scripts/download.py --scaling-law
 
-# Download the other 131 published artifacts (9.06 GB)
+# Download the 51 structured published results (8.97 GB)
 uv run python scripts/download.py --published-results
 
-# Preprocess aggregate sources
+# Optionally download the 80 published PDF/PNG figures (83 MB)
+uv run python scripts/download.py --published-figures
+
+# Preprocess and publish aggregate sources
 uv run python scripts/preprocess_ppl.py
 uv run python scripts/preprocess_olmes.py
 uv run python scripts/preprocess_scaling_law.py
 
-# Preprocess OLMES detail archives (tasks + instances + choices)
+# Preprocess and publish OLMES detail archives (tasks + instances + choices)
 uv run python scripts/preprocess_olmes_details.py --recipe dolma1.7-no-math-no-code
+
+# Convert and publish all structured published-result units
+uv run python scripts/preprocess_published_results.py
+
+# Publish already-processed outputs without recomputing them
+uv run python scripts/publish.py --ppl --olmes --scaling-law
+uv run python scripts/publish.py --olmes-details dolma1.7-no-math-no-code
+uv run python scripts/publish.py --published-results
 ```
 
 Scaling-law preprocessing requires all three local raw CSVs. It validates the
@@ -69,11 +90,12 @@ invalid source groups, resolves the historical `baseline` alias and source
 overlaps by configured policy, and derives corrected token/compute schedules
 from the pinned batch sizes and exact model parameter counts. It writes both
 output tables only after both temporary parquet files validate successfully.
-It does not download or upload data.
+After both final tables validate, the CLI publishes them in one atomic commit
+and deletes the three raw CSVs only after immutable remote verification.
 
-Select both Drive-backed options to reconstruct all 134 files (11.92 GB). The
-downloads use a pinned inventory from the public Drive folder rather than
-crawling its current contents.
+Select all three Drive-backed options to reconstruct all 134 source files
+(11.92 GB). The downloads use a pinned inventory from the public Drive folder
+rather than crawling its current contents.
 
 All preprocess CLIs accept `--data-dir` (default: repo `data/`). Override paths explicitly when needed:
 
@@ -87,6 +109,11 @@ uv run python scripts/preprocess_olmes_details.py \
   --output-instances path/to/instances.parquet \
   --output-choices path/to/choices.parquet
 ```
+
+OLMES detail path overrides require exactly one recipe. A custom `--input` is
+never deleted automatically. To convert or publish selected published-result
+units, repeat `--unit` on `preprocess_published_results.py`; omit it for all 15
+units.
 
 ## OLMES detail preprocessing
 
@@ -111,7 +138,7 @@ Nullable byte/unconditional fields remain null when absent in the source checkpo
 `bits_per_byte_corr` is declared non-reconstructible from the detail slice in `configs/olmes.toml` and is excluded from reconstruction checks.
 
 ```bash
-uv run python scripts/preprocess_olmes_details.py --recipe dolma1.7-no-math-no-code
+uv run python scripts/preprocess_olmes_details.py --recipe dolma1.7-no-math-no-code --no-upload
 uv run python scripts/verify_olmes_details.py --recipe dolma1.7-no-math-no-code
 uv run python scripts/verify_preprocessed_derivations.py
 ```
