@@ -375,6 +375,49 @@ def test_detail_factory_cleanup_is_isolated_to_one_recipe(tmp_path: Path) -> Non
     )
 
 
+def test_detail_factory_can_disable_canonical_source_cleanup(tmp_path: Path) -> None:
+    unit = olmes_details_publication_unit(
+        DataDecidePaths(tmp_path),
+        "c4",
+        cleanup_source=False,
+    )
+
+    assert unit.cleanup_paths == ()
+
+
+def test_factories_publish_exact_output_overrides(tmp_path: Path) -> None:
+    paths = DataDecidePaths(tmp_path)
+    ppl_output = tmp_path / "custom/ppl.parquet"
+    scaling_evaluations = tmp_path / "custom/evaluations.parquet"
+    scaling_losses = tmp_path / "custom/losses.parquet"
+    detail_outputs = (
+        tmp_path / "custom/tasks.parquet",
+        tmp_path / "custom/instances.parquet",
+        tmp_path / "custom/choices.parquet",
+    )
+
+    assert ppl_publication_unit(paths, output_path=ppl_output).files[0].local_path == (
+        ppl_output
+    )
+    scaling = scaling_law_publication_unit(
+        paths,
+        evaluations_output_path=scaling_evaluations,
+        checkpoint_losses_output_path=scaling_losses,
+    )
+    assert tuple(file.local_path for file in scaling.files) == (
+        scaling_evaluations,
+        scaling_losses,
+    )
+    details = olmes_details_publication_unit(
+        paths,
+        "c4",
+        output_tasks_path=detail_outputs[0],
+        output_instances_path=detail_outputs[1],
+        output_choices_path=detail_outputs[2],
+    )
+    assert tuple(file.local_path for file in details.files) == detail_outputs
+
+
 def test_existing_final_output_can_be_republished_without_raw_or_preprocessing(
     tmp_path: Path,
 ) -> None:

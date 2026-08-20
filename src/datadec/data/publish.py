@@ -103,13 +103,14 @@ def ppl_publication_unit(
     paths: DataDecidePaths,
     *,
     contract: PublishingContract | None = None,
+    output_path: Path | None = None,
 ) -> PublicationUnit:
     publishing = contract or load_publishing_contract()
     return PublicationUnit(
         name="ppl",
         files=(
             PublicationFile(
-                local_path=paths.get_path("ppl_processed"),
+                local_path=output_path or paths.get_path("ppl_processed"),
                 remote_path=publishing.ppl.remote_path,
                 expected_schema=_ppl_publication_schema(),
             ),
@@ -122,6 +123,7 @@ def olmes_publication_unit(
     paths: DataDecidePaths,
     *,
     contract: PublishingContract | None = None,
+    output_path: Path | None = None,
 ) -> PublicationUnit:
     publishing = contract or load_publishing_contract()
     table = load_olmes_contract().tables.aggregate
@@ -129,7 +131,7 @@ def olmes_publication_unit(
         name="olmes",
         files=(
             PublicationFile(
-                local_path=paths.get_path("olmes_processed"),
+                local_path=output_path or paths.get_path("olmes_processed"),
                 remote_path=publishing.olmes.remote_path,
                 expected_schema=_publication_schema(table),
             ),
@@ -142,6 +144,8 @@ def scaling_law_publication_unit(
     paths: DataDecidePaths,
     *,
     contract: PublishingContract | None = None,
+    evaluations_output_path: Path | None = None,
+    checkpoint_losses_output_path: Path | None = None,
 ) -> PublicationUnit:
     publishing = contract or load_publishing_contract()
     scaling_law = load_scaling_law_contract()
@@ -149,12 +153,17 @@ def scaling_law_publication_unit(
         name="scaling-law",
         files=(
             PublicationFile(
-                local_path=paths.scaling_law_evaluations_path(),
+                local_path=(
+                    evaluations_output_path or paths.scaling_law_evaluations_path()
+                ),
                 remote_path=publishing.scaling_law.evaluations_remote_path,
                 expected_schema=_publication_schema(scaling_law.tables.evaluations),
             ),
             PublicationFile(
-                local_path=paths.scaling_law_checkpoint_losses_path(),
+                local_path=(
+                    checkpoint_losses_output_path
+                    or paths.scaling_law_checkpoint_losses_path()
+                ),
                 remote_path=publishing.scaling_law.checkpoint_losses_remote_path,
                 expected_schema=_publication_schema(
                     scaling_law.tables.checkpoint_losses
@@ -171,6 +180,10 @@ def olmes_details_publication_unit(
     recipe: str,
     *,
     contract: PublishingContract | None = None,
+    output_tasks_path: Path | None = None,
+    output_instances_path: Path | None = None,
+    output_choices_path: Path | None = None,
+    cleanup_source: bool = True,
 ) -> PublicationUnit:
     publishing = contract or load_publishing_contract()
     olmes = load_olmes_contract()
@@ -185,21 +198,27 @@ def olmes_details_publication_unit(
         name=f"olmes-details:{recipe}",
         files=(
             PublicationFile(
-                local_path=paths.olmes_details_tasks_path(recipe),
+                local_path=(
+                    output_tasks_path or paths.olmes_details_tasks_path(recipe)
+                ),
                 remote_path=detail_contract.tasks_remote_path_template.format(
                     recipe=recipe
                 ),
                 expected_schema=_publication_schema(olmes.tables.detailed_tasks),
             ),
             PublicationFile(
-                local_path=paths.olmes_details_instances_path(recipe),
+                local_path=(
+                    output_instances_path or paths.olmes_details_instances_path(recipe)
+                ),
                 remote_path=detail_contract.instances_remote_path_template.format(
                     recipe=recipe
                 ),
                 expected_schema=_publication_schema(olmes.tables.detailed_instances),
             ),
             PublicationFile(
-                local_path=paths.olmes_details_choices_path(recipe),
+                local_path=(
+                    output_choices_path or paths.olmes_details_choices_path(recipe)
+                ),
                 remote_path=detail_contract.choices_remote_path_template.format(
                     recipe=recipe
                 ),
@@ -207,7 +226,7 @@ def olmes_details_publication_unit(
             ),
         ),
         commit_message=detail_contract.commit_message_template.format(recipe=recipe),
-        cleanup_paths=(archive,),
+        cleanup_paths=(archive,) if cleanup_source else (),
     )
 
 

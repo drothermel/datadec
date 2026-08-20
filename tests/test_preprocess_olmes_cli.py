@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 from pathlib import Path
+from types import SimpleNamespace
 import sys
 from unittest.mock import patch
 
@@ -46,7 +47,12 @@ def test_cli_default_is_repo_data_independent_of_cwd(
     monkeypatch.chdir(tmp_path)
     with (
         patch.object(script, "DataDecidePaths", return_value=paths) as path_type,
-        patch.object(script, "preprocess_olmes") as preprocess,
+        patch.object(
+            script,
+            "preprocess_olmes",
+            return_value=SimpleNamespace(output_path=tmp_path / "olmes.parquet"),
+        ) as preprocess,
+        patch.object(script, "publish_unit") as publish,
     ):
         result = runner.invoke(app, [])
 
@@ -58,6 +64,9 @@ def test_cli_default_is_repo_data_independent_of_cwd(
         output_path=None,
         verbose=True,
     )
+    unit = publish.call_args.args[0]
+    assert unit.files[0].local_path == tmp_path / "olmes.parquet"
+    assert unit.cleanup_paths == ()
     assert DEFAULT_DATA_DIR == Path(__file__).resolve().parents[1] / "data"
 
 
@@ -71,7 +80,7 @@ def test_cli_data_dir_reads_raw_and_writes_only_processed_olmes(tmp_path: Path) 
         patch("datadec.data.download.download_sources") as download_sources,
         patch("datadec.data.ingest.ingest.load_model_registry") as model_registry,
     ):
-        result = runner.invoke(app, ["--data-dir", str(tmp_path)])
+        result = runner.invoke(app, ["--data-dir", str(tmp_path), "--no-upload"])
 
     assert result.exit_code == 0
     assert output_path.is_file()
@@ -100,7 +109,10 @@ def test_cli_input_and_output_overrides(tmp_path: Path) -> None:
     input_path.parent.mkdir(parents=True, exist_ok=True)
     pd.DataFrame([_raw_row()]).to_parquet(input_path, index=False)
 
-    with patch("datadec.data.download.download_sources") as download_sources:
+    with (
+        patch("datadec.data.download.download_sources") as download_sources,
+        patch.object(script, "publish_unit") as publish,
+    ):
         result = runner.invoke(
             app,
             [
@@ -122,3 +134,6 @@ def test_cli_input_and_output_overrides(tmp_path: Path) -> None:
         "olmes training runs: 1\n"
     )
     download_sources.assert_not_called()
+    unit = publish.call_args.args[0]
+    assert unit.files[0].local_path == output_path
+    assert unit.cleanup_paths == ()

@@ -9,6 +9,7 @@ from datadec.config import load_source_manifest
 from datadec.data.download import resolve_olmes_detail_recipes
 from datadec.data.paths import DataDecidePaths
 from datadec.data.preprocess.olmes_details import preprocess_olmes_details
+from datadec.data.publish import olmes_details_publication_unit, publish_unit
 
 DEFAULT_DATA_DIR = Path(__file__).resolve().parents[1] / "data"
 
@@ -33,6 +34,8 @@ def main(
         Path | None,
         typer.Option("--output-choices", help="Override choices parquet path"),
     ] = None,
+    upload: Annotated[bool, typer.Option("--upload/--no-upload")] = True,
+    keep_sources: Annotated[bool, typer.Option("--keep-sources")] = False,
 ) -> None:
     """Preprocess local OLMES detail archives into typed task/instance/choice parquet."""
     manifest = load_source_manifest()
@@ -40,14 +43,20 @@ def main(
         recipes = resolve_olmes_detail_recipes(recipe, manifest.olmes_details)
     except ValueError as exc:
         raise typer.BadParameter(str(exc), param_hint="--recipe") from exc
-    if len(recipes) != 1 and input_path is not None:
+    path_overrides = (
+        input_path,
+        output_tasks,
+        output_instances,
+        output_choices,
+    )
+    if len(recipes) != 1 and any(path is not None for path in path_overrides):
         raise typer.BadParameter(
-            "--input requires exactly one --recipe",
+            "path overrides require exactly one --recipe",
             param_hint="--recipe",
         )
     paths = DataDecidePaths(data_dir)
     for detail_recipe in recipes:
-        preprocess_olmes_details(
+        result = preprocess_olmes_details(
             paths,
             detail_recipe,
             input_path=input_path,
@@ -56,6 +65,18 @@ def main(
             output_choices_path=output_choices,
             verbose=True,
         )
+        if upload:
+            publish_unit(
+                olmes_details_publication_unit(
+                    paths,
+                    detail_recipe,
+                    output_tasks_path=result.output_tasks_path,
+                    output_instances_path=result.output_instances_path,
+                    output_choices_path=result.output_choices_path,
+                    cleanup_source=input_path is None,
+                ),
+                keep_sources=keep_sources,
+            )
 
 
 if __name__ == "__main__":

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 from pathlib import Path
+from types import SimpleNamespace
 import sys
 from unittest.mock import patch
 
@@ -29,13 +30,22 @@ def test_cli_default_is_repo_data_independent_of_cwd(
     monkeypatch.chdir(tmp_path)
     with (
         patch.object(script, "DataDecidePaths", return_value=paths) as path_type,
-        patch.object(script, "preprocess_ppl") as preprocess,
+        patch.object(
+            script,
+            "preprocess_ppl",
+            return_value=SimpleNamespace(output_path=tmp_path / "ppl.parquet"),
+        ) as preprocess,
+        patch.object(script, "publish_unit") as publish,
     ):
         result = runner.invoke(app, [])
 
     assert result.exit_code == 0
     path_type.assert_called_once_with(DEFAULT_DATA_DIR)
     preprocess.assert_called_once_with(paths, verbose=True)
+    unit = publish.call_args.args[0]
+    assert unit.files[0].local_path == tmp_path / "ppl.parquet"
+    assert unit.cleanup_paths == ()
+    assert publish.call_args.kwargs == {"keep_sources": False}
     assert DEFAULT_DATA_DIR == Path(__file__).resolve().parents[1] / "data"
 
 
@@ -59,7 +69,7 @@ def test_cli_data_dir_reads_raw_and_writes_only_processed_ppl(tmp_path: Path) ->
         patch("datadec.data.download.download_sources") as download_sources,
         patch("datadec.data.ingest.ingest.load_model_registry") as model_registry,
     ):
-        result = runner.invoke(app, ["--data-dir", str(tmp_path)])
+        result = runner.invoke(app, ["--data-dir", str(tmp_path), "--no-upload"])
 
     assert result.exit_code == 0
     assert output_path.is_file()
@@ -79,3 +89,34 @@ def test_cli_data_dir_reads_raw_and_writes_only_processed_ppl(tmp_path: Path) ->
     )
     download_sources.assert_not_called()
     model_registry.assert_not_called()
+
+
+def test_cli_no_upload_skips_publication(tmp_path: Path) -> None:
+    with (
+        patch.object(
+            script,
+            "preprocess_ppl",
+            return_value=SimpleNamespace(output_path=tmp_path / "ppl.parquet"),
+        ),
+        patch.object(script, "publish_unit") as publish,
+    ):
+        result = runner.invoke(app, ["--data-dir", str(tmp_path), "--no-upload"])
+
+    assert result.exit_code == 0
+    publish.assert_not_called()
+
+
+def test_cli_preprocess_failure_suppresses_publication(tmp_path: Path) -> None:
+    with (
+        patch.object(
+            script,
+            "preprocess_ppl",
+            side_effect=ValueError("invalid PPL input"),
+        ),
+        patch.object(script, "publish_unit") as publish,
+    ):
+        result = runner.invoke(app, ["--data-dir", str(tmp_path)])
+
+    assert result.exit_code == 1
+    assert isinstance(result.exception, ValueError)
+    publish.assert_not_called()

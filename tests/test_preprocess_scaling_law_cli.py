@@ -3,12 +3,14 @@ from __future__ import annotations
 import csv
 import importlib.util
 from pathlib import Path
+from types import SimpleNamespace
 import sys
 from unittest.mock import patch
 
 import pandas as pd
 from typer.testing import CliRunner
 
+from datadec.data.paths import DataDecidePaths
 from datadec.data.preprocess.scaling_law import RAW_COLUMNS
 
 SCRIPT_PATH = Path(__file__).parents[1] / "scripts/preprocess_scaling_law.py"
@@ -56,17 +58,31 @@ def _write_fixture(data_dir: Path) -> tuple[Path, ...]:
 def test_cli_default_is_repo_data_independent_of_cwd(
     tmp_path: Path, monkeypatch
 ) -> None:
-    paths = object()
+    paths = DataDecidePaths(tmp_path)
     monkeypatch.chdir(tmp_path)
     with (
         patch.object(script, "DataDecidePaths", return_value=paths) as path_type,
-        patch.object(script, "preprocess_scaling_law") as preprocess,
+        patch.object(
+            script,
+            "preprocess_scaling_law",
+            return_value=SimpleNamespace(
+                evaluations_output_path=tmp_path / "evaluations.parquet",
+                checkpoint_losses_output_path=tmp_path / "losses.parquet",
+            ),
+        ) as preprocess,
+        patch.object(script, "publish_unit") as publish,
     ):
         result = runner.invoke(app, [])
 
     assert result.exit_code == 0
     path_type.assert_called_once_with(DEFAULT_DATA_DIR)
     preprocess.assert_called_once_with(paths, verbose=True)
+    unit = publish.call_args.args[0]
+    assert tuple(file.local_path for file in unit.files) == (
+        tmp_path / "evaluations.parquet",
+        tmp_path / "losses.parquet",
+    )
+    assert publish.call_args.kwargs == {"keep_sources": False}
     assert DEFAULT_DATA_DIR == Path(__file__).resolve().parents[1] / "data"
 
 
@@ -85,7 +101,7 @@ def test_cli_data_dir_prints_stable_evidence_without_network_calls(
             side_effect=(100.0, 100.125),
         ),
     ):
-        result = runner.invoke(app, ["--data-dir", str(tmp_path)])
+        result = runner.invoke(app, ["--data-dir", str(tmp_path), "--no-upload"])
 
     assert result.exit_code == 0
     assert evaluations_path.is_file()
@@ -105,3 +121,28 @@ def test_cli_data_dir_prints_stable_evidence_without_network_calls(
     )
     download_sources.assert_not_called()
     upload_file.assert_not_called()
+
+
+def test_cli_keep_sources_is_forwarded_for_atomic_scaling_unit(
+    tmp_path: Path,
+) -> None:
+    paths = DataDecidePaths(tmp_path)
+    result_item = SimpleNamespace(
+        evaluations_output_path=tmp_path / "custom-evaluations.parquet",
+        checkpoint_losses_output_path=tmp_path / "custom-losses.parquet",
+    )
+    with (
+        patch.object(script, "DataDecidePaths", return_value=paths),
+        patch.object(script, "preprocess_scaling_law", return_value=result_item),
+        patch.object(script, "publish_unit") as publish,
+    ):
+        result = runner.invoke(app, ["--keep-sources"])
+
+    assert result.exit_code == 0
+    unit = publish.call_args.args[0]
+    assert tuple(file.local_path for file in unit.files) == (
+        result_item.evaluations_output_path,
+        result_item.checkpoint_losses_output_path,
+    )
+    assert unit.cleanup_paths == paths.scaling_law_raw_paths()
+    assert publish.call_args.kwargs == {"keep_sources": True}
