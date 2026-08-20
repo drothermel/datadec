@@ -338,6 +338,21 @@ def test_missing_checkpoint_tokens_and_compute_are_derived(tmp_path: Path) -> No
     assert checkpoint["compute"] == 147_252_785_971_200.0
 
 
+def test_compute_uses_exact_parameter_count_instead_of_raw_value(
+    tmp_path: Path,
+) -> None:
+    paths = _write_sources(
+        tmp_path,
+        ([_row(model="1B", step="100", compute="1")], [], []),
+    )
+
+    result = preprocess_scaling_law(paths)
+
+    checkpoint = pd.read_parquet(result.checkpoint_losses_output_path).iloc[0]
+    assert checkpoint["tokens"] == 144_179_200
+    assert checkpoint["compute"] == 1_018_048_177_766_400_000.0
+
+
 def test_present_checkpoint_schedule_values_must_match_catalog(tmp_path: Path) -> None:
     paths = _write_sources(tmp_path, ([_row(tokens="100")], [], []))
 

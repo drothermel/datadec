@@ -86,6 +86,23 @@ CHECKPOINT_LOSS_COLUMNS = (
     "throughput_total_tokens",
 )
 
+MODEL_PARAMETER_COUNTS = {
+    "4M": 3_744_832,
+    "6M": 6_010_464,
+    "8M": 8_538_240,
+    "10M": 9_900_432,
+    "14M": 14_380_224,
+    "16M": 16_004_560,
+    "20M": 19_101_888,
+    "60M": 57_078_144,
+    "90M": 97_946_640,
+    "150M": 151_898_880,
+    "300M": 319_980_544,
+    "530M": 530_074_944,
+    "750M": 681_297_408,
+    "1B": 1_176_832_000,
+}
+
 
 def _column_tuples(contract: object) -> tuple[tuple[str, str, bool], ...]:
     columns = getattr(contract, "columns")
@@ -123,6 +140,9 @@ def test_scaling_law_contract_pins_inputs_aliases_models_and_seed_policy() -> No
     assert contract.seed_policy.missing == "exclude_legacy_input"
     assert contract.seed_policy.unknown_non_null == "error"
     assert contract.checkpoint_schedule.flops_per_token_per_parameter == 6
+    assert contract.checkpoint_schedule.model_parameter_counts == (
+        MODEL_PARAMETER_COUNTS
+    )
     with pytest.raises(ValidationError, match="frozen"):
         setattr(contract, "raw_directory", "elsewhere")
 
@@ -222,6 +242,10 @@ def test_scaling_law_paths_follow_contract_without_creating_directories(
             "excluded legacy seeds must contain only seed 6198",
         ),
         (
+            lambda raw: raw["checkpoint_schedule"]["model_parameter_counts"].pop("1B"),
+            "parameter counts must exactly cover models",
+        ),
+        (
             lambda raw: raw["tables"]["evaluations"].update(
                 {"primary_key": ("recipe", "params", "seed", "step", "task")}
             ),
@@ -276,6 +300,7 @@ def test_scaling_law_contract_rejects_invalid_external_references(
         manifest = PublishedResultsManifest.model_validate(manifest_raw)
     elif reference == "models":
         scaling_raw["models"] = scaling_raw["models"][:-1]
+        scaling_raw["checkpoint_schedule"]["model_parameter_counts"].pop("1B")
     elif reference == "recipes":
         del scaling_raw["source_group_map"]["c4"]
     elif reference == "seeds":

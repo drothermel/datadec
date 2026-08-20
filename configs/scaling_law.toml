@@ -72,6 +72,22 @@ unknown_non_null = "error"
 [checkpoint_schedule]
 flops_per_token_per_parameter = 6
 
+[checkpoint_schedule.model_parameter_counts]
+4M = 3744832
+6M = 6010464
+8M = 8538240
+10M = 9900432
+14M = 14380224
+16M = 16004560
+20M = 19101888
+60M = 57078144
+90M = 97946640
+150M = 151898880
+300M = 319980544
+530M = 530074944
+750M = 681297408
+1B = 1176832000
+
 [tables.evaluations]
 path = "processed/scaling-law/evaluations.parquet"
 primary_key = ["recipe", "params", "seed_value", "step", "task"]

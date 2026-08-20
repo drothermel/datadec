@@ -19,7 +19,7 @@ from datadec.config import (
     load_scaling_law_contract,
 )
 from datadec.data.paths import DataDecidePaths
-from datadec.data.constants import HARDCODED_SIZE_MAPPING, MAX_SEQ_LEN
+from datadec.data.constants import MAX_SEQ_LEN
 from datadec.data.model_utils import calc_batch_size
 from datadec.data.preprocess.duckdb import (
     PendingParquetExport,
@@ -651,7 +651,7 @@ def _build_selected_checkpoints(
             (
                 sql_literal(model),
                 str(calc_batch_size(model) * MAX_SEQ_LEN),
-                str(HARDCODED_SIZE_MAPPING[model]),
+                str(contract.checkpoint_schedule.model_parameter_counts[model]),
             )
         )
         + ")"
@@ -668,27 +668,17 @@ def _build_selected_checkpoints(
     )
     flop_multiplier = contract.checkpoint_schedule.flops_per_token_per_parameter
     schedule_mismatch = connection.execute(
-        f"""
+        """
         SELECT
             source_file,
             source_row,
             c.params,
             step,
             tokens,
-            compute,
-            step * tokens_per_step AS expected_tokens,
-            step::DOUBLE * tokens_per_step * true_size::DOUBLE * {flop_multiplier}
-                AS expected_compute
+            step * tokens_per_step AS expected_tokens
         FROM _scaling_clean AS c
         INNER JOIN _scaling_model_schedule AS schedule USING (params)
-        WHERE (tokens IS NOT NULL AND tokens <> step * tokens_per_step)
-           OR (
-                compute IS NOT NULL
-                AND compute <> (
-                    step::DOUBLE * tokens_per_step * true_size::DOUBLE
-                    * {flop_multiplier}
-                )
-           )
+        WHERE tokens IS NOT NULL AND tokens <> step * tokens_per_step
         ORDER BY source_priority, source_row
         LIMIT 1
         """
@@ -700,18 +690,15 @@ def _build_selected_checkpoints(
             params,
             step,
             tokens,
-            compute,
             expected_tokens,
-            expected_compute,
         ) = schedule_mismatch
         raise ValueError(
             f"scaling-law checkpoint schedule mismatch at {source_file} row "
             f"{source_row}: params={params!r}, step={step}, tokens={tokens!r}, "
-            f"compute={compute!r}, expected_tokens={expected_tokens}, "
-            f"expected_compute={expected_compute}"
+            f"expected_tokens={expected_tokens}"
         )
 
-    checkpoint_fields = tuple(RAW_CHECKPOINT_FIELDS)
+    checkpoint_fields = tuple(RAW_CHECKPOINT_FIELDS)[2:]
     aggregates = [
         "count(DISTINCT chinchilla) AS chinchilla_distinct_count",
         "min(chinchilla) AS chinchilla",
@@ -796,9 +783,7 @@ def _build_selected_checkpoints(
             f"step={record['step']}, fields={conflicts!r}"
         )
 
-    selected_fields = ",\n".join(
-        quote_identifier(field) for field in checkpoint_fields[2:]
-    )
+    selected_fields = ",\n".join(quote_identifier(field) for field in checkpoint_fields)
     connection.execute(
         f"""
         CREATE TEMP TABLE _scaling_checkpoints AS

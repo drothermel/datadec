@@ -410,6 +410,15 @@ class ScalingLawColumnContract(ConfigModel):
 
 class ScalingLawCheckpointSchedule(ConfigModel):
     flops_per_token_per_parameter: Literal[6]
+    model_parameter_counts: dict[str, int]
+
+    @model_validator(mode="after")
+    def validate_parameter_counts(self) -> Self:
+        if not self.model_parameter_counts or any(
+            value <= 0 for value in self.model_parameter_counts.values()
+        ):
+            raise ValueError("scaling-law model parameter counts must be positive")
+        return self
 
 
 class ScalingLawTableContract(ConfigModel):
@@ -530,6 +539,10 @@ class ScalingLawContract(ConfigModel):
 
         if len(self.models) != len(set(self.models)):
             raise ValueError("scaling-law models must be unique")
+        if set(self.checkpoint_schedule.model_parameter_counts) != set(self.models):
+            raise ValueError(
+                "scaling-law checkpoint parameter counts must exactly cover models"
+            )
 
         expected_keys = {
             "evaluations": ("recipe", "params", "seed_value", "step", "task"),
