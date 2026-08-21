@@ -162,6 +162,7 @@ model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["mmlu-subject-macro-v1", "olmes-task-macro-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
 comparison_rule_id = "nonempty-paper-plot-v1"
+plot_series_ids = ["dd-0169-paper-analog"]
 
 [[attempts]]
 id = "dd-0356-default"
@@ -178,6 +179,7 @@ checkpoints = ["final-common-complete"]
 sensitivity_ids = ["dd-0356-preceding-common-complete-1", "dd-0356-preceding-common-complete-2", "dd-0356-paper-step"]
 transformation_ids = ["mmlu-subject-macro-v1", "olmes-task-macro-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
 comparison_rule_id = "nonempty-paper-plot-v1"
+plot_series_ids = ["dd-0356-paper-analog"]
 
 [[attempts]]
 id = "dd-0051-default"
@@ -253,6 +255,7 @@ model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
 comparison_rule_id = "nonempty-paper-plot-v1"
+plot_series_ids = ["dd-0148-paper-analog"]
 
 [[attempts]]
 id = "dd-0149-default"
@@ -268,6 +271,7 @@ model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
 comparison_rule_id = "nonempty-paper-plot-v1"
+plot_series_ids = ["dd-0149-paper-analog"]
 
 [[attempts]]
 id = "dd-0150-default"
@@ -283,6 +287,7 @@ model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
 comparison_rule_id = "nonempty-paper-plot-v1"
+plot_series_ids = ["dd-0150-paper-analog"]
 
 [[attempts]]
 id = "dd-0166-default"
@@ -343,6 +348,7 @@ model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
 comparison_rule_id = "nonempty-paper-plot-v1"
+plot_series_ids = ["dd-0174-paper-analog"]
 
 [[attempts]]
 id = "dd-0175-default"
@@ -358,6 +364,7 @@ model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
 comparison_rule_id = "nonempty-paper-plot-v1"
+plot_series_ids = ["dd-0175-paper-analog"]
 
 [[attempts]]
 id = "dd-0176-default"
@@ -373,6 +380,7 @@ model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
 comparison_rule_id = "nonempty-paper-plot-v1"
+plot_series_ids = ["dd-0176-paper-analog"]
 
 [[attempts]]
 id = "dd-0177-default"
@@ -388,6 +396,7 @@ model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
 comparison_rule_id = "nonempty-paper-plot-v1"
+plot_series_ids = ["dd-0177-paper-analog"]
 
 [[attempts]]
 id = "dd-0178-default"
@@ -403,6 +412,7 @@ model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
 comparison_rule_id = "nonempty-paper-plot-v1"
+plot_series_ids = ["dd-0178-paper-analog"]
 
 [[attempts]]
 id = "dd-0179-default"
@@ -418,6 +428,7 @@ model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
 comparison_rule_id = "nonempty-paper-plot-v1"
+plot_series_ids = ["dd-0179-paper-analog"]
 
 [[attempts]]
 id = "dd-0013-default"
@@ -478,6 +489,7 @@ model_sizes = ["scaling-fit-sizes", "1B"]
 checkpoints = ["fit-variant-checkpoints"]
 transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
 comparison_rule_id = "nonempty-paper-plot-v1"
+plot_series_ids = ["dd-0180-paper-analog"]
 
 [[attempts]]
 id = "dd-0181-default"
@@ -703,6 +715,7 @@ model_sizes = ["scaling-fit-sizes", "1B"]
 checkpoints = ["fit-variant-checkpoints"]
 transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
 comparison_rule_id = "nonempty-paper-plot-v1"
+plot_series_ids = ["dd-0368-paper-analog"]
 
 [[attempts]]
 id = "dd-0369-default"
@@ -718,6 +731,7 @@ model_sizes = ["scaling-fit-sizes", "1B"]
 checkpoints = ["fit-variant-checkpoints"]
 transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
 comparison_rule_id = "nonempty-paper-plot-v1"
+plot_series_ids = ["dd-0369-paper-analog"]
 
 [[attempts]]
 id = "dd-0014-default"
@@ -959,6 +973,7 @@ model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
 comparison_rule_id = "nonempty-paper-plot-v1"
+plot_series_ids = ["dd-0208-paper-analog"]
 
 [[attempts]]
 id = "dd-0056-default"
@@ -1022,6 +1037,7 @@ checkpoints = ["final-common-complete"]
 sensitivity_ids = ["dd-0209-preceding-common-complete-1", "dd-0209-preceding-common-complete-2", "dd-0209-paper-step"]
 transformation_ids = ["task-score-v1", "sample-seed-sd-v1", "recipe-spread-v1"]
 comparison_rule_id = "nonempty-paper-plot-v1"
+plot_series_ids = ["dd-0209-paper-analog"]
 
 [[attempts]]
 id = "dd-0210-default"
@@ -1038,6 +1054,7 @@ checkpoints = ["final-common-complete"]
 sensitivity_ids = ["dd-0210-preceding-common-complete-1", "dd-0210-preceding-common-complete-2", "dd-0210-paper-step"]
 transformation_ids = ["task-score-v1", "sample-seed-sd-v1", "recipe-spread-v1"]
 comparison_rule_id = "nonempty-paper-plot-v1"
+plot_series_ids = ["dd-0210-paper-analog"]
 
 [[attempts]]
 id = "dd-0211-default"
@@ -1086,6 +1103,7 @@ checkpoints = ["final-common-complete"]
 sensitivity_ids = ["dd-0218-preceding-common-complete-1", "dd-0218-preceding-common-complete-2", "dd-0218-paper-step"]
 transformation_ids = ["task-score-v1", "sample-seed-sd-v1", "recipe-spread-v1"]
 comparison_rule_id = "nonempty-paper-plot-v1"
+plot_series_ids = ["dd-0218-paper-analog"]
 
 [[attempts]]
 id = "dd-0219-default"
@@ -1102,6 +1120,7 @@ checkpoints = ["final-common-complete"]
 sensitivity_ids = ["dd-0219-preceding-common-complete-1", "dd-0219-preceding-common-complete-2", "dd-0219-paper-step"]
 transformation_ids = ["task-score-v1", "sample-seed-sd-v1", "recipe-spread-v1"]
 comparison_rule_id = "nonempty-paper-plot-v1"
+plot_series_ids = ["dd-0219-paper-analog"]
 
 [[attempts]]
 id = "dd-0220-default"
@@ -1118,3 +1137,4 @@ checkpoints = ["final-common-complete"]
 sensitivity_ids = ["dd-0220-preceding-common-complete-1", "dd-0220-preceding-common-complete-2", "dd-0220-paper-step"]
 transformation_ids = ["task-score-v1", "sample-seed-sd-v1", "recipe-spread-v1"]
 comparison_rule_id = "nonempty-paper-plot-v1"
+plot_series_ids = ["dd-0220-paper-analog"]
