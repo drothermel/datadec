@@ -65,7 +65,7 @@ def test_single_scale_adapter_persists_headline_and_aggregate_series(
     }
     default = next(item for item in attempts if item.attempt_id == "dd-0011-default")
     assert default.role is AttemptRole.DEFAULT
-    assert default.target_value == 0.8
+    assert default.target_value == "decision_accuracy approximately 0.80"
     assert default.computed_value == 0.8033333333333333
     assert default.outcome is ValidationOutcome.APPROXIMATELY_REPRODUCED
     assert default.denominator == 900

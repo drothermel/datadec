@@ -628,7 +628,7 @@ def _headline_results(
                         contract=contract,
                     ),
                 ),
-                target_value=_HEADLINE_TARGET,
+                target_value=claim.paper_target,
                 computed_value=summary.mean_accuracy,
                 unrounded_difference=difference,
                 seeds=prediction.universe.seeds,
