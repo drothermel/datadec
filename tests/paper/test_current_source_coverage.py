@@ -3,11 +3,11 @@ from __future__ import annotations
 from collections import Counter
 from pathlib import Path, PurePosixPath
 
-from datadec.config import load_paper_reproduction_contract
+from datadec.config import load_paper_validation_contract
 from datadec.paper import (
     ClaimRegistry,
-    PaperReproductionContract,
-    load_claim_registry,
+    PaperValidationContract,
+    load_repository_claim_registry,
 )
 from datadec.paper.source import (
     derive_manuscript_source_surface,
@@ -56,11 +56,9 @@ _NON_CLAIM_REGION_KINDS = {
 }
 
 
-def _load_current_registry() -> tuple[PaperReproductionContract, ClaimRegistry]:
-    contract = load_paper_reproduction_contract()
-    return contract, load_claim_registry(
-        _REPOSITORY_ROOT / contract.contracts.claims_contract
-    )
+def _load_current_registry() -> tuple[PaperValidationContract, ClaimRegistry]:
+    contract = load_paper_validation_contract()
+    return contract, load_repository_claim_registry(_REPOSITORY_ROOT)
 
 
 def test_current_source_regions_partition_independently_derived_surface() -> None:

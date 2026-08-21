@@ -5,7 +5,13 @@ from pathlib import Path
 
 import pytest
 
-from datadec.paper.models import ClaimRegistry, PaperClaim, SourceRegion
+from datadec.paper.models import (
+    ClaimKind,
+    ClaimRegistry,
+    PaperClaim,
+    SourceRegion,
+    ValidationOutcome,
+)
 from datadec.paper.source import (
     CitationReport,
     CoverageReport,
@@ -52,11 +58,19 @@ def _claim(
             "line_start": line_start,
             "line_end": line_end,
             "text": "testable claim",
-            "owner": "external_citation" if citation_keys else "datadec_empirical",
-            "expectation_kind": "citation_trace" if citation_keys else "literal",
-            "expectation": "alpha",
-            "required_evidence_boundary": "aggregate_evaluation",
+            "kind": (
+                ClaimKind.EXTERNAL_BACKGROUND
+                if citation_keys
+                else ClaimKind.METHOD_DEFINITION
+            ),
+            "family": "test-source-coverage",
+            "paper_target": "alpha",
             "citation_keys": citation_keys,
+            "supporting_outcome": (
+                ValidationOutcome.EXTERNAL_OR_BACKGROUND
+                if citation_keys
+                else ValidationOutcome.DESCRIPTIVE_ONLY
+            ),
         }
     )
 
@@ -275,6 +289,7 @@ def test_source_coverage_validates_digest_mapping_and_sorted_report(
     paper.mkdir()
     (paper / "source.tex").write_bytes(source)
     registry = ClaimRegistry(
+        format_version=2,
         claims=(
             _claim(claim_id="claim-b", line_start=2, line_end=2),
             _claim(claim_id="claim-a", line_start=1, line_end=1),
@@ -312,6 +327,7 @@ def test_source_coverage_rejects_digest_mismatch(tmp_path: Path) -> None:
     paper.mkdir()
     (paper / "source.tex").write_bytes(source)
     registry = ClaimRegistry(
+        format_version=2,
         claims=(_claim(),),
         source_regions=(_region(source, digest="0" * 64),),
     )
@@ -328,6 +344,7 @@ def test_source_coverage_rejects_unpartitioned_active_tex_line(
     paper.mkdir()
     (paper / "source.tex").write_bytes(source)
     registry = ClaimRegistry(
+        format_version=2,
         claims=(_claim(),),
         source_regions=(_region(source),),
     )
@@ -346,6 +363,7 @@ def test_source_coverage_requires_one_whole_file_region_per_asset(
     (paper / "source.tex").write_bytes(source)
     (paper / "image.pdf").write_bytes(image)
     registry = ClaimRegistry(
+        format_version=2,
         claims=(_claim(),),
         source_regions=(
             _region(source),
@@ -378,6 +396,7 @@ def test_source_coverage_binds_declared_citations_to_the_claim_span(
     (paper / "source.tex").write_bytes(source)
     claim = _claim(citation_keys=("known",))
     registry = ClaimRegistry(
+        format_version=2,
         claims=(claim,),
         source_regions=(_region(source, line_end=2),),
     )
@@ -399,6 +418,7 @@ def test_source_coverage_allows_claim_specific_citation_subset(
     paper.mkdir()
     (paper / "source.tex").write_bytes(source)
     registry = ClaimRegistry(
+        format_version=2,
         claims=(_claim(citation_keys=("known",)),),
         source_regions=(_region(source),),
     )
@@ -411,7 +431,7 @@ def test_source_coverage_rejects_uncovered_claim(tmp_path: Path) -> None:
     paper = tmp_path / "paper"
     paper.mkdir()
     (paper / "source.tex").write_bytes(source)
-    registry = ClaimRegistry(claims=(_claim(),), source_regions=())
+    registry = ClaimRegistry(format_version=2, claims=(_claim(),), source_regions=())
 
     with pytest.raises(SourceValidationError, match="not covered"):
         _validate_test_source_coverage(tmp_path, registry)
@@ -439,7 +459,8 @@ def test_source_coverage_rejects_invalid_claim_locator(
 
     with pytest.raises(SourceValidationError, match=error):
         _validate_test_source_coverage(
-            tmp_path, ClaimRegistry(claims=(claim,), source_regions=())
+            tmp_path,
+            ClaimRegistry(format_version=2, claims=(claim,), source_regions=()),
         )
 
 
@@ -451,6 +472,7 @@ def test_source_coverage_rejects_invalid_mapping_and_partial_overlap(
     paper.mkdir()
     (paper / "source.tex").write_bytes(source)
     outside_mapping = ClaimRegistry(
+        format_version=2,
         claims=(_claim(line_start=2, line_end=2),),
         source_regions=(_region(source, line_start=1, line_end=1),),
     )
@@ -459,6 +481,7 @@ def test_source_coverage_rejects_invalid_mapping_and_partial_overlap(
         _validate_test_source_coverage(tmp_path, outside_mapping)
 
     overlap = ClaimRegistry(
+        format_version=2,
         claims=(_claim(line_start=2, line_end=2),),
         source_regions=(
             _region(source, line_start=1, line_end=2),
