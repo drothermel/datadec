@@ -48,6 +48,13 @@ from datadec.paper.runs import (
     load_run_bundle,
     validate_run_qualification,
 )
+from datadec.paper.run import (
+    RepositoryValidation,
+    build_observations,
+    render_repository,
+    run_repository,
+    validate_repository,
+)
 
 __all__ = [
     "BlockerKind",
@@ -86,12 +93,17 @@ __all__ = [
     "RunBundle",
     "RunManifest",
     "RuntimeIdentity",
+    "RepositoryValidation",
     "SourceRegion",
     "Verdict",
+    "build_observations",
     "create_run_bundle",
     "load_claim_registry",
     "load_repository_claim_registry",
     "load_run_bundle",
     "resolve_olmes_policy",
+    "render_repository",
+    "run_repository",
+    "validate_repository",
     "validate_run_qualification",
 ]
