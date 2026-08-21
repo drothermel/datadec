@@ -1,0 +1,75 @@
+[paper]
+arxiv_id = "2504.11393v2"
+source_url = "https://arxiv.org/e-print/2504.11393v2"
+archive_sha256 = "20dc7aa3f920fe465ddf2e12d6f72fff6e8bb3567f53e34f5555a6da138542d1"
+source_root = "docs/paper"
+entrypoint = "example_paper.tex"
+
+[contracts]
+catalog = "configs/catalog.toml"
+sources = "configs/sources.toml"
+olmes = "configs/olmes.toml"
+scaling_law = "configs/scaling_law.toml"
+published_results = "configs/published_results.toml"
+claims_contract = "docs/paper/claims.toml"
+
+[[methods]]
+id = "paper_source_trace"
+provenance = "paper_derived"
+description = "Locate claims and source regions in the pinned active LaTeX source."
+paper_elements = ["prose", "equations", "tables", "figures", "captions"]
+
+[[methods]]
+id = "external_citation_trace"
+provenance = "paper_derived"
+description = "Trace attributed propositions to the citation keys attached in the paper."
+paper_elements = ["external_citations"]
+
+[[methods]]
+id = "final_artifact_identity"
+provenance = "artifact_derived"
+description = "Compare paper-facing values with pinned final author artifacts without treating the comparison as independent reproduction."
+paper_elements = ["tables", "figures", "release_claims"]
+
+[[policies]]
+id = "external_citation_scope"
+status = "settled"
+statement = "External literature claims receive citation-trace coverage, not independent verification of the cited work."
+
+[[policies]]
+id = "figure_evidence"
+status = "settled"
+statement = "Figure verification uses numerical data and semantics; exact rendered pixels are not required scientific evidence."
+
+[[policies]]
+id = "upstream_source_use"
+status = "settled"
+statement = "Author source may inform an explicitly pinned method interpretation but is never imported, executed, copied, or treated as a runtime dependency."
+
+[[policies]]
+id = "comparison_universe"
+status = "unresolved"
+statement = "Recipe pairs, target and prediction seeds, ties, abstentions, missing values, and incomplete pairs require claim-specific resolution."
+
+[[policies]]
+id = "compute_and_checkpoint"
+status = "unresolved"
+statement = "Target checkpoints, intermediate checkpoints, early-seed stopping, and model-size subsets require claim-specific resolution."
+
+[[policies]]
+id = "statistical_fit"
+status = "unresolved"
+statement = "Aggregation order, uncertainty convention, scaling-law variants, optimizer details, bounds, helper points, and fit failure handling require claim-specific resolution."
+
+[[policies]]
+id = "qualitative_predicates"
+status = "unresolved"
+statement = "Qualitative phrases require explicit claim-specific predicates before independent verification."
+
+[outputs]
+runs_root = "data/paper-reproduction/runs"
+generated_results_root = "data/paper-reproduction/generated"
+report = "docs/paper-reproduction-report.md"
+reproduced_figures_root = "docs/paper/reproduced-figures"
+observations_filename = "observations.json"
+run_manifest_filename = "manifest.json"
