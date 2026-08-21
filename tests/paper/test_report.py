@@ -130,7 +130,26 @@ def _all_verdict_values() -> tuple[ClaimRegistry, RunManifest, tuple[Observation
             Verdict.CONTRADICTED,
             Verdict.INTERNALLY_INCONSISTENT,
         }:
+            if verdict is Verdict.CONTRADICTED:
+                claim_updates.update(
+                    {
+                        "text": "A | B \\ C\ncontinues.",
+                        "expectation": "contradicted | expectation",
+                    }
+                )
             observation_updates["diagnostics"] = ["recorded conflict"]
+        elif verdict is Verdict.EXTERNAL_OR_CITATION_DEPENDENT:
+            claim_updates["citation_keys"] = ("z-key", "citation_*key*")
+            observation_updates.update(
+                {
+                    "actual_evidence_boundary": None,
+                    "observed_value": None,
+                    "blocker": {
+                        "kind": verdict.value,
+                        "reason": f"recorded reason for {verdict.value}",
+                    },
+                }
+            )
         else:
             observation_updates.update(
                 {
@@ -183,15 +202,22 @@ def test_report_covers_every_outcome_and_preserves_recorded_details() -> None:
     assert "is not an independent reproduction" in report
     assert "successful scientific outcomes, not process failures" in report
     assert "A \\| B \\\\ C<br>continues." in report
+    assert '"contradicted \\| expectation"' in report
     assert '"expected \\| value"' in report
-    assert '{"a":[false,null],"z":2}' in report
+    assert '{"a":\\[false,null\\],"z":2}' in report
     assert "diagnostic \\| value" in report
-    assert "denominator=20; abstentions=1; excluded=2; failed_fits=3; ties=4" in report
-    assert "method=method-1; provenance=upstream_informed" in report
-    assert 'missing inputs=["missing-input"]' in report
+    assert (
+        "denominator=20; abstentions=1; excluded=2; failed\\_fits=3; ties=4" in report
+    )
+    assert "method=method-1; provenance=upstream\\_informed" in report
+    assert 'missing inputs=\\["missing-input"\\]' in report
     assert "unresolved method=unresolved-method" in report
-    claim_positions = [report.index(f"| claim-{index:02d} |") for index in range(1, 10)]
-    assert claim_positions != sorted(claim_positions)
+    assert 'citation keys=\\["citation\\_\\*key\\*","z-key"\\]' in report
+    assert 'diagnostics=\\["recorded conflict"\\]' in report
+    for index in range(1, 10):
+        assert f"claim-{index:02d}" in report
+    for index in range(1, 7):
+        assert report.count(f"claim-{index:02d}") == 1
     assert render_report(registry, manifest, reversed(observations)) == report
 
 
@@ -212,7 +238,7 @@ def test_report_identity_and_summary_header_matches_golden() -> None:
 | Identity | ID | Digest / state |
 | --- | --- | --- |
 | Paper | arxiv:2504.11393v2 | SHA256=1111111111111111111111111111111111111111111111111111111111111111 |
-| Reproduction config | configs/paper_reproduction.toml | SHA256=2222222222222222222222222222222222222222222222222222222222222222 |
+| Reproduction config | configs/paper\\_reproduction.toml | SHA256=2222222222222222222222222222222222222222222222222222222222222222 |
 | Claim registry | docs/paper/claims.toml | SHA256=3333333333333333333333333333333333333333333333333333333333333333 |
 | Code | 4444444444444444444444444444444444444444 | tree=clean; dirty diff artifact=— |
 | Observations | observations.json | SHA256=9999999999999999999999999999999999999999999999999999999999999999; count=1 |
@@ -301,9 +327,71 @@ def test_report_does_not_recompute_scientific_outcomes() -> None:
     report = render_report(registry, _manifest(), (observation,))
 
     claim_row = next(
-        line for line in report.splitlines() if line.startswith("| claim-1 ")
+        line for line in report.splitlines() if line.startswith("| claim-1; ")
     )
-    assert "| 1 | value=999; diagnostics=[] | reproduced |" in claim_row
+    assert "| 1 | value=999; diagnostics=\\[\\] | required=" in claim_row
+
+
+def test_large_source_only_report_grows_with_ids_not_repeated_details() -> None:
+    claim_count = 442
+    repeated_claim_text = "repeated claim prose " + "x" * 500
+    repeated_diagnostic = "repeated diagnostic " + "y" * 500
+    claims = tuple(
+        _claim(f"claim-{index:04d}", text=repeated_claim_text)
+        for index in range(claim_count)
+    )
+    observations = tuple(
+        _observation(
+            claim.id,
+            verdict="source_only_match",
+            actual_evidence_boundary="paper_or_final_artifact",
+            observed_value=None,
+            diagnostics=(repeated_diagnostic,),
+        )
+        for claim in claims
+    )
+
+    large_report = render_report(
+        ClaimRegistry(claims=tuple(reversed(claims))),
+        _manifest(claim_count),
+        tuple(reversed(observations)),
+    )
+    single_report = render_report(
+        ClaimRegistry(claims=(claims[0],)),
+        _manifest(),
+        (observations[0],),
+    )
+
+    additional_id_bytes = sum(len(claim.id) for claim in claims[1:])
+    assert repeated_claim_text not in large_report
+    assert repeated_diagnostic not in large_report
+    assert len(large_report.encode()) < 30_000
+    assert len(large_report) - len(single_report) < additional_id_bytes * 3
+    assert "| source or author-artifact agreement only | 442 |" in large_report
+
+
+def test_external_groups_fall_back_to_escaped_blocker_reason() -> None:
+    claims = (_claim("claim-a"), _claim("claim-b"))
+    observations = tuple(
+        _observation(
+            claim.id,
+            verdict="external_or_citation_dependent",
+            actual_evidence_boundary=None,
+            observed_value=None,
+            blocker={
+                "kind": "external_or_citation_dependent",
+                "reason": "external *artifact* | unavailable",
+            },
+        )
+        for claim in claims
+    )
+
+    report = render_report(ClaimRegistry(claims=claims), _manifest(2), observations)
+
+    assert (
+        '| blocker reason="external \\*artifact\\* \\| unavailable" | 2 | '
+        "claim-a, claim-b |" in report
+    )
 
 
 def test_report_file_validates_before_atomic_replacement(

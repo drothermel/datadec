@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 import os
 import tempfile
-from collections import Counter
+from collections import Counter, defaultdict
 from collections.abc import Iterable
 from pathlib import Path
 
@@ -30,29 +30,18 @@ _VERDICT_ORDER = (
     Verdict.NOT_ATTEMPTED,
     Verdict.NOT_APPLICABLE,
 )
-_REPORT_GROUPS = (
-    (
-        "Known contradictions and inconsistencies",
-        (Verdict.CONTRADICTED, Verdict.INTERNALLY_INCONSISTENT),
-    ),
-    ("Reproduced", (Verdict.REPRODUCED,)),
-    ("Source-only matches", (Verdict.SOURCE_ONLY_MATCH,)),
-    ("Blocked: missing input", (Verdict.BLOCKED_MISSING_INPUT,)),
-    ("Blocked: unspecified method", (Verdict.BLOCKED_UNSPECIFIED_METHOD,)),
-    (
-        "External or citation-dependent",
-        (Verdict.EXTERNAL_OR_CITATION_DEPENDENT,),
-    ),
-    (
-        "Not attempted or not applicable",
-        (Verdict.NOT_ATTEMPTED, Verdict.NOT_APPLICABLE),
-    ),
-)
 _CLAIM_TABLE_HEADER = (
     "| ID | Static claim and locator | Expected | Observed / diagnostics | Verdict | "
     "Evidence boundary | Counts | Method / policy / verifier | Blocker | Artifacts |\n"
     "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
 )
+_REPRODUCED_TABLE_HEADER = (
+    "| ID and locator | Expected | Observed / diagnostics | Evidence boundary | "
+    "Counts | Method / policy / verifier | Artifacts |\n"
+    "| --- | --- | --- | --- | --- | --- | --- |\n"
+)
+_COMPACT_TABLE_HEADER = "| Group | Count | Claim IDs |\n| --- | ---: | --- |\n"
+_CLAIM_ID_WRAP_WIDTH = 88
 
 
 def _canonical_json(value: object) -> str:
@@ -60,7 +49,51 @@ def _canonical_json(value: object) -> str:
 
 
 def _escape_table_cell(value: str) -> str:
-    return value.replace("\\", "\\\\").replace("|", "\\|").replace("\n", "<br>")
+    escaped: list[str] = []
+    for character in value:
+        if character == "\n":
+            escaped.append("<br>")
+        elif character in r"\\|`*_[]<>!":
+            escaped.append(f"\\{character}")
+        else:
+            escaped.append(character)
+    return "".join(escaped)
+
+
+def _render_code_span(value: str) -> str:
+    normalized = value.replace("\n", " ")
+    longest_run = 0
+    current_run = 0
+    for character in normalized:
+        if character == "`":
+            current_run += 1
+            longest_run = max(longest_run, current_run)
+        else:
+            current_run = 0
+    delimiter = "`" * max(1, longest_run + 1)
+    padding = " " if normalized.startswith("`") or normalized.endswith("`") else ""
+    return f"{delimiter}{padding}{normalized}{padding}{delimiter}"
+
+
+def _render_wrapped_claim_ids(claim_ids: Iterable[str]) -> str:
+    lines: list[str] = []
+    current: list[str] = []
+    current_width = 0
+    for claim_id in sorted(claim_ids):
+        escaped = _escape_table_cell(claim_id)
+        separator_width = 2 if current else 0
+        if (
+            current
+            and current_width + separator_width + len(escaped) > _CLAIM_ID_WRAP_WIDTH
+        ):
+            lines.append(", ".join(current))
+            current = []
+            current_width = 0
+        current.append(escaped)
+        current_width += (2 if current_width else 0) + len(escaped)
+    if current:
+        lines.append(", ".join(current))
+    return "<br>".join(lines) if lines else "—"
 
 
 def _manifest_sha256(manifest: RunManifest) -> str:
@@ -219,9 +252,12 @@ def _render_claim_row(claim: PaperClaim, observation: Observation) -> str:
         if observation.actual_evidence_boundary is not None
         else "none"
     )
+    static_claim_cell = (
+        f"{_escape_table_cell(claim.text)}<br>{_escape_table_cell(locator)}"
+    )
     cells = (
-        claim.id,
-        f"{claim.text}<br>{locator}",
+        _escape_table_cell(claim.id),
+        static_claim_cell,
         _canonical_json(claim.expectation),
         _render_observed(observation),
         observation.verdict.value,
@@ -231,26 +267,201 @@ def _render_claim_row(claim: PaperClaim, observation: Observation) -> str:
         _render_blocker(observation),
         _canonical_json(list(observation.artifact_ids)),
     )
-    return "| " + " | ".join(_escape_table_cell(cell) for cell in cells) + " |\n"
+    escaped_cells = cells[:2] + tuple(_escape_table_cell(cell) for cell in cells[2:])
+    return "| " + " | ".join(escaped_cells) + " |\n"
 
 
-def _render_group(
-    title: str,
-    verdicts: tuple[Verdict, ...],
+def _render_detailed_outcomes(
     claim_observations: tuple[tuple[PaperClaim, Observation], ...],
 ) -> str:
     rows = "".join(
         _render_claim_row(claim, observation)
         for claim, observation in claim_observations
-        if observation.verdict in verdicts
+        if observation.verdict
+        in {Verdict.CONTRADICTED, Verdict.INTERNALLY_INCONSISTENT}
     )
-    introduction = ""
-    if title == "Known contradictions and inconsistencies":
-        introduction = (
-            "**These selected-run results contradict a claim or expose an internal "
-            "inconsistency and must remain visible.**\n\n"
+    if not rows:
+        rows = "None in the selected run.\n"
+        header = ""
+    else:
+        header = _CLAIM_TABLE_HEADER
+    return (
+        "## Known contradictions and inconsistencies\n\n"
+        "**These selected-run results contradict a claim or expose an internal "
+        "inconsistency and must remain visible.**\n\n"
+        f"{header}{rows}"
+    )
+
+
+def _render_reproduced(
+    claim_observations: tuple[tuple[PaperClaim, Observation], ...],
+) -> str:
+    rows: list[str] = []
+    for claim, observation in claim_observations:
+        if observation.verdict is not Verdict.REPRODUCED:
+            continue
+        actual_boundary = (
+            observation.actual_evidence_boundary.value
+            if observation.actual_evidence_boundary is not None
+            else "none"
         )
-    return f"## {title}\n\n{introduction}{_CLAIM_TABLE_HEADER}{rows}"
+        cells = (
+            f"{claim.id}; {claim.source_file}:{claim.line_start}-{claim.line_end}",
+            _canonical_json(claim.expectation),
+            _render_observed(observation),
+            f"required={claim.required_evidence_boundary.value}; actual={actual_boundary}",
+            _render_counts(observation),
+            _render_method(observation),
+            _canonical_json(list(observation.artifact_ids)),
+        )
+        rows.append(
+            "| " + " | ".join(_escape_table_cell(cell) for cell in cells) + " |\n"
+        )
+    body = (
+        _REPRODUCED_TABLE_HEADER + "".join(rows)
+        if rows
+        else "None in the selected run.\n"
+    )
+    return f"## Reproduced\n\n{body}"
+
+
+def _render_compact_table(
+    title: str,
+    introduction: str,
+    grouped_claim_ids: Iterable[tuple[str, tuple[str, ...]]],
+) -> str:
+    rows = "".join(
+        f"| {_escape_table_cell(group)} | {len(claim_ids)} | "
+        f"{_render_wrapped_claim_ids(claim_ids)} |\n"
+        for group, claim_ids in grouped_claim_ids
+    )
+    body = _COMPACT_TABLE_HEADER + rows if rows else "None in the selected run.\n"
+    return f"## {title}\n\n{introduction}\n\n{body}"
+
+
+def _render_source_only(
+    claim_observations: tuple[tuple[PaperClaim, Observation], ...],
+) -> str:
+    claim_ids = tuple(
+        claim.id
+        for claim, observation in claim_observations
+        if observation.verdict is Verdict.SOURCE_ONLY_MATCH
+    )
+    groups = (
+        (("source or author-artifact agreement only", claim_ids),) if claim_ids else ()
+    )
+    return _render_compact_table(
+        "Source-only matches",
+        "These results are not independent reproductions. Full recorded details are "
+        "in the immutable observations file identified above.",
+        groups,
+    )
+
+
+def _render_missing_inputs(
+    claim_observations: tuple[tuple[PaperClaim, Observation], ...],
+) -> str:
+    grouped: defaultdict[tuple[tuple[str, ...], str], list[str]] = defaultdict(list)
+    for claim, observation in claim_observations:
+        if observation.verdict is Verdict.BLOCKED_MISSING_INPUT:
+            assert observation.blocker is not None
+            grouped[
+                (observation.blocker.missing_input_ids, observation.blocker.reason)
+            ].append(claim.id)
+    groups = tuple(
+        (
+            f"missing inputs={_canonical_json(list(missing_ids))}; reason={reason}",
+            tuple(grouped[(missing_ids, reason)]),
+        )
+        for missing_ids, reason in sorted(grouped)
+    )
+    return _render_compact_table(
+        "Blocked: missing input",
+        "Claims are grouped by the stable missing input IDs and recorded blocker reason.",
+        groups,
+    )
+
+
+def _render_unspecified_methods(
+    claim_observations: tuple[tuple[PaperClaim, Observation], ...],
+) -> str:
+    claim_ids_by_method: defaultdict[str, list[str]] = defaultdict(list)
+    reasons_by_method: defaultdict[str, set[str]] = defaultdict(set)
+    for claim, observation in claim_observations:
+        if observation.verdict is Verdict.BLOCKED_UNSPECIFIED_METHOD:
+            assert observation.blocker is not None
+            method_id = observation.blocker.unresolved_method_id
+            assert method_id is not None
+            claim_ids_by_method[method_id].append(claim.id)
+            reasons_by_method[method_id].add(observation.blocker.reason)
+    groups = tuple(
+        (
+            f"unresolved method={method_id}; "
+            f"reason(s)={_canonical_json(sorted(reasons_by_method[method_id]))}",
+            tuple(claim_ids_by_method[method_id]),
+        )
+        for method_id in sorted(claim_ids_by_method)
+    )
+    return _render_compact_table(
+        "Blocked: unspecified method",
+        "Claims are grouped by unresolved method ID; recorded reasons remain visible "
+        "for action.",
+        groups,
+    )
+
+
+def _render_external(
+    claim_observations: tuple[tuple[PaperClaim, Observation], ...],
+) -> str:
+    grouped: defaultdict[tuple[str, tuple[str, ...] | str], list[str]] = defaultdict(
+        list
+    )
+    for claim, observation in claim_observations:
+        if observation.verdict is Verdict.EXTERNAL_OR_CITATION_DEPENDENT:
+            assert observation.blocker is not None
+            key: tuple[str, tuple[str, ...] | str]
+            if claim.citation_keys:
+                key = ("citation keys", tuple(sorted(claim.citation_keys)))
+            else:
+                key = ("blocker reason", observation.blocker.reason)
+            grouped[key].append(claim.id)
+    groups = tuple(
+        (
+            f"{kind}={_canonical_json(list(value) if isinstance(value, tuple) else value)}",
+            tuple(grouped[(kind, value)]),
+        )
+        for kind, value in sorted(grouped, key=lambda item: (item[0], str(item[1])))
+    )
+    return _render_compact_table(
+        "External or citation-dependent",
+        "Claims are grouped by citation keys when present, otherwise by the recorded "
+        "external blocker reason.",
+        groups,
+    )
+
+
+def _render_unattempted(
+    claim_observations: tuple[tuple[PaperClaim, Observation], ...],
+) -> str:
+    grouped: defaultdict[tuple[Verdict, str], list[str]] = defaultdict(list)
+    for claim, observation in claim_observations:
+        if observation.verdict in {Verdict.NOT_ATTEMPTED, Verdict.NOT_APPLICABLE}:
+            assert observation.blocker is not None
+            grouped[(observation.verdict, observation.blocker.reason)].append(claim.id)
+    groups = tuple(
+        (
+            f"verdict={verdict.value}; reason={reason}",
+            tuple(grouped[(verdict, reason)]),
+        )
+        for verdict, reason in sorted(
+            grouped, key=lambda item: (item[0].value, item[1])
+        )
+    )
+    return _render_compact_table(
+        "Not attempted or not applicable",
+        "Claims are grouped by verdict and recorded reason.",
+        groups,
+    )
 
 
 def render_report(
@@ -286,13 +497,21 @@ def render_report(
     code = manifest.code_identity
     dirty_diff = code.dirty_diff_artifact_id or "—"
     groups = "\n".join(
-        _render_group(title, verdicts, claim_observations)
-        for title, verdicts in _REPORT_GROUPS
+        render_group(claim_observations)
+        for render_group in (
+            _render_detailed_outcomes,
+            _render_reproduced,
+            _render_source_only,
+            _render_missing_inputs,
+            _render_unspecified_methods,
+            _render_external,
+            _render_unattempted,
+        )
     )
     return (
         "# Paper verification report\n\n"
-        f"- Paper identity: `{manifest.paper_identity.id}`\n"
-        f"- Selected run ID: `{manifest.run_id}`\n"
+        f"- Paper identity: {_render_code_span(manifest.paper_identity.id)}\n"
+        f"- Selected run ID: {_render_code_span(manifest.run_id)}\n"
         f"- Manifest SHA256: `{_manifest_sha256(manifest)}`\n\n"
         "## Pinned run identities\n\n"
         "| Identity | ID | Digest / state |\n"
@@ -318,7 +537,11 @@ def render_report(
         "is not an independent reproduction. Blocked and contradicted verdicts are "
         "successful scientific outcomes, not process failures. This report renders "
         "the selected observations as recorded and does not recompute scientific "
-        "results.\n\n"
+        "results. Full per-claim details remain in the immutable selected-run "
+        f"observations identity: run {_render_code_span(manifest.run_id)}, file "
+        f"{_render_code_span(manifest.observations_identity.filename)}, "
+        f"SHA256 {_render_code_span(manifest.observations_identity.sha256)}, "
+        f"{manifest.observations_identity.byte_count} bytes.\n\n"
         "## Summary counts\n\n"
         "| Dimension | Value | Count |\n"
         "| --- | --- | ---: |\n"
