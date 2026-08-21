@@ -38,7 +38,8 @@ _ROW_PATTERN = re.compile(
     rf"(?P<heads>{_INTEGER_PATTERN}) & "
     rf"(?P<layers>{_INTEGER_PATTERN}) & "
     rf"(?P<training_steps>{_INTEGER_PATTERN}) & "
-    r"(?P<tokens_trained>\d+\.\dB) \\\\$")
+    r"(?P<tokens_trained>\d+\.\dB) \\\\$"
+)
 
 
 @verify(UNIQUE)

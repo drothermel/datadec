@@ -64,8 +64,7 @@ def test_current_suite_reports_every_canonical_table_contradiction() -> None:
         ("1B", SuiteField.TRAINING_STEPS): ("69,369", "69,359"),
     }
     assert all(
-        row.matches
-        is all(match.matches for match in row.field_matches)
+        row.matches is all(match.matches for match in row.field_matches)
         for row in verification.rows
     )
 
@@ -100,8 +99,7 @@ def test_suite_facts_never_promote_catalog_evidence_to_training_rerun() -> None:
     verification = verify_repository_suite()
 
     assert all(
-        fact.available_evidence_boundary
-        is EvidenceBoundary.PAPER_OR_FINAL_ARTIFACT
+        fact.available_evidence_boundary is EvidenceBoundary.PAPER_OR_FINAL_ARTIFACT
         for fact in verification.facts
     )
     assert all(
@@ -109,8 +107,7 @@ def test_suite_facts_never_promote_catalog_evidence_to_training_rerun() -> None:
         for fact in verification.facts
     )
     assert all(
-        row.available_evidence_boundary
-        is EvidenceBoundary.PAPER_OR_FINAL_ARTIFACT
+        row.available_evidence_boundary is EvidenceBoundary.PAPER_OR_FINAL_ARTIFACT
         for row in verification.rows
     )
     assert all(
