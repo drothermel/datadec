@@ -271,11 +271,171 @@ class PaperOutputs(PaperModel):
         return self
 
 
+@verify(UNIQUE)
+class OperationalizationBasis(StrEnum):
+    PAPER = "paper"
+    REPOSITORY_OPERATIONALIZED = "repository_operationalized"
+
+
+def _validate_analysis_aliases(
+    values: tuple[str, ...], *, label: str, expected_count: int | None = None
+) -> None:
+    if not values:
+        raise ValueError(f"OLMES {label} aliases must not be empty")
+    if any(not value for value in values):
+        raise ValueError(f"OLMES {label} aliases must not contain empty values")
+    if len(values) != len(set(values)):
+        raise ValueError(f"OLMES {label} aliases must be unique")
+    if expected_count is not None and len(values) != expected_count:
+        raise ValueError(f"OLMES {label} must contain exactly {expected_count} aliases")
+
+
+class OlmesRecipeUniverse(PaperModel):
+    aliases: tuple[str, ...]
+    basis: OperationalizationBasis
+    description: str = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def validate_aliases(self) -> Self:
+        _validate_analysis_aliases(self.aliases, label="recipe", expected_count=25)
+        return self
+
+
+class OlmesSeedPolicy(PaperModel):
+    target_aliases: tuple[str, ...]
+    prediction_aliases: tuple[str, ...]
+    basis: OperationalizationBasis
+    description: str = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def validate_aliases(self) -> Self:
+        _validate_analysis_aliases(
+            self.target_aliases, label="target seed", expected_count=3
+        )
+        _validate_analysis_aliases(
+            self.prediction_aliases, label="prediction seed", expected_count=3
+        )
+        if len(set(self.target_aliases) | set(self.prediction_aliases)) != 5:
+            raise ValueError(
+                "OLMES target and prediction seeds must cover exactly five aliases"
+            )
+        return self
+
+
+class OlmesMetricPolicy(PaperModel):
+    target_column: str = Field(min_length=1)
+    proxy_columns: tuple[str, ...]
+    basis: OperationalizationBasis
+    description: str = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def validate_columns(self) -> Self:
+        _validate_analysis_aliases(
+            self.proxy_columns, label="proxy metric", expected_count=15
+        )
+        if self.target_column in self.proxy_columns:
+            raise ValueError("OLMES target metric must not also be a proxy metric")
+        return self
+
+
+class OlmesTaskGroupingPolicy(PaperModel):
+    non_mmlu_tasks: tuple[str, ...]
+    mmlu_subjects: tuple[str, ...]
+    mmlu_task_name: str = Field(min_length=1)
+    mmlu_subject_weighting: Literal["equal"]
+    olmes_task_weighting: Literal["equal"]
+    basis: OperationalizationBasis
+    description: str = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def validate_groups(self) -> Self:
+        _validate_analysis_aliases(
+            self.non_mmlu_tasks, label="non-MMLU task", expected_count=9
+        )
+        _validate_analysis_aliases(
+            self.mmlu_subjects, label="MMLU subject", expected_count=57
+        )
+        source_tasks = set(self.non_mmlu_tasks) | set(self.mmlu_subjects)
+        if len(source_tasks) != 66:
+            raise ValueError("OLMES non-MMLU and MMLU task aliases must be disjoint")
+        if self.mmlu_task_name in source_tasks:
+            raise ValueError(
+                "OLMES aggregate MMLU task name must differ from source task aliases"
+            )
+        return self
+
+
+class OlmesFinalCheckpoint(PaperModel):
+    model_size: str = Field(min_length=1)
+    step: int = Field(ge=0)
+
+
+class OlmesFinalCheckpointPolicy(PaperModel):
+    checkpoints: tuple[OlmesFinalCheckpoint, ...]
+    basis: OperationalizationBasis
+    description: str = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def validate_checkpoints(self) -> Self:
+        sizes = tuple(checkpoint.model_size for checkpoint in self.checkpoints)
+        _validate_analysis_aliases(sizes, label="final-checkpoint model size")
+        return self
+
+
+class OlmesComparisonPolicy(PaperModel):
+    target_ties: Literal["exclude"]
+    predicted_ties: Literal["count_as_incorrect"]
+    basis: OperationalizationBasis
+    description: str = Field(min_length=1)
+
+
+class OlmesStandardDeviationPolicy(PaperModel):
+    attempt_ddof: int = Field(ge=0)
+    within_recipe_noise_ddof: int = Field(ge=0)
+    spread_ddof: int = Field(ge=0)
+    basis: OperationalizationBasis
+    description: str = Field(min_length=1)
+
+
+class OlmesMissingDataPolicy(PaperModel):
+    behavior: Literal["record"]
+    allow_complete_case: Literal[False]
+    basis: OperationalizationBasis
+    description: str = Field(min_length=1)
+
+
+class OlmesComputePolicy(PaperModel):
+    flops_per_token_per_parameter: int = Field(gt=0)
+    parameter_count_column: Literal["exact_parameter_count"]
+    token_count_column: Literal["tokens"]
+    target_training_tokens: int = Field(gt=0)
+    denominator_scope: Literal["single_target_run"]
+    target_run_count: Literal[1]
+    target_compute_denominator: int = Field(gt=0)
+    basis: OperationalizationBasis
+    description: str = Field(min_length=1)
+
+
+class OlmesAnalysisContract(PaperModel):
+    recipes: OlmesRecipeUniverse
+    target_model_size: str = Field(min_length=1)
+    seeds: OlmesSeedPolicy
+    metrics: OlmesMetricPolicy
+    task_grouping: OlmesTaskGroupingPolicy
+    final_checkpoints: OlmesFinalCheckpointPolicy
+    noise_model_size: str = Field(min_length=1)
+    comparison: OlmesComparisonPolicy
+    standard_deviation: OlmesStandardDeviationPolicy
+    missing_data: OlmesMissingDataPolicy
+    compute: OlmesComputePolicy
+
+
 class PaperReproductionContract(PaperModel):
     paper: PaperIdentity
     contracts: PaperContractReferences
     methods: tuple[MethodProvenanceEntry, ...]
     policies: tuple[NamedPolicy, ...]
+    olmes_analysis: OlmesAnalysisContract
     outputs: PaperOutputs
 
     @model_validator(mode="after")
@@ -557,6 +717,18 @@ __all__ = [
     "ObservationBlocker",
     "ObservationCount",
     "ObservationFileIdentity",
+    "OlmesAnalysisContract",
+    "OlmesComparisonPolicy",
+    "OlmesComputePolicy",
+    "OlmesFinalCheckpoint",
+    "OlmesFinalCheckpointPolicy",
+    "OlmesMetricPolicy",
+    "OlmesMissingDataPolicy",
+    "OlmesRecipeUniverse",
+    "OlmesSeedPolicy",
+    "OlmesStandardDeviationPolicy",
+    "OlmesTaskGroupingPolicy",
+    "OperationalizationBasis",
     "PaperClaim",
     "PaperContractReferences",
     "PaperIdentity",

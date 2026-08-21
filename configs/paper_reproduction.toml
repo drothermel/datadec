@@ -66,6 +66,236 @@ id = "qualitative_predicates"
 status = "unresolved"
 statement = "Qualitative phrases require explicit claim-specific predicates before independent verification."
 
+[olmes_analysis]
+target_model_size = "1B"
+noise_model_size = "150M"
+
+[olmes_analysis.recipes]
+aliases = [
+  "Dolma1.7",
+  "Dolma1.7 (no code)",
+  "Dolma1.7 (no math, code)",
+  "Dolma1.7 (no Reddit)",
+  "Dolma1.7 (no Flan)",
+  "Dolma1.6++",
+  "C4",
+  "FineWeb-Pro",
+  "FineWeb-Edu",
+  "Falcon",
+  "Falcon+CC",
+  "Falcon+CC (QC 10%)",
+  "Falcon+CC (QC 20%)",
+  "Falcon+CC (QC Orig 10%)",
+  "Falcon+CC (QC Tulu 10%)",
+  "DCLM-Baseline",
+  "DCLM-Baseline (QC 10%)",
+  "DCLM-Baseline (QC 20%)",
+  "DCLM-Baseline (QC 7%, FW3)",
+  "DCLM-Baseline (QC 7%, FW2)",
+  "DCLM-Baseline (QC FW 3%)",
+  "DCLM-Baseline (QC FW 10%)",
+  "DCLM-Baseline 25% / Dolma 75%",
+  "DCLM-Baseline 50% / Dolma 50%",
+  "DCLM-Baseline 75% / Dolma 25%",
+]
+basis = "paper"
+description = "The OLMES analysis compares all 25 paper catalog recipes."
+
+[olmes_analysis.seeds]
+target_aliases = ["default", "large aux 2", "large aux 3"]
+prediction_aliases = ["default", "small aux 2", "small aux 3"]
+basis = "paper"
+description = "Target rankings average the three large-model seeds; prediction attempts use the three small-model seeds."
+
+[olmes_analysis.metrics]
+target_column = "primary_metric"
+proxy_columns = [
+  "acc_raw",
+  "acc_per_token",
+  "acc_per_char",
+  "correct_prob",
+  "correct_prob_per_token",
+  "correct_prob_per_char",
+  "margin",
+  "margin_per_token",
+  "margin_per_char",
+  "norm_correct_prob",
+  "norm_correct_prob_per_token",
+  "norm_correct_prob_per_char",
+  "total_prob",
+  "total_prob_per_token",
+  "total_prob_per_char",
+]
+basis = "paper"
+description = "The target plus five proxy bases in unnormalized, per-token, and per-character forms is the paper's 16-metric set."
+
+[olmes_analysis.task_grouping]
+non_mmlu_tasks = [
+  "arc_challenge",
+  "arc_easy",
+  "boolq",
+  "csqa",
+  "hellaswag",
+  "openbookqa",
+  "piqa",
+  "socialiqa",
+  "winogrande",
+]
+mmlu_subjects = [
+  "mmlu_abstract_algebra",
+  "mmlu_anatomy",
+  "mmlu_astronomy",
+  "mmlu_business_ethics",
+  "mmlu_clinical_knowledge",
+  "mmlu_college_biology",
+  "mmlu_college_chemistry",
+  "mmlu_college_computer_science",
+  "mmlu_college_mathematics",
+  "mmlu_college_medicine",
+  "mmlu_college_physics",
+  "mmlu_computer_security",
+  "mmlu_conceptual_physics",
+  "mmlu_econometrics",
+  "mmlu_electrical_engineering",
+  "mmlu_elementary_mathematics",
+  "mmlu_formal_logic",
+  "mmlu_global_facts",
+  "mmlu_high_school_biology",
+  "mmlu_high_school_chemistry",
+  "mmlu_high_school_computer_science",
+  "mmlu_high_school_european_history",
+  "mmlu_high_school_geography",
+  "mmlu_high_school_government_and_politics",
+  "mmlu_high_school_macroeconomics",
+  "mmlu_high_school_mathematics",
+  "mmlu_high_school_microeconomics",
+  "mmlu_high_school_physics",
+  "mmlu_high_school_psychology",
+  "mmlu_high_school_statistics",
+  "mmlu_high_school_us_history",
+  "mmlu_high_school_world_history",
+  "mmlu_human_aging",
+  "mmlu_human_sexuality",
+  "mmlu_international_law",
+  "mmlu_jurisprudence",
+  "mmlu_logical_fallacies",
+  "mmlu_machine_learning",
+  "mmlu_management",
+  "mmlu_marketing",
+  "mmlu_medical_genetics",
+  "mmlu_miscellaneous",
+  "mmlu_moral_disputes",
+  "mmlu_moral_scenarios",
+  "mmlu_nutrition",
+  "mmlu_philosophy",
+  "mmlu_prehistory",
+  "mmlu_professional_accounting",
+  "mmlu_professional_law",
+  "mmlu_professional_medicine",
+  "mmlu_professional_psychology",
+  "mmlu_public_relations",
+  "mmlu_security_studies",
+  "mmlu_sociology",
+  "mmlu_us_foreign_policy",
+  "mmlu_virology",
+  "mmlu_world_religions",
+]
+mmlu_task_name = "mmlu"
+mmlu_subject_weighting = "equal"
+olmes_task_weighting = "equal"
+basis = "paper"
+description = "The 57 MMLU subjects are averaged into one task before equal-weight averaging with the nine non-MMLU tasks."
+
+[olmes_analysis.final_checkpoints]
+basis = "paper"
+description = "Final checkpoints are the exact steps in the paper's model-suite table."
+
+[[olmes_analysis.final_checkpoints.checkpoints]]
+model_size = "4M"
+step = 5725
+
+[[olmes_analysis.final_checkpoints.checkpoints]]
+model_size = "6M"
+step = 9182
+
+[[olmes_analysis.final_checkpoints.checkpoints]]
+model_size = "8M"
+step = 13039
+
+[[olmes_analysis.final_checkpoints.checkpoints]]
+model_size = "10M"
+step = 15117
+
+[[olmes_analysis.final_checkpoints.checkpoints]]
+model_size = "14M"
+step = 21953
+
+[[olmes_analysis.final_checkpoints.checkpoints]]
+model_size = "16M"
+step = 24432
+
+[[olmes_analysis.final_checkpoints.checkpoints]]
+model_size = "20M"
+step = 14584
+
+[[olmes_analysis.final_checkpoints.checkpoints]]
+model_size = "60M"
+step = 29042
+
+[[olmes_analysis.final_checkpoints.checkpoints]]
+model_size = "90M"
+step = 29901
+
+[[olmes_analysis.final_checkpoints.checkpoints]]
+model_size = "150M"
+step = 38157
+
+[[olmes_analysis.final_checkpoints.checkpoints]]
+model_size = "300M"
+step = 45787
+
+[[olmes_analysis.final_checkpoints.checkpoints]]
+model_size = "530M"
+step = 57786
+
+[[olmes_analysis.final_checkpoints.checkpoints]]
+model_size = "750M"
+step = 63589
+
+[[olmes_analysis.final_checkpoints.checkpoints]]
+model_size = "1B"
+step = 69369
+
+[olmes_analysis.comparison]
+target_ties = "exclude"
+predicted_ties = "count_as_incorrect"
+basis = "paper"
+description = "Target ties are outside the two-class universe; predicted ties within that universe count as incorrect."
+
+[olmes_analysis.standard_deviation]
+attempt_ddof = 1
+within_recipe_noise_ddof = 1
+spread_ddof = 1
+basis = "repository_operationalized"
+description = "The paper omits the SD convention; the repository uses sample standard deviations for attempts, within-recipe noise, and across-recipe spread."
+
+[olmes_analysis.missing_data]
+behavior = "record"
+allow_complete_case = false
+basis = "repository_operationalized"
+description = "Missing inputs are recorded explicitly and never converted into silent complete-case comparisons."
+
+[olmes_analysis.compute]
+flops_per_token_per_parameter = 6
+parameter_count_column = "exact_parameter_count"
+token_count_column = "tokens"
+target_training_tokens = 100000000000
+denominator_scope = "single_target_run"
+target_run_count = 1
+target_compute_denominator = 706099200000000000000
+basis = "paper"
+description = "Compute is 6*N*D; the denominator is one final 1B target run, without multiplying by target seeds or recipes."
+
 [outputs]
 runs_root = "data/paper-reproduction/runs"
 generated_results_root = "data/paper-reproduction/generated"
