@@ -245,16 +245,6 @@ def create_run_bundle(
     root.mkdir(parents=True, exist_ok=True)
     root = root.resolve(strict=True)
     final_directory = root / run_id
-    lock_path = root / f".{run_id}.lock"
-    try:
-        lock_descriptor = os.open(
-            lock_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600
-        )
-    except FileExistsError as error:
-        raise FileExistsError(
-            f"run creation is already in progress: {run_id}"
-        ) from error
-
     staging_directory: Path | None = None
     try:
         if final_directory.exists() or final_directory.is_symlink():
@@ -279,9 +269,6 @@ def create_run_bundle(
         if staging_directory is not None and staging_directory.exists():
             _remove_staging_directory(staging_directory, root, run_id)
         raise
-    finally:
-        os.close(lock_descriptor)
-        lock_path.unlink()
 
     return RunBundle(manifest=manifest, observations=ordered_observations)
 

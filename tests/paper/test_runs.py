@@ -338,6 +338,41 @@ def test_create_refuses_existing_run_without_changing_it(tmp_path: Path) -> None
     assert sorted(path.name for path in tmp_path.iterdir()) == ["run-001"]
 
 
+def test_create_tolerates_stale_prior_lock_without_changing_it(tmp_path: Path) -> None:
+    stale_lock = tmp_path / ".run-001.lock"
+    stale_lock.write_bytes(b"prior interrupted creator")
+
+    _create_bundle(tmp_path, _create_kwargs())
+
+    assert (tmp_path / "run-001").is_dir()
+    assert stale_lock.read_bytes() == b"prior interrupted creator"
+
+
+def test_same_id_creation_collision_preserves_winner_and_cleans_loser_staging(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    original_rename = runs_module._rename_no_replace
+    winner_values = _create_kwargs()
+    winner_values["completed_at"] += timedelta(minutes=1)
+    installing_winner = False
+
+    def install_winner_then_rename(source: Path, destination: Path) -> None:
+        nonlocal installing_winner
+        if not installing_winner:
+            installing_winner = True
+            _create_bundle(tmp_path, winner_values)
+        original_rename(source, destination)
+
+    monkeypatch.setattr(runs_module, "_rename_no_replace", install_winner_then_rename)
+
+    with pytest.raises(FileExistsError):
+        _create_bundle(tmp_path, _create_kwargs())
+
+    winner = load_run_bundle(tmp_path, "run-001")
+    assert winner.manifest.completed_at == winner_values["completed_at"]
+    assert sorted(path.name for path in tmp_path.iterdir()) == ["run-001"]
+
+
 def test_injected_write_failure_leaves_no_final_or_staging_directory(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
