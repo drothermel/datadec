@@ -380,9 +380,11 @@ def _validate_adapter_results(
         for spec in specs
         for sensitivity_id in spec.sensitivity_ids
     }
+    result_specs = {}
     supplied_ids = tuple(result.attempt_id for result in results)
     if len(supplied_ids) != len(set(supplied_ids)):
         raise ValueError(f"{analysis_id.value} adapter returned duplicate attempts")
+    attempts_by_id = {result.attempt_id: result for result in results}
     supplied_defaults = {
         result.attempt_id for result in results if result.role is AttemptRole.DEFAULT
     }
@@ -414,6 +416,7 @@ def _validate_adapter_results(
                 raise ValueError("sensitivity result has the wrong parent attempt")
         elif result.role is not AttemptRole.DEFAULT:
             raise ValueError("configured default attempts require default-role results")
+        result_specs[result.attempt_id] = spec
         rule = rules[spec.comparison_rule_id]
         if (
             result.claim_id != spec.claim_id
@@ -440,16 +443,38 @@ def _validate_adapter_results(
     expected_series = {
         series_id: spec for spec in specs for series_id in spec.plot_series_ids
     }
-    if set(supplied_series_ids) != set(expected_series):
+    required_series = {
+        series_id
+        for series_id, spec in expected_series.items()
+        if attempts_by_id[spec.id].outcome
+        is not ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED
+    }
+    missing_series = required_series - set(supplied_series_ids)
+    unexpected_series = set(supplied_series_ids) - set(expected_series)
+    if missing_series or unexpected_series:
         raise ValueError(
             f"{analysis_id.value} adapter plot series differ from config: "
-            f"missing={sorted(set(expected_series) - set(supplied_series_ids))}, "
-            f"unexpected={sorted(set(supplied_series_ids) - set(expected_series))}"
+            f"missing={sorted(missing_series)}, "
+            f"unexpected={sorted(unexpected_series)}"
         )
+    series_by_attempt: dict[str, set[str]] = {}
     for series in plot_series:
         if series.attempt_id != expected_series[series.id].id:
             raise ValueError(
                 f"plot series {series.id} is attached to the wrong attempt"
+            )
+        series_by_attempt.setdefault(series.attempt_id, set()).add(series.id)
+    for result in results:
+        declared = set(result_specs[result.attempt_id].plot_series_ids)
+        referenced = set(result.plot_series_ids)
+        if referenced - declared:
+            raise ValueError(
+                f"adapter result {result.attempt_id} references undeclared plot series"
+            )
+        if referenced != series_by_attempt.get(result.attempt_id, set()):
+            raise ValueError(
+                f"adapter result {result.attempt_id} plot-series references differ "
+                "from returned series"
             )
 
 
@@ -569,7 +594,8 @@ def render_validation(root: str | Path, run_id: str) -> RenderedOutputs:
                 (figures_root / filename, content)
                 for filename, content in rendered.figures
             ),
-        )
+        ),
+        exact_directories={figures_root: figure_paths},
     )
     return RenderedOutputs(report=report_path, figures=figure_paths)
 

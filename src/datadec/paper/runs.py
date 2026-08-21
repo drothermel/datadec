@@ -196,17 +196,18 @@ def _validate_bundle(bundle: AnalysisBundle) -> None:
                 f"attempt {attempt.attempt_id} references an unknown parent attempt"
             )
 
-        if attempt.outcome is ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED:
-            if not attempt.missing_groups or any(
-                row.selected_row_count != 0 for row in attempt.row_selections
-            ):
-                raise ValueError(
-                    "not-assessable results require missing groups and zero selected rows"
-                )
-            continue
+        not_assessable = (
+            attempt.outcome is ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED
+        )
+        if not_assessable and (not attempt.missing_groups or not attempt.diagnostics):
+            raise ValueError(
+                "not-assessable results require missing groups and diagnostics"
+            )
         for selection in attempt.row_selections:
             expected_sha256 = inputs.get(selection.logical_table_id)
             if expected_sha256 is None:
+                if not_assessable and selection.selected_row_count == 0:
+                    continue
                 raise ValueError(
                     f"attempt {attempt.attempt_id} references unknown input "
                     f"{selection.logical_table_id}"

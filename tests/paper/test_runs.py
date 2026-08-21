@@ -219,6 +219,60 @@ def test_create_rejects_unknown_input_cross_reference(tmp_path: Path) -> None:
     assert list(tmp_path.iterdir()) == []
 
 
+def test_not_assessable_partial_selection_persists_without_series(
+    tmp_path: Path,
+) -> None:
+    attempt = _attempt().model_copy(
+        update={
+            "computed_value": {"inspected_rows": 25},
+            "diagnostics": ("task=missing has no qualifying rows",),
+            "missing_groups": ("task=missing",),
+            "outcome": ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED,
+            "plot_series_ids": (),
+        }
+    )
+
+    bundle = create_analysis_bundle(
+        tmp_path,
+        run_id="partial-missing",
+        started_at=_STARTED_AT,
+        completed_at=_STARTED_AT,
+        input_identities=(ContentIdentity(id="olmes_aggregate", sha256=_INPUT_SHA256),),
+        targets=(_target(),),
+        attempts=(attempt,),
+        plot_series=(),
+    )
+
+    assert bundle.attempts[0].row_selections[0].selected_row_count == 25
+    assert load_analysis_bundle(tmp_path, "partial-missing") == bundle
+
+
+def test_not_assessable_result_requires_missing_surface_diagnostics(
+    tmp_path: Path,
+) -> None:
+    attempt = _attempt().model_copy(
+        update={
+            "computed_value": None,
+            "missing_groups": ("task=missing",),
+            "outcome": ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED,
+        }
+    )
+
+    with pytest.raises(ValueError, match="missing groups and diagnostics"):
+        create_analysis_bundle(
+            tmp_path,
+            run_id="unexplained-missing",
+            started_at=_STARTED_AT,
+            completed_at=_STARTED_AT,
+            input_identities=(
+                ContentIdentity(id="olmes_aggregate", sha256=_INPUT_SHA256),
+            ),
+            targets=(_target(),),
+            attempts=(attempt,),
+            plot_series=(),
+        )
+
+
 def test_create_rejects_missing_default_result(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="exactly one default"):
         create_analysis_bundle(

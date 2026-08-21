@@ -147,6 +147,7 @@ def _adapters(
 
 def test_repository_validation_covers_current_static_and_input_surface(
     surface: run_module.ValidationSurface,
+    data_dir: Path,
 ) -> None:
     assert len(surface.registry.claims) == 455
     assert (
@@ -154,12 +155,12 @@ def test_repository_validation_covers_current_static_and_input_surface(
         == 79
     )
     assert len(surface.supporting_dispositions) == 376
-    assert len(surface.inputs) == 3
+    assert len(surface.inputs) == 2
     assert set(surface.input_identities) == {
         "olmes_aggregate",
-        "olmes_choices",
         "scaling_evaluations",
     }
+    assert not (data_dir / "processed/olmes-details").exists()
     assert len(surface.coverage.claim_ids) == 455
     assert len(surface.citations.citation_keys) == 43
 
@@ -176,6 +177,11 @@ def test_validation_rejects_input_schema_drift(data_dir: Path, tmp_path: Path) -
 
     with pytest.raises(ValueError, match="missing columns.*primary_metric"):
         validate_repository(_REPOSITORY_ROOT, copied)
+
+
+def test_validation_rejects_missing_used_input(tmp_path: Path) -> None:
+    with pytest.raises(FileNotFoundError, match="processed/olmes.parquet"):
+        validate_repository(_REPOSITORY_ROOT, tmp_path)
 
 
 def test_validation_code_has_structural_author_result_and_parameter_update_denial() -> (
@@ -284,8 +290,10 @@ def test_render_reads_only_the_completed_bundle_and_replaces_rendered_set(
             return SimpleNamespace(render_bundle_outputs=lambda value: rendered)
         if name == "datadec.paper.output_transaction":
             return SimpleNamespace(
-                replace_output_set=lambda outputs: replaced.setdefault(
-                    "outputs", tuple(outputs)
+                replace_output_set=lambda outputs,
+                *,
+                exact_directories: replaced.update(
+                    outputs=tuple(outputs), exact_directories=exact_directories
                 )
             )
         raise AssertionError(name)
@@ -302,6 +310,9 @@ def test_render_reads_only_the_completed_bundle_and_replaces_rendered_set(
         (result.report, b"report\n"),
         (result.figures[0], b"<svg/>"),
     )
+    assert replaced["exact_directories"] == {
+        _REPOSITORY_ROOT / surface.contract.outputs.figures_root: result.figures
+    }
 
 
 def test_adapter_may_not_serialize_unfinished_analysis_as_missing_data(
@@ -357,6 +368,74 @@ def test_configured_plot_series_are_required(
             contract=contract,
             results=results,
             plot_series=(),
+        )
+
+
+def test_not_assessable_plot_attempt_may_omit_configured_series(
+    surface: run_module.ValidationSurface,
+) -> None:
+    specs = tuple(
+        spec
+        for spec in surface.contract.attempts
+        if spec.analysis_id is AnalysisId.SINGLE_SCALE
+    )
+    missing_spec = next(spec for spec in specs if spec.plot_series_ids)
+    results = tuple(
+        _result_for_spec(spec, surface).model_copy(
+            update={
+                "computed_value": None,
+                "diagnostics": ("configured plot surface is incomplete",),
+                "missing_groups": ("task=missing",),
+                "outcome": ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED,
+                "plot_series_ids": (),
+            }
+        )
+        if spec.id == missing_spec.id
+        else _result_for_spec(spec, surface)
+        for spec in specs
+    )
+    series = tuple(
+        value
+        for spec in specs
+        if spec.id != missing_spec.id
+        for value in _series_for_spec(spec)
+    )
+
+    run_module._validate_adapter_results(
+        analysis_id=AnalysisId.SINGLE_SCALE,
+        registry=surface.registry,
+        contract=surface.contract,
+        results=results,
+        plot_series=series,
+    )
+
+
+def test_unexpected_plot_series_is_rejected(
+    surface: run_module.ValidationSurface,
+) -> None:
+    specs = tuple(
+        spec
+        for spec in surface.contract.attempts
+        if spec.analysis_id is AnalysisId.SINGLE_SCALE
+    )
+    spec = next(item for item in specs if item.plot_series_ids)
+    unexpected = _series_for_spec(spec)[0].model_copy(update={"id": "unexpected"})
+
+    with pytest.raises(ValueError, match="unexpected=.*unexpected"):
+        run_module._validate_adapter_results(
+            analysis_id=AnalysisId.SINGLE_SCALE,
+            registry=surface.registry,
+            contract=surface.contract,
+            results=tuple(_result_for_spec(item, surface) for item in specs),
+            plot_series=(
+                unexpected,
+                *(
+                    value
+                    for item in specs
+                    if item.id != spec.id
+                    for value in _series_for_spec(item)
+                ),
+            ),
         )
 
 
