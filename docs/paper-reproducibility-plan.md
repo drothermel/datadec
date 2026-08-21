@@ -57,6 +57,12 @@ a mismatch. They must not be used as the computational input for claiming that
 the same result was independently reproduced. Independent computations use the
 lower-level aggregate, scaling-law, task, instance, or choice tables.
 
+Enforce this separation structurally: static claim-target extraction may read
+paper result tables, but validation modules and run orchestration must not open
+or import them. Computation receives normalized target values through the claim
+contract. Any debugging comparison with `published-results` is a separate
+manual command whose output cannot enter a validation run.
+
 ## Canonical analysis inputs
 
 The Hugging Face publication contract at `configs/publishing.toml` defines the
@@ -112,6 +118,9 @@ Each empirical claim may have one or more named attempts. An attempt records:
 - stable claim ID and paper locator;
 - verbatim or normalized paper target;
 - `dd_parsed` table and columns used;
+- identities of the actual inputs used, recorded as local Parquet hashes and,
+  when available, the remote dataset revision; identity capture is traceability
+  metadata and never a historical-provenance gate;
 - row-selection rules, including recipes, tasks, metrics, seeds, sizes, and
   checkpoints;
 - transformation and aggregation order;
@@ -150,9 +159,16 @@ or current repository drift as a `not_reproduced` result.
 ### Checkpoints
 
 When the paper says `final` but its exact table step is absent, use the latest
-complete checkpoint available in `dd_parsed` for the required model, recipe,
-seed, task, and metric. Record the actual step. Compare adjacent checkpoints
-when a different reasonable choice could change the conclusion.
+single checkpoint that has a complete Cartesian grid across the entire
+predeclared comparison universe for that attempt: every required recipe, seed,
+task, and metric must use the same step. Record the actual step and completeness
+counts. Never select a different `latest` step per row or choose a step after
+examining the result.
+
+For final-checkpoint claims, always compute the two preceding common complete
+checkpoints as fixed sensitivities when they exist, plus the exact paper step if
+it exists. These sensitivities are selected before results are examined, not
+only when the default appears material.
 
 Never silently replace one model size, task, metric, recipe, or seed group with
 another.
@@ -161,9 +177,10 @@ another.
 
 For exact tabulated numbers, compare after applying the paper's displayed
 precision and also report the unrounded difference. For words such as
-`approximately`, `roughly`, or `comparable`, define a transparent best-attempt
-predicate and include sensitivity to other reasonable thresholds. Ambiguity
-calls for an operationalized attempt, not an automatic blocker.
+`approximately`, `roughly`, or `comparable`, define and version a transparent
+best-attempt predicate and its sensitivity thresholds before examining the
+computed result. Ambiguity calls for a predeclared operationalized attempt, not
+an automatic blocker or a post hoc threshold.
 
 ### Seeds and uncertainty
 
@@ -271,10 +288,15 @@ attempt or is genuinely not assessable from `dd_parsed`.
 ### Phase 5: targeted checkpoint evaluation, only if earned
 
 For a high-value empirical claim still not assessable, determine whether a
-released checkpoint plus a bounded evaluation can supply the missing result.
+released checkpoint plus a bounded evaluation can clarify the uncertainty.
 Record the exact claim, expected new evidence, models, tasks, storage, and
 compute before downloading. Skip the evaluation when it merely improves
 historical provenance or would duplicate available `dd_parsed` evidence.
+
+Checkpoint-evaluation results are supplemental and remain separate from the
+primary `dd_parsed` attempt. They cannot upgrade
+`not_assessable_from_dd_parsed` into a `dd_parsed` reproduction; instead report
+a separately labeled checkpoint-evaluation finding.
 
 Exit condition: checkpoint use is limited to specific unresolved findings and
 contains no training.
@@ -324,14 +346,18 @@ Do not preserve provenance-first blocker behavior from the superseded workflow.
 The completed system must prove that:
 
 - no code path trains or updates model parameters;
+- every attempt records the identities of the `dd_parsed` files it actually
+  read without requiring an unavailable historical revision;
 - primary results are computed from lower-level `dd_parsed` tables rather than
-  copied from `published-results`;
+  copied from `published-results`, and computation code cannot access those
+  author-result paths;
 - reported row selections and aggregations are deterministic and inspectable;
-- latest-available checkpoint selection records the actual checkpoint and has
-  sensitivity coverage where material;
+- final-checkpoint selection uses one predeclared common complete step across
+  the comparison universe and always records fixed preceding-step sensitivity;
 - seeds, denominators, exclusions, missing groups, and ties remain visible;
 - paper targets and our results are stored separately;
-- approximate and qualitative outcomes use explicit predicates;
+- approximate and qualitative outcomes use predicates frozen before results are
+  examined;
 - metadata discrepancies do not masquerade as empirical contradictions;
 - paper-analog plots are backed by machine-readable series; and
 - generated reports do not recompute scientific results.
