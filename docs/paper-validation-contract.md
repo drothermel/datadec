@@ -176,6 +176,27 @@ load_analysis_bundle(runs_root, run_id) -> AnalysisBundle
 render_validation(root, run_id) -> RenderedOutputs
 ```
 
+Analysis adapters expose one consistent boundary:
+
+```python
+run_<analysis_id>_attempts(
+    *,
+    repository_root: Path,
+    data_root: Path,
+    registry: ClaimRegistry,
+    contract: PaperValidationContract,
+    input_identities: Mapping[str, ContentIdentity],
+) -> tuple[tuple[AttemptResult, ...], tuple[PlotSeries, ...]]
+```
+
+Adapters return only results for their closed analysis ID, ordered by attempt
+ID, followed by ordered plot-series IDs. They translate deterministic internal
+calculation values into persisted models but do not create run manifests,
+write files, or inspect other analysis families. Missing eligible evidence is
+an explicit `not_assessable_from_dd_parsed` result with a zero-row selection
+and concrete missing groups; unfinished implementation is never serialized as
+that outcome.
+
 The sole CLI entrypoint is `scripts/validate_paper_findings.py` with `validate`,
 `run`, and `render` commands. The prior verification CLI and generated blocker
 report/figures are deleted in the same cutover.
