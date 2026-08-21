@@ -162,9 +162,11 @@ def test_prediction_attempt_summary_rejects_invalid_ddof() -> None:
 
 def test_compute_equations_use_explicit_costs_and_denominator() -> None:
     first_cost = theoretical_training_flops(2, 3)
+    zero_cost = theoretical_training_flops(2, 0)
     result = percent_target_compute((12.0, first_cost), target_compute=96.0)
 
     assert first_cost == 36.0
+    assert zero_cost == 0.0
     assert result.percent == 50.0
     assert result.included_compute == 48.0
     assert result.target_compute == 96.0
@@ -173,7 +175,7 @@ def test_compute_equations_use_explicit_costs_and_denominator() -> None:
 
 @pytest.mark.parametrize(
     "parameters, tokens",
-    [(0, 1), (1, 0), (-1, 1), (math.inf, 1)],
+    [(0, 1), (1, -1), (-1, 1), (math.inf, 1)],
 )
 def test_theoretical_training_flops_rejects_invalid_compute_inputs(
     parameters: float, tokens: float

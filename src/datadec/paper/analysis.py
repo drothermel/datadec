@@ -294,8 +294,10 @@ def summarize_prediction_attempts(
 def theoretical_training_flops(parameter_count: float, token_count: float) -> float:
     parameters = _finite_number(parameter_count, label="parameter_count")
     tokens = _finite_number(token_count, label="token_count")
-    if parameters <= 0 or tokens <= 0:
-        raise ValueError("parameter_count and token_count must both be positive")
+    if parameters <= 0:
+        raise ValueError("parameter_count must be positive")
+    if tokens < 0:
+        raise ValueError("token_count must be non-negative")
     flops = 6 * parameters * tokens
     if not math.isfinite(flops):
         raise ValueError("theoretical training FLOPs are not finite")

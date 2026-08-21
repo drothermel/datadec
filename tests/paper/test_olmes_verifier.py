@@ -138,6 +138,19 @@ def test_aggregate_is_permutation_invariant_and_two_stage_weights_mmlu() -> None
     assert scores[0].score == pytest.approx(0.1)
 
 
+def test_step_zero_accepts_zero_tokens_but_later_steps_do_not() -> None:
+    step_zero = pd.DataFrame(_task_rows(step=0, tokens=0))
+
+    scores, missing = aggregate_olmes_scores(step_zero, _policy())
+
+    assert missing == ()
+    assert {score.token_count for score in scores} == {0.0}
+
+    later = pd.DataFrame(_task_rows(step=1, tokens=0))
+    with pytest.raises(ValueError, match="positive after step 0"):
+        aggregate_olmes_scores(later, _policy())
+
+
 def test_normalized_key_validation_rejects_duplicates() -> None:
     rows = _task_rows()
     frame = pd.DataFrame([*rows, rows[0]])

@@ -424,9 +424,12 @@ def aggregate_olmes_scores(
             )
         parameter_count = next(iter(parameters))
         token_count = next(iter(tokens))
-        if parameter_count <= 0 or token_count <= 0:
+        if parameter_count <= 0:
+            raise ValueError(f"parameter count must be positive for {group_key!r}")
+        if token_count < 0 or (step > 0 and token_count == 0):
             raise ValueError(
-                f"parameter and token counts must be positive for {group_key!r}"
+                "token count must be non-negative and positive after step 0 for "
+                f"{group_key!r}"
             )
 
         for metric_index, metric in enumerate(policy.metric_columns, start=7):
