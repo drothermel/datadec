@@ -333,7 +333,7 @@ def render_figure_files(
     observations: Iterable[Observation],
     output_root: str | Path,
 ) -> None:
-    """Atomically replace the two generated SVG files after both render successfully."""
+    """Render both SVGs before replacing each destination file."""
     supplied = tuple(observations)
     verdict_svg = render_verdict_summary_svg(manifest, supplied)
     contradictions_svg = render_suite_contradictions_svg(registry, manifest, supplied)

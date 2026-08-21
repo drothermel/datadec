@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 from collections import Counter
 from dataclasses import replace
 from pathlib import Path
@@ -10,6 +11,7 @@ from typing import Any
 import pandas as pd
 import pytest
 
+import datadec.paper.output_transaction as output_transaction_module
 import datadec.paper.run as run_module
 from datadec.paper.analysis import MMLU_SUBJECTS, OLMES_NON_MMLU_TASKS, TiePolicy
 from datadec.paper.models import (
@@ -500,7 +502,7 @@ def test_run_repository_captures_current_file_and_runtime_identities(
     assert captured["runtime_identity"].dependency_lock_sha256 == lock_digest
 
 
-def test_render_repository_validates_current_identities_and_uses_atomic_renderer(
+def test_render_repository_validates_current_identities_and_replaces_rendered_set(
     validation: run_module.RepositoryValidation,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -527,28 +529,182 @@ def test_render_repository_validates_current_identities_and_uses_atomic_renderer
     monkeypatch.setattr(run_module, "validate_repository", lambda root: validation)
     monkeypatch.setattr(run_module, "load_run_bundle", lambda *args, **kwargs: bundle)
 
-    def capture_render(*args: Any) -> None:
-        rendered["args"] = args
+    def capture_report(*args: Any) -> str:
+        rendered["report_args"] = args
+        return "new report"
 
-    monkeypatch.setattr(run_module, "render_report_file", capture_render)
+    def capture_verdict(*args: Any) -> str:
+        rendered["verdict_args"] = args
+        return "new verdict"
+
+    def capture_suite(*args: Any) -> str:
+        rendered["suite_args"] = args
+        return "new suite"
+
+    monkeypatch.setattr(run_module, "render_report", capture_report)
+    monkeypatch.setattr(run_module, "render_verdict_summary_svg", capture_verdict)
+    monkeypatch.setattr(run_module, "render_suite_contradictions_svg", capture_suite)
     monkeypatch.setattr(
         run_module,
-        "render_figure_files",
-        lambda *args: rendered.setdefault("figure_args", args),
+        "replace_output_set",
+        lambda outputs: rendered.setdefault("outputs", tuple(outputs)),
     )
 
     output = render_repository(_REPOSITORY_ROOT, "selected-run")
 
     assert output == _REPOSITORY_ROOT / "docs/paper-reproduction-report.md"
-    assert rendered["args"] == (
+    assert rendered["report_args"] == (
         validation.registry,
         manifest,
         (),
-        output,
     )
-    assert rendered["figure_args"] == (
+    assert rendered["verdict_args"] == (manifest, ())
+    assert rendered["suite_args"] == (
         validation.registry,
         manifest,
         (),
-        _REPOSITORY_ROOT / "docs/paper/reproduced-figures",
     )
+    assert rendered["outputs"] == (
+        (output, "new report"),
+        (
+            _REPOSITORY_ROOT / "docs/paper/reproduced-figures/verdict-summary.svg",
+            "new verdict",
+        ),
+        (
+            _REPOSITORY_ROOT / "docs/paper/reproduced-figures/suite-contradictions.svg",
+            "new suite",
+        ),
+    )
+
+
+def _stub_render_repository(
+    validation: run_module.RepositoryValidation,
+    repository_root: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    test_validation = replace(validation, repository_root=repository_root)
+    identities = {
+        "configs/paper_reproduction.toml": ContentIdentity(
+            id="configs/paper_reproduction.toml", sha256="b" * 64
+        ),
+        "docs/paper/claims.toml": ContentIdentity(
+            id="docs/paper/claims.toml", sha256="c" * 64
+        ),
+    }
+    manifest = SimpleNamespace(
+        complete=True,
+        code_identity=CodeIdentity(
+            commit_sha="a" * 40,
+            tree_state=CodeTreeState.CLEAN,
+        ),
+        paper_identity=ContentIdentity(
+            id=f"arxiv:{validation.contract.paper.arxiv_id}",
+            sha256=validation.contract.paper.archive_sha256,
+        ),
+        config_identity=identities["configs/paper_reproduction.toml"],
+        claims_identity=identities["docs/paper/claims.toml"],
+    )
+    bundle = SimpleNamespace(manifest=manifest, observations=())
+    monkeypatch.setattr(run_module, "validate_repository", lambda root: test_validation)
+    monkeypatch.setattr(run_module, "load_run_bundle", lambda *args, **kwargs: bundle)
+    monkeypatch.setattr(
+        run_module,
+        "_file_identity",
+        lambda root, relative_path: identities[relative_path],
+    )
+
+
+def _write_original_render_set(repository_root: Path) -> tuple[Path, Path, Path]:
+    report_path = repository_root / "docs/paper-reproduction-report.md"
+    figures_root = repository_root / "docs/paper/reproduced-figures"
+    verdict_path = figures_root / "verdict-summary.svg"
+    suite_path = figures_root / "suite-contradictions.svg"
+    figures_root.mkdir(parents=True)
+    report_path.write_text("old report")
+    verdict_path.write_text("old verdict")
+    suite_path.write_text("old suite")
+    return report_path, verdict_path, suite_path
+
+
+def test_render_repository_validates_entire_set_before_destination_changes(
+    validation: run_module.RepositoryValidation,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    destinations = _write_original_render_set(tmp_path)
+    _stub_render_repository(validation, tmp_path, monkeypatch)
+    monkeypatch.setattr(run_module, "render_report", lambda *args: "new report")
+    monkeypatch.setattr(
+        run_module, "render_verdict_summary_svg", lambda *args: "new verdict"
+    )
+
+    def fail_late_validation(*args: Any) -> str:
+        raise ValueError("injected suite validation failure")
+
+    monkeypatch.setattr(
+        run_module, "render_suite_contradictions_svg", fail_late_validation
+    )
+    monkeypatch.setattr(
+        run_module,
+        "replace_output_set",
+        lambda outputs: pytest.fail("replacement must wait for every validation"),
+    )
+
+    with pytest.raises(ValueError, match="injected suite validation failure"):
+        render_repository(tmp_path, "selected-run")
+
+    assert tuple(path.read_text() for path in destinations) == (
+        "old report",
+        "old verdict",
+        "old suite",
+    )
+    assert sorted(path.name for path in tmp_path.rglob("*.*")) == [
+        "paper-reproduction-report.md",
+        "suite-contradictions.svg",
+        "verdict-summary.svg",
+    ]
+
+
+def test_render_repository_restores_complete_set_after_late_replace_failure(
+    validation: run_module.RepositoryValidation,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    destinations = _write_original_render_set(tmp_path)
+    report_path, verdict_path, suite_path = destinations
+    _stub_render_repository(validation, tmp_path, monkeypatch)
+    monkeypatch.setattr(run_module, "render_report", lambda *args: "new report")
+    monkeypatch.setattr(
+        run_module, "render_verdict_summary_svg", lambda *args: "new verdict"
+    )
+    monkeypatch.setattr(
+        run_module, "render_suite_contradictions_svg", lambda *args: "new suite"
+    )
+    original_replace = os.replace
+    injected = False
+
+    def fail_third_destination(source: str | Path, target: str | Path) -> None:
+        nonlocal injected
+        if Path(target) == suite_path and not injected:
+            injected = True
+            assert report_path.read_text() == "new report"
+            assert verdict_path.read_text() == "new verdict"
+            raise OSError("injected late replace failure")
+        original_replace(source, target)
+
+    monkeypatch.setattr(output_transaction_module.os, "replace", fail_third_destination)
+
+    with pytest.raises(OSError, match="injected late replace failure"):
+        render_repository(tmp_path, "selected-run")
+
+    assert injected
+    assert tuple(path.read_text() for path in destinations) == (
+        "old report",
+        "old verdict",
+        "old suite",
+    )
+    assert sorted(path.name for path in tmp_path.rglob("*.*")) == [
+        "paper-reproduction-report.md",
+        "suite-contradictions.svg",
+        "verdict-summary.svg",
+    ]

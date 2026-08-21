@@ -19,7 +19,10 @@ from datadec.config import (
     SourceManifest,
 )
 from datadec.paper.contracts import load_claim_registry
-from datadec.paper.figures import render_figure_files
+from datadec.paper.figures import (
+    render_suite_contradictions_svg,
+    render_verdict_summary_svg,
+)
 from datadec.paper.models import (
     BlockerKind,
     ClaimOwnership,
@@ -42,7 +45,8 @@ from datadec.paper.registry import (
     resolve_method_provenance,
     validate_static_references,
 )
-from datadec.paper.report import render_report_file
+from datadec.paper.output_transaction import replace_output_set
+from datadec.paper.report import render_report
 from datadec.paper.runs import (
     create_run_bundle,
     load_run_bundle,
@@ -727,7 +731,7 @@ def run_repository(
 
 
 def render_repository(root: str | Path, run_id: str) -> Path:
-    """Validate and atomically render one selected immutable run bundle."""
+    """Validate, render, and replace one selected run's configured output set."""
     validation = validate_repository(root)
     bundle = load_run_bundle(
         validation.repository_root / validation.contract.outputs.runs_root,
@@ -759,19 +763,23 @@ def render_repository(root: str | Path, run_id: str) -> Path:
             )
 
     output_path = validation.repository_root / validation.contract.outputs.report
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    render_report_file(
-        validation.registry,
-        bundle.manifest,
-        bundle.observations,
-        output_path,
+    figures_root = (
+        validation.repository_root / validation.contract.outputs.reproduced_figures_root
     )
-    render_figure_files(
+    observations = tuple(bundle.observations)
+    report = render_report(validation.registry, bundle.manifest, observations)
+    verdict_figure = render_verdict_summary_svg(bundle.manifest, observations)
+    contradictions_figure = render_suite_contradictions_svg(
         validation.registry,
         bundle.manifest,
-        bundle.observations,
-        validation.repository_root
-        / validation.contract.outputs.reproduced_figures_root,
+        observations,
+    )
+    replace_output_set(
+        (
+            (output_path, report),
+            (figures_root / "verdict-summary.svg", verdict_figure),
+            (figures_root / "suite-contradictions.svg", contradictions_figure),
+        )
     )
     return output_path
 
