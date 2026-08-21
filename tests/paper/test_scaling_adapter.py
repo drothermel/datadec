@@ -26,10 +26,12 @@ def _scaling_contract() -> ScalingLawContract:
     )
 
 
-def _write_partial_evaluations(data_root: Path) -> Path:
+def _write_partial_evaluations(
+    data_root: Path, *, complete_fit_size_count: int = 5
+) -> Path:
     scaling_contract = _scaling_contract()
     recipes = tuple(sorted(scaling_contract.source_group_map.values()))
-    complete_fit_sizes = set(scaling_contract.models[:5])
+    complete_fit_sizes = set(scaling_contract.models[:complete_fit_size_count])
     rows: list[dict[str, object]] = []
     for size_index, size_id in enumerate(scaling_contract.models, start=1):
         parameter_count = float(size_index * 1_000_000)
@@ -68,7 +70,7 @@ def _write_partial_evaluations(data_root: Path) -> Path:
     return path
 
 
-def test_partial_scaling_surface_records_missing_groups_and_prefix_series(
+def test_partial_scaling_surface_records_missing_groups_without_plot_series(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     input_path = _write_partial_evaluations(tmp_path)
@@ -108,33 +110,10 @@ def test_partial_scaling_surface_records_missing_groups_and_prefix_series(
     assert {result.outcome for result in results} == {
         ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED
     }
-    assert tuple(value.id for value in series) == (
-        "dd-0180-paper-analog",
-        "dd-0368-paper-analog",
-        "dd-0369-paper-analog",
-    )
-    all_variants = next(value for value in series if value.id == "dd-0180-paper-analog")
-    assert len(all_variants.points) == 24
-    assert {
-        next(
-            dimension.value
-            for dimension in point.dimensions
-            if dimension.name == "subset"
-        )
-        for point in all_variants.points
-    } == {"prefix-03", "prefix-04", "prefix-05"}
-    assert all(
-        next(
-            dimension.value
-            for dimension in point.dimensions
-            if dimension.name == "subset_kind"
-        )
-        == "prefix"
-        for point in all_variants.points
-    )
+    assert series == ()
 
     result = next(value for value in results if value.claim_id == "DD-0180")
-    assert result.plot_series_ids == ("dd-0180-paper-analog",)
+    assert result.plot_series_ids == ()
     assert (
         "recipe=c4|size=20M|seed=default|missing=task_loss_surface|incomplete_steps=1,2"
     ) in result.missing_groups
@@ -186,3 +165,53 @@ def test_no_scaling_attempts_do_not_read_inputs() -> None:
         contract=without_scaling,
         input_identities={},
     ) == ((), ())
+
+
+def test_complete_scaling_plots_preserve_claim_specific_predicates(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _write_partial_evaluations(tmp_path, complete_fit_size_count=13)
+
+    def fake_held_out_prediction(
+        final_losses: object,
+        evaluations: object,
+        *,
+        target: object,
+        variant: ScalingVariant,
+    ) -> object:
+        del final_losses, evaluations, variant
+        actual_score = target.actual_score  # type: ignore[attr-defined]
+        return SimpleNamespace(
+            predicted_score=actual_score,
+            target=SimpleNamespace(actual_score=actual_score),
+        )
+
+    monkeypatch.setattr(
+        scaling_adapter, "held_out_prediction", fake_held_out_prediction
+    )
+    results, series = scaling_adapter.run_scaling_law_attempts(
+        repository_root=_REPOSITORY_ROOT,
+        data_root=tmp_path,
+        registry=load_repository_claim_registry(_REPOSITORY_ROOT),
+        contract=load_paper_validation_contract(),
+        input_identities={},
+    )
+
+    assert {value.id for value in series} >= {
+        "dd-0368-paper-analog",
+        "dd-0369-paper-analog",
+    }
+    for claim_id, count_key in (
+        ("DD-0368", "below_frontier_points"),
+        ("DD-0369", "near_random_points"),
+    ):
+        result = next(value for value in results if value.claim_id == claim_id)
+        expected_holds = (
+            result.computed_value[count_key]
+            > result.computed_value["variant_points"] / 2
+        )
+        assert result.outcome is (
+            ValidationOutcome.REPRODUCED
+            if expected_holds
+            else ValidationOutcome.NOT_REPRODUCED
+        )

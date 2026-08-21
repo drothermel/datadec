@@ -186,6 +186,67 @@ def _parameter(rule: ComparisonRule, name: ComparisonParameterName) -> float:
     return rule.parameter(name).default
 
 
+def _comparison_sensitivity_contexts(
+    context: _Context,
+) -> tuple[tuple[str, ComparisonParameterName, float, _Context], ...]:
+    sensitivities: list[tuple[str, ComparisonParameterName, float, _Context]] = []
+    for parameter_index, parameter in enumerate(context.rule.parameters):
+        for grid_index, value in enumerate(parameter.sensitivity_grid, start=1):
+            if value == parameter.default:
+                continue
+            sensitivity_id = (
+                f"{context.attempt.claim_id.lower()}-comparison-"
+                f"{parameter.name.value.replace('_', '-')}-grid-{grid_index}"
+            )
+            if sensitivity_id not in context.attempt.sensitivity_ids:
+                raise ValueError(
+                    f"{context.attempt.id} does not declare comparison sensitivity "
+                    f"{sensitivity_id}"
+                )
+            parameters = list(context.rule.parameters)
+            parameters[parameter_index] = parameter.model_copy(
+                update={"default": value}
+            )
+            sensitivities.append(
+                (
+                    sensitivity_id,
+                    parameter.name,
+                    value,
+                    _Context(
+                        attempt=context.attempt,
+                        claim=context.claim,
+                        rule=context.rule.model_copy(
+                            update={"parameters": tuple(parameters)}
+                        ),
+                        completeness_dimensions=context.completeness_dimensions,
+                    ),
+                )
+            )
+    return tuple(sensitivities)
+
+
+def _comparison_sensitivity_result(
+    result: AttemptResult,
+    *,
+    sensitivity_id: str,
+    parameter_name: ComparisonParameterName,
+    parameter_value: float,
+) -> AttemptResult:
+    return result.model_copy(
+        update={
+            "attempt_id": sensitivity_id,
+            "role": AttemptRole.SENSITIVITY,
+            "parent_attempt_id": result.attempt_id,
+            "diagnostics": (
+                *result.diagnostics,
+                f"comparison_parameter={parameter_name.value}",
+                f"comparison_parameter_value={parameter_value:.17g}",
+            ),
+            "plot_series_ids": (),
+        }
+    )
+
+
 def _sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as file:
@@ -1178,10 +1239,10 @@ def _run_proxy_plot_attempt(
         denominator=denominator,
         target_ties=target_ties,
         predicted_ties=predicted_ties,
-        outcome=ValidationOutcome.REPRODUCED,
+        outcome=ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED,
         diagnostics=(f"Persisted {len(points)} finite paper-analog points.",),
         limitations=(
-            "The configured nonempty-plot predicate validates the curve surface, not the paper's benefiting-task count.",
+            "The derived plot series is available for visual comparison, but no frozen semantic predicate adjudicates the paper's benefiting-task count.",
             "Pre-aggregated OLMES metrics are used; choice-level formula parity is not audited here.",
         ),
         plot_series_ids=(series_id,),
@@ -2607,10 +2668,10 @@ def _run_noise_plot_attempt(
         denominator=sum(decision.denominator for decision in decisions),
         target_ties=sum(decision.target_ties for decision in decisions),
         predicted_ties=sum(decision.predicted_ties for decision in decisions),
-        outcome=ValidationOutcome.REPRODUCED,
+        outcome=ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED,
         diagnostics=(f"Persisted {len(points)} finite paper-analog points.",),
         limitations=(
-            "The configured nonempty-plot predicate validates the plotted evidence surface, not qualitative words such as low, high, often, or align.",
+            "The derived plot series is available for visual comparison, but no frozen semantic predicate adjudicates qualitative words such as low, high, often, or align.",
             "Noise and spread use sample standard deviations (DDOF 1).",
             "The configured paper-step sensitivity is not emitted because the attempt does not declare an exact numeric paper step.",
         ),
@@ -2687,7 +2748,7 @@ def _run_noise_plot_attempt(
                 predicted_ties=sum(
                     decision.predicted_ties for decision in sensitivity_decisions
                 ),
-                outcome=ValidationOutcome.REPRODUCED,
+                outcome=ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED,
                 diagnostics=(
                     f"Computed {len(sensitivity_noise)} points at fixed preceding step {sensitivity_checkpoint.step}.",
                 ),
@@ -2765,18 +2826,24 @@ def run_proxy_metrics_attempts(
     results: list[AttemptResult] = []
     series: list[PlotSeries] = []
     curve_surfaces: dict[tuple[tuple[str, ...], ...], _CurveSurface] = {}
-    for context in contexts:
+
+    def run_context(
+        context: _Context,
+    ) -> tuple[tuple[AttemptResult, ...], PlotSeries | None]:
         if context.attempt.id in _THRESHOLD_ATTEMPTS:
             attempt_columns = (*_BASE_COLUMNS, *_PAPER_METRICS)
-            results.append(
-                _run_threshold_attempt(
-                    context,
-                    input_data,
-                    columns=attempt_columns,
-                    observations=observations,
-                )
+            return (
+                (
+                    _run_threshold_attempt(
+                        context,
+                        input_data,
+                        columns=attempt_columns,
+                        observations=observations,
+                    ),
+                ),
+                None,
             )
-        elif context.attempt.id in _PROXY_PLOT_ATTEMPTS:
+        if context.attempt.id in _PROXY_PLOT_ATTEMPTS:
             attempt_columns = (*_BASE_COLUMNS, *_PER_CHARACTER_PLOT_METRICS)
             result, plot = _run_proxy_plot_attempt(
                 context,
@@ -2784,41 +2851,66 @@ def run_proxy_metrics_attempts(
                 columns=attempt_columns,
                 observations=observations,
             )
-            results.append(result)
-            if plot is not None:
-                series.append(plot)
-        elif context.attempt.id == "dd-0057-default":
+            return (result,), plot
+        if context.attempt.id == "dd-0057-default":
             attempt_columns = tuple(
                 dict.fromkeys(
                     (*_BASE_COLUMNS, _PRIMARY_METRIC, *_metrics(context.attempt))
                 )
             )
-            results.extend(
+            return (
                 _run_noise_improvement_attempt(
                     context,
                     input_data,
                     columns=attempt_columns,
                     observations=observations,
-                )
+                ),
+                None,
             )
-        else:
-            attempt_columns = tuple(
-                dict.fromkeys(
-                    (*_BASE_COLUMNS, _PRIMARY_METRIC, *_metrics(context.attempt))
-                )
-            )
-            surface_key = _curve_surface_key(context)
-            surface = curve_surfaces.get(surface_key)
-            if surface is None:
-                surface = _curve_surface(context, observations)
-                curve_surfaces[surface_key] = surface
-            results.append(
+        attempt_columns = tuple(
+            dict.fromkeys((*_BASE_COLUMNS, _PRIMARY_METRIC, *_metrics(context.attempt)))
+        )
+        surface_key = _curve_surface_key(context)
+        surface = curve_surfaces.get(surface_key)
+        if surface is None:
+            surface = _curve_surface(context, observations)
+            curve_surfaces[surface_key] = surface
+        return (
+            (
                 _run_proxy_curve_qualitative_attempt(
                     context,
                     input_data,
                     columns=attempt_columns,
                     observations=observations,
                     surface=surface,
+                ),
+            ),
+            None,
+        )
+
+    for context in contexts:
+        context_results, plot = run_context(context)
+        results.extend(context_results)
+        if plot is not None:
+            series.append(plot)
+        for (
+            sensitivity_id,
+            name,
+            value,
+            sensitivity_context,
+        ) in _comparison_sensitivity_contexts(context):
+            sensitivity_results, _ = run_context(sensitivity_context)
+            default = next(
+                result
+                for result in sensitivity_results
+                if result.attempt_id == context.attempt.id
+            )
+            results.append(
+                _comparison_sensitivity_result(
+                    default,
+                    sensitivity_id=sensitivity_id,
+                    parameter_name=name,
+                    parameter_value=value,
                 )
             )
     return tuple(sorted(results, key=lambda result: result.attempt_id)), tuple(
@@ -2889,58 +2981,89 @@ def run_noise_spread_attempts(
     observations = _observations(input_data, metrics)
     results: list[AttemptResult] = []
     series: list[PlotSeries] = []
-    for context in contexts:
+
+    def run_context(
+        context: _Context,
+    ) -> tuple[tuple[AttemptResult, ...], PlotSeries | None]:
         attempt_columns = tuple(
             dict.fromkeys((*_BASE_COLUMNS, _PRIMARY_METRIC, *_metrics(context.attempt)))
         )
         if context.attempt.id in _NOISE_PLOT_ATTEMPTS:
-            attempt_results, plot = _run_noise_plot_attempt(
+            return _run_noise_plot_attempt(
                 context,
                 input_data,
                 columns=attempt_columns,
                 observations=observations,
             )
-            results.extend(attempt_results)
-            if plot is not None:
-                series.append(plot)
-        elif context.attempt.id in {"dd-0056-default", "dd-0211-default"}:
-            results.extend(
+        if context.attempt.id in {"dd-0056-default", "dd-0211-default"}:
+            return (
                 _run_noise_association_attempt(
                     context,
                     input_data,
                     columns=attempt_columns,
                     observations=observations,
-                )
+                ),
+                None,
             )
-        elif context.attempt.id == "dd-0098-default":
-            results.extend(
+        if context.attempt.id == "dd-0098-default":
+            return (
                 _run_sd_claim_attempt(
                     context,
                     input_data,
                     columns=attempt_columns,
                     observations=observations,
-                )
+                ),
+                None,
             )
-        elif context.attempt.id == "dd-0194-default":
-            results.append(
-                _run_crossover_attempt(
-                    context,
-                    input_data,
-                    columns=attempt_columns,
-                    observations=observations,
-                )
+        if context.attempt.id == "dd-0194-default":
+            return (
+                (
+                    _run_crossover_attempt(
+                        context,
+                        input_data,
+                        columns=attempt_columns,
+                        observations=observations,
+                    ),
+                ),
+                None,
             )
-        elif context.attempt.id == "dd-0212-default":
-            results.extend(
+        if context.attempt.id == "dd-0212-default":
+            return (
                 _run_noise_improvement_attempt(
                     context,
                     input_data,
                     columns=attempt_columns,
                     observations=observations,
+                ),
+                None,
+            )
+        raise ValueError(f"no noise/spread implementation for {context.attempt.id}")
+
+    for context in contexts:
+        context_results, plot = run_context(context)
+        results.extend(context_results)
+        if plot is not None:
+            series.append(plot)
+        for (
+            sensitivity_id,
+            name,
+            value,
+            sensitivity_context,
+        ) in _comparison_sensitivity_contexts(context):
+            sensitivity_results, _ = run_context(sensitivity_context)
+            default = next(
+                result
+                for result in sensitivity_results
+                if result.attempt_id == context.attempt.id
+            )
+            results.append(
+                _comparison_sensitivity_result(
+                    default,
+                    sensitivity_id=sensitivity_id,
+                    parameter_name=name,
+                    parameter_value=value,
                 )
             )
-        else:
-            raise ValueError(f"no noise/spread implementation for {context.attempt.id}")
     return tuple(sorted(results, key=lambda result: result.attempt_id)), tuple(
         sorted(series, key=lambda plot: plot.id)
     )

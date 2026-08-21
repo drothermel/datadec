@@ -111,6 +111,73 @@ def _parameter(rule: ComparisonRule, name: ComparisonParameterName) -> float:
     return rule.parameter(name).default
 
 
+def _comparison_sensitivity_rules(
+    attempt: AttemptSpec, rule: ComparisonRule
+) -> tuple[tuple[str, ComparisonParameterName, float, ComparisonRule], ...]:
+    sensitivities: list[tuple[str, ComparisonParameterName, float, ComparisonRule]] = []
+    for parameter_index, parameter in enumerate(rule.parameters):
+        for grid_index, value in enumerate(parameter.sensitivity_grid, start=1):
+            if value == parameter.default:
+                continue
+            sensitivity_id = (
+                f"{attempt.claim_id.lower()}-comparison-"
+                f"{parameter.name.value.replace('_', '-')}-grid-{grid_index}"
+            )
+            if sensitivity_id not in attempt.sensitivity_ids:
+                raise ValueError(
+                    f"{attempt.id} does not declare comparison sensitivity "
+                    f"{sensitivity_id}"
+                )
+            parameters = list(rule.parameters)
+            parameters[parameter_index] = parameter.model_copy(
+                update={"default": value}
+            )
+            sensitivities.append(
+                (
+                    sensitivity_id,
+                    parameter.name,
+                    value,
+                    rule.model_copy(update={"parameters": tuple(parameters)}),
+                )
+            )
+    return tuple(sensitivities)
+
+
+def _contract_with_rule(
+    contract: PaperValidationContract, rule: ComparisonRule
+) -> PaperValidationContract:
+    return contract.model_copy(
+        update={
+            "comparison_rules": tuple(
+                rule if candidate.id == rule.id else candidate
+                for candidate in contract.comparison_rules
+            )
+        }
+    )
+
+
+def _comparison_sensitivity_result(
+    result: AttemptResult,
+    *,
+    sensitivity_id: str,
+    parameter_name: ComparisonParameterName,
+    parameter_value: float,
+) -> AttemptResult:
+    return result.model_copy(
+        update={
+            "attempt_id": sensitivity_id,
+            "role": AttemptRole.SENSITIVITY,
+            "parent_attempt_id": result.attempt_id,
+            "diagnostics": (
+                *result.diagnostics,
+                f"comparison_parameter={parameter_name.value}",
+                f"comparison_parameter_value={parameter_value:.17g}",
+            ),
+            "plot_series_ids": (),
+        }
+    )
+
+
 def _linear_slope(xs: Iterable[float], ys: Iterable[float]) -> float:
     x_values = tuple(xs)
     y_values = tuple(ys)
@@ -809,13 +876,13 @@ def _aggregate_plot(
         ),
         target_ties=total_target_ties,
         predicted_ties=total_predicted_ties,
-        outcome=ValidationOutcome.REPRODUCED,
+        outcome=ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED,
         diagnostics=(
             f"Persisted {len(points)} common-complete aggregate plot points.",
         ),
         limitations=(
-            "The configured nonempty-plot predicate validates series availability; "
-            "it does not adjudicate approximate log-linearity.",
+            "The derived plot series is available for visual comparison, but no "
+            "frozen semantic predicate adjudicates approximate log-linearity.",
         ),
         plot_series_ids=(series.id,),
     )
@@ -1048,11 +1115,11 @@ def _per_task_plot(
         ),
         target_ties=total_target_ties,
         predicted_ties=total_predicted_ties,
-        outcome=ValidationOutcome.REPRODUCED,
+        outcome=ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED,
         diagnostics=(f"Persisted {len(points)} common-complete per-task plot points.",),
         limitations=(
-            "The configured nonempty-plot predicate validates series availability; "
-            "it does not adjudicate task-specific qualitative predicates.",
+            "The derived plot series is available for visual comparison, but no "
+            "frozen semantic predicate adjudicates the task-specific claims.",
         ),
         plot_series_ids=(series.id,),
     )
@@ -1866,8 +1933,43 @@ def run_single_scale_attempts(
         aggregate_result=plot_result,
         aggregate_series=series,
     )
+    sensitivity_results: list[AttemptResult] = []
+    qualitative_by_id = {result.attempt_id: result for result in qualitative}
+    for attempt in contract.attempts:
+        if attempt.analysis_id is not AnalysisId.SINGLE_SCALE:
+            continue
+        rule = _comparison_rule(contract, attempt)
+        for (
+            sensitivity_id,
+            name,
+            value,
+            sensitivity_rule,
+        ) in _comparison_sensitivity_rules(attempt, rule):
+            rerun, _ = _single_scale_qualitative_attempts(
+                registry=registry,
+                contract=_contract_with_rule(contract, sensitivity_rule),
+                headline=headline,
+                aggregate_result=plot_result,
+                aggregate_series=series,
+            )
+            rerun_by_id = {result.attempt_id: result for result in rerun}
+            if attempt.id not in rerun_by_id or attempt.id not in qualitative_by_id:
+                raise ValueError(
+                    f"single-scale comparison sensitivity has no result for {attempt.id}"
+                )
+            sensitivity_results.append(
+                _comparison_sensitivity_result(
+                    rerun_by_id[attempt.id],
+                    sensitivity_id=sensitivity_id,
+                    parameter_name=name,
+                    parameter_value=value,
+                )
+            )
     return tuple(
-        sorted((*headline, plot_result, *qualitative), key=lambda item: item.attempt_id)
+        sorted(
+            (*headline, plot_result, *qualitative, *sensitivity_results),
+            key=lambda item: item.attempt_id,
+        )
     ), tuple(sorted((series, *qualitative_series), key=lambda item: item.id))
 
 
@@ -1900,8 +2002,42 @@ def run_per_task_attempts(
         evidence=result,
         base_series=series,
     )
+    sensitivity_results: list[AttemptResult] = []
+    qualitative_by_id = {item.attempt_id: item for item in qualitative}
+    for attempt in contract.attempts:
+        if attempt.analysis_id is not AnalysisId.PER_TASK:
+            continue
+        rule = _comparison_rule(contract, attempt)
+        for (
+            sensitivity_id,
+            name,
+            value,
+            sensitivity_rule,
+        ) in _comparison_sensitivity_rules(attempt, rule):
+            rerun, _ = _per_task_qualitative_attempts(
+                registry=registry,
+                contract=_contract_with_rule(contract, sensitivity_rule),
+                evidence=result,
+                base_series=series,
+            )
+            rerun_by_id = {item.attempt_id: item for item in rerun}
+            if attempt.id not in rerun_by_id or attempt.id not in qualitative_by_id:
+                raise ValueError(
+                    f"per-task comparison sensitivity has no result for {attempt.id}"
+                )
+            sensitivity_results.append(
+                _comparison_sensitivity_result(
+                    rerun_by_id[attempt.id],
+                    sensitivity_id=sensitivity_id,
+                    parameter_name=name,
+                    parameter_value=value,
+                )
+            )
     return tuple(
-        sorted((result, *qualitative), key=lambda item: item.attempt_id)
+        sorted(
+            (result, *qualitative, *sensitivity_results),
+            key=lambda item: item.attempt_id,
+        )
     ), tuple(sorted((series, *qualitative_series), key=lambda item: item.id))
 
 

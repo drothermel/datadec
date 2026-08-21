@@ -116,7 +116,29 @@ def test_single_scale_adapter_persists_headline_and_aggregate_series(
     aggregate_result = next(
         item for item in attempts if item.attempt_id == "dd-0169-default"
     )
+    assert aggregate.points
+    assert aggregate_result.outcome is ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED
     assert aggregate_result.plot_series_ids == (aggregate.id,)
+
+    annotation_results = {
+        item.attempt_id: item
+        for item in attempts
+        if item.parent_attempt_id == "dd-0356-default"
+        and "-comparison-" in item.attempt_id
+    }
+    assert {
+        attempt_id: result.outcome for attempt_id, result in annotation_results.items()
+    } == {
+        "dd-0356-comparison-accuracy-threshold-grid-1": (
+            ValidationOutcome.APPROXIMATELY_REPRODUCED
+        ),
+        "dd-0356-comparison-accuracy-threshold-grid-3": (
+            ValidationOutcome.NOT_REPRODUCED
+        ),
+    }
+    assert {
+        result.computed_value["threshold"] for result in annotation_results.values()
+    } == {0.75, 0.85}
 
 
 def test_per_task_adapter_persists_all_ten_logical_task_curves(
@@ -133,7 +155,9 @@ def test_per_task_adapter_persists_all_ten_logical_task_curves(
         input_identities={identity.id: identity},
     )
 
-    assert {item.attempt_id for item in attempts} == {
+    assert {
+        item.attempt_id for item in attempts if item.role is AttemptRole.DEFAULT
+    } == {
         "dd-0051-default",
         "dd-0052-default",
         "dd-0053-default",
@@ -146,14 +170,10 @@ def test_per_task_adapter_persists_all_ten_logical_task_curves(
         "dd-0168-default",
         *(f"dd-{claim:04d}-default" for claim in range(174, 180)),
     }
-    assert all(
-        item.outcome is not ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED
-        for item in attempts
-    )
     plot_result = next(
         item for item in attempts if item.attempt_id == "dd-0148-default"
     )
-    assert plot_result.outcome is ValidationOutcome.REPRODUCED
+    assert plot_result.outcome is ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED
     assert plot_result.plot_series_ids == ("dd-0148-paper-analog",)
     assert {item.id for item in series} == {
         "dd-0148-paper-analog",
@@ -177,6 +197,16 @@ def test_per_task_adapter_persists_all_ten_logical_task_curves(
         "winogrande",
     }
     assert all(point.measures[0].value > 0 for point in per_task.points)
+    comparison_sensitivities = tuple(
+        item for item in attempts if "-comparison-" in item.attempt_id
+    )
+    assert comparison_sensitivities
+    assert all(
+        item.role is AttemptRole.SENSITIVITY
+        and item.parent_attempt_id is not None
+        and not item.plot_series_ids
+        for item in comparison_sensitivities
+    )
 
 
 def test_adapter_rejects_an_unverified_input_identity(

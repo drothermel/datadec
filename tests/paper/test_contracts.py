@@ -205,6 +205,27 @@ def test_qualitative_attempts_use_frozen_typed_rules() -> None:
     assert clustering.parameter(
         ComparisonParameterName.SILHOUETTE_MINIMUM
     ).sensitivity_grid == (0.15, 0.25, 0.35)
+    noise_improvement = attempts["dd-0057-default"]
+    assert set(noise_improvement.sensitivity_ids) >= {
+        "dd-0057-preceding-common-complete-1",
+        "dd-0057-preceding-common-complete-2",
+        "dd-0057-comparison-fraction-threshold-grid-2",
+        "dd-0057-comparison-fraction-threshold-grid-3",
+    }
+    assert len(noise_improvement.sensitivity_ids) == len(
+        set(noise_improvement.sensitivity_ids)
+    )
+    for attempt_id in attempt_ids:
+        attempt = attempts[attempt_id]
+        rule = rules[attempt.comparison_rule_id]
+        expected_ids = {
+            f"{attempt.claim_id.lower()}-comparison-"
+            f"{parameter.name.value.replace('_', '-')}-grid-{grid_index}"
+            for parameter in rule.parameters
+            for grid_index, value in enumerate(parameter.sensitivity_grid, start=1)
+            if value != parameter.default
+        }
+        assert expected_ids <= set(attempt.sensitivity_ids)
 
 
 @pytest.mark.parametrize(

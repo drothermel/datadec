@@ -1183,10 +1183,13 @@ def _result(
             spec.claim_id, evidence=evidence, analysis=analysis
         )
         if rule.predicate is ComparisonPredicate.NONEMPTY_PLOT:
-            holds = series is not None
-        outcome = (
-            ValidationOutcome.REPRODUCED if holds else ValidationOutcome.NOT_REPRODUCED
-        )
+            outcome = ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED
+        else:
+            outcome = (
+                ValidationOutcome.REPRODUCED
+                if holds
+                else ValidationOutcome.NOT_REPRODUCED
+            )
     decisions = tuple(item.decision for item in analysis.predictions)
     denominator_values = {item.denominator for item in decisions}
     denominator = (
@@ -1327,7 +1330,11 @@ def run_scaling_law_attempts(
             raise ValueError(
                 f"scaling attempt references unknown rule {spec.comparison_rule_id}"
             )
-        series = _plot_series(spec=spec, analysis=analysis, recipe_count=len(recipes))
+        series = (
+            None
+            if evidence.missing_groups
+            else _plot_series(spec=spec, analysis=analysis, recipe_count=len(recipes))
+        )
         if series is not None:
             declared = spec.plot_series_ids
             if declared and declared != (series.id,):

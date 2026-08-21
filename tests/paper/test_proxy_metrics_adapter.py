@@ -261,7 +261,7 @@ def test_noise_plot_uses_declared_canonical_series_id(tmp_path: Path) -> None:
         30,
     ]
     assert attempts[0].plot_series_ids == ("dd-0209-paper-analog",)
-    assert attempts[0].outcome is ValidationOutcome.REPRODUCED
+    assert attempts[0].outcome is ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED
     assert series[0].id == "dd-0209-paper-analog"
     assert series[0].actual_checkpoint == 50
     assert len(series[0].points) == 1
@@ -345,11 +345,22 @@ def test_small_scale_proxy_equivalence_uses_frozen_compute_and_difference_rules(
     )
 
     assert series == ()
-    assert len(attempts) == 1
-    assert attempts[0].attempt_id == "dd-0196-default"
-    assert attempts[0].outcome is ValidationOutcome.REPRODUCED
-    assert attempts[0].computed_value["comparison_count"] == 10
-    assert attempts[0].computed_value["mean_best_proxy_minus_accuracy"] == 0.0
+    assert len(attempts) == 3
+    default = next(result for result in attempts if result.role is AttemptRole.DEFAULT)
+    assert default.attempt_id == "dd-0196-default"
+    assert default.outcome is ValidationOutcome.REPRODUCED
+    assert default.computed_value["comparison_count"] == 10
+    assert default.computed_value["mean_best_proxy_minus_accuracy"] == 0.0
+    sensitivities = tuple(
+        result for result in attempts if result.role is AttemptRole.SENSITIVITY
+    )
+    assert {result.attempt_id for result in sensitivities} == {
+        "dd-0196-comparison-maximum-scale-percent-grid-1",
+        "dd-0196-comparison-maximum-scale-percent-grid-3",
+    }
+    assert all(
+        result.parent_attempt_id == default.attempt_id for result in sensitivities
+    )
 
 
 def test_one_billion_seed_sd_claim_counts_tasks_and_reports_maximum(
