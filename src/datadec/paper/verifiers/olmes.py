@@ -652,7 +652,7 @@ def compute_single_scale_decisions(
             for score in score_values
             if score.model_size != policy.target_size
             and score.seed in policy.prediction_seeds
-            and score.metric in policy.proxy_metric_columns
+            and score.metric in policy.metric_columns
         }
     )
     lookup = {

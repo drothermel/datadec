@@ -2,17 +2,21 @@ from __future__ import annotations
 
 import hashlib
 from collections import Counter
+from dataclasses import replace
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
 
+import pandas as pd
 import pytest
 
 import datadec.paper.run as run_module
+from datadec.paper.analysis import MMLU_SUBJECTS, OLMES_NON_MMLU_TASKS, TiePolicy
 from datadec.paper.models import (
     CodeIdentity,
     CodeTreeState,
     ContentIdentity,
+    EvidenceBoundary,
     MethodProvenance,
     Verdict,
 )
@@ -24,8 +28,12 @@ from datadec.paper.run import (
 )
 from datadec.paper.verifiers.olmes import (
     CanonicalFinalSelection,
-    CheckpointDecisionSummary,
+    FinalCheckpoint,
+    MissingDataBehavior,
+    NormalizedOlmesPolicy,
     NormalizedOlmesVerification,
+    OlmesTaskGrouping,
+    verify_normalized_olmes,
 )
 
 _REPOSITORY_ROOT = Path(__file__).parents[2]
@@ -34,6 +42,80 @@ _REPOSITORY_ROOT = Path(__file__).parents[2]
 @pytest.fixture(scope="module")
 def validation() -> run_module.RepositoryValidation:
     return validate_repository(_REPOSITORY_ROOT)
+
+
+def _olmes_policy(
+    *,
+    prediction_seeds: tuple[str, ...] = (
+        "prediction-1",
+        "prediction-2",
+        "prediction-3",
+    ),
+) -> NormalizedOlmesPolicy:
+    return NormalizedOlmesPolicy(
+        recipes=("a", "b"),
+        target_size="1B",
+        target_seeds=("target-1", "target-2", "target-3"),
+        prediction_seeds=prediction_seeds,
+        target_metric_column="primary_metric",
+        proxy_metric_columns=("proxy_metric",),
+        task_grouping=OlmesTaskGrouping(
+            non_mmlu_tasks=OLMES_NON_MMLU_TASKS,
+            mmlu_subjects=MMLU_SUBJECTS,
+            mmlu_task_name="mmlu",
+        ),
+        final_checkpoints=(
+            FinalCheckpoint(model_size="1B", step=100),
+            FinalCheckpoint(model_size="150M", step=50),
+        ),
+        noise_size="150M",
+        tie_policy=TiePolicy.COUNT_AS_INCORRECT,
+        attempt_ddof=1,
+        within_recipe_ddof=1,
+        spread_ddof=1,
+        missing_data_behavior=MissingDataBehavior.RECORD,
+        parameter_count_column="exact_parameter_count",
+        token_count_column="tokens",
+        target_compute_denominator=6_000.0,
+    )
+
+
+def _real_olmes_verification(
+    policy: NormalizedOlmesPolicy,
+    *,
+    missing_primary_checkpoint_value: bool = False,
+) -> NormalizedOlmesVerification:
+    rows: list[dict[str, object]] = []
+    for recipe_index, recipe in enumerate(policy.recipes):
+        for model_size, step, seeds, parameters, tokens in (
+            ("1B", 100, policy.target_seeds, 100, 10),
+            ("150M", 50, policy.prediction_seeds, 10, 20),
+        ):
+            for seed in seeds:
+                for task in (*OLMES_NON_MMLU_TASKS, *MMLU_SUBJECTS):
+                    primary_value: float | None = float(recipe_index)
+                    if (
+                        missing_primary_checkpoint_value
+                        and model_size == "150M"
+                        and recipe == "a"
+                        and seed == policy.prediction_seeds[0]
+                        and task == OLMES_NON_MMLU_TASKS[0]
+                    ):
+                        primary_value = None
+                    rows.append(
+                        {
+                            "params": model_size,
+                            "data": recipe,
+                            "seed": seed,
+                            "step": step,
+                            "task": task,
+                            "exact_parameter_count": parameters,
+                            "tokens": tokens,
+                            "primary_metric": primary_value,
+                            "proxy_metric": float(recipe_index),
+                        }
+                    )
+    return verify_normalized_olmes(pd.DataFrame(rows), policy)
 
 
 def test_current_repository_validation_is_complete_and_read_only() -> None:
@@ -70,8 +152,8 @@ def test_first_run_builds_one_truthful_terminal_observation_per_claim(
     assert Counter(observation.verdict for observation in observations) == {
         Verdict.SOURCE_ONLY_MATCH: 154,
         Verdict.BLOCKED_UNSPECIFIED_METHOD: 108,
-        Verdict.BLOCKED_MISSING_INPUT: 64,
-        Verdict.NOT_ATTEMPTED: 62,
+        Verdict.BLOCKED_MISSING_INPUT: 65,
+        Verdict.NOT_ATTEMPTED: 61,
         Verdict.EXTERNAL_OR_CITATION_DEPENDENT: 39,
         Verdict.CONTRADICTED: 15,
     }
@@ -120,6 +202,9 @@ def test_first_run_builds_one_truthful_terminal_observation_per_claim(
     assert planned_olmes.verdict is Verdict.NOT_ATTEMPTED
     assert planned_olmes.verifier_id == "olmes_aggregate"
     assert planned_olmes.policy_id == "olmes_v1"
+    assert by_id["DD-0045"].verdict is Verdict.BLOCKED_MISSING_INPUT
+    assert by_id["DD-0045"].blocker is not None
+    assert by_id["DD-0045"].blocker.missing_input_ids == ("normalized-olmes-input",)
 
 
 def test_source_only_diagnostics_do_not_claim_independent_reproduction(
@@ -141,41 +226,31 @@ def test_source_only_diagnostics_do_not_claim_independent_reproduction(
 def test_abstract_single_scale_claim_requires_exact_summary_then_tolerance(
     validation: run_module.RepositoryValidation,
 ) -> None:
+    policy = _olmes_policy()
+    test_validation = replace(validation, olmes_policy=policy)
     without_input = next(
-        value for value in build_observations(validation) if value.claim_id == "DD-0011"
+        value
+        for value in build_observations(test_validation)
+        if value.claim_id == "DD-0011"
     )
     assert without_input.verdict is Verdict.BLOCKED_MISSING_INPUT
     assert without_input.blocker is not None
     assert without_input.blocker.missing_input_ids == (
-        "olmes-summary:params=150M:step=38157:metric=primary_metric",
+        "olmes-summary:params=150M:step=50:metric=primary_metric",
     )
 
-    summary = CheckpointDecisionSummary(
-        model_size="150M",
-        step=38_157,
-        metric="primary_metric",
-        mean_accuracy=0.8,
-        sd_accuracy=0.0,
-        seed_count=3,
-        ddof=1,
-        sd_denominator=2,
-        percent_target_compute=15.0,
-        attempts=(),
-    )
-    verification = NormalizedOlmesVerification(
-        canonical_finals=CanonicalFinalSelection(scores=(), missing=()),
-        target_ranking=None,
-        seed_decisions=(),
-        checkpoint_summaries=(summary,),
-        noise_spread=(),
-        missing=(),
-        facts=(),
+    verification = _real_olmes_verification(policy)
+    assert any(
+        summary.model_size == "150M"
+        and summary.step == 50
+        and summary.metric == "primary_metric"
+        for summary in verification.checkpoint_summaries
     )
 
     with_input = next(
         value
         for value in build_observations(
-            validation,
+            test_validation,
             olmes_verification=verification,
             olmes_input_id="normalized-olmes-input",
         )
@@ -185,6 +260,102 @@ def test_abstract_single_scale_claim_requires_exact_summary_then_tolerance(
     assert with_input.input_ids == ("normalized-olmes-input",)
     assert with_input.blocker is not None
     assert "no numeric tolerance" in with_input.blocker.reason
+
+    incomplete = _real_olmes_verification(
+        policy,
+        missing_primary_checkpoint_value=True,
+    )
+    missing_exact_summary = next(
+        value
+        for value in build_observations(
+            test_validation,
+            olmes_verification=incomplete,
+            olmes_input_id="normalized-olmes-input",
+        )
+        if value.claim_id == "DD-0011"
+    )
+    assert missing_exact_summary.verdict is Verdict.BLOCKED_MISSING_INPUT
+    assert missing_exact_summary.blocker is not None
+    assert missing_exact_summary.blocker.missing_input_ids == (
+        "olmes-summary:params=150M:step=50:metric=primary_metric",
+    )
+
+
+def test_exact_olmes_fact_mapping_persists_complete_fact_evidence(
+    validation: run_module.RepositoryValidation,
+) -> None:
+    policy = _olmes_policy()
+    verification = _real_olmes_verification(policy)
+
+    observations = build_observations(
+        replace(validation, olmes_policy=policy),
+        olmes_verification=verification,
+        olmes_input_id="normalized-olmes-input",
+    )
+    by_id = {observation.claim_id: observation for observation in observations}
+    observation = by_id["DD-0045"]
+
+    assert observation.verdict is Verdict.REPRODUCED
+    assert observation.actual_evidence_boundary is EvidenceBoundary.AGGREGATE_EVALUATION
+    assert observation.method_provenance is MethodProvenance.PAPER_DERIVED
+    assert observation.input_ids == ("normalized-olmes-input",)
+    assert observation.denominator == 2
+    assert {count.name: count.value for count in observation.counts} == {
+        "exclusions": 0,
+        "predicted_ties": 0,
+        "seed_count": 3,
+        "target_ties": 0,
+    }
+    assert isinstance(observation.observed_value, list)
+    assert {fact["dimensions"]["metric"] for fact in observation.observed_value} == {
+        "primary_metric",
+        "proxy_metric",
+    }
+    assert all(
+        fact["denominator"] == 3
+        and fact["seed_count"] == 3
+        and fact["exclusions"] == 0
+        and fact["target_ties"] == 0
+        and fact["predicted_ties"] == 0
+        for fact in observation.observed_value
+    )
+    for unsupported_claim_id in ("DD-0002", "DD-0012", "DD-0107"):
+        assert by_id[unsupported_claim_id].verdict is Verdict.NOT_ATTEMPTED
+        assert by_id[unsupported_claim_id].input_ids == ()
+
+
+def test_exact_olmes_fact_mapping_blocks_incomplete_input_and_contradicts_value(
+    validation: run_module.RepositoryValidation,
+) -> None:
+    policy = _olmes_policy()
+    incomplete = _real_olmes_verification(
+        policy,
+        missing_primary_checkpoint_value=True,
+    )
+    blocked = next(
+        value
+        for value in build_observations(
+            replace(validation, olmes_policy=policy),
+            olmes_verification=incomplete,
+            olmes_input_id="normalized-olmes-input",
+        )
+        if value.claim_id == "DD-0045"
+    )
+    assert blocked.verdict is Verdict.BLOCKED_MISSING_INPUT
+    assert blocked.input_ids == ("normalized-olmes-input",)
+
+    two_seed_policy = _olmes_policy(prediction_seeds=("prediction-1", "prediction-2"))
+    contradicted = next(
+        value
+        for value in build_observations(
+            replace(validation, olmes_policy=two_seed_policy),
+            olmes_verification=_real_olmes_verification(two_seed_policy),
+            olmes_input_id="normalized-olmes-input",
+        )
+        if value.claim_id == "DD-0045"
+    )
+    assert contradicted.verdict is Verdict.CONTRADICTED
+    assert {count.name: count.value for count in contradicted.counts}["seed_count"] == 2
 
 
 def test_run_repository_rejects_a_dirty_tree_before_validation(

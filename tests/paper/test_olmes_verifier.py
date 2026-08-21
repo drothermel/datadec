@@ -375,8 +375,12 @@ def test_verification_emits_long_form_facts_with_evidence_boundary() -> None:
 
     assert result.missing == ()
     assert result.target_ranking is not None
-    assert len(result.seed_decisions) == 2
-    assert len(result.checkpoint_summaries) == 1
+    assert len(result.seed_decisions) == 4
+    assert len(result.checkpoint_summaries) == 2
+    assert {summary.metric for summary in result.checkpoint_summaries} == {
+        "primary_metric",
+        "proxy_metric",
+    }
     assert len(result.noise_spread) == 20
     assert all(
         fact.input_evidence_boundary is EvidenceBoundary.AGGREGATE_EVALUATION

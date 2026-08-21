@@ -30,6 +30,7 @@ from datadec.paper.models import (
     EvidenceBoundary,
     Observation,
     ObservationBlocker,
+    ObservationCount,
     PaperClaim,
     PaperReproductionContract,
     RunBundle,
@@ -57,6 +58,8 @@ from datadec.paper.source import (
     validate_source_coverage,
 )
 from datadec.paper.verifiers.olmes import (
+    FactRow,
+    FactStatus,
     NormalizedOlmesPolicy,
     NormalizedOlmesVerification,
     verify_normalized_olmes_parquet,
@@ -80,6 +83,15 @@ _EVALUATION_RERUN_RESULTS_ID = "evaluation-rerun-results"
 _TRAINING_RUN_MANIFEST_ID = "training-run-manifest"
 _CORPUS_CONSTRUCTION_MANIFEST_ID = "corpus-construction-manifest"
 _ABSTRACT_SINGLE_SCALE_CLAIM_ID = "DD-0011"
+_PREDICTION_SEED_COUNT_CLAIM_ID = "DD-0045"
+_PREDICTION_SEED_COUNT_EXPECTATION = "prediction_attempt_count_per_point = 3"
+_PREDICTION_SEED_COUNT = 3
+_PREDICTION_SEED_FACT = "single_scale_mean_decision_accuracy"
+_PREDICTION_SEED_STATIC_REFERENCES = (
+    "olmes_aggregate",
+    "olmes_aggregate_verification",
+    "olmes_v1",
+)
 _ModelT = TypeVar("_ModelT", bound=BaseModel)
 
 
@@ -399,6 +411,110 @@ def _abstract_single_scale_observation(
     )
 
 
+def _missing_olmes_fact_id(fact: FactRow) -> str:
+    dimensions = ":".join(f"{name}={value}" for name, value in fact.dimensions)
+    return f"olmes-fact:{fact.fact}:{dimensions}"
+
+
+def _serialized_olmes_fact(fact: FactRow) -> dict[str, object]:
+    return {
+        "fact": fact.fact,
+        "dimensions": dict(fact.dimensions),
+        "value": fact.value,
+        "denominator": fact.denominator,
+        "exclusions": fact.exclusions,
+        "target_ties": fact.target_ties,
+        "predicted_ties": fact.predicted_ties,
+        "seed_count": fact.seed_count,
+    }
+
+
+def _prediction_seed_count_observation(
+    claim: PaperClaim,
+    verification: NormalizedOlmesVerification | None,
+    olmes_input_id: str | None,
+) -> Observation:
+    static_references = (claim.verifier_id, claim.method_id, claim.policy_id)
+    if static_references != _PREDICTION_SEED_STATIC_REFERENCES:
+        raise ValueError(
+            f"OLMES fact mapping for {claim.id} no longer matches its static references"
+        )
+    if claim.expectation != _PREDICTION_SEED_COUNT_EXPECTATION:
+        raise ValueError(
+            f"OLMES fact mapping for {claim.id} no longer matches its expectation"
+        )
+    if verification is None or olmes_input_id is None:
+        return _missing_observation(
+            claim,
+            (_NORMALIZED_OLMES_INPUT_ID,),
+            "the mapped OLMES fact requires an identified normalized aggregate input",
+        )
+
+    input_ids = (olmes_input_id,)
+    missing_facts = tuple(
+        fact for fact in verification.facts if fact.status is FactStatus.MISSING
+    )
+    if missing_facts:
+        return _missing_observation(
+            claim,
+            tuple(sorted({_missing_olmes_fact_id(fact) for fact in missing_facts})),
+            "incomplete normalized OLMES facts cannot establish the seed count for every checkpoint summary",
+            input_ids=input_ids,
+        )
+
+    facts = tuple(
+        fact
+        for fact in verification.facts
+        if fact.status is FactStatus.COMPLETE and fact.fact == _PREDICTION_SEED_FACT
+    )
+    if not facts:
+        return _missing_observation(
+            claim,
+            (f"olmes-fact:{_PREDICTION_SEED_FACT}",),
+            "no complete checkpoint-summary facts are available",
+            input_ids=input_ids,
+        )
+
+    boundaries = {fact.input_evidence_boundary for fact in facts}
+    if boundaries != {EvidenceBoundary.AGGREGATE_EVALUATION}:
+        raise ValueError(
+            "mapped OLMES checkpoint summaries have an unexpected evidence boundary"
+        )
+    seed_counts = {fact.seed_count for fact in facts}
+    reproduced = seed_counts == {_PREDICTION_SEED_COUNT}
+    return Observation(
+        claim_id=claim.id,
+        actual_evidence_boundary=EvidenceBoundary.AGGREGATE_EVALUATION,
+        verdict=Verdict.REPRODUCED if reproduced else Verdict.CONTRADICTED,
+        observed_value=[_serialized_olmes_fact(fact) for fact in facts],
+        diagnostics=(
+            f"mapped fact: {_PREDICTION_SEED_FACT}",
+            "predicate: every complete checkpoint summary has seed_count = 3",
+        ),
+        denominator=len(facts),
+        counts=tuple(
+            sorted(
+                (
+                    ObservationCount(
+                        name="exclusions", value=sum(fact.exclusions for fact in facts)
+                    ),
+                    ObservationCount(
+                        name="predicted_ties",
+                        value=sum(fact.predicted_ties for fact in facts),
+                    ),
+                    ObservationCount(name="seed_count", value=max(seed_counts)),
+                    ObservationCount(
+                        name="target_ties",
+                        value=sum(fact.target_ties for fact in facts),
+                    ),
+                ),
+                key=lambda count: count.name,
+            )
+        ),
+        input_ids=input_ids,
+    )
+
+
 def build_observations(
     validation: RepositoryValidation,
     *,
@@ -420,6 +536,12 @@ def build_observations(
             observation = _abstract_single_scale_observation(
                 claim,
                 validation.olmes_policy,
+                olmes_verification,
+                olmes_input_id,
+            )
+        elif claim.id == _PREDICTION_SEED_COUNT_CLAIM_ID:
+            observation = _prediction_seed_count_observation(
+                claim,
                 olmes_verification,
                 olmes_input_id,
             )
