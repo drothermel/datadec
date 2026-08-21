@@ -69,6 +69,13 @@ Two independent axes plus relevance tier, reported side by side and never collap
 
 Papers under 6 months old are labeled `too-new-for-external` rather than scored low.
 
+Provider findings (verified 2026-08-21, authenticated OpenAlex + unauthenticated S2):
+
+- OpenAlex splits a work across manifestations (e.g., Dolma: 50 citations on the ACL DOI record, 10 on the arXiv-DOI record). Agents gather every OpenAlex work ID per paper (arXiv DOI, venue DOI, title-matched siblings) and sum; a single-ID count is never reported.
+- OpenAlex undercounts ML citations substantially (DataDecide: 0 in OpenAlex vs. 37 / 5 influential in Semantic Scholar). Semantic Scholar is the primary source for `citationCount` and `influentialCitationCount`; OpenAlex supplies the citation graph (`referenced_works`, `cites:` filters), cohort percentiles via `group_by`, venue and author metadata.
+- Cost model: every OpenAlex call costs $0.0001 whether singleton or 50-work filter; `search=` costs 10×. Discovery uses arXiv/S2/OpenReview; OpenAlex receives exact IDs in batches of 50 with `select=`. Budget at test time: $1/day free, $6 prepaid, 60k one-time credits. Each OpenAlex-touching step logs `x-ratelimit-*` usage and aborts above a $5 per-workflow ceiling.
+- Unauthenticated Semantic Scholar throttles after the first request; pace at 1 request/s with retry, or supply `SEMANTIC_SCHOLAR_API_KEY` via the same mise secrets file.
+
 ### Internal rigor (from the deep-read card, quoted evidence required)
 
 - controlled comparison vs. observational design
