@@ -139,8 +139,8 @@ def test_current_repository_validation_is_complete_and_read_only() -> None:
         "--untracked-files=all",
     )
     assert status_after == status_before
-    assert len(validation.registry.claims) == 442
-    assert len(validation.coverage.claim_ids) == 442
+    assert len(validation.registry.claims) == 455
+    assert len(validation.coverage.claim_ids) == 455
     assert len(validation.citations.citation_keys) == 43
     assert len(validation.suite.rows) == 14
 
@@ -151,10 +151,10 @@ def test_first_run_builds_one_truthful_terminal_observation_per_claim(
     observations = build_observations(validation)
     by_id = {observation.claim_id: observation for observation in observations}
 
-    assert len(observations) == len(by_id) == 442
+    assert len(observations) == len(by_id) == 455
     assert tuple(by_id) == tuple(sorted(by_id))
     assert Counter(observation.verdict for observation in observations) == {
-        Verdict.SOURCE_ONLY_MATCH: 154,
+        Verdict.SOURCE_ONLY_MATCH: 167,
         Verdict.BLOCKED_UNSPECIFIED_METHOD: 108,
         Verdict.BLOCKED_MISSING_INPUT: 65,
         Verdict.NOT_ATTEMPTED: 61,
