@@ -6738,3 +6738,1155 @@ prerequisite_claim_ids = []
 paper_elements = ["fig:primary_metric_compute_vs_accuracy_per_task","MMLU facet"]
 citation_keys = []
 
+[[source_regions]]
+id = "SR-N-bibliography-rendering"
+source_file = "docs/paper/example_paper.bbl"
+line_start = 1
+line_end = 255
+kind = "bibliography_rendering"
+content_sha256 = "94fa2c815578f3aa5f5f962b40a767dc25d23c6e59e05a77de600ce686df1f3c"
+non_claim_reason = "rendered bibliography, validated separately from scientific claims"
+
+[[source_regions]]
+id = "SR-N-bibliography-provenance"
+source_file = "docs/paper/example_paper.bib"
+line_start = 1
+line_end = 460
+kind = "bibliography_provenance"
+content_sha256 = "db248c00567f7c5b10c160ee40f413368ccfd56852f44ffa229c15842fa177f4"
+non_claim_reason = "bibliography source metadata, validated separately from scientific claims"
+
+[[source_regions]]
+id = "SR-C-example-paper-0075-0075"
+source_file = "docs/paper/example_paper.tex"
+line_start = 75
+line_end = 75
+kind = "macro_definition"
+content_sha256 = "2a82782f59d473245ac6c7ebe9050751104af349f8dc13e17c127f6b68f33594"
+claim_ids = ["DD-0163"]
+
+[[source_regions]]
+id = "SR-N-running-title"
+source_file = "docs/paper/example_paper.tex"
+line_start = 163
+line_end = 163
+kind = "title_metadata"
+content_sha256 = "eb1be2b7368536b550d16a287a2971e219acd506dbf5a625055fb8ce2e4c0864"
+non_claim_reason = "running title metadata, not a scientific claim"
+
+[[source_regions]]
+id = "SR-N-logo-macro"
+source_file = "docs/paper/example_paper.tex"
+line_start = 167
+line_end = 176
+kind = "decorative_logo"
+content_sha256 = "d9877b7b49bf7db32b4fb60098c9adb6524265d5645cd038633566353907335b"
+non_claim_reason = "decorative title logo composition, not a scientific claim"
+
+[[source_regions]]
+id = "SR-N-paper-title"
+source_file = "docs/paper/example_paper.tex"
+line_start = 185
+line_end = 185
+kind = "title_metadata"
+content_sha256 = "b28f506c55c8663b8c79ee1bda94271b00346a198d58956bba8982ddbaeaa3cc"
+non_claim_reason = "paper title metadata, not a scientific claim"
+
+[[source_regions]]
+id = "SR-N-author-list"
+source_file = "docs/paper/example_paper.tex"
+line_start = 191
+line_end = 205
+kind = "author_metadata"
+content_sha256 = "0da384d4b6eaf1931bde6ff707bb8ad2c44ac5420d0dd67d25a91a91b4cba301"
+non_claim_reason = "paper author metadata, not a scientific claim"
+
+[[source_regions]]
+id = "SR-N-affiliations"
+source_file = "docs/paper/example_paper.tex"
+line_start = 208
+line_end = 210
+kind = "affiliation_metadata"
+content_sha256 = "5963895afb91a00bfbf70a6f1c59fcbcf2cb11901de008545e1cb55ae0f30afc"
+non_claim_reason = "author affiliation metadata, not a scientific claim"
+
+[[source_regions]]
+id = "SR-N-corresponding-author"
+source_file = "docs/paper/example_paper.tex"
+line_start = 213
+line_end = 213
+kind = "contact_metadata"
+content_sha256 = "6442e1bbcdfc02a0197af337108412ab2aca133190a364349de84dd8dc41051e"
+non_claim_reason = "corresponding-author contact metadata, not a scientific claim"
+
+[[source_regions]]
+id = "SR-N-keywords"
+source_file = "docs/paper/example_paper.tex"
+line_start = 219
+line_end = 219
+kind = "keyword_metadata"
+content_sha256 = "4759167e83aa9a08927e7d68bc1bbdaec4980956ec9ee31a9f04ad548d339b5b"
+non_claim_reason = "paper keyword metadata, not a scientific claim"
+
+[[source_regions]]
+id = "SR-N-equal-contribution"
+source_file = "docs/paper/example_paper.tex"
+line_start = 233
+line_end = 233
+kind = "author_metadata"
+content_sha256 = "7630ab70020a728db853ca8729c192f3c044e44d817fc530c173038fbb946531"
+non_claim_reason = "equal-contribution author metadata, not a scientific claim"
+
+[[source_regions]]
+id = "SR-C-example-paper-0237-0240"
+source_file = "docs/paper/example_paper.tex"
+line_start = 237
+line_end = 240
+kind = "prose"
+content_sha256 = "0131f01d16a90acfe4bdefdf0f04b05b6bff6ca9e81e97bfdb4265975c38e3f7"
+claim_ids = ["DD-0001", "DD-0002", "DD-0003", "DD-0004", "DD-0005", "DD-0006", "DD-0007", "DD-0008", "DD-0009", "DD-0010", "DD-0011", "DD-0012", "DD-0013", "DD-0014", "DD-0015", "DD-0016", "DD-0017", "DD-0018"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0248-0249"
+source_file = "docs/paper/example_paper.tex"
+line_start = 248
+line_end = 249
+kind = "figure_caption"
+content_sha256 = "b96d9d31b64de3731f44d1b0599a4c09b63bc0457c4e5573313da6ea2ec3bacd"
+claim_ids = ["DD-0019", "DD-0020", "DD-0021"]
+
+[[source_regions]]
+id = "SR-N-heading-introduction"
+source_file = "docs/paper/example_paper.tex"
+line_start = 259
+line_end = 259
+kind = "section_heading"
+content_sha256 = "31a08bbcefd02086c8aeb9bac49e33b3a01e94f5bb7e2186d785175c115a8e87"
+non_claim_reason = "section heading, not a scientific claim"
+
+[[source_regions]]
+id = "SR-C-example-paper-0260-0261"
+source_file = "docs/paper/example_paper.tex"
+line_start = 260
+line_end = 261
+kind = "prose"
+content_sha256 = "39759099ab469ab3ed7698dd48fb271782713d584e2864ca8133e7b4356af81b"
+claim_ids = ["DD-0022", "DD-0023", "DD-0024", "DD-0025", "DD-0026", "DD-0027"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0263-0263"
+source_file = "docs/paper/example_paper.tex"
+line_start = 263
+line_end = 263
+kind = "prose"
+content_sha256 = "25188b82316aec0512eff1f15234d739ebe34e2b04b36e3bbb47e8cfbee821b4"
+claim_ids = ["DD-0028", "DD-0029", "DD-0030", "DD-0031"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0265-0265"
+source_file = "docs/paper/example_paper.tex"
+line_start = 265
+line_end = 265
+kind = "prose"
+content_sha256 = "dfcb2b8c7457fe7de10e9ed10f620d88ad06c58b07e08194a7928f20d1dc0bb1"
+claim_ids = ["DD-0032", "DD-0033", "DD-0034", "DD-0035", "DD-0036"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0267-0268"
+source_file = "docs/paper/example_paper.tex"
+line_start = 267
+line_end = 268
+kind = "prose"
+content_sha256 = "44f3d454e1ccb78c67e9fd1c80a8c033344c7c4273844d9e36104807bdf7a419"
+claim_ids = ["DD-0037", "DD-0038", "DD-0039", "DD-0040", "DD-0041", "DD-0042"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0270-0270"
+source_file = "docs/paper/example_paper.tex"
+line_start = 270
+line_end = 270
+kind = "prose"
+content_sha256 = "091f8ed9415a54d7e6198dd230816bd98f8e413a3a56d8a5ccef2ce5b727c6e5"
+claim_ids = ["DD-0043", "DD-0044", "DD-0045", "DD-0046"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0279-0279"
+source_file = "docs/paper/example_paper.tex"
+line_start = 279
+line_end = 279
+kind = "table_caption"
+content_sha256 = "8a2d442b517ef001fe0634447befc1933ac3f530a8735110b2078238179829f0"
+claim_ids = ["DD-0047", "DD-0048", "DD-0049", "DD-0050"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0285-0288"
+source_file = "docs/paper/example_paper.tex"
+line_start = 285
+line_end = 288
+kind = "prose"
+content_sha256 = "37dbe22bf4835bb190b146d700e5636a20c3ee5f8968b02b5f9a0e4ae448e38e"
+claim_ids = ["DD-0051", "DD-0052", "DD-0053", "DD-0054", "DD-0055", "DD-0056", "DD-0057"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0291-0291"
+source_file = "docs/paper/example_paper.tex"
+line_start = 291
+line_end = 291
+kind = "prose"
+content_sha256 = "a19ad022b226ba31f4fc2e26dec441a6f415bb8dc2ec5c42bf17bb71cee13145"
+claim_ids = ["DD-0058", "DD-0059", "DD-0060"]
+
+[[source_regions]]
+id = "SR-N-heading-methods"
+source_file = "docs/paper/example_paper.tex"
+line_start = 294
+line_end = 294
+kind = "section_heading"
+content_sha256 = "5cd6db661e5f9caf531faab5b2eb07a68a9a25b13a8168b54e4ea7f15673f359"
+non_claim_reason = "section heading, not a scientific claim"
+
+[[source_regions]]
+id = "SR-C-example-paper-0296-0296"
+source_file = "docs/paper/example_paper.tex"
+line_start = 296
+line_end = 296
+kind = "prose"
+content_sha256 = "00b13b9ea5d04b9f0b5cef594b9fa98bee58b96daba9b8e60808bb63568c23c1"
+claim_ids = ["DD-0088"]
+
+[[source_regions]]
+id = "SR-N-heading-suite"
+source_file = "docs/paper/example_paper.tex"
+line_start = 298
+line_end = 298
+kind = "section_heading"
+content_sha256 = "91500a1941f9bf2460d75c9423e84ec965d9d44b7f3c9cfbaa0cf49afed44117"
+non_claim_reason = "section heading, not a scientific claim"
+
+[[source_regions]]
+id = "SR-C-example-paper-0300-0300"
+source_file = "docs/paper/example_paper.tex"
+line_start = 300
+line_end = 300
+kind = "prose"
+content_sha256 = "6002446536c433a74c627c6b8d27198b5fbe653ba2bbb2fd222149c512184ec9"
+claim_ids = ["DD-0089", "DD-0090", "DD-0091"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0302-0302"
+source_file = "docs/paper/example_paper.tex"
+line_start = 302
+line_end = 302
+kind = "prose"
+content_sha256 = "c8e3f97b1d24a659ed5d262f82457bc47c6f4c33a9a8106a612720dc32fc3be7"
+claim_ids = ["DD-0092", "DD-0093", "DD-0094"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0304-0304"
+source_file = "docs/paper/example_paper.tex"
+line_start = 304
+line_end = 304
+kind = "prose"
+content_sha256 = "8cf2762b7b7dc4c0ab6ca2a9ad147c3f5e83f4fa5351c8d71971bf64764d632d"
+claim_ids = ["DD-0095", "DD-0096", "DD-0097", "DD-0098"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0306-0307"
+source_file = "docs/paper/example_paper.tex"
+line_start = 306
+line_end = 307
+kind = "prose"
+content_sha256 = "0eae91a555cad570118ca2ffd7a13be9108f3dc52943c2b652b03080521026b2"
+claim_ids = ["DD-0099", "DD-0100", "DD-0101", "DD-0102"]
+
+[[source_regions]]
+id = "SR-N-heading-prediction-methods"
+source_file = "docs/paper/example_paper.tex"
+line_start = 310
+line_end = 310
+kind = "section_heading"
+content_sha256 = "287db187c25a76d705dfe5f3a26c96c188db514e6b96cbb0d915a1c056077dcd"
+non_claim_reason = "section heading, not a scientific claim"
+
+[[source_regions]]
+id = "SR-C-example-paper-0312-0312"
+source_file = "docs/paper/example_paper.tex"
+line_start = 312
+line_end = 312
+kind = "prose"
+content_sha256 = "383b323be9e81d72c03fb1b6e36ac140d945b86a8ede777afb08af5582080360"
+claim_ids = ["DD-0103"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0314-0314"
+source_file = "docs/paper/example_paper.tex"
+line_start = 314
+line_end = 314
+kind = "prose"
+content_sha256 = "017a185e7af79658844c08764f015dce288ab9217c567cdca42bca0e4b312e3b"
+claim_ids = ["DD-0104", "DD-0105", "DD-0106"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0316-0321"
+source_file = "docs/paper/example_paper.tex"
+line_start = 316
+line_end = 321
+kind = "equation"
+content_sha256 = "913f3df0136fbd4ac70e64d7a762c74381c8bcc675d228fcfff6de6bad6d5948"
+claim_ids = ["DD-0107", "DD-0108", "DD-0109", "DD-0110", "DD-0111", "DD-0112", "DD-0113", "DD-0114"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0323-0324"
+source_file = "docs/paper/example_paper.tex"
+line_start = 323
+line_end = 324
+kind = "prose"
+content_sha256 = "482e0c8bc78f9ccc081a66b987f5f3fb9a0fd32463b3b036450189dee8b4fe97"
+claim_ids = ["DD-0115", "DD-0116", "DD-0117", "DD-0118", "DD-0119"]
+
+[[source_regions]]
+id = "SR-N-heading-prediction-metrics"
+source_file = "docs/paper/example_paper.tex"
+line_start = 326
+line_end = 326
+kind = "section_heading"
+content_sha256 = "28147f2977b3d019c7b991dbf01bde0188f2274a5c2b6305fba2b7b96978dcd0"
+non_claim_reason = "section heading, not a scientific claim"
+
+[[source_regions]]
+id = "SR-C-example-paper-0330-0330"
+source_file = "docs/paper/example_paper.tex"
+line_start = 330
+line_end = 330
+kind = "prose"
+content_sha256 = "547a768c2ccbb833e8d57f252145e068d7a5e5a304ee6cafa75121616cae75d5"
+claim_ids = ["DD-0120", "DD-0121", "DD-0122"]
+
+[[source_regions]]
+id = "SR-N-heading-decision-accuracy"
+source_file = "docs/paper/example_paper.tex"
+line_start = 333
+line_end = 333
+kind = "section_heading"
+content_sha256 = "7391f64c0bbf88c7f209c0b86a78699148cc3c6a03c6b7a84da114b15a4bd178"
+non_claim_reason = "paragraph heading, not a scientific claim"
+
+[[source_regions]]
+id = "SR-C-example-paper-0334-0337"
+source_file = "docs/paper/example_paper.tex"
+line_start = 334
+line_end = 337
+kind = "equation"
+content_sha256 = "11fe16742e66b460a19b3db2245d56d0a612c0bee451e16d5b3abe61672331a9"
+claim_ids = ["DD-0123", "DD-0124", "DD-0125", "DD-0126", "DD-0127"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0340-0340"
+source_file = "docs/paper/example_paper.tex"
+line_start = 340
+line_end = 340
+kind = "prose"
+content_sha256 = "d63767323cb63fef639d5dc9e22769f37ad488b887e030d554cc510fe07c4d9a"
+claim_ids = ["DD-0128", "DD-0129", "DD-0130"]
+
+[[source_regions]]
+id = "SR-N-heading-olmes"
+source_file = "docs/paper/example_paper.tex"
+line_start = 342
+line_end = 342
+kind = "section_heading"
+content_sha256 = "b498c79e33e72e7d2c2fd04ac6bdd648d4cb6d22086a24efdd542ca335f5c8f0"
+non_claim_reason = "section heading, not a scientific claim"
+
+[[source_regions]]
+id = "SR-C-example-paper-0345-0345"
+source_file = "docs/paper/example_paper.tex"
+line_start = 345
+line_end = 345
+kind = "prose"
+content_sha256 = "ebd60da247bec74abb1d0433dce24cb088a6d6b74b80b020143742dfadc520ab"
+claim_ids = ["DD-0131", "DD-0132", "DD-0133", "DD-0134", "DD-0135", "DD-0136", "DD-0137", "DD-0138", "DD-0139", "DD-0140", "DD-0141", "DD-0142", "DD-0143", "DD-0144", "DD-0145", "DD-0146", "DD-0147"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0350-0350"
+source_file = "docs/paper/example_paper.tex"
+line_start = 350
+line_end = 350
+kind = "figure_caption"
+content_sha256 = "a964fe2e49f7f91f773a08c26ff4f8f2b11bbe93a2db04f2b99298017a124b1f"
+claim_ids = ["DD-0148", "DD-0149", "DD-0150"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0354-0354"
+source_file = "docs/paper/example_paper.tex"
+line_start = 354
+line_end = 354
+kind = "prose"
+content_sha256 = "c21aaa6d4c2c193c00088291007bf3e8dcdf122537981f4622430ea420819275"
+claim_ids = ["DD-0151", "DD-0152", "DD-0153"]
+
+[[source_regions]]
+id = "SR-N-heading-proxy-metrics"
+source_file = "docs/paper/example_paper.tex"
+line_start = 357
+line_end = 357
+kind = "section_heading"
+content_sha256 = "39e4775225eb917dae6e0537a43db35871bb9ca6b6a073a8c8618197f6caa0a2"
+non_claim_reason = "section heading, not a scientific claim"
+
+[[source_regions]]
+id = "SR-C-example-paper-0359-0360"
+source_file = "docs/paper/example_paper.tex"
+line_start = 359
+line_end = 360
+kind = "prose"
+content_sha256 = "644ab7c2e63c542a1881618ee2d209a27d761c15e99f67f2923cb0cf6c5b1598"
+claim_ids = ["DD-0154", "DD-0155", "DD-0156", "DD-0157", "DD-0158", "DD-0159", "DD-0160", "DD-0161", "DD-0162"]
+
+[[source_regions]]
+id = "SR-N-heading-results"
+source_file = "docs/paper/example_paper.tex"
+line_start = 362
+line_end = 362
+kind = "section_heading"
+content_sha256 = "ac94e270110dbcbaf38c59cd16f6928897a5cb877f8ca2bcd0e328a5b9887a77"
+non_claim_reason = "section heading, not a scientific claim"
+
+[[source_regions]]
+id = "SR-N-heading-compute"
+source_file = "docs/paper/example_paper.tex"
+line_start = 364
+line_end = 364
+kind = "section_heading"
+content_sha256 = "95bb02fba19a98f7b75f65c6f41d92773386db177aacc8d5beb843ea5a4a920e"
+non_claim_reason = "section heading, not a scientific claim"
+
+[[source_regions]]
+id = "SR-C-example-paper-0367-0367"
+source_file = "docs/paper/example_paper.tex"
+line_start = 367
+line_end = 367
+kind = "prose"
+content_sha256 = "67cd7f6336b0eb144816c4beab923dc67acadc962f878ef717c4b3fc47049eca"
+claim_ids = ["DD-0164", "DD-0165", "DD-0166", "DD-0167", "DD-0168"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0370-0370"
+source_file = "docs/paper/example_paper.tex"
+line_start = 370
+line_end = 370
+kind = "prose"
+content_sha256 = "465c27220a9fbf1030e5a5720b3ef94691313f1e7a32f3f7d60ef0b0fd8d42a2"
+claim_ids = ["DD-0169", "DD-0170", "DD-0171", "DD-0172", "DD-0173"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0372-0372"
+source_file = "docs/paper/example_paper.tex"
+line_start = 372
+line_end = 372
+kind = "prose"
+content_sha256 = "b81342730f63f02b4648774c5f7fe1755fe8cb166f2e26257aed453ff95eca51"
+claim_ids = ["DD-0174", "DD-0175", "DD-0176", "DD-0177", "DD-0178", "DD-0179"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0378-0378"
+source_file = "docs/paper/example_paper.tex"
+line_start = 378
+line_end = 378
+kind = "figure_caption"
+content_sha256 = "1eec03d822abe267d2f7244cebd021f42637f2edf8ba74473cd4bf00e7aec410"
+claim_ids = ["DD-0180"]
+
+[[source_regions]]
+id = "SR-N-heading-scaling-comparison"
+source_file = "docs/paper/example_paper.tex"
+line_start = 381
+line_end = 381
+kind = "section_heading"
+content_sha256 = "d813662fb759fb57d1e35782009cf1ec8ac06641005dcc7edb685eb5a34a93f2"
+non_claim_reason = "section heading, not a scientific claim"
+
+[[source_regions]]
+id = "SR-C-example-paper-0384-0384"
+source_file = "docs/paper/example_paper.tex"
+line_start = 384
+line_end = 384
+kind = "prose"
+content_sha256 = "324f243a2bb98c196f036e2083ff62234c10d869db435c20e62cfe73ccc8bf75"
+claim_ids = ["DD-0181"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0387-0387"
+source_file = "docs/paper/example_paper.tex"
+line_start = 387
+line_end = 387
+kind = "prose"
+content_sha256 = "e4252c9520de226d84858beaf83dae74be94912403f41a88f3fa106e7a1a61d6"
+claim_ids = ["DD-0182", "DD-0183", "DD-0184", "DD-0185", "DD-0186", "DD-0187"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0389-0389"
+source_file = "docs/paper/example_paper.tex"
+line_start = 389
+line_end = 389
+kind = "prose"
+content_sha256 = "cee48862b68d9f4e71b41ad4d50b2d47a5f870b33c44546b956dfdd267e5faf5"
+claim_ids = ["DD-0188", "DD-0189"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0391-0391"
+source_file = "docs/paper/example_paper.tex"
+line_start = 391
+line_end = 391
+kind = "prose"
+content_sha256 = "af0e5c8c6af1f73db389610002fd4de2af19c4d84f5b95ebeb09b9c5571cd345"
+claim_ids = ["DD-0190", "DD-0191", "DD-0192", "DD-0193", "DD-0194", "DD-0195"]
+
+[[source_regions]]
+id = "SR-N-heading-proxy-signal"
+source_file = "docs/paper/example_paper.tex"
+line_start = 397
+line_end = 397
+kind = "section_heading"
+content_sha256 = "38c023ce7898f46b62602eadb59ddbf78fec0d2a2fa164f46208a7ccd0a5fccd"
+non_claim_reason = "section heading, not a scientific claim"
+
+[[source_regions]]
+id = "SR-C-example-paper-0400-0400"
+source_file = "docs/paper/example_paper.tex"
+line_start = 400
+line_end = 400
+kind = "prose"
+content_sha256 = "7e55e11e051012080d8b05b4eddc0f68712624a9bd7a406352093f4abed70c32"
+claim_ids = ["DD-0196"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0404-0404"
+source_file = "docs/paper/example_paper.tex"
+line_start = 404
+line_end = 404
+kind = "prose"
+content_sha256 = "eef91aa476b85ac42d30c0287fc7d9160ade8693201f8dfd660d58812fc7f068"
+claim_ids = ["DD-0197", "DD-0198"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0406-0406"
+source_file = "docs/paper/example_paper.tex"
+line_start = 406
+line_end = 406
+kind = "prose"
+content_sha256 = "b58ceccf5960235042fc9af67303e05efa52fde856fc14f89f5fa3d495c51f4a"
+claim_ids = ["DD-0199", "DD-0200", "DD-0201"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0408-0408"
+source_file = "docs/paper/example_paper.tex"
+line_start = 408
+line_end = 408
+kind = "prose"
+content_sha256 = "4a403a94762571d072da5522fc8c0dbdbe042eef8f0aebd47473ab910d47cca3"
+claim_ids = ["DD-0202", "DD-0203", "DD-0204", "DD-0205", "DD-0206", "DD-0207"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0414-0414"
+source_file = "docs/paper/example_paper.tex"
+line_start = 414
+line_end = 414
+kind = "figure_caption"
+content_sha256 = "8d8f9a3075f479bcc650ee6983f3aef1a8e7724cd9f0ac65673c41e6e5712bdd"
+claim_ids = ["DD-0208"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0422-0422"
+source_file = "docs/paper/example_paper.tex"
+line_start = 422
+line_end = 422
+kind = "figure_caption"
+content_sha256 = "6d13725359e55b663b7b256dd7b1263b46f7fdd403ba165d00deaf9f5ba054d8"
+claim_ids = ["DD-0209", "DD-0210"]
+
+[[source_regions]]
+id = "SR-N-heading-benchmark-predictability"
+source_file = "docs/paper/example_paper.tex"
+line_start = 426
+line_end = 426
+kind = "section_heading"
+content_sha256 = "9f29becf61c23b0ccfcf58938754a537f10f411b0a955adeaf91a0163ccc17c3"
+non_claim_reason = "section heading, not a scientific claim"
+
+[[source_regions]]
+id = "SR-C-example-paper-0429-0429"
+source_file = "docs/paper/example_paper.tex"
+line_start = 429
+line_end = 429
+kind = "prose"
+content_sha256 = "2a6a25d0d8ead3091bc5bba0d3065f15b5c55e0f605582b73cf5e551315aa79c"
+claim_ids = ["DD-0211", "DD-0212", "DD-0213"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0432-0432"
+source_file = "docs/paper/example_paper.tex"
+line_start = 432
+line_end = 432
+kind = "prose"
+content_sha256 = "fffeb80bbcde81ba806092fd48b1f6311bf6cd4972a34cbe0d50825addbce213"
+claim_ids = ["DD-0214", "DD-0215", "DD-0216", "DD-0217", "DD-0218", "DD-0219", "DD-0220"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0438-0438"
+source_file = "docs/paper/example_paper.tex"
+line_start = 438
+line_end = 438
+kind = "figure_caption"
+content_sha256 = "666023fbb921a5155465c78f184f7eca24b95c11c3e4d87293779e16ef809711"
+claim_ids = ["DD-0221", "DD-0222"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0442-0442"
+source_file = "docs/paper/example_paper.tex"
+line_start = 442
+line_end = 442
+kind = "prose"
+content_sha256 = "18e381335eb4080bf6fbcfc0ce02fe3944fa155f46c4cc85f8da418c09129e93"
+claim_ids = ["DD-0223", "DD-0224", "DD-0225", "DD-0226", "DD-0227"]
+
+[[source_regions]]
+id = "SR-N-heading-related-work"
+source_file = "docs/paper/example_paper.tex"
+line_start = 444
+line_end = 444
+kind = "section_heading"
+content_sha256 = "666e6f288b5e8faffc2025c5ad0fd74ad91df0c0c7726197ed8e35d32186ed46"
+non_claim_reason = "section heading, not a scientific claim"
+
+[[source_regions]]
+id = "SR-N-heading-related-prediction"
+source_file = "docs/paper/example_paper.tex"
+line_start = 445
+line_end = 445
+kind = "section_heading"
+content_sha256 = "d18e44af049fe5b836f85f548ff5faf021154bba20acd2ddc9afef06cba3b96d"
+non_claim_reason = "paragraph heading, not a scientific claim"
+
+[[source_regions]]
+id = "SR-C-example-paper-0447-0449"
+source_file = "docs/paper/example_paper.tex"
+line_start = 447
+line_end = 449
+kind = "prose"
+content_sha256 = "70e1eaf6241583b7e9ac9205eb8331ec82ad227b7248cc6bc2c0d6f50173fb63"
+claim_ids = ["DD-0228", "DD-0229", "DD-0230", "DD-0231", "DD-0232", "DD-0233", "DD-0234", "DD-0235", "DD-0243"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0452-0454"
+source_file = "docs/paper/example_paper.tex"
+line_start = 452
+line_end = 454
+kind = "prose"
+content_sha256 = "f97f93f691cf34fffb8ed512941e1a2e3eca08bda755e0808d51d3453acd9b9e"
+claim_ids = ["DD-0236", "DD-0237", "DD-0238", "DD-0239", "DD-0240", "DD-0241", "DD-0242", "DD-0244", "DD-0245", "DD-0246"]
+
+[[source_regions]]
+id = "SR-N-heading-limitations"
+source_file = "docs/paper/example_paper.tex"
+line_start = 456
+line_end = 456
+kind = "section_heading"
+content_sha256 = "26479a732b99e99d72c926de11f5011c7166fc23dd3c7e5e06f3ac3b5248573a"
+non_claim_reason = "section heading, not a scientific claim"
+
+[[source_regions]]
+id = "SR-C-example-paper-0457-0459"
+source_file = "docs/paper/example_paper.tex"
+line_start = 457
+line_end = 459
+kind = "prose"
+content_sha256 = "3ca09441b775282bb343b2382f108f9a2740516e6546452d45b454eee6fcfc0e"
+claim_ids = ["DD-0247", "DD-0248", "DD-0249", "DD-0250", "DD-0251", "DD-0252", "DD-0253", "DD-0254", "DD-0255", "DD-0256"]
+
+[[source_regions]]
+id = "SR-N-heading-acknowledgments"
+source_file = "docs/paper/example_paper.tex"
+line_start = 462
+line_end = 462
+kind = "section_heading"
+content_sha256 = "a1663a317acd0c86413c15bd3ebc03b8caccf62f3f12178ec972f0c29b4bd51e"
+non_claim_reason = "section heading, not a scientific claim"
+
+[[source_regions]]
+id = "SR-C-example-paper-0463-0463"
+source_file = "docs/paper/example_paper.tex"
+line_start = 463
+line_end = 463
+kind = "prose"
+content_sha256 = "b4ff6b5af599949ceb662c8686493889a84e22d9de6cdea3aba9c6b7b1ead9d3"
+claim_ids = ["DD-0257", "DD-0258", "DD-0259"]
+
+[[source_regions]]
+id = "SR-N-heading-impact"
+source_file = "docs/paper/example_paper.tex"
+line_start = 465
+line_end = 465
+kind = "section_heading"
+content_sha256 = "b336689a07bc445c8ea94f5908754ef3eedadf716d71f85fd1cfe831162c1a8a"
+non_claim_reason = "section heading, not a scientific claim"
+
+[[source_regions]]
+id = "SR-C-example-paper-0466-0466"
+source_file = "docs/paper/example_paper.tex"
+line_start = 466
+line_end = 466
+kind = "prose"
+content_sha256 = "3e798d10d9b59cb2806224131f3bd56d9e9ea7ef91c4b4dcb65bd5227ee2feff"
+claim_ids = ["DD-0260", "DD-0261", "DD-0262", "DD-0263", "DD-0264", "DD-0265", "DD-0266"]
+
+[[source_regions]]
+id = "SR-N-bibliography-commands"
+source_file = "docs/paper/example_paper.tex"
+line_start = 470
+line_end = 471
+kind = "bibliography_commands"
+content_sha256 = "ae07b922f55858e26e44f0745793240e72924cac6f49fc1b4ff1c8dd56f71865"
+non_claim_reason = "bibliography rendering commands, not scientific claims"
+
+[[source_regions]]
+id = "SR-N-appendix-boundary"
+source_file = "docs/paper/example_paper.tex"
+line_start = 480
+line_end = 480
+kind = "section_layout"
+content_sha256 = "cd4128afa16797693804616f5512a5b480c88bdf6052ba8554461ce27d459de0"
+non_claim_reason = "appendix boundary, not a scientific claim"
+
+[[source_regions]]
+id = "SR-N-heading-hyperparameters"
+source_file = "docs/paper/example_paper.tex"
+line_start = 482
+line_end = 482
+kind = "section_heading"
+content_sha256 = "ae713287fe438987a589b0b1fca7af8711c987b6950722c5de9967c6fd83ef7d"
+non_claim_reason = "section heading, not a scientific claim"
+
+[[source_regions]]
+id = "SR-C-example-paper-0489-0490"
+source_file = "docs/paper/example_paper.tex"
+line_start = 489
+line_end = 490
+kind = "table_caption"
+content_sha256 = "d7b7916229061a183d22359d6a3835eb16bf243064ad799746a7b7a01c78adbc"
+claim_ids = ["DD-0267", "DD-0268", "DD-0269", "DD-0270", "DD-0271", "DD-0272", "DD-0273", "DD-0274", "DD-0275"]
+
+[[source_regions]]
+id = "SR-N-heading-proxy-definitions"
+source_file = "docs/paper/example_paper.tex"
+line_start = 497
+line_end = 497
+kind = "section_heading"
+content_sha256 = "3bba3af44bf69854d67044aa1c2473574512c3be4b261f34256e426a70534387"
+non_claim_reason = "section heading, not a scientific claim"
+
+[[source_regions]]
+id = "SR-C-example-paper-0501-0501"
+source_file = "docs/paper/example_paper.tex"
+line_start = 501
+line_end = 501
+kind = "table_caption"
+content_sha256 = "56fe7c9b53dace03a7dbb4b85fb296b10bdae0b68d2b1afe5cee301f4b7315ea"
+claim_ids = ["DD-0297", "DD-0298", "DD-0299", "DD-0300"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0512-0512"
+source_file = "docs/paper/example_paper.tex"
+line_start = 512
+line_end = 512
+kind = "table_caption"
+content_sha256 = "0ac42604ed01dcb817c0b6946b7c0030f9376b6334caebc204ba709a9763198d"
+claim_ids = ["DD-0309", "DD-0310", "DD-0311", "DD-0312"]
+
+[[source_regions]]
+id = "SR-N-heading-scaling-variants"
+source_file = "docs/paper/example_paper.tex"
+line_start = 515
+line_end = 515
+kind = "section_heading"
+content_sha256 = "b1d6454c36382272344bb71cd575f4b5dccede1adddd7895f599e538c7a5c9d9"
+non_claim_reason = "section heading, not a scientific claim"
+
+[[source_regions]]
+id = "SR-N-heading-baseline-fit"
+source_file = "docs/paper/example_paper.tex"
+line_start = 518
+line_end = 518
+kind = "section_heading"
+content_sha256 = "200b4fc529e28f16a1968983e5b10cae0f394d019805f93bb7c8e3bbc612e415"
+non_claim_reason = "variant heading, not a scientific claim"
+
+[[source_regions]]
+id = "SR-C-example-paper-0519-0519"
+source_file = "docs/paper/example_paper.tex"
+line_start = 519
+line_end = 519
+kind = "prose"
+content_sha256 = "63b016a70e12872265e38e3c8c27942ebb64cbddce47e6b45b8fb4674af407ab"
+claim_ids = ["DD-0313", "DD-0314"]
+
+[[source_regions]]
+id = "SR-N-heading-two-parameter-fit"
+source_file = "docs/paper/example_paper.tex"
+line_start = 521
+line_end = 521
+kind = "section_heading"
+content_sha256 = "5f2c419a2021908d674230b0e2c7729e087d3478099c06044e03a7032c3c1fc2"
+non_claim_reason = "variant heading, not a scientific claim"
+
+[[source_regions]]
+id = "SR-C-example-paper-0522-0526"
+source_file = "docs/paper/example_paper.tex"
+line_start = 522
+line_end = 526
+kind = "equation"
+content_sha256 = "47002a59b9a3e7988c96ac75ccde2bc4728bf2694c0aa3444f6e7abb6691ae22"
+claim_ids = ["DD-0315"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0528-0534"
+source_file = "docs/paper/example_paper.tex"
+line_start = 528
+line_end = 534
+kind = "equation"
+content_sha256 = "c50e9fad62bde25317bc61944cb1aa99d59b6a0e07e617c3aa192215c320d88e"
+claim_ids = ["DD-0316", "DD-0317", "DD-0318"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0536-0542"
+source_file = "docs/paper/example_paper.tex"
+line_start = 536
+line_end = 542
+kind = "equation"
+content_sha256 = "d2f41881ef985886b9aca94228aa082465c849ef4fab51549e12586b406fac6c"
+claim_ids = ["DD-0319", "DD-0320"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0544-0550"
+source_file = "docs/paper/example_paper.tex"
+line_start = 544
+line_end = 550
+kind = "equation"
+content_sha256 = "af12588c14fbf1a69835d3f8679c7ce9ec00f2665a49eb44a0a1d59392745a95"
+claim_ids = ["DD-0321", "DD-0322"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0552-0552"
+source_file = "docs/paper/example_paper.tex"
+line_start = 552
+line_end = 552
+kind = "prose"
+content_sha256 = "786b9f19410a0946b0f73bdf3cc46537dd915ce0eba2035eca9502d4ebc78f53"
+claim_ids = ["DD-0323", "DD-0324"]
+
+[[source_regions]]
+id = "SR-N-heading-helper-points"
+source_file = "docs/paper/example_paper.tex"
+line_start = 554
+line_end = 554
+kind = "section_heading"
+content_sha256 = "b8010f6f0a8ff26410375950346b5f904c2bd0fe3266dd94a44a4546dc6708dc"
+non_claim_reason = "variant heading, not a scientific claim"
+
+[[source_regions]]
+id = "SR-C-example-paper-0555-0555"
+source_file = "docs/paper/example_paper.tex"
+line_start = 555
+line_end = 555
+kind = "prose"
+content_sha256 = "a9bfe86587a097717e2b02717412aa805b7688cda69f34c5cda9b9a433e3407b"
+claim_ids = ["DD-0325", "DD-0326"]
+
+[[source_regions]]
+id = "SR-N-heading-checkpoint-filter"
+source_file = "docs/paper/example_paper.tex"
+line_start = 557
+line_end = 557
+kind = "section_heading"
+content_sha256 = "f150046a55910b1f42a93f05c99621757791c3a220c62aea7fe2a3b08caab52b"
+non_claim_reason = "variant heading, not a scientific claim"
+
+[[source_regions]]
+id = "SR-C-example-paper-0558-0558"
+source_file = "docs/paper/example_paper.tex"
+line_start = 558
+line_end = 558
+kind = "prose"
+content_sha256 = "1dc62c63193f21155730951c9414cf9e2f500b9fc2a12671638ea70bd18703f3"
+claim_ids = ["DD-0327", "DD-0328"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0560-0561"
+source_file = "docs/paper/example_paper.tex"
+line_start = 560
+line_end = 561
+kind = "prose"
+content_sha256 = "1a9dbd7c2e5b83d4d0d596287a52f4d1bfdaed5599e937829a9f15bbc63c03d1"
+claim_ids = ["DD-0329"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0564-0564"
+source_file = "docs/paper/example_paper.tex"
+line_start = 564
+line_end = 564
+kind = "prose"
+content_sha256 = "1d49fd079228c5db4814aceeb985668423ce3e187ef8562b9ae60c524fd05a5d"
+claim_ids = ["DD-0330", "DD-0331"]
+
+[[source_regions]]
+id = "SR-C-figures-datadecide-infographic-0001-0001"
+source_file = "docs/paper/figures/DataDecide_Infographic.pdf"
+line_start = 1
+line_end = 1
+kind = "figure"
+content_sha256 = "ebdd25cdce50910205f5952213621f0bec12390b24bf21e686a21b0b7217b0ce"
+claim_ids = ["DD-0332", "DD-0333", "DD-0334", "DD-0335", "DD-0336", "DD-0337", "DD-0338", "DD-0339", "DD-0340", "DD-0341", "DD-0342", "DD-0343", "DD-0344", "DD-0345", "DD-0346", "DD-0347", "DD-0348", "DD-0349", "DD-0350", "DD-0351", "DD-0352", "DD-0353", "DD-0354", "DD-0355", "DD-0356"]
+
+[[source_regions]]
+id = "SR-C-figures-accuracy-vs-compute-with-legend-fixed-0001-0001"
+source_file = "docs/paper/figures/accuracy_vs_compute_with_legend_fixed.pdf"
+line_start = 1
+line_end = 1
+kind = "figure"
+content_sha256 = "e5c62df5dab5c87b6a015ef3d43597074d1eec433b15f51aec63b8582d0e4ab4"
+claim_ids = ["DD-0357", "DD-0358", "DD-0359", "DD-0360", "DD-0361", "DD-0362", "DD-0363", "DD-0364", "DD-0365", "DD-0366", "DD-0367", "DD-0368", "DD-0369"]
+
+[[source_regions]]
+id = "SR-C-figures-all-metrics-compute-vs-accuracy-per-task-0001-0001"
+source_file = "docs/paper/figures/all_metrics_compute_vs_accuracy_per_task.pdf"
+line_start = 1
+line_end = 1
+kind = "figure"
+content_sha256 = "e5c62df5dab5c87b6a015ef3d43597074d1eec433b15f51aec63b8582d0e4ab4"
+claim_ids = ["DD-0370", "DD-0371", "DD-0372", "DD-0373", "DD-0374", "DD-0375", "DD-0376", "DD-0377", "DD-0378", "DD-0379", "DD-0380", "DD-0381", "DD-0382", "DD-0383", "DD-0384", "DD-0385", "DD-0386", "DD-0387"]
+
+[[source_regions]]
+id = "SR-N-decorative-logo"
+source_file = "docs/paper/figures/datadecide-logo.pdf"
+line_start = 1
+line_end = 1
+kind = "decorative_logo"
+content_sha256 = "e23884fcce655e4bcb57f653dd754ece889446e062f6d54bcf0b4df410c24016"
+non_claim_reason = "decorative logo, not scientific evidence"
+
+[[source_regions]]
+id = "SR-C-figures-math-code-decision-accuracy-0001-0001"
+source_file = "docs/paper/figures/math_code_decision_accuracy.pdf"
+line_start = 1
+line_end = 1
+kind = "figure"
+content_sha256 = "e5c62df5dab5c87b6a015ef3d43597074d1eec433b15f51aec63b8582d0e4ab4"
+claim_ids = ["DD-0403", "DD-0404", "DD-0405", "DD-0406", "DD-0407", "DD-0408", "DD-0409", "DD-0410", "DD-0411", "DD-0412", "DD-0413", "DD-0414"]
+
+[[source_regions]]
+id = "SR-C-figures-noise-to-spread-150m-0001-0001"
+source_file = "docs/paper/figures/noise_to_spread_150M.pdf"
+line_start = 1
+line_end = 1
+kind = "figure"
+content_sha256 = "e5c62df5dab5c87b6a015ef3d43597074d1eec433b15f51aec63b8582d0e4ab4"
+claim_ids = ["DD-0388", "DD-0389", "DD-0390", "DD-0391", "DD-0392", "DD-0393", "DD-0394", "DD-0395", "DD-0396", "DD-0397", "DD-0398", "DD-0399", "DD-0400", "DD-0401", "DD-0402"]
+
+[[source_regions]]
+id = "SR-C-figures-primary-metric-compute-vs-accuracy-per-task-0001-0001"
+source_file = "docs/paper/figures/primary_metric_compute_vs_accuracy_per_task.pdf"
+line_start = 1
+line_end = 1
+kind = "figure"
+content_sha256 = "e5c62df5dab5c87b6a015ef3d43597074d1eec433b15f51aec63b8582d0e4ab4"
+claim_ids = ["DD-0415", "DD-0416", "DD-0417", "DD-0418", "DD-0419", "DD-0420", "DD-0421", "DD-0422", "DD-0423", "DD-0424", "DD-0425", "DD-0426", "DD-0427", "DD-0428", "DD-0429", "DD-0430", "DD-0431", "DD-0432", "DD-0433", "DD-0434", "DD-0435", "DD-0436", "DD-0437", "DD-0438", "DD-0439", "DD-0440", "DD-0441", "DD-0442"]
+
+[[source_regions]]
+id = "SR-N-table-data-recipes-heading"
+source_file = "docs/paper/tables/data_recipes.tex"
+line_start = 73
+line_end = 77
+kind = "table_heading"
+content_sha256 = "363b5d7b956fb777d744a62729557cc5972d3d140721ccd859bfdadd8d1c14b4"
+non_claim_reason = "table column headings and active header layout, not scientific claims"
+
+[[source_regions]]
+id = "SR-C-tables-data-recipes-0079-0080"
+source_file = "docs/paper/tables/data_recipes.tex"
+line_start = 79
+line_end = 80
+kind = "table"
+content_sha256 = "50079043cb251017ee806997f5761dec1ae7d2a491b56b714199e58897eeb3f4"
+claim_ids = ["DD-0061", "DD-0062", "DD-0063", "DD-0064", "DD-0065"]
+
+[[source_regions]]
+id = "SR-C-tables-data-recipes-0082-0083"
+source_file = "docs/paper/tables/data_recipes.tex"
+line_start = 82
+line_end = 83
+kind = "table"
+content_sha256 = "9087994379ca7151fcdc91b9d2ce5aac13b8850d13b902abefea3276d39f5cc7"
+claim_ids = ["DD-0066"]
+
+[[source_regions]]
+id = "SR-C-tables-data-recipes-0085-0086"
+source_file = "docs/paper/tables/data_recipes.tex"
+line_start = 85
+line_end = 86
+kind = "table"
+content_sha256 = "db3568c3a30b15ebd4cf48b4312a598c1b1fb7752873ee825159d113c00df295"
+claim_ids = ["DD-0067", "DD-0068"]
+
+[[source_regions]]
+id = "SR-C-tables-data-recipes-0088-0089"
+source_file = "docs/paper/tables/data_recipes.tex"
+line_start = 88
+line_end = 89
+kind = "table"
+content_sha256 = "cdc80e71a9fb845855c8e18567fce2dadc0e01c3d5ef66c618a330113f916962"
+claim_ids = ["DD-0069"]
+
+[[source_regions]]
+id = "SR-C-tables-data-recipes-0091-0092"
+source_file = "docs/paper/tables/data_recipes.tex"
+line_start = 91
+line_end = 92
+kind = "table"
+content_sha256 = "70f7361f1fda3f7b52c1e5097147a11eef31407d4f9401a8728e09cfb1628e89"
+claim_ids = ["DD-0070"]
+
+[[source_regions]]
+id = "SR-C-tables-data-recipes-0094-0095"
+source_file = "docs/paper/tables/data_recipes.tex"
+line_start = 94
+line_end = 95
+kind = "table"
+content_sha256 = "a2658b372b47a61922eba345b67414aa405d53682c6aff8d56d0442c67d62926"
+claim_ids = ["DD-0071", "DD-0072"]
+
+[[source_regions]]
+id = "SR-C-tables-data-recipes-0097-0098"
+source_file = "docs/paper/tables/data_recipes.tex"
+line_start = 97
+line_end = 98
+kind = "table"
+content_sha256 = "03beb9bf824e3faa308ff12b278f7ed4febcab50aa80a327c0ff23d44be54147"
+claim_ids = ["DD-0073", "DD-0074", "DD-0075", "DD-0076", "DD-0077"]
+
+[[source_regions]]
+id = "SR-C-tables-data-recipes-0100-0105"
+source_file = "docs/paper/tables/data_recipes.tex"
+line_start = 100
+line_end = 105
+kind = "table"
+content_sha256 = "4696dec8fa08d382026d11e55cdab587437e95e800bad55f8e4d4f8b4fa40f5a"
+claim_ids = ["DD-0078", "DD-0079", "DD-0080", "DD-0081", "DD-0082", "DD-0083", "DD-0084", "DD-0085", "DD-0086", "DD-0087"]
+
+[[source_regions]]
+id = "SR-N-table-prediction-error-heading"
+source_file = "docs/paper/tables/pred_error.tex"
+line_start = 1
+line_end = 5
+kind = "table_heading"
+content_sha256 = "baf12b29bd85f0844fdf58d0a3e2cdee9c2b9302dc0fcd04422d7fbbc1c1429c"
+non_claim_reason = "table column headings and active header layout, not scientific claims"
+
+[[source_regions]]
+id = "SR-C-tables-pred-error-0006-0013"
+source_file = "docs/paper/tables/pred_error.tex"
+line_start = 6
+line_end = 13
+kind = "table"
+content_sha256 = "ab993de95f0117bc318132dc46bd1d5a6d39f487015975c68115a5b9217d9a30"
+claim_ids = ["DD-0301", "DD-0302", "DD-0303", "DD-0304", "DD-0305", "DD-0306", "DD-0307", "DD-0308"]
+
+[[source_regions]]
+id = "SR-N-table-proxy-metrics-heading"
+source_file = "docs/paper/tables/proxy_metrics.tex"
+line_start = 1
+line_end = 4
+kind = "table_heading"
+content_sha256 = "2d157ad4ebbf1459a533781c914ad80b07c01664745f3955c3db3fefc4b133db"
+non_claim_reason = "table column headings and active header layout, not scientific claims"
+
+[[source_regions]]
+id = "SR-C-tables-proxy-metrics-0005-0005"
+source_file = "docs/paper/tables/proxy_metrics.tex"
+line_start = 5
+line_end = 5
+kind = "table"
+content_sha256 = "4f9982bd10517bb720fc57b86f73229d33fa37d3d8df0c9714951dd3c2140edd"
+claim_ids = ["DD-0290"]
+
+[[source_regions]]
+id = "SR-C-tables-proxy-metrics-0007-0007"
+source_file = "docs/paper/tables/proxy_metrics.tex"
+line_start = 7
+line_end = 7
+kind = "table"
+content_sha256 = "55f908e5a7ddc054efc352b9c98c7380f666fddc28436de0d56e5d3f2f837035"
+claim_ids = ["DD-0291"]
+
+[[source_regions]]
+id = "SR-C-tables-proxy-metrics-0009-0009"
+source_file = "docs/paper/tables/proxy_metrics.tex"
+line_start = 9
+line_end = 9
+kind = "table"
+content_sha256 = "03bfe0e33d87217e919d35903bfe04679aeb4d87e51d0f9068689e97191918fb"
+claim_ids = ["DD-0292"]
+
+[[source_regions]]
+id = "SR-C-tables-proxy-metrics-0011-0011"
+source_file = "docs/paper/tables/proxy_metrics.tex"
+line_start = 11
+line_end = 11
+kind = "table"
+content_sha256 = "eb581d77c19b55ac9d3ddde114d8b506cfd3d04d37d25771266f93412bf158a0"
+claim_ids = ["DD-0293"]
+
+[[source_regions]]
+id = "SR-C-tables-proxy-metrics-0013-0013"
+source_file = "docs/paper/tables/proxy_metrics.tex"
+line_start = 13
+line_end = 13
+kind = "table"
+content_sha256 = "6219ec856cd32a06130ae24571c75da5f4cbb00eddffbeaecc260121a17c541f"
+claim_ids = ["DD-0294"]
+
+[[source_regions]]
+id = "SR-C-tables-proxy-metrics-0015-0015"
+source_file = "docs/paper/tables/proxy_metrics.tex"
+line_start = 15
+line_end = 15
+kind = "table"
+content_sha256 = "fff22baadd661e1521b2de92646cc43930eeed2dc1935f9929082a90cd963da2"
+claim_ids = ["DD-0295"]
+
+[[source_regions]]
+id = "SR-C-tables-proxy-metrics-0017-0017"
+source_file = "docs/paper/tables/proxy_metrics.tex"
+line_start = 17
+line_end = 17
+kind = "table"
+content_sha256 = "f5c56cf2f594e061d8f8866c02bcc3184f2c6417988b8130ca34064fd831a6bf"
+claim_ids = ["DD-0296"]
+
+[[source_regions]]
+id = "SR-N-table-suite-stats-heading"
+source_file = "docs/paper/tables/suite_stats.tex"
+line_start = 1
+line_end = 4
+kind = "table_heading"
+content_sha256 = "3a53d85e5fa48c272d2ebc975caa9e06e60a3bb7a2b5a3d0d542b724cf994da7"
+non_claim_reason = "table column headings and active header layout, not scientific claims"
+
+[[source_regions]]
+id = "SR-C-tables-suite-stats-0005-0018"
+source_file = "docs/paper/tables/suite_stats.tex"
+line_start = 5
+line_end = 18
+kind = "table"
+content_sha256 = "e0d32995cc2b68c421bd9863d75a96f5b9fd223d2f9cf5d59b90272c37f9fe51"
+claim_ids = ["DD-0276", "DD-0277", "DD-0278", "DD-0279", "DD-0280", "DD-0281", "DD-0282", "DD-0283", "DD-0284", "DD-0285", "DD-0286", "DD-0287", "DD-0288", "DD-0289"]
+
