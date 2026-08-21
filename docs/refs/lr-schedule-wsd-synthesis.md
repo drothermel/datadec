@@ -60,9 +60,11 @@ They can also be run together and cross-validated (which is itself an experiment
 | ID | Idea | Cost | Source |
 |----|------|------|--------|
 | **A1** | **Checkpoint merging as pseudo-annealing.** Merge a sliding window of recent checkpoints with weights from an emulated decay curve (WSM). Validated on *stable-phase* runs (MiniCPM-style WSD, Nemotron 3 uses it for mid-run readouts). The open question is whether it works on *cosine* mid-run checkpoints, where LR varies within the merge window. If it works even approximately, "annealed" evals can be retrofitted onto all of DataDecide for the cost of evals. | evals-only | `§WSD` |
-| **A2** | **Multi-power-law analytic correction.** Fit the MPL (power law in cumulative LR + decay-drop terms) to each recipe's loss curve and predict the loss after a hypothetical decay at each checkpoint. Gives corrected *loss* only — no downstream metrics — but directly quantifies how much each recipe's apparent ranking is schedule artifact. | evals-only (curve fitting) | `§MPL`, `§WSD` |
+| **A2** | **Multi-power-law analytic correction.** Apply the per-recipe MPL fit (A5) to predict the loss after a hypothetical decay at each checkpoint. Gives corrected *loss* only — no downstream metrics — but directly quantifies how much each recipe's apparent ranking is schedule artifact. | evals-only (curve fitting) | `§MPL`, `§WSD` |
 | **A3** | **Short decay branches resumed from existing cosine checkpoints.** Resume a checkpoint with a fresh, short decay (e.g. 1-sqrt or linear-to-zero, ~10% of elapsed tokens) and eval the endpoint. This is the Hägele / MiniCPM protocol applied to a non-stable starting point; it is the "small extensions of training from each checkpoint" option. Branch length is a parameter, not a constant (river-valley predicts the decay also advances along the river). | small-train | `§WSD` |
 | **A4** | **Cross-validate A1/A2 against A3.** Use A3 branches as ground truth on a subset of (recipe, checkpoint) pairs; measure how well A1 merges and A2 corrections reproduce them. If A1 or A2 is faithful, the cheap method scales to the whole grid. | small-train (subset) + evals | derived |
+| **A5** | **Per-recipe MPL fits as a recipe signature.** Fit the multi-power law (power law in cumulative LR + decay-drop terms) to each recipe's logged loss curve. The fit is the engine behind A2; the fitted parameters are also a free, schedule-aware recipe signature (do recipes differ in the along-river term or the decay-drop term?). No GPU; runs first and informs which recipes/checkpoints to branch in A3. | curve fitting | `§MPL` |
+| **A6** | **Decision-flip analysis ("does the confound cancel?").** Recompute DataDecide's ~300 pairwise recipe decisions on annealed values (A1/A2/A3) and report which flip, at which steps, on which tasks — directly testing DataDecide's finding that intermediate decisions match final ones. This is the headline result of the A track; run under each proxy and check agreement alongside A4. | analysis on A outputs | `§WSD` |
 
 ### B. New training: a WSD-branch suite
 
@@ -106,13 +108,12 @@ These are *diagnostics*, not standalone experiments; they attach to checkpoints 
 | **E4** | **Regress the DataDecide outcome table on features.** 25 corpora × (~300 pairwise decisions, per-task breakdowns) is a supervised problem nobody has run. Ask which feature family predicts outcomes, and whether intrinsic features recover model-mediated ones. Should be run on *annealed* outcomes (A/B) as well as raw ones. | analysis | `§WSD` |
 | **E5** | **Determinism profile → landscape geometry.** Test whether D1 (cheap, static) predicts annealing behaviour: decay gain (A3/B1), interpolation signature (C1), per-token migration (D4). This ties the WSD suite and the featurization question into one design. | requires D1 + A3/B1 | `§WSD`, `§TOK` |
 
-### F. Schedule-as-predictor / loss-curve functionals
+### Parked
 
-| ID | Idea | Cost | Source |
-|----|------|------|--------|
-| **F1** | **Fit the MPL per recipe** and compare fitted parameters across recipes. If recipes differ mainly in the along-river term vs. the decay-drop term, that is a compact, schedule-aware recipe signature. Prerequisite for A2. | curve fitting | `§MPL` |
-| **F2** | **"When does the confound cancel" test.** Using A2/A3/B1-corrected values, compare pairwise recipe decisions at intermediate vs. final checkpoints to DataDecide's published finding that they match. Identify which recipes/tasks flip once annealed. | analysis on A/B outputs | `§WSD` |
-| **F3** | **Loss-curve features → future trainability (plasticity bridge).** Cheap training statistics (curvature, feature rank, dead units, weight norm) as predictors of how much a checkpoint gains from decay or from post-training. Lower priority; the connective-tissue idea from `§MPL`. | evals-only + diagnostics | `§MPL` |
+- **Loss-curve features → future trainability (plasticity bridge, `§MPL`).** Cheap training
+  statistics (curvature, feature rank, dead units, weight norm) as predictors of how much a
+  checkpoint gains from decay or post-training. Speculative; at most a related-work sentence
+  near-term.
 
 ---
 
@@ -125,7 +126,7 @@ These are *diagnostics*, not standalone experiments; they attach to checkpoints 
                                     │
         ┌──────────────┬────────────┼──────────────┬───────────────┐
         ▼              ▼            ▼              ▼               ▼
-       A1            F1 ──► A2     C1/C3/C5       D1/D5           E1/E2/E3
+       A1            A5 ──► A2     C1/C3/C5       D1/D5           E1/E2/E3
    (merge)         (MPL fit/    (geometry on     (static token    (features)
                     correct)     raw ckpts)       views)              │
         │              │                                              │
@@ -136,10 +137,10 @@ These are *diagnostics*, not standalone experiments; they attach to checkpoints 
                │                                                      │
                ├──► D3 ──► D4 (per-token responsiveness, migration)   │
                ├──► B3 (post-training from annealed)                  │
-               └──► F2 (does the confound cancel?) ◄──────────────────┤
+               └──► A6 (decision flips / confound cancel?) ◄──────────┤
                                                                       │
               B1/B2 (WSD retrain suite) — cleaner replacement for A3  │
-               │    as the source of branches for D3/D4/B3/F2          │
+               │    as the source of branches for D3/D4/B3/A6          │
                ▼                                                      ▼
               E5 (determinism profile ─► geometry) ◄── needs D1 + branches
               E4 (features ─► annealed outcome table) ◄── needs E1-3 + A/B
@@ -170,7 +171,7 @@ These are *diagnostics*, not standalone experiments; they attach to checkpoints 
 | # | Hypothesis | Tested by | Prediction if true |
 |---|-----------|-----------|--------------------|
 | H1 | Un-annealed DataDecide evals mix durable progress with a schedule-dependent wall term large enough to matter. | A3 (or B1) vs. raw evals | Annealed-vs-raw gap is large and varies by recipe and checkpoint. |
-| H2 | The confound cancels for pairwise recipe *rankings* but not for levels or post-training. | F2, B3 | Rankings mostly stable under annealing; levels shift; post-training outcomes change. |
+| H2 | The confound cancels for pairwise recipe *rankings* but not for levels or post-training. | A6, B3 | Rankings mostly stable under annealing; levels shift; post-training outcomes change. |
 | H3 | Checkpoint merging approximates a true anneal even on cosine mid-run checkpoints. | A4 (A1 vs. A3) | Merged-model evals track branch-endpoint evals within noise. |
 | H4 | The MPL fitted on a recipe's raw curve predicts its branch-endpoint loss. | A4 (A2 vs. A3) | Small residuals; residual structure tells us where the MPL breaks. |
 | H5 | The interpolation signature discriminates stable-phase from decayed checkpoints on real DataDecide runs. | C1 on raw vs. A3/B1 checkpoints | Convex/unimodal between raw checkpoints; monotone between branch endpoints. |
@@ -202,7 +203,7 @@ depend on it.
 4. **Checkpoint-merging tool** — sliding-window weighted averaging with an emulated decay
    curve (WSM). Evals-only; serves A1/A4.
 5. **Loss-curve fitting** — MPL fit per recipe from logged training curves; predicted decay
-   drop at arbitrary steps. Serves F1/A2/A4/F2.
+   drop at arbitrary steps. Serves A5/A2/A4/A6.
 6. **Interpolation tooling** — loss along linear paths between two checkpoints, optional
    permutation alignment (Git Re-Basin). Serves C1/C2/C5.
 7. **Reference-model scoring** — per-token entropy from a strong reference model and from an
@@ -216,9 +217,10 @@ depend on it.
 
 ## 6. Sequencing considerations (for discussion, not a decision)
 
-- **Cheapest high-information first move:** A2 + F1 (curve fitting, no GPU) and C1/C3 (a
+- **Cheapest high-information first move:** A5/A2 (curve fitting, no GPU) and C1/C3 (a
   handful of evals) answer "how big is the confound in loss terms, and does the geometry look
-  river-valley-like on these runs" before any training.
+  river-valley-like on these runs" before any training. A5 also picks the A3 grid: branch
+  where the fitted decay term is largest or most recipe-divergent.
 - **The pivotal experiment is A3 on a small grid** (a few recipes × a few checkpoints × 1–2
   branch lengths). It simultaneously gives ground truth for A4, the first D3 measurement, the
   first B3 starting points, and the evidence needed to decide whether B1 is worth the retrain.
