@@ -44,7 +44,7 @@ def test_current_static_references_are_resolved_and_intentionally_covered() -> N
 
     counts = Counter(claim.verifier_id for claim in registry.claims)
     assert counts == {
-        "source_trace": 146,
+        "source_trace": 159,
         "citation_trace": 39,
         "suite_config": 21,
         "olmes_aggregate": 46,
@@ -53,7 +53,7 @@ def test_current_static_references_are_resolved_and_intentionally_covered() -> N
         None: 138,
     }
     assert (
-        sum(count for verifier, count in counts.items() if verifier is not None) == 304
+        sum(count for verifier, count in counts.items() if verifier is not None) == 317
     )
     assert not any(
         claim.verifier_id is not None and claim.unresolved_method_id is not None

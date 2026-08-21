@@ -1215,7 +1215,7 @@ policy_id = "citation_trace_v1"
 input_refs = []
 prerequisite_claim_ids = []
 paper_elements = ["tab:data_recipes","Falcon row"]
-citation_keys = ["Penedo2023TheRD","2019t5"]
+citation_keys = ["Penedo2023TheRD"]
 
 [[claims]]
 id = "DD-0073"
@@ -1301,10 +1301,10 @@ id = "DD-0078"
 source_file = "docs/paper/tables/data_recipes.tex"
 line_start = 100
 line_end = 102
-text = "DCLM-Baseline is a Common Crawl corpus using selected deduplication, cleaning heuristics, and a quality filter."
+text = "DCLM-Baseline is a Common Crawl corpus."
 owner = "external_citation"
 expectation_kind = "citation_trace"
-expectation = "DCLM-Baseline construction attribution"
+expectation = "DCLM-Baseline Common Crawl source attribution"
 required_evidence_boundary = "paper_or_final_artifact"
 verifier_id = "citation_trace"
 method_id = "external_citation_trace"
@@ -1312,7 +1312,7 @@ policy_id = "citation_trace_v1"
 input_refs = []
 prerequisite_claim_ids = []
 paper_elements = ["tab:data_recipes","DCLM-Baseline row"]
-citation_keys = ["commoncrawl","li2024datacomplmsearchgenerationtraining"]
+citation_keys = ["commoncrawl"]
 
 [[claims]]
 id = "DD-0079"
@@ -3846,7 +3846,7 @@ citation_keys = ["schaeffer2024why"]
 id = "DD-0231"
 source_file = "docs/paper/example_paper.tex"
 line_start = 448
-line_end = 448
+line_end = 449
 text = "Downstream performance can be predicted with a two-step scale-to-loss and loss-to-performance chain."
 owner = "external_citation"
 expectation_kind = "citation_trace"
@@ -7598,6 +7598,240 @@ prerequisite_claim_ids = []
 paper_elements = ["fig:primary_metric_compute_vs_accuracy_per_task","MMLU facet"]
 citation_keys = []
 
+[[claims]]
+id = "DD-0443"
+source_file = "docs/paper/example_paper.tex"
+line_start = 66
+line_end = 66
+text = "The paper defines the downstream evaluation count as 10."
+owner = "method_design"
+expectation_kind = "numeric"
+expectation = 10
+required_evidence_boundary = "paper_or_final_artifact"
+verifier_id = "source_trace"
+method_id = "paper_source_trace"
+policy_id = "source_coverage_v1"
+input_refs = []
+prerequisite_claim_ids = []
+paper_elements = ["semantic macros"]
+citation_keys = []
+
+[[claims]]
+id = "DD-0444"
+source_file = "docs/paper/example_paper.tex"
+line_start = 67
+line_end = 67
+text = "The paper defines the data-recipe count as 25."
+owner = "method_design"
+expectation_kind = "numeric"
+expectation = 25
+required_evidence_boundary = "paper_or_final_artifact"
+verifier_id = "source_trace"
+method_id = "paper_source_trace"
+policy_id = "source_coverage_v1"
+input_refs = []
+prerequisite_claim_ids = []
+paper_elements = ["semantic macros"]
+citation_keys = []
+
+[[claims]]
+id = "DD-0445"
+source_file = "docs/paper/example_paper.tex"
+line_start = 68
+line_end = 68
+text = "The paper defines the model-scale count as 14."
+owner = "method_design"
+expectation_kind = "numeric"
+expectation = 14
+required_evidence_boundary = "paper_or_final_artifact"
+verifier_id = "source_trace"
+method_id = "paper_source_trace"
+policy_id = "source_coverage_v1"
+input_refs = []
+prerequisite_claim_ids = []
+paper_elements = ["semantic macros"]
+citation_keys = []
+
+[[claims]]
+id = "DD-0446"
+source_file = "docs/paper/example_paper.tex"
+line_start = 69
+line_end = 69
+text = "The paper defines the suite model count as 1,050."
+owner = "method_design"
+expectation_kind = "numeric"
+expectation = 1050
+required_evidence_boundary = "paper_or_final_artifact"
+verifier_id = "source_trace"
+method_id = "paper_source_trace"
+policy_id = "source_coverage_v1"
+input_refs = []
+prerequisite_claim_ids = []
+paper_elements = ["semantic macros"]
+citation_keys = []
+
+[[claims]]
+id = "DD-0447"
+source_file = "docs/paper/example_paper.tex"
+line_start = 71
+line_end = 71
+text = "The paper defines the target-scale rerun count as 3 seeds."
+owner = "method_design"
+expectation_kind = "numeric"
+expectation = 3
+required_evidence_boundary = "paper_or_final_artifact"
+verifier_id = "source_trace"
+method_id = "paper_source_trace"
+policy_id = "source_coverage_v1"
+input_refs = []
+prerequisite_claim_ids = []
+paper_elements = ["semantic macros"]
+citation_keys = []
+
+[[claims]]
+id = "DD-0448"
+source_file = "docs/paper/example_paper.tex"
+line_start = 72
+line_end = 72
+text = "The paper defines the small-scale prediction rerun count as 3 seeds."
+owner = "method_design"
+expectation_kind = "numeric"
+expectation = 3
+required_evidence_boundary = "paper_or_final_artifact"
+verifier_id = "source_trace"
+method_id = "paper_source_trace"
+policy_id = "source_coverage_v1"
+input_refs = []
+prerequisite_claim_ids = []
+paper_elements = ["semantic macros"]
+citation_keys = []
+
+[[claims]]
+id = "DD-0449"
+source_file = "docs/paper/example_paper.tex"
+line_start = 73
+line_end = 73
+text = "The paper defines the small-scale rerun compute budget as 25 percent of target compute."
+owner = "method_design"
+expectation_kind = "numeric"
+expectation = 25
+required_evidence_boundary = "paper_or_final_artifact"
+verifier_id = "source_trace"
+method_id = "paper_source_trace"
+policy_id = "source_coverage_v1"
+input_refs = []
+prerequisite_claim_ids = []
+paper_elements = ["semantic macros"]
+citation_keys = []
+
+[[claims]]
+id = "DD-0450"
+source_file = "docs/paper/example_paper.tex"
+line_start = 158
+line_end = 158
+text = "The paper defines the number of scaling-law approaches as 8."
+owner = "method_design"
+expectation_kind = "numeric"
+expectation = 8
+required_evidence_boundary = "paper_or_final_artifact"
+verifier_id = "source_trace"
+method_id = "paper_source_trace"
+policy_id = "source_coverage_v1"
+input_refs = []
+prerequisite_claim_ids = []
+paper_elements = ["semantic macros"]
+citation_keys = []
+
+[[claims]]
+id = "DD-0451"
+source_file = "docs/paper/example_paper.tex"
+line_start = 283
+line_end = 283
+text = "The paper frames its recommendations around compute cost versus decision quality in small data-selection experiments."
+owner = "method_design"
+expectation_kind = "literal"
+expectation = "recommendations concern the compute-to-decision-quality tradeoff"
+required_evidence_boundary = "paper_or_final_artifact"
+verifier_id = "source_trace"
+method_id = "paper_source_trace"
+policy_id = "source_coverage_v1"
+input_refs = []
+prerequisite_claim_ids = []
+paper_elements = ["introduction recommendations"]
+citation_keys = []
+
+[[claims]]
+id = "DD-0452"
+source_file = "docs/paper/example_paper.tex"
+line_start = 295
+line_end = 295
+text = "The study aims to test how well small experiments predict downstream performance at a larger target scale."
+owner = "method_design"
+expectation_kind = "literal"
+expectation = "small experiments predict larger-target-scale downstream performance"
+required_evidence_boundary = "paper_or_final_artifact"
+verifier_id = "source_trace"
+method_id = "paper_source_trace"
+policy_id = "source_coverage_v1"
+input_refs = []
+prerequisite_claim_ids = []
+paper_elements = ["methods framing"]
+citation_keys = []
+
+[[claims]]
+id = "DD-0453"
+source_file = "docs/paper/example_paper.tex"
+line_start = 328
+line_end = 328
+text = "The predictive task forecasts which of two data recipes performs better at a target scale from small-scale experiments."
+owner = "method_design"
+expectation_kind = "literal"
+expectation = "pairwise target-scale recipe winner prediction from small-scale experiments"
+required_evidence_boundary = "paper_or_final_artifact"
+verifier_id = "source_trace"
+method_id = "paper_source_trace"
+policy_id = "source_coverage_v1"
+input_refs = []
+prerequisite_claim_ids = []
+paper_elements = ["sec:pred_metrics"]
+citation_keys = []
+
+[[claims]]
+id = "DD-0454"
+source_file = "docs/paper/example_paper.tex"
+line_start = 495
+line_end = 495
+text = "The suite-statistics table provides OLMo model-ladder configurations for every DataDecide model."
+owner = "method_design"
+expectation_kind = "predicate"
+expectation = "suite-statistics table covers every DataDecide model configuration"
+required_evidence_boundary = "paper_or_final_artifact"
+verifier_id = "source_trace"
+method_id = "paper_source_trace"
+policy_id = "source_coverage_v1"
+input_refs = ["docs/paper/tables/suite_stats.tex"]
+prerequisite_claim_ids = []
+paper_elements = ["tab:suite_stats"]
+citation_keys = []
+
+[[claims]]
+id = "DD-0455"
+source_file = "docs/paper/example_paper.tex"
+line_start = 506
+line_end = 506
+text = "The proxy-metrics table provides formal definitions for the paper's proxy metrics."
+owner = "method_design"
+expectation_kind = "literal"
+expectation = "proxy-metrics table defines the proxy metrics"
+required_evidence_boundary = "paper_or_final_artifact"
+verifier_id = "source_trace"
+method_id = "paper_source_trace"
+policy_id = "source_coverage_v1"
+input_refs = ["docs/paper/tables/proxy_metrics.tex"]
+prerequisite_claim_ids = []
+paper_elements = ["tab:proxy_metrics"]
+citation_keys = []
+
 [[source_regions]]
 id = "SR-N-bibliography-rendering"
 source_file = "docs/paper/example_paper.bbl"
@@ -7611,10 +7845,37 @@ non_claim_reason = "rendered bibliography, validated separately from scientific 
 id = "SR-N-bibliography-provenance"
 source_file = "docs/paper/example_paper.bib"
 line_start = 1
-line_end = 460
+line_end = 461
 kind = "bibliography_provenance"
-content_sha256 = "db248c00567f7c5b10c160ee40f413368ccfd56852f44ffa229c15842fa177f4"
+content_sha256 = "86b43d5324fa265597da257920b8cdbd14d4faefbcd3eb2364539722836761b9"
 non_claim_reason = "bibliography source metadata, validated separately from scientific claims"
+
+[[source_regions]]
+id = "SR-N-example-paper-0003-0062"
+source_file = "docs/paper/example_paper.tex"
+line_start = 3
+line_end = 62
+kind = "document_setup"
+content_sha256 = "db04050ea678a5c93c44bb12da7de3055629e53e6ea685905376d607afa829ca"
+non_claim_reason = "active document setup and theorem declarations, not manuscript assertions"
+
+[[source_regions]]
+id = "SR-C-example-paper-0066-0069"
+source_file = "docs/paper/example_paper.tex"
+line_start = 66
+line_end = 69
+kind = "semantic_numeric_macros"
+content_sha256 = "d503943aebe0cc2431cfc5cc97c633f4d5b91f5c01bbb5c370eb22d4b7f2970b"
+claim_ids = ["DD-0443", "DD-0444", "DD-0445", "DD-0446"]
+
+[[source_regions]]
+id = "SR-C-example-paper-0071-0073"
+source_file = "docs/paper/example_paper.tex"
+line_start = 71
+line_end = 73
+kind = "semantic_numeric_macros"
+content_sha256 = "031017c6e80ea181304852fb8e05a830d96de51d0ea41eed67068de6dc26444f"
+claim_ids = ["DD-0447", "DD-0448", "DD-0449"]
 
 [[source_regions]]
 id = "SR-C-example-paper-0075-0075"
@@ -7624,6 +7885,24 @@ line_end = 75
 kind = "macro_definition"
 content_sha256 = "2a82782f59d473245ac6c7ebe9050751104af349f8dc13e17c127f6b68f33594"
 claim_ids = ["DD-0163"]
+
+[[source_regions]]
+id = "SR-N-example-paper-0077-0157"
+source_file = "docs/paper/example_paper.tex"
+line_start = 77
+line_end = 157
+kind = "semantic_vocabulary"
+content_sha256 = "195aa1414be868ee4887b95f5e82966125bc2a014caf05c61f5ce4f93c3bb577"
+non_claim_reason = "manuscript terminology and display labels, not independently asserted propositions"
+
+[[source_regions]]
+id = "SR-C-example-paper-0158-0158"
+source_file = "docs/paper/example_paper.tex"
+line_start = 158
+line_end = 158
+kind = "semantic_numeric_macro"
+content_sha256 = "068f4f0288a4e708200663da9d9421edf71e6ea212325a21b76fc0579d26615a"
+claim_ids = ["DD-0450"]
 
 [[source_regions]]
 id = "SR-N-running-title"
@@ -7644,6 +7923,15 @@ content_sha256 = "d9877b7b49bf7db32b4fb60098c9adb6524265d5645cd03863356635390733
 non_claim_reason = "decorative title logo composition, not a scientific claim"
 
 [[source_regions]]
+id = "SR-N-example-paper-0178-0183"
+source_file = "docs/paper/example_paper.tex"
+line_start = 178
+line_end = 183
+kind = "document_structure"
+content_sha256 = "af23b1215dc45a68870a4004865bc931a1e3caf42305b5fe9bd142d1e4767648"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
+
+[[source_regions]]
 id = "SR-N-paper-title"
 source_file = "docs/paper/example_paper.tex"
 line_start = 185
@@ -7653,6 +7941,15 @@ content_sha256 = "b28f506c55c8663b8c79ee1bda94271b00346a198d58956bba8982ddbaeaa3
 non_claim_reason = "paper title metadata, not a scientific claim"
 
 [[source_regions]]
+id = "SR-N-example-paper-0187-0190"
+source_file = "docs/paper/example_paper.tex"
+line_start = 187
+line_end = 190
+kind = "document_structure"
+content_sha256 = "c1518d5395ff1e748e9b30e23fddfe9ecf36ec1f48ed9ee6821a565789419deb"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
+
+[[source_regions]]
 id = "SR-N-author-list"
 source_file = "docs/paper/example_paper.tex"
 line_start = 191
@@ -7660,6 +7957,15 @@ line_end = 205
 kind = "author_metadata"
 content_sha256 = "0da384d4b6eaf1931bde6ff707bb8ad2c44ac5420d0dd67d25a91a91b4cba301"
 non_claim_reason = "paper author metadata, not a scientific claim"
+
+[[source_regions]]
+id = "SR-N-example-paper-0206-0206"
+source_file = "docs/paper/example_paper.tex"
+line_start = 206
+line_end = 206
+kind = "document_structure"
+content_sha256 = "412ca345ccf75bf9c0806bce695be8de808b79984251a7a54d202cf6101dd451"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
 
 [[source_regions]]
 id = "SR-N-affiliations"
@@ -7689,6 +7995,15 @@ content_sha256 = "4759167e83aa9a08927e7d68bc1bbdaec4980956ec9ee31a9f04ad548d339b
 non_claim_reason = "paper keyword metadata, not a scientific claim"
 
 [[source_regions]]
+id = "SR-N-example-paper-0221-0222"
+source_file = "docs/paper/example_paper.tex"
+line_start = 221
+line_end = 222
+kind = "document_structure"
+content_sha256 = "56956016d87fafd16c3e3fd308bec95d54c797c360f90496b2f808b23af6463f"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
+
+[[source_regions]]
 id = "SR-N-equal-contribution"
 source_file = "docs/paper/example_paper.tex"
 line_start = 233
@@ -7696,6 +8011,15 @@ line_end = 233
 kind = "author_metadata"
 content_sha256 = "7630ab70020a728db853ca8729c192f3c044e44d817fc530c173038fbb946531"
 non_claim_reason = "equal-contribution author metadata, not a scientific claim"
+
+[[source_regions]]
+id = "SR-N-example-paper-0236-0236"
+source_file = "docs/paper/example_paper.tex"
+line_start = 236
+line_end = 236
+kind = "document_structure"
+content_sha256 = "a071de173176009e698a89da5ed916ce42736670aaf9466a3420f935bbfe5e35"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
 
 [[source_regions]]
 id = "SR-C-example-paper-0237-0240"
@@ -7707,6 +8031,15 @@ content_sha256 = "0131f01d16a90acfe4bdefdf0f04b05b6bff6ca9e81e97bfdb4265975c38e3
 claim_ids = ["DD-0001", "DD-0002", "DD-0003", "DD-0004", "DD-0005", "DD-0006", "DD-0007", "DD-0008", "DD-0009", "DD-0010", "DD-0011", "DD-0012", "DD-0013", "DD-0014", "DD-0015", "DD-0016", "DD-0017", "DD-0018"]
 
 [[source_regions]]
+id = "SR-N-example-paper-0241-0247"
+source_file = "docs/paper/example_paper.tex"
+line_start = 241
+line_end = 247
+kind = "document_structure"
+content_sha256 = "3ef184df1b4cafd54da40437c7d1ab7f9bda841b35b9d32e22d964a1fb69d36f"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
+
+[[source_regions]]
 id = "SR-C-example-paper-0248-0249"
 source_file = "docs/paper/example_paper.tex"
 line_start = 248
@@ -7714,6 +8047,15 @@ line_end = 249
 kind = "figure_caption"
 content_sha256 = "b96d9d31b64de3731f44d1b0599a4c09b63bc0457c4e5573313da6ea2ec3bacd"
 claim_ids = ["DD-0019", "DD-0020", "DD-0021"]
+
+[[source_regions]]
+id = "SR-N-example-paper-0250-0252"
+source_file = "docs/paper/example_paper.tex"
+line_start = 250
+line_end = 252
+kind = "document_structure"
+content_sha256 = "92e8a6e1d35198d9b7d74299a46cad858de30eda14549c3bb8bd8bf90da16c16"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
 
 [[source_regions]]
 id = "SR-N-heading-introduction"
@@ -7770,6 +8112,15 @@ content_sha256 = "091f8ed9415a54d7e6198dd230816bd98f8e413a3a56d8a5ccef2ce5b727c6
 claim_ids = ["DD-0043", "DD-0044", "DD-0045", "DD-0046"]
 
 [[source_regions]]
+id = "SR-N-example-paper-0272-0278"
+source_file = "docs/paper/example_paper.tex"
+line_start = 272
+line_end = 278
+kind = "document_structure"
+content_sha256 = "80ec40e4d1fb6580d6835365a2c90d437944f0be0140fec0c28f5321eabcbdab"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
+
+[[source_regions]]
 id = "SR-C-example-paper-0279-0279"
 source_file = "docs/paper/example_paper.tex"
 line_start = 279
@@ -7779,6 +8130,33 @@ content_sha256 = "8a2d442b517ef001fe0634447befc1933ac3f530a8735110b2078238179829
 claim_ids = ["DD-0047", "DD-0048", "DD-0049", "DD-0050"]
 
 [[source_regions]]
+id = "SR-N-example-paper-0280-0281"
+source_file = "docs/paper/example_paper.tex"
+line_start = 280
+line_end = 281
+kind = "document_structure"
+content_sha256 = "f2a1ba7daa0d2bcce93dd82cde7fb3d22d18d38909c0cf37792b9dc188163e9e"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
+
+[[source_regions]]
+id = "SR-C-example-paper-0283-0283"
+source_file = "docs/paper/example_paper.tex"
+line_start = 283
+line_end = 283
+kind = "prose"
+content_sha256 = "dc12c0f357ece36bee7a469f290392d1b0d5557258c2cb09e9baee8ddfd055d3"
+claim_ids = ["DD-0451"]
+
+[[source_regions]]
+id = "SR-N-example-paper-0284-0284"
+source_file = "docs/paper/example_paper.tex"
+line_start = 284
+line_end = 284
+kind = "document_structure"
+content_sha256 = "3da54e7d533ec4a1b8f0cbd3fbdbde510f5cca7e784d4f40755265286485d8f1"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
+
+[[source_regions]]
 id = "SR-C-example-paper-0285-0288"
 source_file = "docs/paper/example_paper.tex"
 line_start = 285
@@ -7786,6 +8164,15 @@ line_end = 288
 kind = "prose"
 content_sha256 = "37dbe22bf4835bb190b146d700e5636a20c3ee5f8968b02b5f9a0e4ae448e38e"
 claim_ids = ["DD-0051", "DD-0052", "DD-0053", "DD-0054", "DD-0055", "DD-0056", "DD-0057"]
+
+[[source_regions]]
+id = "SR-N-example-paper-0289-0289"
+source_file = "docs/paper/example_paper.tex"
+line_start = 289
+line_end = 289
+kind = "document_structure"
+content_sha256 = "ff6c68c6399c0ea19150d8aa2ab7d57085b66ff9fc52249f04b95648d5f7ce62"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
 
 [[source_regions]]
 id = "SR-C-example-paper-0291-0291"
@@ -7806,13 +8193,13 @@ content_sha256 = "5cd6db661e5f9caf531faab5b2eb07a68a9a25b13a8168b54e4ea7f15673f3
 non_claim_reason = "section heading, not a scientific claim"
 
 [[source_regions]]
-id = "SR-C-example-paper-0296-0296"
+id = "SR-C-example-paper-0295-0296"
 source_file = "docs/paper/example_paper.tex"
-line_start = 296
+line_start = 295
 line_end = 296
 kind = "prose"
-content_sha256 = "00b13b9ea5d04b9f0b5cef594b9fa98bee58b96daba9b8e60808bb63568c23c1"
-claim_ids = ["DD-0088"]
+content_sha256 = "8c608938acf44408c7110d3d9cb54ced7472d1b8366746e15602ce0cdb546aa6"
+claim_ids = ["DD-0088", "DD-0452"]
 
 [[source_regions]]
 id = "SR-N-heading-suite"
@@ -7822,6 +8209,15 @@ line_end = 298
 kind = "section_heading"
 content_sha256 = "91500a1941f9bf2460d75c9423e84ec965d9d44b7f3c9cfbaa0cf49afed44117"
 non_claim_reason = "section heading, not a scientific claim"
+
+[[source_regions]]
+id = "SR-N-example-paper-0299-0299"
+source_file = "docs/paper/example_paper.tex"
+line_start = 299
+line_end = 299
+kind = "document_structure"
+content_sha256 = "40f52abdf044b8ad58ed7c0ab5f556a9f54f47738d774e45966761dc67115517"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
 
 [[source_regions]]
 id = "SR-C-example-paper-0300-0300"
@@ -7869,6 +8265,15 @@ content_sha256 = "287db187c25a76d705dfe5f3a26c96c188db514e6b96cbb0d915a1c056077d
 non_claim_reason = "section heading, not a scientific claim"
 
 [[source_regions]]
+id = "SR-N-example-paper-0311-0311"
+source_file = "docs/paper/example_paper.tex"
+line_start = 311
+line_end = 311
+kind = "document_structure"
+content_sha256 = "a22a17c9f6bb2f9495a6f87996d87442217cf195c7b0dc397ca479e75d1e615e"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
+
+[[source_regions]]
 id = "SR-C-example-paper-0312-0312"
 source_file = "docs/paper/example_paper.tex"
 line_start = 312
@@ -7896,6 +8301,15 @@ content_sha256 = "913f3df0136fbd4ac70e64d7a762c74381c8bcc675d228fcfff6de6bad6d59
 claim_ids = ["DD-0107", "DD-0108", "DD-0109", "DD-0110", "DD-0111", "DD-0112", "DD-0113", "DD-0114"]
 
 [[source_regions]]
+id = "SR-N-example-paper-0322-0322"
+source_file = "docs/paper/example_paper.tex"
+line_start = 322
+line_end = 322
+kind = "document_structure"
+content_sha256 = "ec60cd60b9b48b00672a15bf23a1785fa57cc2d17d82e0c195e1c0d236e7b43c"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
+
+[[source_regions]]
 id = "SR-C-example-paper-0323-0324"
 source_file = "docs/paper/example_paper.tex"
 line_start = 323
@@ -7914,6 +8328,24 @@ content_sha256 = "28147f2977b3d019c7b991dbf01bde0188f2274a5c2b6305fba2b7b96978dc
 non_claim_reason = "section heading, not a scientific claim"
 
 [[source_regions]]
+id = "SR-N-example-paper-0327-0327"
+source_file = "docs/paper/example_paper.tex"
+line_start = 327
+line_end = 327
+kind = "document_structure"
+content_sha256 = "27b0a36c6c89331e85cccfdb2a17be0034766ee551c9fef42a9208bf49b13e14"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
+
+[[source_regions]]
+id = "SR-C-example-paper-0328-0328"
+source_file = "docs/paper/example_paper.tex"
+line_start = 328
+line_end = 328
+kind = "prose"
+content_sha256 = "36e17ea3643bff583cc3514de31b83ff87790d30cd8895616108e2030efc2238"
+claim_ids = ["DD-0453"]
+
+[[source_regions]]
 id = "SR-C-example-paper-0330-0330"
 source_file = "docs/paper/example_paper.tex"
 line_start = 330
@@ -7921,6 +8353,15 @@ line_end = 330
 kind = "prose"
 content_sha256 = "547a768c2ccbb833e8d57f252145e068d7a5e5a304ee6cafa75121616cae75d5"
 claim_ids = ["DD-0120", "DD-0121", "DD-0122"]
+
+[[source_regions]]
+id = "SR-N-example-paper-0332-0332"
+source_file = "docs/paper/example_paper.tex"
+line_start = 332
+line_end = 332
+kind = "document_structure"
+content_sha256 = "cc629f70f500b1a18e0f7d783b187667cde0b5723b49b2d71f00dfe75781bd4f"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
 
 [[source_regions]]
 id = "SR-N-heading-decision-accuracy"
@@ -7941,6 +8382,15 @@ content_sha256 = "11fe16742e66b460a19b3db2245d56d0a612c0bee451e16d5b3abe61672331
 claim_ids = ["DD-0123", "DD-0124", "DD-0125", "DD-0126", "DD-0127"]
 
 [[source_regions]]
+id = "SR-N-example-paper-0338-0338"
+source_file = "docs/paper/example_paper.tex"
+line_start = 338
+line_end = 338
+kind = "document_structure"
+content_sha256 = "73c2a688d319e8294ebc3cc5b089c079c023ff0c7465b8a88cd80a2a1b9531fc"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
+
+[[source_regions]]
 id = "SR-C-example-paper-0340-0340"
 source_file = "docs/paper/example_paper.tex"
 line_start = 340
@@ -7959,6 +8409,15 @@ content_sha256 = "b498c79e33e72e7d2c2fd04ac6bdd648d4cb6d22086a24efdd542ca335f5c8
 non_claim_reason = "section heading, not a scientific claim"
 
 [[source_regions]]
+id = "SR-N-example-paper-0343-0343"
+source_file = "docs/paper/example_paper.tex"
+line_start = 343
+line_end = 343
+kind = "document_structure"
+content_sha256 = "bc59968d587d001aeea41f9cb61281dc36fe4df79eb32d7cb10f460fc4994fb6"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
+
+[[source_regions]]
 id = "SR-C-example-paper-0345-0345"
 source_file = "docs/paper/example_paper.tex"
 line_start = 345
@@ -7968,6 +8427,15 @@ content_sha256 = "ebd60da247bec74abb1d0433dce24cb088a6d6b74b80b020143742dfadc520
 claim_ids = ["DD-0131", "DD-0132", "DD-0133", "DD-0134", "DD-0135", "DD-0136", "DD-0137", "DD-0138", "DD-0139", "DD-0140", "DD-0141", "DD-0142", "DD-0143", "DD-0144", "DD-0145", "DD-0146", "DD-0147"]
 
 [[source_regions]]
+id = "SR-N-example-paper-0347-0349"
+source_file = "docs/paper/example_paper.tex"
+line_start = 347
+line_end = 349
+kind = "document_structure"
+content_sha256 = "c93136671f53d00327c7c835576320f30340c3c05c79863aa6c2b29910526de6"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
+
+[[source_regions]]
 id = "SR-C-example-paper-0350-0350"
 source_file = "docs/paper/example_paper.tex"
 line_start = 350
@@ -7975,6 +8443,15 @@ line_end = 350
 kind = "figure_caption"
 content_sha256 = "a964fe2e49f7f91f773a08c26ff4f8f2b11bbe93a2db04f2b99298017a124b1f"
 claim_ids = ["DD-0148", "DD-0149", "DD-0150"]
+
+[[source_regions]]
+id = "SR-N-example-paper-0351-0352"
+source_file = "docs/paper/example_paper.tex"
+line_start = 351
+line_end = 352
+kind = "document_structure"
+content_sha256 = "c96f416544f0c0646cbb6f4ff143395e818cb7fb31860992b6a21457e9b6b1de"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
 
 [[source_regions]]
 id = "SR-C-example-paper-0354-0354"
@@ -7993,6 +8470,15 @@ line_end = 357
 kind = "section_heading"
 content_sha256 = "39e4775225eb917dae6e0537a43db35871bb9ca6b6a073a8c8618197f6caa0a2"
 non_claim_reason = "section heading, not a scientific claim"
+
+[[source_regions]]
+id = "SR-N-example-paper-0358-0358"
+source_file = "docs/paper/example_paper.tex"
+line_start = 358
+line_end = 358
+kind = "document_structure"
+content_sha256 = "83cc9bf5a6d87839f7b752b72159ecfdb5cd38a43852078466b5d05cb2e05986"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
 
 [[source_regions]]
 id = "SR-C-example-paper-0359-0360"
@@ -8022,6 +8508,15 @@ content_sha256 = "95bb02fba19a98f7b75f65c6f41d92773386db177aacc8d5beb843ea5a4a92
 non_claim_reason = "section heading, not a scientific claim"
 
 [[source_regions]]
+id = "SR-N-example-paper-0365-0366"
+source_file = "docs/paper/example_paper.tex"
+line_start = 365
+line_end = 366
+kind = "document_structure"
+content_sha256 = "4d9f9f82b2a812d0390630434d50b3e0c3930e86700775aa63e4cc49b006ffc6"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
+
+[[source_regions]]
 id = "SR-C-example-paper-0367-0367"
 source_file = "docs/paper/example_paper.tex"
 line_start = 367
@@ -8029,6 +8524,15 @@ line_end = 367
 kind = "prose"
 content_sha256 = "67cd7f6336b0eb144816c4beab923dc67acadc962f878ef717c4b3fc47049eca"
 claim_ids = ["DD-0164", "DD-0165", "DD-0166", "DD-0167", "DD-0168"]
+
+[[source_regions]]
+id = "SR-N-example-paper-0368-0368"
+source_file = "docs/paper/example_paper.tex"
+line_start = 368
+line_end = 368
+kind = "document_structure"
+content_sha256 = "bf7b4bebd36526d6ff7f2974b0b2a50645f2c2106c15e3e79924252d58bc753b"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
 
 [[source_regions]]
 id = "SR-C-example-paper-0370-0370"
@@ -8049,6 +8553,15 @@ content_sha256 = "b81342730f63f02b4648774c5f7fe1755fe8cb166f2e26257aed453ff95eca
 claim_ids = ["DD-0174", "DD-0175", "DD-0176", "DD-0177", "DD-0178", "DD-0179"]
 
 [[source_regions]]
+id = "SR-N-example-paper-0375-0377"
+source_file = "docs/paper/example_paper.tex"
+line_start = 375
+line_end = 377
+kind = "document_structure"
+content_sha256 = "263dc8fea29d56fc58f053ea88e9172dcce65841e6e38f5e8804c190a120980c"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
+
+[[source_regions]]
 id = "SR-C-example-paper-0378-0378"
 source_file = "docs/paper/example_paper.tex"
 line_start = 378
@@ -8056,6 +8569,15 @@ line_end = 378
 kind = "figure_caption"
 content_sha256 = "1eec03d822abe267d2f7244cebd021f42637f2edf8ba74473cd4bf00e7aec410"
 claim_ids = ["DD-0180"]
+
+[[source_regions]]
+id = "SR-N-example-paper-0379-0380"
+source_file = "docs/paper/example_paper.tex"
+line_start = 379
+line_end = 380
+kind = "document_structure"
+content_sha256 = "acf5b78d6368d6b52191e69d1cf8975ea2ebf9a5385229c33989bf8276bdaa15"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
 
 [[source_regions]]
 id = "SR-N-heading-scaling-comparison"
@@ -8067,6 +8589,15 @@ content_sha256 = "d813662fb759fb57d1e35782009cf1ec8ac06641005dcc7edb685eb5a34a93
 non_claim_reason = "section heading, not a scientific claim"
 
 [[source_regions]]
+id = "SR-N-example-paper-0382-0383"
+source_file = "docs/paper/example_paper.tex"
+line_start = 382
+line_end = 383
+kind = "document_structure"
+content_sha256 = "dfcb07eb40e0b508293128cfd1c40e239bbcee80c1030459163131ec71430f00"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
+
+[[source_regions]]
 id = "SR-C-example-paper-0384-0384"
 source_file = "docs/paper/example_paper.tex"
 line_start = 384
@@ -8074,6 +8605,15 @@ line_end = 384
 kind = "prose"
 content_sha256 = "324f243a2bb98c196f036e2083ff62234c10d869db435c20e62cfe73ccc8bf75"
 claim_ids = ["DD-0181"]
+
+[[source_regions]]
+id = "SR-N-example-paper-0385-0385"
+source_file = "docs/paper/example_paper.tex"
+line_start = 385
+line_end = 385
+kind = "document_structure"
+content_sha256 = "bf7b4bebd36526d6ff7f2974b0b2a50645f2c2106c15e3e79924252d58bc753b"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
 
 [[source_regions]]
 id = "SR-C-example-paper-0387-0387"
@@ -8112,6 +8652,15 @@ content_sha256 = "38c023ce7898f46b62602eadb59ddbf78fec0d2a2fa164f46208a7ccd0a5fc
 non_claim_reason = "section heading, not a scientific claim"
 
 [[source_regions]]
+id = "SR-N-example-paper-0398-0399"
+source_file = "docs/paper/example_paper.tex"
+line_start = 398
+line_end = 399
+kind = "document_structure"
+content_sha256 = "f80cf2beb17078c0f63d220bed5ae549c95c5ff7aedea67a9b5a474101309bbd"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
+
+[[source_regions]]
 id = "SR-C-example-paper-0400-0400"
 source_file = "docs/paper/example_paper.tex"
 line_start = 400
@@ -8119,6 +8668,15 @@ line_end = 400
 kind = "prose"
 content_sha256 = "7e55e11e051012080d8b05b4eddc0f68712624a9bd7a406352093f4abed70c32"
 claim_ids = ["DD-0196"]
+
+[[source_regions]]
+id = "SR-N-example-paper-0401-0401"
+source_file = "docs/paper/example_paper.tex"
+line_start = 401
+line_end = 401
+kind = "document_structure"
+content_sha256 = "bf7b4bebd36526d6ff7f2974b0b2a50645f2c2106c15e3e79924252d58bc753b"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
 
 [[source_regions]]
 id = "SR-C-example-paper-0404-0404"
@@ -8148,6 +8706,15 @@ content_sha256 = "4a403a94762571d072da5522fc8c0dbdbe042eef8f0aebd47473ab910d47cc
 claim_ids = ["DD-0202", "DD-0203", "DD-0204", "DD-0205", "DD-0206", "DD-0207"]
 
 [[source_regions]]
+id = "SR-N-example-paper-0410-0413"
+source_file = "docs/paper/example_paper.tex"
+line_start = 410
+line_end = 413
+kind = "document_structure"
+content_sha256 = "06849aa9e5dd657c3c22678a2cde52051e1002b0abe67c33e91537f161008f0b"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
+
+[[source_regions]]
 id = "SR-C-example-paper-0414-0414"
 source_file = "docs/paper/example_paper.tex"
 line_start = 414
@@ -8155,6 +8722,15 @@ line_end = 414
 kind = "figure_caption"
 content_sha256 = "8d8f9a3075f479bcc650ee6983f3aef1a8e7724cd9f0ac65673c41e6e5712bdd"
 claim_ids = ["DD-0208"]
+
+[[source_regions]]
+id = "SR-N-example-paper-0415-0421"
+source_file = "docs/paper/example_paper.tex"
+line_start = 415
+line_end = 421
+kind = "document_structure"
+content_sha256 = "2fb8a87d0437b33b417b230b2f118fff46dcf66e8f8da13b1491c816d61fa8e0"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
 
 [[source_regions]]
 id = "SR-C-example-paper-0422-0422"
@@ -8166,6 +8742,15 @@ content_sha256 = "6d13725359e55b663b7b256dd7b1263b46f7fdd403ba165d00deaf9f5ba054
 claim_ids = ["DD-0209", "DD-0210"]
 
 [[source_regions]]
+id = "SR-N-example-paper-0423-0424"
+source_file = "docs/paper/example_paper.tex"
+line_start = 423
+line_end = 424
+kind = "document_structure"
+content_sha256 = "a37cb964b544c305592623403334d8679212db22b28b66df072313aad3ed62b6"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
+
+[[source_regions]]
 id = "SR-N-heading-benchmark-predictability"
 source_file = "docs/paper/example_paper.tex"
 line_start = 426
@@ -8173,6 +8758,15 @@ line_end = 426
 kind = "section_heading"
 content_sha256 = "9f29becf61c23b0ccfcf58938754a537f10f411b0a955adeaf91a0163ccc17c3"
 non_claim_reason = "section heading, not a scientific claim"
+
+[[source_regions]]
+id = "SR-N-example-paper-0427-0428"
+source_file = "docs/paper/example_paper.tex"
+line_start = 427
+line_end = 428
+kind = "document_structure"
+content_sha256 = "1b4a5083158e1afede77e5753c80d318966b8de741e5a16b4d7a5a17bd6abd47"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
 
 [[source_regions]]
 id = "SR-C-example-paper-0429-0429"
@@ -8184,6 +8778,15 @@ content_sha256 = "2a6a25d0d8ead3091bc5bba0d3065f15b5c55e0f605582b73cf5e551315aa7
 claim_ids = ["DD-0211", "DD-0212", "DD-0213"]
 
 [[source_regions]]
+id = "SR-N-example-paper-0430-0430"
+source_file = "docs/paper/example_paper.tex"
+line_start = 430
+line_end = 430
+kind = "document_structure"
+content_sha256 = "bf7b4bebd36526d6ff7f2974b0b2a50645f2c2106c15e3e79924252d58bc753b"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
+
+[[source_regions]]
 id = "SR-C-example-paper-0432-0432"
 source_file = "docs/paper/example_paper.tex"
 line_start = 432
@@ -8193,6 +8796,15 @@ content_sha256 = "fffeb80bbcde81ba806092fd48b1f6311bf6cd4972a34cbe0d50825addbce2
 claim_ids = ["DD-0214", "DD-0215", "DD-0216", "DD-0217", "DD-0218", "DD-0219", "DD-0220"]
 
 [[source_regions]]
+id = "SR-N-example-paper-0435-0437"
+source_file = "docs/paper/example_paper.tex"
+line_start = 435
+line_end = 437
+kind = "document_structure"
+content_sha256 = "439a532e06024a952a71233d9155d598107fb51b6015f8356c982ea8704c037a"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
+
+[[source_regions]]
 id = "SR-C-example-paper-0438-0438"
 source_file = "docs/paper/example_paper.tex"
 line_start = 438
@@ -8200,6 +8812,15 @@ line_end = 438
 kind = "figure_caption"
 content_sha256 = "666023fbb921a5155465c78f184f7eca24b95c11c3e4d87293779e16ef809711"
 claim_ids = ["DD-0221", "DD-0222"]
+
+[[source_regions]]
+id = "SR-N-example-paper-0439-0440"
+source_file = "docs/paper/example_paper.tex"
+line_start = 439
+line_end = 440
+kind = "document_structure"
+content_sha256 = "3b934ca00a01abbb3433aa687d712d70c9ddd8a4bc0b238fc752e6411a331097"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
 
 [[source_regions]]
 id = "SR-C-example-paper-0442-0442"
@@ -8310,6 +8931,15 @@ content_sha256 = "ae07b922f55858e26e44f0745793240e72924cac6f49fc1b4ff1c8dd56f718
 non_claim_reason = "bibliography rendering commands, not scientific claims"
 
 [[source_regions]]
+id = "SR-N-example-paper-0479-0479"
+source_file = "docs/paper/example_paper.tex"
+line_start = 479
+line_end = 479
+kind = "document_structure"
+content_sha256 = "d2980a2801ccfcaad7a365bbeb933b286bc6ee28d92e55feb11c11e0047b6089"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
+
+[[source_regions]]
 id = "SR-N-appendix-boundary"
 source_file = "docs/paper/example_paper.tex"
 line_start = 480
@@ -8328,6 +8958,15 @@ content_sha256 = "ae713287fe438987a589b0b1fca7af8711c987b6950722c5de9967c6fd83ef
 non_claim_reason = "section heading, not a scientific claim"
 
 [[source_regions]]
+id = "SR-N-example-paper-0486-0488"
+source_file = "docs/paper/example_paper.tex"
+line_start = 486
+line_end = 488
+kind = "document_structure"
+content_sha256 = "12b935586107f2a0f71b9e0e5494ad8276d962379e102ef09231d20ccdcdbc32"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
+
+[[source_regions]]
 id = "SR-C-example-paper-0489-0490"
 source_file = "docs/paper/example_paper.tex"
 line_start = 489
@@ -8335,6 +8974,24 @@ line_end = 490
 kind = "table_caption"
 content_sha256 = "d7b7916229061a183d22359d6a3835eb16bf243064ad799746a7b7a01c78adbc"
 claim_ids = ["DD-0267", "DD-0268", "DD-0269", "DD-0270", "DD-0271", "DD-0272", "DD-0273", "DD-0274", "DD-0275"]
+
+[[source_regions]]
+id = "SR-N-example-paper-0491-0493"
+source_file = "docs/paper/example_paper.tex"
+line_start = 491
+line_end = 493
+kind = "document_structure"
+content_sha256 = "dfdab36cf85a5dc9880b7b3cdf0d84402a3e1a5708ee50beb034611ebcdc5f07"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
+
+[[source_regions]]
+id = "SR-C-example-paper-0495-0495"
+source_file = "docs/paper/example_paper.tex"
+line_start = 495
+line_end = 495
+kind = "prose"
+content_sha256 = "c50ac85679b3d65f342d6fe78f4cfd9aef324b137933412d2de44847ecbce65c"
+claim_ids = ["DD-0454"]
 
 [[source_regions]]
 id = "SR-N-heading-proxy-definitions"
@@ -8346,6 +9003,15 @@ content_sha256 = "3bba3af44bf69854d67044aa1c2473574512c3be4b261f34256e426a705343
 non_claim_reason = "section heading, not a scientific claim"
 
 [[source_regions]]
+id = "SR-N-example-paper-0498-0500"
+source_file = "docs/paper/example_paper.tex"
+line_start = 498
+line_end = 500
+kind = "document_structure"
+content_sha256 = "54155d0e63f449bb2f1b22b65f03da54caece0c64acec2b88ea49a4076404296"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
+
+[[source_regions]]
 id = "SR-C-example-paper-0501-0501"
 source_file = "docs/paper/example_paper.tex"
 line_start = 501
@@ -8353,6 +9019,33 @@ line_end = 501
 kind = "table_caption"
 content_sha256 = "56fe7c9b53dace03a7dbb4b85fb296b10bdae0b68d2b1afe5cee301f4b7315ea"
 claim_ids = ["DD-0297", "DD-0298", "DD-0299", "DD-0300"]
+
+[[source_regions]]
+id = "SR-N-example-paper-0502-0504"
+source_file = "docs/paper/example_paper.tex"
+line_start = 502
+line_end = 504
+kind = "document_structure"
+content_sha256 = "7fce61ac9ef37a25a9888fc50e492b39c8c0ca60ffe86dbd8b37a9ee45e8fc05"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
+
+[[source_regions]]
+id = "SR-C-example-paper-0506-0506"
+source_file = "docs/paper/example_paper.tex"
+line_start = 506
+line_end = 506
+kind = "prose"
+content_sha256 = "7f6604db104d46e67b8264f2514cbede7fcc8462f4810c8e63b88789158b3953"
+claim_ids = ["DD-0455"]
+
+[[source_regions]]
+id = "SR-N-example-paper-0508-0511"
+source_file = "docs/paper/example_paper.tex"
+line_start = 508
+line_end = 511
+kind = "document_structure"
+content_sha256 = "d4a4893f3086945753ce606fb40e26edb4f1d4ac71ae0ee5eaa9cd23d9ec79c6"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
 
 [[source_regions]]
 id = "SR-C-example-paper-0512-0512"
@@ -8364,6 +9057,15 @@ content_sha256 = "0ac42604ed01dcb817c0b6946b7c0030f9376b6334caebc204ba709a976319
 claim_ids = ["DD-0309", "DD-0310", "DD-0311", "DD-0312"]
 
 [[source_regions]]
+id = "SR-N-example-paper-0513-0514"
+source_file = "docs/paper/example_paper.tex"
+line_start = 513
+line_end = 514
+kind = "document_structure"
+content_sha256 = "77f4ba08b8e965c146fea6be3ddf14f3565112cc02641fe4883cfe92394b7f11"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
+
+[[source_regions]]
 id = "SR-N-heading-scaling-variants"
 source_file = "docs/paper/example_paper.tex"
 line_start = 515
@@ -8371,6 +9073,15 @@ line_end = 515
 kind = "section_heading"
 content_sha256 = "b1d6454c36382272344bb71cd575f4b5dccede1adddd7895f599e538c7a5c9d9"
 non_claim_reason = "section heading, not a scientific claim"
+
+[[source_regions]]
+id = "SR-N-example-paper-0516-0516"
+source_file = "docs/paper/example_paper.tex"
+line_start = 516
+line_end = 516
+kind = "document_structure"
+content_sha256 = "9a3475d1e4ef9a55e95556ac717bc2cb2bf7b646b89628cbc74527b132a0eff2"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
 
 [[source_regions]]
 id = "SR-N-heading-baseline-fit"
@@ -8499,66 +9210,75 @@ content_sha256 = "1d49fd079228c5db4814aceeb985668423ce3e187ef8562b9ae60c524fd05a
 claim_ids = ["DD-0330", "DD-0331"]
 
 [[source_regions]]
-id = "SR-C-figures-datadecide-infographic-0001-0001"
+id = "SR-N-example-paper-0567-0567"
+source_file = "docs/paper/example_paper.tex"
+line_start = 567
+line_end = 567
+kind = "document_structure"
+content_sha256 = "7c0796754f02f5feb9aadd6a37d7145d65bd53ddb0779dba48832b3bbb06fcb2"
+non_claim_reason = "active TeX structure, inclusion, or cross-reference command, not a manuscript assertion"
+
+[[source_regions]]
+id = "SR-C-figures-datadecide-infographic-0001-3928"
 source_file = "docs/paper/figures/DataDecide_Infographic.pdf"
 line_start = 1
-line_end = 1
+line_end = 3928
 kind = "figure"
-content_sha256 = "ebdd25cdce50910205f5952213621f0bec12390b24bf21e686a21b0b7217b0ce"
+content_sha256 = "3641cab33393db574b1e3ba2d35d60086424d1f441a8480d3ca9bcbe2685583e"
 claim_ids = ["DD-0332", "DD-0333", "DD-0334", "DD-0335", "DD-0336", "DD-0337", "DD-0338", "DD-0339", "DD-0340", "DD-0341", "DD-0342", "DD-0343", "DD-0344", "DD-0345", "DD-0346", "DD-0347", "DD-0348", "DD-0349", "DD-0350", "DD-0351", "DD-0352", "DD-0353", "DD-0354", "DD-0355", "DD-0356"]
 
 [[source_regions]]
-id = "SR-C-figures-accuracy-vs-compute-with-legend-fixed-0001-0001"
+id = "SR-C-figures-accuracy-vs-compute-with-legend-fixed-0001-0699"
 source_file = "docs/paper/figures/accuracy_vs_compute_with_legend_fixed.pdf"
 line_start = 1
-line_end = 1
+line_end = 699
 kind = "figure"
-content_sha256 = "e5c62df5dab5c87b6a015ef3d43597074d1eec433b15f51aec63b8582d0e4ab4"
+content_sha256 = "d98c644d24368e0396875449905eb7b0fd451a1f5c9816be9e0e02afbfe1ae9d"
 claim_ids = ["DD-0357", "DD-0358", "DD-0359", "DD-0360", "DD-0361", "DD-0362", "DD-0363", "DD-0364", "DD-0365", "DD-0366", "DD-0367", "DD-0368", "DD-0369"]
 
 [[source_regions]]
-id = "SR-C-figures-all-metrics-compute-vs-accuracy-per-task-0001-0001"
+id = "SR-C-figures-all-metrics-compute-vs-accuracy-per-task-0001-10101"
 source_file = "docs/paper/figures/all_metrics_compute_vs_accuracy_per_task.pdf"
 line_start = 1
-line_end = 1
+line_end = 10101
 kind = "figure"
-content_sha256 = "e5c62df5dab5c87b6a015ef3d43597074d1eec433b15f51aec63b8582d0e4ab4"
+content_sha256 = "14677652b6154ca0656012b171bf3058700ca0a3e9a41f1eafed3ea51bd9049b"
 claim_ids = ["DD-0370", "DD-0371", "DD-0372", "DD-0373", "DD-0374", "DD-0375", "DD-0376", "DD-0377", "DD-0378", "DD-0379", "DD-0380", "DD-0381", "DD-0382", "DD-0383", "DD-0384", "DD-0385", "DD-0386", "DD-0387"]
 
 [[source_regions]]
 id = "SR-N-decorative-logo"
 source_file = "docs/paper/figures/datadecide-logo.pdf"
 line_start = 1
-line_end = 1
+line_end = 103
 kind = "decorative_logo"
-content_sha256 = "e23884fcce655e4bcb57f653dd754ece889446e062f6d54bcf0b4df410c24016"
+content_sha256 = "8fa972d441a3c1c5ca70535a9a04a94ec35aa07084f91a34264516fffbbeb17b"
 non_claim_reason = "decorative logo, not scientific evidence"
 
 [[source_regions]]
-id = "SR-C-figures-math-code-decision-accuracy-0001-0001"
+id = "SR-C-figures-math-code-decision-accuracy-0001-0428"
 source_file = "docs/paper/figures/math_code_decision_accuracy.pdf"
 line_start = 1
-line_end = 1
+line_end = 428
 kind = "figure"
-content_sha256 = "e5c62df5dab5c87b6a015ef3d43597074d1eec433b15f51aec63b8582d0e4ab4"
+content_sha256 = "be59a36e45a4b932deab5540acd5fa7315c0ed6c30f0b46865cbae8c7ce3aeaa"
 claim_ids = ["DD-0403", "DD-0404", "DD-0405", "DD-0406", "DD-0407", "DD-0408", "DD-0409", "DD-0410", "DD-0411", "DD-0412", "DD-0413", "DD-0414"]
 
 [[source_regions]]
-id = "SR-C-figures-noise-to-spread-150m-0001-0001"
+id = "SR-C-figures-noise-to-spread-150m-0001-0648"
 source_file = "docs/paper/figures/noise_to_spread_150M.pdf"
 line_start = 1
-line_end = 1
+line_end = 648
 kind = "figure"
-content_sha256 = "e5c62df5dab5c87b6a015ef3d43597074d1eec433b15f51aec63b8582d0e4ab4"
+content_sha256 = "729d191cf662fba59abad3f26c5949025b8275d1b8d1de7dd2dc2989fbd69734"
 claim_ids = ["DD-0388", "DD-0389", "DD-0390", "DD-0391", "DD-0392", "DD-0393", "DD-0394", "DD-0395", "DD-0396", "DD-0397", "DD-0398", "DD-0399", "DD-0400", "DD-0401", "DD-0402"]
 
 [[source_regions]]
-id = "SR-C-figures-primary-metric-compute-vs-accuracy-per-task-0001-0001"
+id = "SR-C-figures-primary-metric-compute-vs-accuracy-per-task-0001-2859"
 source_file = "docs/paper/figures/primary_metric_compute_vs_accuracy_per_task.pdf"
 line_start = 1
-line_end = 1
+line_end = 2859
 kind = "figure"
-content_sha256 = "e5c62df5dab5c87b6a015ef3d43597074d1eec433b15f51aec63b8582d0e4ab4"
+content_sha256 = "c33a4dc72566a75fc6be83d6bbbcd281428a54a1dcf2596b5b4ccab794798d59"
 claim_ids = ["DD-0415", "DD-0416", "DD-0417", "DD-0418", "DD-0419", "DD-0420", "DD-0421", "DD-0422", "DD-0423", "DD-0424", "DD-0425", "DD-0426", "DD-0427", "DD-0428", "DD-0429", "DD-0430", "DD-0431", "DD-0432", "DD-0433", "DD-0434", "DD-0435", "DD-0436", "DD-0437", "DD-0438", "DD-0439", "DD-0440", "DD-0441", "DD-0442"]
 
 [[source_regions]]
@@ -8643,6 +9363,15 @@ content_sha256 = "4696dec8fa08d382026d11e55cdab587437e95e800bad55f8e4d4f8b4fa40f
 claim_ids = ["DD-0078", "DD-0079", "DD-0080", "DD-0081", "DD-0082", "DD-0083", "DD-0084", "DD-0085", "DD-0086", "DD-0087"]
 
 [[source_regions]]
+id = "SR-N-data-recipes-0107-0108"
+source_file = "docs/paper/tables/data_recipes.tex"
+line_start = 107
+line_end = 108
+kind = "table_layout"
+content_sha256 = "2a89a827aaf7db53f7fd89ba4aa2f04ee5774c58bdbaf9a14b07e562149029b1"
+non_claim_reason = "active table rule or environment command, not a manuscript assertion"
+
+[[source_regions]]
 id = "SR-N-table-prediction-error-heading"
 source_file = "docs/paper/tables/pred_error.tex"
 line_start = 1
@@ -8659,6 +9388,15 @@ line_end = 13
 kind = "table"
 content_sha256 = "ab993de95f0117bc318132dc46bd1d5a6d39f487015975c68115a5b9217d9a30"
 claim_ids = ["DD-0301", "DD-0302", "DD-0303", "DD-0304", "DD-0305", "DD-0306", "DD-0307", "DD-0308"]
+
+[[source_regions]]
+id = "SR-N-pred-error-0014-0015"
+source_file = "docs/paper/tables/pred_error.tex"
+line_start = 14
+line_end = 15
+kind = "table_layout"
+content_sha256 = "d54c6bf0328485a686166b5a67bdd290b7ac1e50d6a82ab7c854138a827ba480"
+non_claim_reason = "active table rule or environment command, not a manuscript assertion"
 
 [[source_regions]]
 id = "SR-N-table-proxy-metrics-heading"
@@ -8679,6 +9417,15 @@ content_sha256 = "4f9982bd10517bb720fc57b86f73229d33fa37d3d8df0c9714951dd3c2140e
 claim_ids = ["DD-0290"]
 
 [[source_regions]]
+id = "SR-N-proxy-metrics-0006-0006"
+source_file = "docs/paper/tables/proxy_metrics.tex"
+line_start = 6
+line_end = 6
+kind = "table_layout"
+content_sha256 = "c1cbed7937765956e8a96aae39bd0dd5de55a8df5343f58dfbd48646a36bd5a8"
+non_claim_reason = "active table rule or environment command, not a manuscript assertion"
+
+[[source_regions]]
 id = "SR-C-tables-proxy-metrics-0007-0007"
 source_file = "docs/paper/tables/proxy_metrics.tex"
 line_start = 7
@@ -8686,6 +9433,15 @@ line_end = 7
 kind = "table"
 content_sha256 = "55f908e5a7ddc054efc352b9c98c7380f666fddc28436de0d56e5d3f2f837035"
 claim_ids = ["DD-0291"]
+
+[[source_regions]]
+id = "SR-N-proxy-metrics-0008-0008"
+source_file = "docs/paper/tables/proxy_metrics.tex"
+line_start = 8
+line_end = 8
+kind = "table_layout"
+content_sha256 = "c1cbed7937765956e8a96aae39bd0dd5de55a8df5343f58dfbd48646a36bd5a8"
+non_claim_reason = "active table rule or environment command, not a manuscript assertion"
 
 [[source_regions]]
 id = "SR-C-tables-proxy-metrics-0009-0009"
@@ -8697,6 +9453,15 @@ content_sha256 = "03bfe0e33d87217e919d35903bfe04679aeb4d87e51d0f9068689e97191918
 claim_ids = ["DD-0292"]
 
 [[source_regions]]
+id = "SR-N-proxy-metrics-0010-0010"
+source_file = "docs/paper/tables/proxy_metrics.tex"
+line_start = 10
+line_end = 10
+kind = "table_layout"
+content_sha256 = "c1cbed7937765956e8a96aae39bd0dd5de55a8df5343f58dfbd48646a36bd5a8"
+non_claim_reason = "active table rule or environment command, not a manuscript assertion"
+
+[[source_regions]]
 id = "SR-C-tables-proxy-metrics-0011-0011"
 source_file = "docs/paper/tables/proxy_metrics.tex"
 line_start = 11
@@ -8704,6 +9469,15 @@ line_end = 11
 kind = "table"
 content_sha256 = "eb581d77c19b55ac9d3ddde114d8b506cfd3d04d37d25771266f93412bf158a0"
 claim_ids = ["DD-0293"]
+
+[[source_regions]]
+id = "SR-N-proxy-metrics-0012-0012"
+source_file = "docs/paper/tables/proxy_metrics.tex"
+line_start = 12
+line_end = 12
+kind = "table_layout"
+content_sha256 = "c1cbed7937765956e8a96aae39bd0dd5de55a8df5343f58dfbd48646a36bd5a8"
+non_claim_reason = "active table rule or environment command, not a manuscript assertion"
 
 [[source_regions]]
 id = "SR-C-tables-proxy-metrics-0013-0013"
@@ -8715,6 +9489,15 @@ content_sha256 = "6219ec856cd32a06130ae24571c75da5f4cbb00eddffbeaecc260121a17c54
 claim_ids = ["DD-0294"]
 
 [[source_regions]]
+id = "SR-N-proxy-metrics-0014-0014"
+source_file = "docs/paper/tables/proxy_metrics.tex"
+line_start = 14
+line_end = 14
+kind = "table_layout"
+content_sha256 = "c1cbed7937765956e8a96aae39bd0dd5de55a8df5343f58dfbd48646a36bd5a8"
+non_claim_reason = "active table rule or environment command, not a manuscript assertion"
+
+[[source_regions]]
 id = "SR-C-tables-proxy-metrics-0015-0015"
 source_file = "docs/paper/tables/proxy_metrics.tex"
 line_start = 15
@@ -8724,6 +9507,15 @@ content_sha256 = "fff22baadd661e1521b2de92646cc43930eeed2dc1935f9929082a90cd963d
 claim_ids = ["DD-0295"]
 
 [[source_regions]]
+id = "SR-N-proxy-metrics-0016-0016"
+source_file = "docs/paper/tables/proxy_metrics.tex"
+line_start = 16
+line_end = 16
+kind = "table_layout"
+content_sha256 = "c1cbed7937765956e8a96aae39bd0dd5de55a8df5343f58dfbd48646a36bd5a8"
+non_claim_reason = "active table rule or environment command, not a manuscript assertion"
+
+[[source_regions]]
 id = "SR-C-tables-proxy-metrics-0017-0017"
 source_file = "docs/paper/tables/proxy_metrics.tex"
 line_start = 17
@@ -8731,6 +9523,15 @@ line_end = 17
 kind = "table"
 content_sha256 = "f5c56cf2f594e061d8f8866c02bcc3184f2c6417988b8130ca34064fd831a6bf"
 claim_ids = ["DD-0296"]
+
+[[source_regions]]
+id = "SR-N-proxy-metrics-0018-0018"
+source_file = "docs/paper/tables/proxy_metrics.tex"
+line_start = 18
+line_end = 18
+kind = "table_layout"
+content_sha256 = "0411b421ce2e331b7fdce00748bf8cc9c62546c8de3954f90f45c80c9a7a73a9"
+non_claim_reason = "active table rule or environment command, not a manuscript assertion"
 
 [[source_regions]]
 id = "SR-N-table-suite-stats-heading"
@@ -8749,3 +9550,12 @@ line_end = 18
 kind = "table"
 content_sha256 = "e0d32995cc2b68c421bd9863d75a96f5b9fd223d2f9cf5d59b90272c37f9fe51"
 claim_ids = ["DD-0276", "DD-0277", "DD-0278", "DD-0279", "DD-0280", "DD-0281", "DD-0282", "DD-0283", "DD-0284", "DD-0285", "DD-0286", "DD-0287", "DD-0288", "DD-0289"]
+
+[[source_regions]]
+id = "SR-N-suite-stats-0019-0020"
+source_file = "docs/paper/tables/suite_stats.tex"
+line_start = 19
+line_end = 20
+kind = "table_layout"
+content_sha256 = "d54c6bf0328485a686166b5a67bdd290b7ac1e50d6a82ab7c854138a827ba480"
+non_claim_reason = "active table rule or environment command, not a manuscript assertion"

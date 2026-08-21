@@ -1,17 +1,16 @@
 from __future__ import annotations
 
-import re
-from collections import Counter, defaultdict
+from collections import Counter
 from pathlib import Path, PurePosixPath
 
 from datadec.config import load_paper_reproduction_contract
 from datadec.paper import (
     ClaimRegistry,
-    PaperClaim,
     PaperReproductionContract,
     load_claim_registry,
 )
 from datadec.paper.source import (
+    derive_manuscript_source_surface,
     raw_line_slice_sha256,
     scan_tex_dependencies,
     validate_citations,
@@ -38,48 +37,22 @@ _GRAPHICS_FILES = (
     "docs/paper/figures/primary_metric_compute_vs_accuracy_per_task.pdf",
 )
 _NON_CLAIM_REGION_KINDS = {
-    ("SR-N-bibliography-rendering", "bibliography_rendering"),
-    ("SR-N-bibliography-provenance", "bibliography_provenance"),
-    ("SR-N-running-title", "title_metadata"),
-    ("SR-N-logo-macro", "decorative_logo"),
-    ("SR-N-paper-title", "title_metadata"),
-    ("SR-N-author-list", "author_metadata"),
-    ("SR-N-affiliations", "affiliation_metadata"),
-    ("SR-N-corresponding-author", "contact_metadata"),
-    ("SR-N-keywords", "keyword_metadata"),
-    ("SR-N-equal-contribution", "author_metadata"),
-    ("SR-N-heading-introduction", "section_heading"),
-    ("SR-N-heading-methods", "section_heading"),
-    ("SR-N-heading-suite", "section_heading"),
-    ("SR-N-heading-prediction-methods", "section_heading"),
-    ("SR-N-heading-prediction-metrics", "section_heading"),
-    ("SR-N-heading-decision-accuracy", "section_heading"),
-    ("SR-N-heading-olmes", "section_heading"),
-    ("SR-N-heading-proxy-metrics", "section_heading"),
-    ("SR-N-heading-results", "section_heading"),
-    ("SR-N-heading-compute", "section_heading"),
-    ("SR-N-heading-scaling-comparison", "section_heading"),
-    ("SR-N-heading-proxy-signal", "section_heading"),
-    ("SR-N-heading-benchmark-predictability", "section_heading"),
-    ("SR-N-heading-related-work", "section_heading"),
-    ("SR-N-heading-related-prediction", "section_heading"),
-    ("SR-N-heading-limitations", "section_heading"),
-    ("SR-N-heading-acknowledgments", "section_heading"),
-    ("SR-N-heading-impact", "section_heading"),
-    ("SR-N-bibliography-commands", "bibliography_commands"),
-    ("SR-N-appendix-boundary", "section_layout"),
-    ("SR-N-heading-hyperparameters", "section_heading"),
-    ("SR-N-heading-proxy-definitions", "section_heading"),
-    ("SR-N-heading-scaling-variants", "section_heading"),
-    ("SR-N-heading-baseline-fit", "section_heading"),
-    ("SR-N-heading-two-parameter-fit", "section_heading"),
-    ("SR-N-heading-helper-points", "section_heading"),
-    ("SR-N-heading-checkpoint-filter", "section_heading"),
-    ("SR-N-decorative-logo", "decorative_logo"),
-    ("SR-N-table-data-recipes-heading", "table_heading"),
-    ("SR-N-table-prediction-error-heading", "table_heading"),
-    ("SR-N-table-proxy-metrics-heading", "table_heading"),
-    ("SR-N-table-suite-stats-heading", "table_heading"),
+    "affiliation_metadata",
+    "author_metadata",
+    "bibliography_commands",
+    "bibliography_provenance",
+    "bibliography_rendering",
+    "contact_metadata",
+    "decorative_logo",
+    "document_setup",
+    "document_structure",
+    "keyword_metadata",
+    "section_heading",
+    "section_layout",
+    "semantic_vocabulary",
+    "table_heading",
+    "table_layout",
+    "title_metadata",
 }
 
 
@@ -90,77 +63,84 @@ def _load_current_registry() -> tuple[PaperReproductionContract, ClaimRegistry]:
     )
 
 
-def _connected_claim_regions(
-    claims: tuple[PaperClaim, ...],
-) -> tuple[tuple[str, int, int, tuple[str, ...]], ...]:
-    by_file: dict[str, list[PaperClaim]] = defaultdict(list)
-    for claim in claims:
-        by_file[claim.source_file].append(claim)
-
-    connected: list[tuple[str, int, int, tuple[str, ...]]] = []
-    for source_file, file_claims in sorted(by_file.items()):
-        groups: list[tuple[int, int, list[str]]] = []
-        for claim in sorted(
-            file_claims,
-            key=lambda item: (item.line_start, item.line_end, item.id),
-        ):
-            if not groups or claim.line_start > groups[-1][1] + 1:
-                groups.append((claim.line_start, claim.line_end, [claim.id]))
-                continue
-            line_start, line_end, claim_ids = groups[-1]
-            groups[-1] = (
-                line_start,
-                max(line_end, claim.line_end),
-                [*claim_ids, claim.id],
-            )
-        connected.extend(
-            (source_file, line_start, line_end, tuple(sorted(claim_ids)))
-            for line_start, line_end, claim_ids in groups
-        )
-    return tuple(connected)
-
-
-def _claim_region_id(source_file: str, line_start: int, line_end: int) -> str:
-    relative = PurePosixPath(source_file).relative_to("docs/paper").with_suffix("")
-    slug = re.sub(r"[^a-z0-9]+", "-", relative.as_posix().lower()).strip("-")
-    return f"SR-C-{slug}-{line_start:04d}-{line_end:04d}"
-
-
-def test_current_source_regions_cover_exact_connected_claim_spans() -> None:
-    _, registry = _load_current_registry()
+def test_current_source_regions_partition_independently_derived_surface() -> None:
+    contract, registry = _load_current_registry()
+    entrypoint = (
+        PurePosixPath(contract.paper.source_root) / contract.paper.entrypoint
+    ).as_posix()
+    surface = derive_manuscript_source_surface(_REPOSITORY_ROOT, entrypoint)
     claim_regions = tuple(
         region for region in registry.source_regions if region.claim_ids
     )
     non_claim_regions = tuple(
         region for region in registry.source_regions if region.non_claim_reason
     )
-    expected_connected = _connected_claim_regions(registry.claims)
+    line_coverage = Counter(
+        (region.source_file, line_number)
+        for region in registry.source_regions
+        for line_number in range(region.line_start, region.line_end + 1)
+        if (region.source_file, line_number) in set(surface.active_tex_lines)
+    )
 
-    assert len(registry.claims) == 442
-    assert len(claim_regions) == len(expected_connected) == 86
-    assert len(non_claim_regions) == len(_NON_CLAIM_REGION_KINDS) == 42
-    assert (
-        tuple(
-            (
-                region.source_file,
-                region.line_start,
-                region.line_end,
-                region.claim_ids,
-            )
-            for region in claim_regions
-        )
-        == expected_connected
+    assert Counter(source_file for source_file, _ in surface.active_tex_lines) == {
+        "docs/paper/example_paper.tex": 363,
+        "docs/paper/tables/data_recipes.tex": 26,
+        "docs/paper/tables/pred_error.tex": 15,
+        "docs/paper/tables/proxy_metrics.tex": 18,
+        "docs/paper/tables/suite_stats.tex": 20,
+    }
+    assert line_coverage == Counter(dict.fromkeys(surface.active_tex_lines, 1))
+    assert surface.asset_files == (
+        "docs/paper/example_paper.bbl",
+        "docs/paper/example_paper.bib",
+        *_GRAPHICS_FILES,
     )
-    assert tuple(region.id for region in claim_regions) == tuple(
-        _claim_region_id(source_file, line_start, line_end)
-        for source_file, line_start, line_end, _ in expected_connected
+    assert surface.excluded_implementation_files == ("docs/paper/icml2025.bst",)
+    assert not any(
+        region.source_file in surface.excluded_implementation_files
+        for region in registry.source_regions
     )
+    assert len(registry.claims) == 455
+    assert len(claim_regions) == 93
+    assert len(non_claim_regions) == 99
     assert Counter(
         claim_id for region in claim_regions for claim_id in region.claim_ids
     ) == Counter(claim.id for claim in registry.claims)
-    assert {(region.id, region.kind) for region in non_claim_regions} == (
-        _NON_CLAIM_REGION_KINDS
-    )
+    assert {region.kind for region in non_claim_regions} == _NON_CLAIM_REGION_KINDS
+    assert all(region.non_claim_reason for region in non_claim_regions)
+    claims = {claim.id: claim for claim in registry.claims}
+    assert {
+        claim_id: (claims[claim_id].line_start, claims[claim_id].line_end)
+        for claim_id in (
+            "DD-0443",
+            "DD-0444",
+            "DD-0445",
+            "DD-0446",
+            "DD-0447",
+            "DD-0448",
+            "DD-0449",
+            "DD-0450",
+            "DD-0451",
+            "DD-0452",
+            "DD-0453",
+            "DD-0454",
+            "DD-0455",
+        )
+    } == {
+        "DD-0443": (66, 66),
+        "DD-0444": (67, 67),
+        "DD-0445": (68, 68),
+        "DD-0446": (69, 69),
+        "DD-0447": (71, 71),
+        "DD-0448": (72, 72),
+        "DD-0449": (73, 73),
+        "DD-0450": (158, 158),
+        "DD-0451": (283, 283),
+        "DD-0452": (295, 295),
+        "DD-0453": (328, 328),
+        "DD-0454": (495, 495),
+        "DD-0455": (506, 506),
+    }
 
 
 def test_current_source_regions_are_hashed_and_canonically_ordered() -> None:
@@ -168,8 +148,9 @@ def test_current_source_regions_are_hashed_and_canonically_ordered() -> None:
 
     coverage = validate_source_coverage(_REPOSITORY_ROOT, registry)
 
-    assert coverage.claim_ids == tuple(f"DD-{index:04d}" for index in range(1, 443))
-    assert len(coverage.source_region_ids) == 128
+    assert coverage.claim_ids == tuple(f"DD-{index:04d}" for index in range(1, 456))
+    assert len(coverage.source_region_ids) == 192
+    assert len(coverage.source_region_ids) == len(set(coverage.source_region_ids))
     assert registry.source_regions == tuple(
         sorted(
             registry.source_regions,
@@ -224,10 +205,19 @@ def test_current_dependencies_include_every_active_claim_source() -> None:
         for region in registry.source_regions
         if region.source_file == "docs/paper/figures/datadecide-logo.pdf"
     ) == ("SR-N-decorative-logo",)
+    assert all(
+        (region.line_start, region.line_end)
+        == (
+            1,
+            len((_REPOSITORY_ROOT / region.source_file).read_bytes().splitlines()),
+        )
+        for region in registry.source_regions
+        if region.source_file in dependencies.graphics_files
+    )
 
 
 def test_current_citation_keys_resolve_in_bib_and_rendered_bibliography() -> None:
-    contract, _ = _load_current_registry()
+    contract, registry = _load_current_registry()
     entrypoint = (
         PurePosixPath(contract.paper.source_root) / contract.paper.entrypoint
     ).as_posix()
@@ -239,6 +229,14 @@ def test_current_citation_keys_resolve_in_bib_and_rendered_bibliography() -> Non
     assert citations.citation_keys == dependencies.citation_keys
     assert set(citations.citation_keys) <= set(citations.bib_keys)
     assert set(citations.citation_keys) <= set(citations.bbl_keys)
+
+    claims = {claim.id: claim for claim in registry.claims}
+    assert claims["DD-0072"].citation_keys == ("Penedo2023TheRD",)
+    assert claims["DD-0078"].citation_keys == ("commoncrawl",)
+    assert (claims["DD-0231"].line_start, claims["DD-0231"].line_end) == (
+        448,
+        449,
+    )
 
 
 def test_source_region_digests_do_not_depend_on_normalized_claim_prose() -> None:

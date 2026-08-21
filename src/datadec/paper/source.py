@@ -38,6 +38,14 @@ class CoverageReport:
     source_files: tuple[str, ...]
 
 
+@dataclass(frozen=True, slots=True)
+class ManuscriptSourceSurface:
+    active_tex_lines: tuple[tuple[str, int], ...]
+    asset_files: tuple[str, ...]
+    excluded_implementation_files: tuple[str, ...]
+
+
+_DEFAULT_MANUSCRIPT_ENTRYPOINT = "docs/paper/example_paper.tex"
 _COMMAND_RE = re.compile(r"\\([A-Za-z@]+|.)")
 _LITERAL_PATH_RE = re.compile(r"[A-Za-z0-9._/-]+")
 _CITATION_COMMAND_RE = re.compile(r"cite(?:alp|alt|author|p|t|year|yearpar)?")
@@ -143,6 +151,50 @@ def raw_line_slice_sha256(
     return hashlib.sha256(b"".join(lines[line_start - 1 : line_end])).hexdigest()
 
 
+def _active_tex_line_numbers(
+    repository_root: Path,
+    source_file: str,
+) -> tuple[int, ...]:
+    text = _strip_unescaped_comments(
+        _required_file(repository_root, source_file).read_text()
+    )
+    active_lines: list[int] = []
+    for line_number, line in enumerate(text.splitlines(), start=1):
+        if line.strip():
+            active_lines.append(line_number)
+        if re.search(r"\\end\s*\{document\}", line):
+            break
+    return tuple(active_lines)
+
+
+def derive_manuscript_source_surface(
+    repository_root: str | Path,
+    entrypoint: str = _DEFAULT_MANUSCRIPT_ENTRYPOINT,
+) -> ManuscriptSourceSurface:
+    """Derive the complete semantic manuscript surface from its entrypoint."""
+    root = Path(repository_root)
+    dependencies = scan_tex_dependencies(root, entrypoint)
+    active_tex_lines = tuple(
+        (source_file, line_number)
+        for source_file in dependencies.tex_files
+        for line_number in _active_tex_line_numbers(root, source_file)
+    )
+    asset_files = tuple(
+        sorted(
+            {
+                *dependencies.graphics_files,
+                *dependencies.bibliography_files,
+                *(dependencies.bbl_files if dependencies.bibliography_files else ()),
+            }
+        )
+    )
+    return ManuscriptSourceSurface(
+        active_tex_lines=active_tex_lines,
+        asset_files=asset_files,
+        excluded_implementation_files=dependencies.bibliography_style_files,
+    )
+
+
 def _validate_locator(
     repository_root: Path,
     source_file: str,
@@ -174,19 +226,134 @@ def _validate_nonoverlapping_regions(regions: tuple[SourceRegion, ...]) -> None:
             for right in ordered[index + 1 :]:
                 if right.line_start > left.line_end:
                     break
-                if (left.line_start, left.line_end) != (
-                    right.line_start,
-                    right.line_end,
-                ):
-                    raise SourceValidationError(
-                        "source region spans overlap without being identical in "
-                        f"{source_file}: {left.id} and {right.id}"
-                    )
+                raise SourceValidationError(
+                    f"source region spans overlap in {source_file}: "
+                    f"{left.id} and {right.id}"
+                )
+
+
+def _citation_keys_in_source_span(
+    repository_root: Path,
+    source_file: str,
+    line_start: int,
+    line_end: int,
+) -> tuple[str, ...]:
+    lines = _raw_lines(repository_root, source_file)
+    text = b"".join(lines[line_start - 1 : line_end]).decode()
+    stripped = _strip_unescaped_comments(text)
+    citation_keys: set[str] = set()
+    for match in _COMMAND_RE.finditer(stripped):
+        command = match.group(1)
+        if _CITATION_COMMAND_RE.fullmatch(command):
+            serialized_keys, _ = _parse_citation_keys(
+                stripped,
+                match.end(),
+                command,
+            )
+            citation_keys.update(serialized_keys.split(","))
+    return tuple(sorted(citation_keys))
+
+
+def _validate_claim_citation_bindings(
+    repository_root: Path,
+    registry: ClaimRegistry,
+) -> None:
+    for claim in registry.claims:
+        if not claim.citation_keys:
+            continue
+        present_keys = set(
+            _citation_keys_in_source_span(
+                repository_root,
+                claim.source_file,
+                claim.line_start,
+                claim.line_end,
+            )
+        )
+        missing_keys = sorted(set(claim.citation_keys) - present_keys)
+        if missing_keys:
+            raise SourceValidationError(
+                f"claim {claim.id} citation keys are absent from its source span: "
+                f"{', '.join(missing_keys)}"
+            )
+
+
+def _validate_surface_partition(
+    repository_root: Path,
+    regions: tuple[SourceRegion, ...],
+    surface: ManuscriptSourceSurface,
+) -> None:
+    active_tex_lines = set(surface.active_tex_lines)
+    tex_files = {source_file for source_file, _ in active_tex_lines}
+    asset_files = set(surface.asset_files)
+    surface_files = tex_files | asset_files
+
+    disconnected_regions = sorted(
+        region.id for region in regions if region.source_file not in surface_files
+    )
+    if disconnected_regions:
+        raise SourceValidationError(
+            "source regions are outside the active manuscript surface: "
+            f"{', '.join(disconnected_regions)}"
+        )
+
+    line_coverage = {source_line: 0 for source_line in active_tex_lines}
+    regions_by_file: dict[str, list[SourceRegion]] = {}
+    for region in regions:
+        regions_by_file.setdefault(region.source_file, []).append(region)
+        if region.source_file not in tex_files:
+            continue
+        for line_number in range(region.line_start, region.line_end + 1):
+            source_line = (region.source_file, line_number)
+            if source_line in line_coverage:
+                line_coverage[source_line] += 1
+
+    missing_lines = sorted(
+        source_line for source_line, count in line_coverage.items() if count == 0
+    )
+    duplicate_lines = sorted(
+        source_line for source_line, count in line_coverage.items() if count > 1
+    )
+    if missing_lines or duplicate_lines:
+        details: list[str] = []
+        if missing_lines:
+            details.append(
+                "missing="
+                + ", ".join(
+                    f"{source_file}:{line_number}"
+                    for source_file, line_number in missing_lines
+                )
+            )
+        if duplicate_lines:
+            details.append(
+                "duplicate="
+                + ", ".join(
+                    f"{source_file}:{line_number}"
+                    for source_file, line_number in duplicate_lines
+                )
+            )
+        raise SourceValidationError(
+            "active manuscript TeX lines require exactly one source region ("
+            + "; ".join(details)
+            + ")"
+        )
+
+    for asset_file in sorted(asset_files):
+        asset_regions = regions_by_file.get(asset_file, [])
+        line_count = len(_raw_lines(repository_root, asset_file))
+        if len(asset_regions) != 1 or (
+            asset_regions[0].line_start,
+            asset_regions[0].line_end,
+        ) != (1, line_count):
+            raise SourceValidationError(
+                f"referenced manuscript asset {asset_file} requires exactly one "
+                f"whole-file source region spanning lines 1-{line_count}"
+            )
 
 
 def validate_source_coverage(
     repository_root: str | Path,
     registry: ClaimRegistry,
+    entrypoint: str = _DEFAULT_MANUSCRIPT_ENTRYPOINT,
 ) -> CoverageReport:
     root = Path(repository_root)
     claims_by_id = {claim.id: claim for claim in registry.claims}
@@ -200,6 +367,7 @@ def validate_source_coverage(
             f"claim {claim.id}",
         )
 
+    _validate_claim_citation_bindings(root, registry)
     _validate_nonoverlapping_regions(registry.source_regions)
     covered_claim_ids: set[str] = set()
     for region in registry.source_regions:
@@ -244,6 +412,9 @@ def validate_source_coverage(
             f"claims are not covered by claim-bearing source regions: {', '.join(uncovered)}"
         )
 
+    surface = derive_manuscript_source_surface(root, entrypoint)
+    _validate_surface_partition(root, registry.source_regions, surface)
+
     return CoverageReport(
         claim_ids=tuple(sorted(claims_by_id)),
         source_region_ids=tuple(
@@ -251,8 +422,8 @@ def validate_source_coverage(
         ),
         source_files=tuple(
             sorted(
-                {claim.source_file for claim in registry.claims}
-                | {region.source_file for region in registry.source_regions}
+                {source_file for source_file, _ in surface.active_tex_lines}
+                | set(surface.asset_files)
             )
         ),
     )
@@ -586,7 +757,9 @@ __all__ = [
     "CitationReport",
     "CoverageReport",
     "DependencyReport",
+    "ManuscriptSourceSurface",
     "SourceValidationError",
+    "derive_manuscript_source_surface",
     "raw_line_slice_sha256",
     "scan_tex_dependencies",
     "validate_citations",

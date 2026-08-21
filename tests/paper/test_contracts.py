@@ -276,11 +276,11 @@ required_evidence_boundary = "aggregate_evaluation"
 def test_current_claim_registry_is_complete_and_contiguous() -> None:
     registry = load_repository_claim_registry()
 
-    assert len(registry.claims) == 442
+    assert len(registry.claims) == 455
     assert tuple(claim.id for claim in registry.claims) == tuple(
-        f"DD-{index:04d}" for index in range(1, 443)
+        f"DD-{index:04d}" for index in range(1, 456)
     )
-    assert len(registry.source_regions) == 128
+    assert len(registry.source_regions) == 192
 
 
 def test_config_file_prefers_packaged_resource(
