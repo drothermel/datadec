@@ -87,6 +87,9 @@ _PREDICTION_SEED_COUNT_CLAIM_ID = "DD-0045"
 _PREDICTION_SEED_COUNT_EXPECTATION = "prediction_attempt_count_per_point = 3"
 _PREDICTION_SEED_COUNT = 3
 _PREDICTION_SEED_FACT = "single_scale_mean_decision_accuracy"
+_PREDICTION_SEED_MISSING_STAGES = frozenset(
+    {"task_aggregation", "target_mean", "single_scale_seed"}
+)
 _PREDICTION_SEED_STATIC_REFERENCES = (
     "olmes_aggregate",
     "olmes_aggregate_verification",
@@ -452,7 +455,10 @@ def _prediction_seed_count_observation(
 
     input_ids = (olmes_input_id,)
     missing_facts = tuple(
-        fact for fact in verification.facts if fact.status is FactStatus.MISSING
+        fact
+        for fact in verification.facts
+        if fact.status is FactStatus.MISSING
+        and dict(fact.dimensions).get("stage") in _PREDICTION_SEED_MISSING_STAGES
     )
     if missing_facts:
         return _missing_observation(

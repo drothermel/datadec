@@ -28,6 +28,8 @@ from datadec.paper.run import (
 )
 from datadec.paper.verifiers.olmes import (
     CanonicalFinalSelection,
+    FactRow,
+    FactStatus,
     FinalCheckpoint,
     MissingDataBehavior,
     NormalizedOlmesPolicy,
@@ -322,6 +324,52 @@ def test_exact_olmes_fact_mapping_persists_complete_fact_evidence(
     for unsupported_claim_id in ("DD-0002", "DD-0012", "DD-0107"):
         assert by_id[unsupported_claim_id].verdict is Verdict.NOT_ATTEMPTED
         assert by_id[unsupported_claim_id].input_ids == ()
+
+
+def test_exact_olmes_fact_mapping_ignores_unrelated_missing_stages(
+    validation: run_module.RepositoryValidation,
+) -> None:
+    policy = _olmes_policy()
+    verification = _real_olmes_verification(policy)
+    unrelated_missing = FactRow(
+        fact="missing_input",
+        status=FactStatus.MISSING,
+        dimensions=(
+            ("stage", "noise_spread"),
+            ("model_size", "150M"),
+            ("step", "50"),
+            ("metric", "primary_metric"),
+            ("recipe", ""),
+            ("seed", ""),
+            ("missing_tasks", "task-a"),
+            ("missing_recipes", ""),
+        ),
+        value=None,
+        denominator=0,
+        exclusions=0,
+        target_ties=0,
+        predicted_ties=0,
+        seed_count=0,
+        input_evidence_boundary=EvidenceBoundary.AGGREGATE_EVALUATION,
+    )
+
+    observation = next(
+        value
+        for value in build_observations(
+            replace(
+                validation,
+                olmes_policy=policy,
+            ),
+            olmes_verification=replace(
+                verification,
+                facts=(*verification.facts, unrelated_missing),
+            ),
+            olmes_input_id="normalized-olmes-input",
+        )
+        if value.claim_id == "DD-0045"
+    )
+
+    assert observation.verdict is Verdict.REPRODUCED
 
 
 def test_exact_olmes_fact_mapping_blocks_incomplete_input_and_contradicts_value(
