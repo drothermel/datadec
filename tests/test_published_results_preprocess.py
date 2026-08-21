@@ -124,6 +124,7 @@ def _source(
             "id": file_id,
             "path": path,
             "expected_size": 1,
+            "sha256": "0" * 64,
             "category": "published_results",
             "publication_unit": unit,
             "schema": schema,

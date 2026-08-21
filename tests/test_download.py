@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import inspect
 from pathlib import Path
 from unittest.mock import MagicMock, call, patch
@@ -9,8 +10,10 @@ import pandas as pd
 import pytest
 
 from datadec.config import (
+    DetailFile,
     PublishedResultFile,
     PublishedResultsManifest,
+    SourceManifest,
     load_published_results_manifest,
     load_source_manifest,
 )
@@ -21,6 +24,7 @@ from datadec.data.paths import DataDecidePaths
 PUBLISHED_RESULTS_FOLDER_URL = (
     "https://drive.google.com/drive/folders/1weYlEOlHrA_fzT2OsRa40uLc4EKTGz1D"
 )
+DETAIL_BYTES = b"verified detail archive"
 
 
 def _write_dataset_parquet(path: Path) -> None:
@@ -62,18 +66,47 @@ def published_file(
     expected_size: int = 6,
     category: str = "published_results",
     file_id: str = "drive-file-id",
+    content: bytes | None = None,
 ) -> PublishedResultFile:
     structured = category == "published_results"
+    expected_content = content or (
+        b"abcdef" if expected_size == 6 else b"x" * expected_size
+    )
     return PublishedResultFile.model_validate(
         {
             "id": file_id,
             "path": path,
             "expected_size": expected_size,
+            "sha256": hashlib.sha256(expected_content).hexdigest(),
             "category": category,
             "publication_unit": "outputs2" if structured else None,
             "schema": "transformed" if structured else None,
         }
     )
+
+
+def detail_manifest(*recipes: str) -> SourceManifest:
+    manifest = load_source_manifest()
+    files = tuple(
+        DetailFile(
+            recipe=recipe,
+            expected_size=len(DETAIL_BYTES),
+            sha256=hashlib.sha256(DETAIL_BYTES).hexdigest(),
+        )
+        for recipe in recipes
+    )
+    return manifest.model_copy(
+        update={
+            "olmes_details": manifest.olmes_details.model_copy(update={"files": files})
+        }
+    )
+
+
+def write_detail_download(**kwargs: object) -> Path:
+    destination = Path(str(kwargs["local_dir"])) / str(kwargs["filename"])
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_bytes(DETAIL_BYTES)
+    return destination
 
 
 def test_data_paths_use_exact_root_and_raw_outputs(tmp_path: Path) -> None:
@@ -99,13 +132,17 @@ def test_download_sources_preserves_ppl_olmes_then_detail_order(
             "datadec.data.download.load_dataset",
             side_effect=[ppl_dataset, olmes_dataset],
         ) as load_dataset,
-        patch("datadec.data.download.hf_hub_download") as hf_hub_download,
+        patch(
+            "datadec.data.download.hf_hub_download",
+            side_effect=write_detail_download,
+        ) as hf_hub_download,
     ):
         results = download_sources(
             paths,
             ppl=True,
             olmes=True,
             olmes_details=["fineweb-pro", "c4", "fineweb-pro"],
+            manifest=detail_manifest("fineweb-pro", "c4"),
         )
 
     cache_dir = tmp_path / "cache/huggingface"
@@ -174,13 +211,19 @@ def test_existing_outputs_are_reused_without_network_calls(tmp_path: Path) -> No
         _write_dataset_parquet(output)
     for output in outputs[2:]:
         output.parent.mkdir(parents=True, exist_ok=True)
-        output.touch()
+        output.write_bytes(DETAIL_BYTES)
 
     with (
         patch("datadec.data.download.load_dataset") as load_dataset,
         patch("datadec.data.download.hf_hub_download") as hf_hub_download,
     ):
-        results = download_sources(paths, ppl=True, olmes=True, olmes_details=["c4"])
+        results = download_sources(
+            paths,
+            ppl=True,
+            olmes=True,
+            olmes_details=["c4"],
+            manifest=detail_manifest("c4"),
+        )
 
     assert [result.destination for result in results] == outputs
     assert [result.status for result in results] == ["reused"] * 3
@@ -194,9 +237,18 @@ def test_force_propagates_to_dataset_and_detail_downloads(tmp_path: Path) -> Non
     dataset.to_parquet.side_effect = _write_dataset_parquet
     with (
         patch("datadec.data.download.load_dataset", return_value=dataset) as load,
-        patch("datadec.data.download.hf_hub_download") as hf_download,
+        patch(
+            "datadec.data.download.hf_hub_download",
+            side_effect=write_detail_download,
+        ) as hf_download,
     ):
-        download_sources(paths, ppl=True, olmes_details=["c4"], force=True)
+        download_sources(
+            paths,
+            ppl=True,
+            olmes_details=["c4"],
+            force=True,
+            manifest=detail_manifest("c4"),
+        )
 
     load.assert_called_once_with(
         "allenai/DataDecide-ppl-results",
@@ -229,6 +281,45 @@ def test_invalid_existing_dataset_output_is_redownloaded(tmp_path: Path) -> None
 
     assert result[0].status == "downloaded"
     assert pd.read_parquet(output)["value"].tolist() == [1]
+
+
+def test_existing_detail_archive_requires_matching_digest(tmp_path: Path) -> None:
+    destination = tmp_path / "raw/olmes-details/models/c4.tar.gz"
+    destination.parent.mkdir(parents=True)
+    destination.write_bytes(b"x" * len(DETAIL_BYTES))
+
+    with (
+        patch("datadec.data.download.hf_hub_download") as hf_hub_download,
+        pytest.raises(ValueError, match="unexpected SHA-256"),
+    ):
+        download_sources(
+            DataDecidePaths(tmp_path),
+            olmes_details=["c4"],
+            manifest=detail_manifest("c4"),
+        )
+
+    hf_hub_download.assert_not_called()
+
+
+def test_downloaded_detail_archive_requires_matching_digest(tmp_path: Path) -> None:
+    def write_invalid_detail(**kwargs: object) -> Path:
+        destination = Path(str(kwargs["local_dir"])) / str(kwargs["filename"])
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(b"x" * len(DETAIL_BYTES))
+        return destination
+
+    with (
+        patch(
+            "datadec.data.download.hf_hub_download",
+            side_effect=write_invalid_detail,
+        ),
+        pytest.raises(ValueError, match="unexpected SHA-256"),
+    ):
+        download_sources(
+            DataDecidePaths(tmp_path),
+            olmes_details=["c4"],
+            manifest=detail_manifest("c4"),
+        )
 
 
 def test_failed_forced_dataset_export_preserves_existing_output(
@@ -403,7 +494,7 @@ def test_published_result_reuses_expected_size_and_force_redownloads(
         tmp_path / "reference/published-results/outputs2/1_metric_transformed.csv"
     )
     destination.parent.mkdir(parents=True)
-    destination.write_bytes(b"stored")
+    destination.write_bytes(b"abcdef")
 
     with patch("datadec.data.download.urlopen") as open_url:
         reused = download._download_published_result_file(
@@ -416,6 +507,7 @@ def test_published_result_reuses_expected_size_and_force_redownloads(
         "datadec.data.download.urlopen",
         return_value=FakeResponse(b"forced"),
     ):
+        source = published_file(content=b"forced")
         forced = download._download_published_result_file(
             DataDecidePaths(tmp_path), source, force=True
         )
@@ -434,13 +526,75 @@ def test_published_result_rejects_mismatched_complete_file(
     destination.write_bytes(b"wrong")
 
     with patch("datadec.data.download.urlopen") as open_url:
-        with pytest.raises(ValueError, match="existing file has unexpected size"):
+        with pytest.raises(ValueError, match="existing file.*unexpected size"):
             download._download_published_result_file(
                 DataDecidePaths(tmp_path), source, force=False
             )
 
     open_url.assert_not_called()
     assert destination.read_bytes() == b"wrong"
+
+
+def test_published_result_rejects_same_size_wrong_digest(tmp_path: Path) -> None:
+    source = published_file()
+    destination = (
+        tmp_path / "reference/published-results/outputs2/1_metric_transformed.csv"
+    )
+    destination.parent.mkdir(parents=True)
+    destination.write_bytes(b"stored")
+
+    with (
+        patch("datadec.data.download.urlopen") as open_url,
+        pytest.raises(ValueError, match="unexpected SHA-256"),
+    ):
+        download._download_published_result_file(
+            DataDecidePaths(tmp_path), source, force=False
+        )
+
+    open_url.assert_not_called()
+
+
+def test_published_result_rejects_complete_partial_with_wrong_digest(
+    tmp_path: Path,
+) -> None:
+    source = published_file()
+    destination = (
+        tmp_path / "reference/published-results/outputs2/1_metric_transformed.csv"
+    )
+    partial = destination.with_name(f"{destination.name}.part")
+    partial.parent.mkdir(parents=True)
+    partial.write_bytes(b"stored")
+
+    with (
+        patch("datadec.data.download.urlopen") as open_url,
+        pytest.raises(ValueError, match="unexpected SHA-256"),
+    ):
+        download._download_published_result_file(
+            DataDecidePaths(tmp_path), source, force=False
+        )
+
+    open_url.assert_not_called()
+    assert not destination.exists()
+    assert partial.read_bytes() == b"stored"
+
+
+def test_published_result_download_digest_mismatch_keeps_partial(
+    tmp_path: Path,
+) -> None:
+    source = published_file(content=b"ghijkl")
+    with patch("datadec.data.download.urlopen", return_value=FakeResponse(b"abcdef")):
+        with pytest.raises(RuntimeError, match="failed to download") as exc_info:
+            download._download_published_result_file(
+                DataDecidePaths(tmp_path), source, force=False
+            )
+
+    destination = (
+        tmp_path / "reference/published-results/outputs2/1_metric_transformed.csv"
+    )
+    assert isinstance(exc_info.value.__cause__, ValueError)
+    assert "unexpected SHA-256" in str(exc_info.value.__cause__)
+    assert not destination.exists()
+    assert destination.with_name(f"{destination.name}.part").read_bytes() == b"abcdef"
 
 
 def test_published_result_size_mismatch_keeps_only_partial_file(

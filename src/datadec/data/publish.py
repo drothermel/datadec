@@ -406,13 +406,16 @@ def _verify_remote_files(
                 f"expected {local.size}, got {remote_size!r}"
             )
         remote_sha256 = _lfs_sha256(remote)
-        if remote_sha256 is not None:
-            local_sha256 = _local_sha256(local.publication_file.local_path)
-            if local_sha256 != remote_sha256:
-                raise RuntimeError(
-                    f"published file LFS SHA-256 mismatch at {commit_oid} for "
-                    f"{path}: expected {local_sha256}, got {remote_sha256}"
-                )
+        if remote_sha256 is None:
+            raise RuntimeError(
+                f"published file LFS SHA-256 missing at {commit_oid} for {path}"
+            )
+        local_sha256 = _local_sha256(local.publication_file.local_path)
+        if local_sha256 != remote_sha256:
+            raise RuntimeError(
+                f"published file LFS SHA-256 mismatch at {commit_oid} for "
+                f"{path}: expected {local_sha256}, got {remote_sha256}"
+            )
 
 
 def publish_unit(

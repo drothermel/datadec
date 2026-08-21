@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import hashlib
 import os
 from pathlib import Path, PurePosixPath
 import re
@@ -51,6 +52,35 @@ def _is_valid_dataset_parquet(path: Path) -> bool:
     except (OSError, pa.ArrowInvalid):
         return False
     return metadata.num_rows > 0 and metadata.num_columns > 0
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as file:
+        while chunk := file.read(_DOWNLOAD_CHUNK_SIZE):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _validate_file_identity(
+    path: Path,
+    *,
+    expected_size: int,
+    expected_sha256: str,
+    description: str,
+) -> None:
+    actual_size = path.stat().st_size
+    if actual_size != expected_size:
+        raise ValueError(
+            f"{description} has unexpected size: {path} has {actual_size} bytes, "
+            f"expected {expected_size}"
+        )
+    actual_sha256 = _sha256(path)
+    if actual_sha256 != expected_sha256:
+        raise ValueError(
+            f"{description} has unexpected SHA-256: {path} has {actual_sha256}, "
+            f"expected {expected_sha256}"
+        )
 
 
 def _download_dataset_source(
@@ -115,11 +145,18 @@ def _download_detail_source(
     *,
     force: bool,
 ) -> DownloadResult:
+    artifact = source.file_for_recipe(recipe)
     filename = source.filename_template.format(recipe=recipe)
     output_root = paths.data_dir / source.output_root
     destination = output_root / filename
     result_source = f"{source.id}:{recipe}"
     if destination.exists() and not force:
+        _validate_file_identity(
+            destination,
+            expected_size=artifact.expected_size,
+            expected_sha256=artifact.sha256,
+            description=f"existing OLMES detail archive for {recipe}",
+        )
         return DownloadResult(result_source, destination, "reused")
 
     output_root.mkdir(parents=True, exist_ok=True)
@@ -133,6 +170,12 @@ def _download_detail_source(
         cache_dir=cache_dir,
         local_dir=output_root,
         force_download=force,
+    )
+    _validate_file_identity(
+        destination,
+        expected_size=artifact.expected_size,
+        expected_sha256=artifact.sha256,
+        description=f"downloaded OLMES detail archive for {recipe}",
     )
     return DownloadResult(result_source, destination, "downloaded")
 
@@ -165,13 +208,12 @@ def _download_published_result_file(
     destination = _published_result_destination(paths, source)
     result_source = f"{source.category.replace('_', '-')}:{source.path}"
     if destination.exists() and not force:
-        actual_size = destination.stat().st_size
-        if actual_size != source.expected_size:
-            raise ValueError(
-                f"existing file has unexpected size for {source.path}: "
-                f"{destination} has {actual_size} bytes, expected "
-                f"{source.expected_size}"
-            )
+        _validate_file_identity(
+            destination,
+            expected_size=source.expected_size,
+            expected_sha256=source.sha256,
+            description=f"existing file for {source.path}",
+        )
         return DownloadResult(result_source, destination, "reused")
 
     destination.parent.mkdir(parents=True, exist_ok=True)
@@ -183,6 +225,12 @@ def _download_published_result_file(
             f"{partial_size} bytes, expected at most {source.expected_size}"
         )
     if partial_size == source.expected_size and not force:
+        _validate_file_identity(
+            partial,
+            expected_size=source.expected_size,
+            expected_sha256=source.sha256,
+            description=f"completed partial file for {source.path}",
+        )
         partial.replace(destination)
         return DownloadResult(result_source, destination, "downloaded")
 
@@ -219,11 +267,12 @@ def _download_published_result_file(
                 while chunk := response.read(_DOWNLOAD_CHUNK_SIZE):
                     file.write(chunk)
 
-        actual_size = partial.stat().st_size
-        if actual_size != source.expected_size:
-            raise ValueError(
-                f"downloaded {actual_size} bytes, expected {source.expected_size}"
-            )
+        _validate_file_identity(
+            partial,
+            expected_size=source.expected_size,
+            expected_sha256=source.sha256,
+            description=f"downloaded file for {source.path}",
+        )
         partial.replace(destination)
     except Exception as exc:
         raise RuntimeError(

@@ -93,7 +93,7 @@ def test_source_manifest_identifies_download_inputs_and_provenance() -> None:
         "split": "train",
         "output": "raw/olmes.parquet",
     }
-    assert manifest.olmes_details.model_dump() == {
+    assert manifest.olmes_details.model_dump(exclude={"files"}) == {
         "id": "olmes-details",
         "provider": "huggingface_hub",
         "repo_type": "dataset",
@@ -101,7 +101,21 @@ def test_source_manifest_identifies_download_inputs_and_provenance() -> None:
         "revision": "23f3b2e186ca6c39026e3efa00e4af397680c075",
         "filename_template": "models/{recipe}.tar.gz",
         "output_root": "raw/olmes-details",
-        "recipes": OLMES_DETAIL_RECIPES,
+    }
+    assert manifest.olmes_details.recipes == tuple(OLMES_DETAIL_RECIPES)
+    assert len(manifest.olmes_details.files) == 25
+    assert sum(file.expected_size for file in manifest.olmes_details.files) == (
+        122_923_803_722
+    )
+    assert manifest.olmes_details.files[0].model_dump() == {
+        "recipe": "c4",
+        "expected_size": 4_886_124_480,
+        "sha256": "791e5a82f0091bb4ddd0111bf677df30cde5f29b9111152ce4164777e263569c",
+    }
+    assert manifest.olmes_details.files[-1].model_dump() == {
+        "recipe": "fineweb-pro",
+        "expected_size": 4_945_554_599,
+        "sha256": "da824026431e243b7b5ed27233cab8ab17e0702ae9fb588e669b43c1c38c0c71",
     }
     assert manifest.archives[0].downloaded_on == date(2025, 9, 19)
 
@@ -125,6 +139,7 @@ def test_published_results_inventory_pins_public_folder_contract() -> None:
     assert sum(file.expected_size for file in scaling_law) == 2_861_749_771
     assert sum(file.expected_size for file in published_results) == 8_974_174_175
     assert sum(file.expected_size for file in published_figures) == 83_178_155
+    assert all(len(file.sha256) == 64 for file in manifest.files)
     assert all(
         file.publication_unit is not None and file.schema is not None
         for file in published_results

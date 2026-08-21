@@ -128,6 +128,12 @@ class DatasetSource(ConfigModel):
     output: str
 
 
+class DetailFile(ConfigModel):
+    recipe: str
+    expected_size: int = Field(gt=0)
+    sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+
 class DetailSource(ConfigModel):
     id: str
     provider: Literal["huggingface_hub"]
@@ -136,7 +142,17 @@ class DetailSource(ConfigModel):
     revision: str
     filename_template: str
     output_root: str
-    recipes: tuple[str, ...]
+    files: tuple[DetailFile, ...]
+
+    @property
+    def recipes(self) -> tuple[str, ...]:
+        return tuple(file.recipe for file in self.files)
+
+    def file_for_recipe(self, recipe: str) -> DetailFile:
+        for file in self.files:
+            if file.recipe == recipe:
+                return file
+        raise ValueError(f"unknown OLMES detail recipe: {recipe}")
 
     @model_validator(mode="after")
     def validate_unique_recipes(self) -> Self:
@@ -276,6 +292,7 @@ class PublishedResultFile(ConfigModel):
     id: str
     path: str
     expected_size: int = Field(gt=0)
+    sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     category: PublishedResultCategory
     publication_unit: PublishedResultUnit | None = None
     schema_: PublishedResultSchema | None = Field(default=None, alias="schema")
@@ -1118,6 +1135,7 @@ __all__ = [
     "ArchiveSource",
     "DataDecideCatalog",
     "DatasetSource",
+    "DetailFile",
     "DetailSource",
     "OLMESAggregatePrimaryMetricPolicy",
     "OLMESColumnContract",

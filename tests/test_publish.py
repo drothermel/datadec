@@ -72,7 +72,11 @@ def _api_for(output: Path, *, created_path: str = "results/output.parquet") -> M
     api = Mock()
     api.repo_info.return_value = SimpleNamespace(sha="parent-oid")
     api.get_paths_info.return_value = [
-        SimpleNamespace(path=created_path, size=output.stat().st_size, lfs=None)
+        SimpleNamespace(
+            path=created_path,
+            size=output.stat().st_size,
+            lfs=SimpleNamespace(sha256=hashlib.sha256(output.read_bytes()).hexdigest()),
+        )
     ]
     return api
 
@@ -266,6 +270,27 @@ def test_lfs_hash_mismatch_preserves_source(tmp_path: Path) -> None:
     ):
         publish_unit(_unit(output, cleanup_paths=(raw,)), api=api)
 
+    assert raw.is_file()
+
+
+def test_missing_lfs_hash_preserves_source(tmp_path: Path) -> None:
+    output = tmp_path / "output.parquet"
+    raw = tmp_path / "source.csv"
+    _write_parquet(output)
+    raw.write_text("source")
+    api = _api_for(output)
+    api.get_paths_info.return_value[0].lfs = None
+
+    with (
+        patch(
+            "datadec.data.publish.commit_dataset_files_to_hf",
+            return_value=_commit_result(),
+        ),
+        pytest.raises(RuntimeError, match="LFS SHA-256 missing"),
+    ):
+        publish_unit(_unit(output, cleanup_paths=(raw,)), api=api)
+
+    assert output.is_file()
     assert raw.is_file()
 
 
