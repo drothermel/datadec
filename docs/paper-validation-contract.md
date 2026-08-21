@@ -84,6 +84,13 @@ Each `AttemptSpec` contains:
 - fixed sensitivity IDs; and
 - plot-series IDs it is expected to produce.
 
+Default attempt IDs are `<claim-id-lowercase>-default` (for example,
+`dd-0011-default`). Closed analysis IDs are `single_scale`, `per_task`,
+`proxy_metrics`, `noise_spread`, and `scaling_law`. A claim that is assessable
+in principle has its default specification even before its analysis is
+implemented; orchestration records `not_assessable_from_dd_parsed` only for a
+declared missing evidence surface, never as a synonym for unfinished code.
+
 Cross-contract validation requires unique IDs, exact claim/attempt references,
 one default attempt per assessable primary claim, existing method-dependency
 claims, and no executable attempt for a nonempirical claim.
