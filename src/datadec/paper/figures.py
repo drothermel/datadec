@@ -34,7 +34,9 @@ _PRIMARY_OUTCOMES = (
     ValidationOutcome.DIRECTIONALLY_CONSISTENT,
     ValidationOutcome.NOT_REPRODUCED,
     ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED,
+    ValidationOutcome.DESCRIPTIVE_ONLY,
 )
+_MAX_ANNOTATED_POINTS = 100
 
 
 @dataclass(frozen=True, slots=True)
@@ -221,12 +223,17 @@ def _ratio_color(value: float, *, description: str) -> str:
     return "#" + "".join(f"{channel:02x}" for channel in channels)
 
 
-def _point_label(point: PlotPoint) -> str | None:
-    preferred = next(
-        (item for item in point.dimensions if item.name.lower() == "task"), None
+def _curve_key(point: PlotPoint) -> tuple[tuple[str, object], ...]:
+    trajectory_dimensions = {"step", "checkpoint"}
+    return tuple(
+        (dimension.name, dimension.value)
+        for dimension in point.dimensions
+        if dimension.name.lower() not in trajectory_dimensions
     )
-    dimension = preferred or (point.dimensions[0] if point.dimensions else None)
-    return None if dimension is None else str(dimension.value)
+
+
+def _subseries_label(key: tuple[tuple[str, object], ...]) -> str:
+    return ";".join(f"{name}={value}" for name, value in key) or "aggregate"
 
 
 def _render_panel(
@@ -338,40 +345,54 @@ def _render_panel(
             )
             for point in series.points
         )
+        curve_groups: defaultdict[
+            tuple[tuple[str, object], ...], list[tuple[float, float, PlotPoint]]
+        ] = defaultdict(list)
+        for point in points:
+            curve_groups[_curve_key(point[2])].append(point)
+        ordered_curves = tuple(
+            (
+                key,
+                tuple(sorted(group, key=lambda item: (item[0], item[1]))),
+            )
+            for key, group in sorted(
+                curve_groups.items(), key=lambda item: _subseries_label(item[0])
+            )
+        )
         uncertainty = _uncertainty_measures(series)
         if uncertainty is not None:
             lower, upper = uncertainty
-            upper_points = [
-                (
-                    x_scale.project(_measure(point, x_axis.measure)),
-                    y_scale.project(_measure(point, upper)),
+            for key, curve in ordered_curves:
+                upper_points = [
+                    (x, y_scale.project(_measure(point, upper)))
+                    for x, _, point in curve
+                ]
+                lower_points = [
+                    (x, y_scale.project(_measure(point, lower)))
+                    for x, _, point in reversed(curve)
+                ]
+                polygon = " ".join(
+                    f"{_number(x)},{_number(y)}"
+                    for x, y in (*upper_points, *lower_points)
                 )
-                for point in series.points
-            ]
-            lower_points = [
-                (
-                    x_scale.project(_measure(point, x_axis.measure)),
-                    y_scale.project(_measure(point, lower)),
+                lines.append(
+                    f'<polygon class="uncertainty-band" data-series="{_xml(series.id)}" '
+                    f'data-subseries="{_xml(_subseries_label(key))}" '
+                    f'fill="{color}" points="{polygon}"/>'
                 )
-                for point in reversed(series.points)
-            ]
-            polygon = " ".join(
-                f"{_number(x)},{_number(y)}" for x, y in (*upper_points, *lower_points)
-            )
-            lines.append(
-                f'<polygon class="uncertainty-band" data-series="{_xml(series.id)}" '
-                f'fill="{color}" points="{polygon}"/>'
-            )
         if not noise_spread:
-            path = " ".join(
-                f"{'M' if point_index == 0 else 'L'} {_number(x)} {_number(y)}"
-                for point_index, (x, y, _) in enumerate(points)
-            )
-            lines.append(
-                f'<path class="series-line" data-series="{_xml(series.id)}" '
-                f'stroke="{color}" d="{path}"/>'
-            )
-        for x, y, point in points:
+            for key, curve in ordered_curves:
+                path = " ".join(
+                    f"{'M' if point_index == 0 else 'L'} {_number(x)} {_number(y)}"
+                    for point_index, (x, y, _) in enumerate(curve)
+                )
+                lines.append(
+                    f'<path class="series-line" data-series="{_xml(series.id)}" '
+                    f'data-subseries="{_xml(_subseries_label(key))}" '
+                    f'stroke="{color}" d="{path}"/>'
+                )
+        annotate_points = len(points) <= _MAX_ANNOTATED_POINTS
+        for x, y, point in points if annotate_points else ():
             point_color = (
                 _ratio_color(
                     _measure(point, color_measure),
@@ -391,11 +412,12 @@ def _render_panel(
                 f"{color_attribute}>"
                 f"<title>{_xml(_point_description(series, point))}</title></circle>"
             )
-            if noise_spread and (label := _point_label(point)) is not None:
-                lines.append(
-                    f'<text class="tick" x="{_number(x + 5)}" y="{_number(y - 5)}">'
-                    f"{_xml(label)}</text>"
-                )
+        if not annotate_points:
+            lines.append(
+                f'<text class="tick" x="{left}" y="{bottom - 8}" '
+                f'data-series="{_xml(series.id)}" data-point-count="{len(points)}">'
+                f"{len(points)} points; exact values are in plot-series.json.</text>"
+            )
         legend_y = origin_y + 20 + 14 * index
         legend_x = origin_x + panel_width - 180
         lines.extend(
@@ -409,9 +431,9 @@ def _render_panel(
         )
         if color_measure is not None:
             lines.append(
-                f'<text class="legend" x="{left}" y="{top + 14}" '
-                f'data-color-measure="{_xml(color_measure)}">Point color: '
-                f"{_xml(color_measure)} (0–1); exact values are in point labels.</text>"
+                f'<text class="legend" x="{left}" y="{top - 8}" '
+                f'data-color-measure="{_xml(color_measure)}">Color: '
+                f"{_xml(color_measure)} (0–1); values in plot-series.json.</text>"
             )
     return lines
 

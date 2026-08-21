@@ -185,15 +185,11 @@ def test_report_is_deterministic_and_covers_finding_contract() -> None:
         "0.8033333333333333 | 0.00333333333333 | reproduced |"
     ) in report
     assert "dd-0001-preceding-1" in report
-    assert "Role and parent: `sensitivity`; dd-0001-preceding-1" not in report
-    assert "Role and parent: `sensitivity`; dd-0001-default" in report
-    assert "comparison rule `approximately-80-percent` version 2" in report
-    assert 'ordered transformations=\\["macro-average-mmlu"' in report
-    assert "selected rows=12" in report
-    assert "actual step=37500" in report
-    assert "groups=4950/4950" in report
-    assert "denominator=900" in report
-    assert "standard deviation=0.0296273147244 (DDOF=1)" in report
+    assert "Sensitivity attempts remain separate comparison rows" in report
+    assert "approximately-80-percent v2" in report
+    assert "macro-average-mmlu, pairwise-decisions" in report
+    assert "rows=12; denominator=900; ties=2/1" in report
+    assert "| 37500 |" in report
     assert "DD-0002" in report and "task=missing" in report
     assert "DD-0003" in report and "No attempt result persisted" in report
     assert "## Metadata discrepancies" in report
@@ -202,6 +198,7 @@ def test_report_is_deterministic_and_covers_finding_contract() -> None:
     assert "## Traceability appendix" in report
     assert "| Input | olmes |" in report
     assert "| Bundle | attempts.json |" in report
+    assert len(report.encode()) < 20_000
 
 
 def test_report_uses_persisted_results_without_input_reads_or_recomputation(

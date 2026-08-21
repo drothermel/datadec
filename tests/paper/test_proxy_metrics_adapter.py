@@ -395,7 +395,7 @@ def test_one_billion_seed_sd_claim_counts_tasks_and_reports_maximum(
 
     assert series == ()
     assert attempts[0].outcome is ValidationOutcome.APPROXIMATELY_REPRODUCED
-    assert attempts[0].computed_value["matching_task_count"] == 10
-    assert attempts[0].computed_value["maximum_observed_sample_sd"] == pytest.approx(
-        0.02
-    )
+    computed_value = attempts[0].computed_value
+    assert isinstance(computed_value, dict)
+    assert computed_value["matching_task_count"] == 10
+    assert computed_value["maximum_observed_sample_sd"] == pytest.approx(0.02)

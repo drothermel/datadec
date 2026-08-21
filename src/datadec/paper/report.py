@@ -10,10 +10,8 @@ from datadec.paper.models import (
     AnalysisBundle,
     AttemptResult,
     AttemptRole,
-    CheckpointSelection,
     MetadataDiscrepancy,
     PaperTarget,
-    RowSelection,
     ValidationOutcome,
 )
 
@@ -23,6 +21,7 @@ _PRIMARY_OUTCOMES = (
     ValidationOutcome.DIRECTIONALLY_CONSISTENT,
     ValidationOutcome.NOT_REPRODUCED,
     ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED,
+    ValidationOutcome.DESCRIPTIVE_ONLY,
 )
 _COMPARISON_HEADER = (
     "| Claim | Attempt | Role | Paper target | Computed result | Difference | Outcome |\n"
@@ -54,6 +53,19 @@ def _escape(value: object) -> str:
 
 def _json_cell(value: object) -> str:
     return _escape(_json(value))
+
+
+def _compact_json_cell(value: object, *, limit: int = 240) -> str:
+    rendered = _json(value)
+    if len(rendered) <= limit:
+        return _escape(rendered)
+    if isinstance(value, dict):
+        summary = f"object keys={','.join(sorted(str(key) for key in value))}"
+    elif isinstance(value, (list, tuple)):
+        summary = f"{type(value).__name__} items={len(value)}"
+    else:
+        summary = f"{type(value).__name__}"
+    return _escape(f"{summary}; {len(rendered)} JSON chars; see attempts.json")
 
 
 def _attempt_sort_key(attempt: AttemptResult) -> tuple[int, str]:
@@ -96,96 +108,48 @@ def _comparison_row(target: PaperTarget, attempt: AttemptResult) -> str:
     return (
         f"| {_escape(target.claim_id)} | {_escape(attempt.attempt_id)} | "
         f"{attempt.role.value} | {_json_cell(target.value)} | "
-        f"{_json_cell(attempt.computed_value)} | {difference} | "
+        f"{_compact_json_cell(attempt.computed_value)} | {difference} | "
         f"{attempt.outcome.value} |\n"
     )
 
 
-def _render_predicate(selection: RowSelection) -> str:
-    predicates = tuple(
-        predicate.model_dump(mode="json") for predicate in selection.predicates
+def _sample(values: tuple[str, ...], *, limit: int = 2) -> str:
+    if not values:
+        return "none"
+    shown = "; ".join(values[:limit])
+    remaining = len(values) - min(len(values), limit)
+    return shown if remaining == 0 else f"{shown}; +{remaining} more"
+
+
+def _method_row(target: PaperTarget, attempt: AttemptResult) -> str:
+    rows = sum(selection.selected_row_count for selection in attempt.row_selections)
+    checkpoint_steps = tuple(
+        selection.actual_step for selection in attempt.checkpoint_selections
     )
-    return _json(predicates)
-
-
-def _render_row_selection(selection: RowSelection) -> str:
-    remote_revision = selection.remote_dataset_revision or "not recorded"
-    return (
-        f"table `{_escape(selection.logical_table_id)}`; "
-        f"columns={_escape(_json(selection.columns))}; "
-        f"predicates={_escape(_render_predicate(selection))}; "
-        f"selected rows={selection.selected_row_count}; "
-        f"Parquet SHA-256=`{selection.local_parquet_sha256}`; "
-        f"selected-key SHA-256=`{selection.selected_key_sha256}`; "
-        f"remote revision={_escape(remote_revision)}"
-    )
-
-
-def _render_checkpoint(selection: CheckpointSelection) -> str:
-    return (
-        f"{_escape(selection.requested_meaning)} via `{selection.rule.value}`: "
-        f"actual step={selection.actual_step}; completeness dimensions="
-        f"{_escape(_json(selection.completeness_dimensions))}; groups="
-        f"{selection.selected_group_count}/{selection.expected_group_count}"
-    )
-
-
-def _render_counts(attempt: AttemptResult) -> str:
-    values: list[str] = []
-    if attempt.denominator is not None:
-        values.append(f"denominator={attempt.denominator}")
-    values.extend(f"{item.name}={item.value}" for item in attempt.exclusions)
-    values.extend(
-        (
-            f"target ties={attempt.target_ties}",
-            f"predicted ties={attempt.predicted_ties}",
+    unique_steps = tuple(sorted(set(checkpoint_steps)))
+    if not checkpoint_steps:
+        checkpoints = "none"
+    elif len(checkpoint_steps) <= 6:
+        checkpoints = ", ".join(str(step) for step in checkpoint_steps)
+    else:
+        checkpoints = (
+            f"{len(checkpoint_steps)} selections; {len(unique_steps)} unique steps; "
+            f"range={unique_steps[0]}..{unique_steps[-1]}"
         )
+    counts = (
+        f"rows={rows}; denominator={attempt.denominator}; "
+        f"ties={attempt.target_ties}/{attempt.predicted_ties}"
     )
-    if attempt.seeds:
-        values.append(f"seeds={_json(attempt.seeds)}")
-    if attempt.standard_deviation is not None:
-        values.append(
-            f"standard deviation={attempt.standard_deviation:.12g} (DDOF={attempt.ddof})"
-        )
-    if attempt.missing_groups:
-        values.append(f"missing groups={_json(attempt.missing_groups)}")
-    return "; ".join(values)
-
-
-def _render_attempt_details(target: PaperTarget, attempt: AttemptResult) -> str:
-    row_selections = "\n".join(
-        f"  - {_render_row_selection(selection)}"
-        for selection in attempt.row_selections
+    missing = (
+        "none"
+        if not attempt.missing_groups
+        else f"{len(attempt.missing_groups)}: {_sample(attempt.missing_groups)}"
     )
-    checkpoint_selections = (
-        "\n".join(
-            f"  - {_render_checkpoint(selection)}"
-            for selection in attempt.checkpoint_selections
-        )
-        if attempt.checkpoint_selections
-        else "  - None recorded."
-    )
-    parent = attempt.parent_attempt_id or "none"
-    diagnostics = _escape(_json(attempt.diagnostics))
-    limitations = _escape(_json(attempt.limitations))
-    plot_series = _escape(_json(attempt.plot_series_ids))
     return (
-        f"### {_escape(attempt.attempt_id)}\n\n"
-        f"- Paper source: `{_escape(target.source_file)}:{target.line_start}-"
-        f"{target.line_end}`\n"
-        f"- Paper source text: {_escape(target.source_text)}\n"
-        f"- Role and parent: `{attempt.role.value}`; {_escape(parent)}\n"
-        f"- Method: comparison rule `{_escape(attempt.comparison_rule_id)}` version "
-        f"{attempt.comparison_rule_version}; ordered transformations="
-        f"{_escape(_json(attempt.transformation_ids))}\n"
-        f"- Counts and uncertainty: {_escape(_render_counts(attempt))}\n"
-        f"- Diagnostics: {diagnostics}\n"
-        f"- Limitations: {limitations}\n"
-        f"- Plot-series trace: {plot_series}\n"
-        "- Row selections:\n"
-        f"{row_selections}\n"
-        "- Checkpoint selections:\n"
-        f"{checkpoint_selections}\n\n"
+        f"| {_escape(target.claim_id)} | {_escape(attempt.comparison_rule_id)} v"
+        f"{attempt.comparison_rule_version} | {_escape(', '.join(attempt.transformation_ids))} | "
+        f"{_escape(counts)} | {_escape(checkpoints)} | {_escape(missing)} | "
+        f"{_escape(', '.join(attempt.plot_series_ids) or 'none')} |\n"
     )
 
 
@@ -195,18 +159,23 @@ def _render_family(
     attempts_by_claim: dict[str, tuple[AttemptResult, ...]],
 ) -> str:
     comparisons: list[str] = []
-    details: list[str] = []
+    methods: list[str] = []
     for target in targets:
         attempts = attempts_by_claim.get(target.claim_id, ())
         for attempt in attempts:
             comparisons.append(_comparison_row(target, attempt))
-            details.append(_render_attempt_details(target, attempt))
+        default = _default_attempt(attempts)
+        if default is not None:
+            methods.append(_method_row(target, default))
     return (
         f"## Family: {_escape(family)}\n\n"
         f"{_COMPARISON_HEADER}{''.join(comparisons)}\n"
-        "### Methods, selections, counts, and sensitivities\n\n"
-        "Sensitivity attempts remain separate rows and retain their default parent.\n\n"
-        f"{''.join(details)}"
+        "### Compact method and selection trace\n\n"
+        "Sensitivity attempts remain separate comparison rows; full predicates, "
+        "diagnostics, row keys, and sensitivity parents remain in `attempts.json`.\n\n"
+        "| Claim | Rule | Transformations | Counts | Checkpoints | Missing groups | Series |\n"
+        "| --- | --- | --- | --- | --- | --- | --- |\n"
+        f"{''.join(methods)}\n"
     )
 
 
@@ -217,7 +186,6 @@ def _render_unassessable(
     if not targets:
         return "## Unassessable from dd_parsed\n\nNone in this bundle.\n\n"
     rows: list[str] = []
-    details: list[str] = []
     for target in targets:
         attempts = attempts_by_claim.get(target.claim_id, ())
         default = _default_attempt(attempts)
@@ -228,19 +196,23 @@ def _render_unassessable(
             )
             continue
         reason_parts = (*default.diagnostics, *default.limitations)
-        reason = _json(reason_parts) if reason_parts else "No diagnostic recorded"
+        reason = _sample(reason_parts) if reason_parts else "No diagnostic recorded"
+        missing = (
+            "none"
+            if not default.missing_groups
+            else f"{len(default.missing_groups)}: {_sample(default.missing_groups)}"
+        )
         rows.append(
             f"| {_escape(target.claim_id)} | {_escape(target.family)} | "
             f"{_json_cell(target.value)} | {_escape(reason)} | "
-            f"{_escape(_json(default.missing_groups))} |\n"
+            f"{_escape(missing)} |\n"
         )
-        details.append(_render_attempt_details(target, default))
     return (
         "## Unassessable from dd_parsed\n\n"
         "These targets lack a default assessable result in the persisted bundle.\n\n"
         "| Claim | Family | Paper target | Recorded reason | Missing groups |\n"
         "| --- | --- | --- | --- | --- |\n"
-        f"{''.join(rows)}\n{''.join(details)}"
+        f"{''.join(rows)}\n"
     )
 
 

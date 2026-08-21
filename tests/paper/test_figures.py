@@ -194,7 +194,11 @@ def _series(
         y_axis=AxisSpec(
             measure="decision_accuracy", scale=AxisScale.LINEAR, unit="ratio"
         ),
-        dimensions=("model_size",),
+        dimensions=(
+            tuple(item.name for item in series_points[0].dimensions)
+            if series_points
+            else ("model_size",)
+        ),
         measures=tuple(measures),
         attempt_id="dd-0001-default",
         points=series_points,
@@ -274,7 +278,7 @@ def test_paper_analog_figures_are_named_deterministic_valid_and_semantic() -> No
     assert "Semantic kinds: compute_vs_decision" in compute_svg
     noise_svg = dict(rendered)["noise-spread.svg"].decode()
     assert 'data-color-measure="decision_accuracy"' in noise_svg
-    assert "Point color: decision_accuracy (0–1)" in noise_svg
+    assert "Color: decision_accuracy (0–1); values in plot-series.json." in noise_svg
     assert "ARC Easy" in noise_svg
     assert '<path class="series-line" data-series="dd-0001-noise' not in noise_svg
 
@@ -326,3 +330,61 @@ def test_empty_nonanalog_series_is_suppressed_and_rendering_reads_no_inputs(
     rendered = render_figures(bundle)
 
     assert tuple(name for name, _ in rendered) == ("outcome-audit.svg",)
+
+
+def test_large_series_uses_compact_path_without_per_point_titles() -> None:
+    points = tuple(_point(float(index + 1), 0.5 + index / 1000) for index in range(101))
+    rendered = dict(
+        render_figures(_bundle(series=(_series("per-task", points=points),)))
+    )["per-task.svg"]
+
+    svg = rendered.decode()
+    assert 'data-point-count="101"' in svg
+    assert "exact values are in plot-series.json" in svg
+    assert "<circle" not in svg
+    assert len(rendered) < 25_000
+
+
+def test_curve_paths_group_nontrajectory_dimensions_and_sort_by_x() -> None:
+    points = (
+        PlotPoint(
+            dimensions=(
+                DimensionValue(name="task", value="b"),
+                DimensionValue(name="model_size", value="4M"),
+                DimensionValue(name="step", value=2),
+            ),
+            measures=(
+                MeasureValue(name="compute", value=2.0),
+                MeasureValue(name="decision_accuracy", value=0.6),
+            ),
+        ),
+        PlotPoint(
+            dimensions=(
+                DimensionValue(name="task", value="a"),
+                DimensionValue(name="model_size", value="4M"),
+                DimensionValue(name="step", value=1),
+            ),
+            measures=(
+                MeasureValue(name="compute", value=1.0),
+                MeasureValue(name="decision_accuracy", value=0.5),
+            ),
+        ),
+        PlotPoint(
+            dimensions=(
+                DimensionValue(name="task", value="a"),
+                DimensionValue(name="model_size", value="4M"),
+                DimensionValue(name="step", value=3),
+            ),
+            measures=(
+                MeasureValue(name="compute", value=3.0),
+                MeasureValue(name="decision_accuracy", value=0.7),
+            ),
+        ),
+    )
+    svg = dict(render_figures(_bundle(series=(_series("per-task", points=points),))))[
+        "per-task.svg"
+    ].decode()
+
+    assert svg.count('class="series-line"') == 2
+    assert 'data-subseries="task=a;model_size=4M"' in svg
+    assert 'data-subseries="task=b;model_size=4M"' in svg
