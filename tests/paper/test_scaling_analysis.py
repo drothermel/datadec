@@ -296,6 +296,7 @@ def test_fit_failures_are_typed_for_insufficient_and_degenerate_inputs() -> None
             evaluations,
             variant=ScalingVariant.THREE_PARAMETER_TWO_STAGE,
         )
+    assert isinstance(insufficient.value, ScalingFitError)
     assert (
         insufficient.value.failure.reason is FitFailureReason.INSUFFICIENT_OBSERVATIONS
     )
@@ -318,6 +319,7 @@ def test_fit_failures_are_typed_for_insufficient_and_degenerate_inputs() -> None
             evaluations,
             variant=ScalingVariant.THREE_PARAMETER_TWO_STAGE,
         )
+    assert isinstance(degenerate.value, ScalingFitError)
     assert degenerate.value.failure.reason is FitFailureReason.DEGENERATE_PREDICTOR
 
 
@@ -344,6 +346,7 @@ def test_ill_conditioned_fit_can_fail_or_remain_visible_by_policy() -> None:
             variant=ScalingVariant.FIVE_PARAMETER_ND_TWO_STAGE,
             policy=strict,
         )
+    assert isinstance(error.value, ScalingFitError)
     assert error.value.failure.reason is FitFailureReason.ILL_CONDITIONED
 
     permissive = ScalingPolicy(
