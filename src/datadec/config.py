@@ -11,7 +11,8 @@ from typing import Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from datadec.paper.models import PaperReproductionContract
+from datadec.paper.contracts import load_validation_contract
+from datadec.paper.models import PaperValidationContract
 
 _CONFIG_PACKAGE = "datadec"
 _SOURCE_CONFIGS_DIR = Path(__file__).parents[2] / "configs"
@@ -1134,10 +1135,8 @@ def load_publishing_contract() -> PublishingContract:
 
 
 @cache
-def load_paper_reproduction_contract() -> PaperReproductionContract:
-    return PaperReproductionContract.model_validate(
-        _load_toml("paper_reproduction.toml")
-    )
+def load_paper_validation_contract() -> PaperValidationContract:
+    return load_validation_contract(config_file("paper_validation.toml"))
 
 
 __all__ = [
@@ -1154,7 +1153,7 @@ __all__ = [
     "OLMESMetricContract",
     "OLMESTableContract",
     "OLMESTables",
-    "PaperReproductionContract",
+    "PaperValidationContract",
     "PublishedResultCategory",
     "PublishedResultFile",
     "PublishedResultSchema",
@@ -1174,7 +1173,7 @@ __all__ = [
     "config_file",
     "load_catalog",
     "load_olmes_contract",
-    "load_paper_reproduction_contract",
+    "load_paper_validation_contract",
     "load_published_results_manifest",
     "load_publishing_contract",
     "load_scaling_law_contract",

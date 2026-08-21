@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from copy import deepcopy
+from datetime import UTC, datetime
 from pathlib import Path
 import subprocess
 import sys
@@ -9,21 +9,75 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-import datadec.config as config_module
-from datadec.config import config_file, load_paper_reproduction_contract
+from datadec.config import config_file, load_paper_validation_contract
 from datadec.paper import (
-    ClaimOwnership,
-    ClaimRegistry,
-    EvidenceBoundary,
-    ExpectationKind,
-    MethodProvenance,
+    AnalysisId,
+    AnalysisManifest,
+    AttemptInput,
+    AttemptSpec,
+    AxisScale,
+    AxisSpec,
+    CheckpointRule,
+    ClaimKind,
+    ComparisonPredicate,
+    ComparisonRule,
+    ContentIdentity,
+    MeasureValue,
     PaperClaim,
+    PlotPoint,
+    PlotSeries,
+    PredicateOperator,
+    RowPredicate,
     SourceRegion,
-    load_claim_registry,
-    load_repository_claim_registry,
+    ValidationOutcome,
 )
 
+_REPOSITORY_ROOT = Path(__file__).parents[2]
 _SHA256 = "a" * 64
+
+
+def _claim(**updates: Any) -> dict[str, Any]:
+    claim: dict[str, Any] = {
+        "id": "DD-0001",
+        "source_file": "docs/paper/example_paper.tex",
+        "line_start": 10,
+        "line_end": 11,
+        "text": "The paper makes a testable claim.",
+        "kind": ClaimKind.EMPIRICAL_NUMERIC,
+        "family": "headline",
+        "paper_target": 0.8,
+        "attempt_ids": ("dd-0001-default",),
+    }
+    claim.update(updates)
+    return claim
+
+
+def _attempt(**updates: Any) -> dict[str, Any]:
+    attempt: dict[str, Any] = {
+        "id": "dd-0001-default",
+        "claim_id": "DD-0001",
+        "default": True,
+        "analysis_id": AnalysisId.SINGLE_SCALE,
+        "inputs": (AttemptInput(table_id="olmes", columns=("recipe", "score")),),
+        "transformation_ids": ("rank", "compare"),
+        "comparison_rule_id": "approx-v1",
+    }
+    attempt.update(updates)
+    return attempt
+
+
+def _region(**updates: Any) -> dict[str, Any]:
+    region: dict[str, Any] = {
+        "id": "region-1",
+        "source_file": "docs/paper/example_paper.tex",
+        "line_start": 10,
+        "line_end": 12,
+        "kind": "prose",
+        "content_sha256": _SHA256,
+        "claim_ids": ("DD-0001",),
+    }
+    region.update(updates)
+    return region
 
 
 def test_config_imports_in_a_clean_interpreter() -> None:
@@ -37,168 +91,213 @@ def test_config_imports_in_a_clean_interpreter() -> None:
     assert result.returncode == 0, result.stderr
 
 
-def _claim(**updates: Any) -> dict[str, Any]:
-    claim: dict[str, Any] = {
-        "id": "claim-1",
-        "source_file": "docs/paper/example_paper.tex",
-        "line_start": 10,
-        "line_end": 11,
-        "text": "The paper makes a testable claim.",
-        "owner": "datadec_empirical",
-        "expectation_kind": "literal",
-        "expectation": "expected",
-        "required_evidence_boundary": "aggregate_evaluation",
-        "input_refs": ["configs/olmes.toml"],
-        "prerequisite_claim_ids": [],
-        "paper_elements": ["section:introduction"],
-        "citation_keys": [],
+def test_validation_vocabulary_is_exact() -> None:
+    assert {kind.value for kind in ClaimKind} == {
+        "empirical_numeric",
+        "empirical_comparison",
+        "empirical_trend",
+        "empirical_plot",
+        "method_definition",
+        "descriptive_metadata",
+        "external_background",
+        "normative_or_future",
     }
-    claim.update(updates)
-    return claim
-
-
-def _region(**updates: Any) -> dict[str, Any]:
-    region: dict[str, Any] = {
-        "id": "region-1",
-        "source_file": "docs/paper/example_paper.tex",
-        "line_start": 10,
-        "line_end": 12,
-        "kind": "prose",
-        "content_sha256": _SHA256,
-        "claim_ids": ["claim-1"],
+    assert {outcome.value for outcome in ValidationOutcome} == {
+        "reproduced",
+        "approximately_reproduced",
+        "directionally_consistent",
+        "not_reproduced",
+        "not_assessable_from_dd_parsed",
+        "metadata_discrepancy",
+        "descriptive_only",
+        "external_or_background",
     }
-    region.update(updates)
-    return region
-
-
-def test_current_paper_reproduction_contract_pins_sources_and_boundaries() -> None:
-    contract = load_paper_reproduction_contract()
-
-    assert config_file("paper_reproduction.toml").is_file()
-    assert contract.paper.arxiv_id == "2504.11393v2"
-    assert contract.paper.archive_sha256 == (
-        "20dc7aa3f920fe465ddf2e12d6f72fff6e8bb3567f53e34f5555a6da138542d1"
-    )
-    assert contract.paper.source_root == "docs/paper"
-    assert contract.paper.entrypoint == "example_paper.tex"
-    assert contract.contracts.model_dump() == {
-        "catalog": "configs/catalog.toml",
-        "sources": "configs/sources.toml",
-        "olmes": "configs/olmes.toml",
-        "scaling_law": "configs/scaling_law.toml",
-        "published_results": "configs/published_results.toml",
-        "claims_contract": "docs/paper/claims.toml",
+    assert {analysis.value for analysis in AnalysisId} == {
+        "single_scale",
+        "per_task",
+        "proxy_metrics",
+        "noise_spread",
+        "scaling_law",
     }
-    assert {method.provenance for method in contract.methods} == {
-        MethodProvenance.PAPER_DERIVED,
-        MethodProvenance.ARTIFACT_DERIVED,
-    }
-    method_provenance = {method.id: method.provenance for method in contract.methods}
-    assert method_provenance["suite_config_comparison"] is (
-        MethodProvenance.PAPER_DERIVED
+
+
+def test_current_validation_config_declares_all_assessable_defaults() -> None:
+    config_path = _REPOSITORY_ROOT / "configs/paper_validation.toml"
+    contract = load_paper_validation_contract()
+
+    assert config_file("paper_validation.toml").is_file()
+    assert len(contract.attempts) == 68
+    assert all(attempt.default for attempt in contract.attempts)
+    assert all(
+        attempt.id == f"{attempt.claim_id.lower()}-default"
+        for attempt in contract.attempts
     )
-    assert method_provenance["olmes_aggregate_verification"] is (
-        MethodProvenance.PAPER_DERIVED
+    assert {attempt.analysis_id: 0 for attempt in contract.attempts}.keys() == set(
+        AnalysisId
     )
-    assert method_provenance["author_artifact_comparison"] is (
-        MethodProvenance.ARTIFACT_DERIVED
+    assert contract.checkpoint_policy.final_rule is (
+        CheckpointRule.LATEST_COMMON_COMPLETE
     )
-    assert method_provenance["artifact_inventory"] is (
-        MethodProvenance.ARTIFACT_DERIVED
+    assert contract.sensitivity_policy.preceding_common_complete_steps == 2
+    headline = next(
+        attempt for attempt in contract.attempts if attempt.id == "dd-0011-default"
     )
-    policy_statuses = {policy.id: policy.status for policy in contract.policies}
-    assert policy_statuses["external_citation_scope"] == "settled"
-    assert policy_statuses["comparison_universe"] == "unresolved"
-    assert policy_statuses["statistical_fit"] == "unresolved"
-    assert policy_statuses["source_coverage_v1"] == "settled"
-    assert policy_statuses["citation_trace_v1"] == "settled"
-    assert policy_statuses["suite_config_v1"] == "settled"
-    assert policy_statuses["olmes_v1"] == "settled"
-    olmes_policy = next(
-        policy for policy in contract.policies if policy.id == "olmes_v1"
+    assert headline.sensitivity_ids == (
+        "dd-0011-preceding-common-complete-1",
+        "dd-0011-preceding-common-complete-2",
+        "dd-0011-paper-step",
     )
-    assert "olmes_analysis" in olmes_policy.statement
-    assert "does not settle scaling-law" in olmes_policy.statement
-    assert contract.outputs.runs_root == "data/paper-reproduction/runs"
-    assert contract.outputs.report == "docs/paper-reproduction-report.md"
+    assert contract.outputs.runs_root == "data/paper-validation/runs"
+    assert contract.outputs.report == "docs/paper-validation-report.md"
+    assert contract.outputs.figures_root == "docs/paper/validation-figures"
+    assert "published-results" not in config_path.read_text()
 
     with pytest.raises(ValidationError, match="frozen"):
-        contract.paper.entrypoint = "other.tex"
-
-
-def test_paper_models_reject_extra_fields_and_enums_are_exact() -> None:
-    raw = load_paper_reproduction_contract().model_dump()
-    raw["unexpected"] = True
-
-    with pytest.raises(ValidationError, match="Extra inputs are not permitted"):
-        type(load_paper_reproduction_contract()).model_validate(raw)
-
-    assert {owner.value for owner in ClaimOwnership} == {
-        "datadec_empirical",
-        "method_design",
-        "artifact_release",
-        "qualitative_interpretation",
-        "external_citation",
-    }
-    assert {boundary.value for boundary in EvidenceBoundary} == {
-        "paper_or_final_artifact",
-        "author_downstream_table",
-        "aggregate_evaluation",
-        "instance_and_choice",
-        "evaluation_rerun",
-        "training_rerun",
-        "corpus_construction",
-    }
-    assert {kind.value for kind in ExpectationKind} == {
-        "literal",
-        "numeric",
-        "predicate",
-        "citation_trace",
-    }
+        contract.outputs.report = "other.md"
 
 
 @pytest.mark.parametrize(
     ("updates", "error"),
     [
-        (
-            {"owner": "external_citation", "expectation_kind": "citation_trace"},
-            "must include citation keys",
-        ),
-        (
-            {"verifier_id": "verify-1", "unresolved_method_id": "method-gap-1"},
-            "mutually exclusive",
-        ),
         ({"line_start": 12, "line_end": 11}, "line_end"),
+        ({"attempt_ids": ()}, "require attempts"),
+        (
+            {
+                "attempt_ids": (),
+                "supporting_outcome": ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED,
+            },
+            "non-assessable reason",
+        ),
         ({"unknown": "value"}, "Extra inputs are not permitted"),
     ],
 )
-def test_claim_contract_rejects_invalid_persisted_claims(
+def test_empirical_claim_contract_rejects_invalid_claims(
     updates: dict[str, Any], error: str
 ) -> None:
     with pytest.raises(ValidationError, match=error):
         PaperClaim.model_validate(_claim(**updates))
 
 
-def test_external_citation_claim_requires_and_preserves_citation_keys() -> None:
-    claim = PaperClaim.model_validate(
+def test_nonassessable_and_supporting_claims_have_no_attempts() -> None:
+    nonassessable = PaperClaim.model_validate(
         _claim(
-            owner="external_citation",
-            expectation_kind="citation_trace",
-            expectation="citation resolves to the attributed work",
-            citation_keys=["brown2020language"],
+            attempt_ids=(),
+            supporting_outcome=ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED,
+            non_assessable_reason="Required observations are absent.",
+        )
+    )
+    supporting = PaperClaim.model_validate(
+        _claim(
+            kind=ClaimKind.METHOD_DEFINITION,
+            paper_target=None,
+            attempt_ids=(),
+            supporting_outcome=ValidationOutcome.DESCRIPTIVE_ONLY,
         )
     )
 
-    assert claim.citation_keys == ("brown2020language",)
-    assert claim.owner is ClaimOwnership.EXTERNAL_CITATION
+    assert not nonassessable.attempt_ids
+    assert not supporting.attempt_ids
+
+    with pytest.raises(ValidationError, match="nonempirical"):
+        PaperClaim.model_validate(
+            _claim(
+                kind=ClaimKind.METHOD_DEFINITION,
+                supporting_outcome=ValidationOutcome.DESCRIPTIVE_ONLY,
+            )
+        )
+
+
+def test_attempt_specs_pin_default_ids_and_ordered_transformations() -> None:
+    attempt = AttemptSpec.model_validate(_attempt())
+
+    assert attempt.transformation_ids == ("rank", "compare")
+
+    with pytest.raises(ValidationError, match="default attempt ID"):
+        AttemptSpec.model_validate(_attempt(id="claim-default"))
+    with pytest.raises(ValidationError, match="parent attempt"):
+        AttemptSpec.model_validate(_attempt(default=False, id="dd-0001-sensitivity"))
+
+
+def test_comparison_rules_freeze_default_and_sensitivity_thresholds() -> None:
+    rule = ComparisonRule(
+        id="approximately-one-point-v1",
+        version=1,
+        predicate=ComparisonPredicate.ABSOLUTE_TOLERANCE,
+        absolute_tolerance=0.01,
+        threshold_grid=(0.005, 0.01, 0.02),
+    )
+
+    assert rule.threshold_grid == (0.005, 0.01, 0.02)
+
+    with pytest.raises(ValidationError, match="must include the default"):
+        ComparisonRule(
+            id="bad",
+            version=1,
+            predicate=ComparisonPredicate.ABSOLUTE_TOLERANCE,
+            absolute_tolerance=0.01,
+            threshold_grid=(0.005, 0.02),
+        )
+
+
+def test_row_predicates_are_typed() -> None:
+    scalar = RowPredicate(column="step", operator=PredicateOperator.EQ, value=37500)
+    choices = RowPredicate(
+        column="seed", operator=PredicateOperator.IN, value=(1, 2, 3)
+    )
+
+    assert scalar.value == 37500
+    assert choices.value == (1, 2, 3)
+
+    with pytest.raises(ValidationError, match="set predicates require tuple"):
+        RowPredicate(column="step", operator=PredicateOperator.EQ, value=(37500,))
+
+
+def test_run_format_2_manifest_has_only_trace_and_bundle_identities() -> None:
+    now = datetime(2026, 8, 21, tzinfo=UTC)
+    manifest = AnalysisManifest(
+        run_id="run-1",
+        started_at=now,
+        completed_at=now,
+        input_identities=(ContentIdentity(id="olmes", sha256=_SHA256),),
+        targets_identity=ContentIdentity(id="targets.json", sha256=_SHA256),
+        attempts_identity=ContentIdentity(id="attempts.json", sha256=_SHA256),
+        plot_series_identity=ContentIdentity(id="plot-series.json", sha256=_SHA256),
+    )
+
+    assert manifest.run_format == 2
+    assert "qualification" not in manifest.model_dump()
+    assert "tree_state" not in manifest.model_dump()
+
+
+def test_paper_analog_plot_series_cannot_be_empty() -> None:
+    with pytest.raises(ValidationError, match="must not be empty"):
+        PlotSeries(
+            id="series-1",
+            figure="figure-1",
+            panel="a",
+            semantic_kind="paper_analog",
+            x_axis=AxisSpec(measure="compute", scale=AxisScale.LOG, unit="FLOPs"),
+            y_axis=AxisSpec(measure="accuracy", scale=AxisScale.LINEAR, unit="ratio"),
+            measures=("compute", "accuracy"),
+            attempt_id="dd-0001-default",
+            points=(),
+        )
+
+    with pytest.raises(ValidationError, match="finite"):
+        PlotPoint(
+            measures=(
+                MeasureValue(name="compute", value=float("inf")),
+                MeasureValue(name="accuracy", value=0.8),
+            )
+        )
 
 
 @pytest.mark.parametrize(
     ("updates", "error"),
     [
-        ({"claim_ids": [], "non_claim_reason": None}, "exactly one"),
+        ({"claim_ids": (), "non_claim_reason": None}, "exactly one"),
         (
-            {"claim_ids": ["claim-1"], "non_claim_reason": "section heading"},
+            {"claim_ids": ("DD-0001",), "non_claim_reason": "heading"},
             "exactly one",
         ),
         ({"line_start": 13, "line_end": 12}, "line_end"),
@@ -209,91 +308,3 @@ def test_source_region_requires_claims_xor_non_claim_reason(
 ) -> None:
     with pytest.raises(ValidationError, match=error):
         SourceRegion.model_validate(_region(**updates))
-
-    non_claim = SourceRegion.model_validate(
-        _region(claim_ids=[], non_claim_reason="formatting-only command")
-    )
-    assert non_claim.non_claim_reason == "formatting-only command"
-
-
-@pytest.mark.parametrize(
-    ("registry", "error"),
-    [
-        (
-            {"claims": [_claim(), _claim()], "source_regions": []},
-            "claim IDs must be unique",
-        ),
-        (
-            {
-                "claims": [_claim()],
-                "source_regions": [_region(), _region()],
-            },
-            "region IDs must be unique",
-        ),
-        (
-            {
-                "claims": [_claim()],
-                "source_regions": [_region(claim_ids=["missing-claim"])],
-            },
-            "reference unknown claims",
-        ),
-    ],
-)
-def test_claim_registry_rejects_duplicate_and_unknown_references(
-    registry: dict[str, Any], error: str
-) -> None:
-    with pytest.raises(ValidationError, match=error):
-        ClaimRegistry.model_validate(deepcopy(registry))
-
-
-def test_claim_registry_loads_supplied_and_repository_paths(tmp_path: Path) -> None:
-    contract_text = """
-[[claims]]
-id = "claim-1"
-source_file = "docs/paper/example_paper.tex"
-line_start = 10
-line_end = 11
-text = "The paper makes a testable claim."
-owner = "datadec_empirical"
-expectation_kind = "literal"
-expectation = "expected"
-required_evidence_boundary = "aggregate_evaluation"
-"""
-    supplied_path = tmp_path / "supplied-claims.toml"
-    supplied_path.write_text(contract_text)
-    repository_path = tmp_path / "repository" / "docs" / "paper"
-    repository_path.mkdir(parents=True)
-    (repository_path / "claims.toml").write_text(contract_text)
-
-    supplied = load_claim_registry(supplied_path)
-    repository = load_repository_claim_registry(tmp_path / "repository")
-
-    assert supplied == repository
-    assert supplied.source_regions == ()
-    assert supplied.claims[0].id == "claim-1"
-
-
-def test_current_claim_registry_is_complete_and_contiguous() -> None:
-    registry = load_repository_claim_registry()
-
-    assert len(registry.claims) == 455
-    assert tuple(claim.id for claim in registry.claims) == tuple(
-        f"DD-{index:04d}" for index in range(1, 456)
-    )
-    assert len(registry.source_regions) == 192
-
-
-def test_config_file_prefers_packaged_resource(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    package_root = tmp_path / "datadec"
-    packaged_config = package_root / "configs" / "paper_reproduction.toml"
-    packaged_config.parent.mkdir(parents=True)
-    packaged_config.write_text("packaged = true\n")
-    source_root = tmp_path / "source-configs"
-    source_root.mkdir()
-    (source_root / "paper_reproduction.toml").write_text("source = true\n")
-    monkeypatch.setattr(config_module, "files", lambda _package: package_root)
-    monkeypatch.setattr(config_module, "_SOURCE_CONFIGS_DIR", source_root)
-
-    assert config_file("paper_reproduction.toml") == packaged_config

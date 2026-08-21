@@ -1,0 +1,1126 @@
+[paper]
+arxiv_id = "2504.11393v2"
+source_url = "https://arxiv.org/e-print/2504.11393v2"
+archive_sha256 = "20dc7aa3f920fe465ddf2e12d6f72fff6e8bb3567f53e34f5555a6da138542d1"
+source_root = "docs/paper"
+entrypoint = "example_paper.tex"
+
+[[inputs]]
+id = "olmes_tasks"
+path = "processed/olmes-details/{recipe}/tasks.parquet"
+remote_path = "olmes-details/{recipe}/tasks.parquet"
+columns = ["recipe", "params", "seed", "step", "tokens", "compute", "task", "primary_metric", "acc_raw", "acc_per_token", "acc_per_char", "primary_score"]
+
+[[inputs]]
+id = "olmes_choices"
+path = "processed/olmes-details/{recipe}/choices.parquet"
+remote_path = "olmes-details/{recipe}/choices.parquet"
+columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy", "sum_logits_uncond", "logits_per_token", "logits_per_char"]
+
+[[inputs]]
+id = "scaling_evaluations"
+path = "processed/scaling-law/evaluations.parquet"
+remote_path = "scaling-law/evaluations.parquet"
+columns = ["recipe", "params", "seed", "step", "task", "tokens", "compute", "exact_parameter_count", "primary_metric"]
+
+[[inputs]]
+id = "scaling_checkpoint_losses"
+path = "processed/scaling-law/checkpoint-losses.parquet"
+remote_path = "scaling-law/checkpoint-losses.parquet"
+columns = ["recipe", "params", "seed", "step", "tokens", "compute", "exact_parameter_count", "c4_en_validation_cross_entropy", "dolma_common_crawl_validation_cross_entropy", "pile_validation_cross_entropy", "wikitext_103_validation_cross_entropy", "train_cross_entropy"]
+
+[[comparison_rules]]
+id = "predicate-true-v1"
+version = 1
+predicate = "boolean_true"
+
+[[comparison_rules]]
+id = "directional-v1"
+version = 1
+predicate = "directional"
+
+[[comparison_rules]]
+id = "nonempty-paper-plot-v1"
+version = 1
+predicate = "nonempty_plot"
+
+[[comparison_rules]]
+id = "approximately-one-point-v1"
+version = 1
+predicate = "absolute_tolerance"
+absolute_tolerance = 0.01
+threshold_grid = [0.005, 0.01, 0.02]
+
+[[comparison_rules]]
+id = "rounded-one-decimal-v1"
+version = 1
+predicate = "rounded"
+displayed_decimal_places = 1
+
+[checkpoint_policy]
+final_rule = "latest_common_complete"
+completeness_dimensions = ["recipe", "seed", "task", "metric"]
+one_step_across_universe = true
+
+[sensitivity_policy]
+preceding_common_complete_steps = 2
+include_paper_step_when_present = true
+fixed_before_computation = true
+
+[[analysis_policies]]
+id = "single_scale"
+transformation_ids = ["mmlu-subject-macro-v1", "olmes-task-macro-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+
+[[analysis_policies]]
+id = "per_task"
+transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+
+[[analysis_policies]]
+id = "proxy_metrics"
+transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+
+[[analysis_policies]]
+id = "noise_spread"
+transformation_ids = ["task-score-v1", "sample-seed-sd-v1", "recipe-spread-v1"]
+
+[[analysis_policies]]
+id = "scaling_law"
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+
+[outputs]
+runs_root = "data/paper-validation/runs"
+report = "docs/paper-validation-report.md"
+figures_root = "docs/paper/validation-figures"
+
+[[attempts]]
+id = "dd-0010-default"
+claim_id = "DD-0010"
+default = true
+analysis_id = "single_scale"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["olmes-macro"]
+metric_ids = ["primary_metric"]
+model_sizes = ["150M", "1B"]
+checkpoints = ["final-common-complete"]
+sensitivity_ids = ["dd-0010-preceding-common-complete-1", "dd-0010-preceding-common-complete-2", "dd-0010-paper-step"]
+transformation_ids = ["mmlu-subject-macro-v1", "olmes-task-macro-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "predicate-true-v1"
+
+[[attempts]]
+id = "dd-0011-default"
+claim_id = "DD-0011"
+default = true
+analysis_id = "single_scale"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["olmes-macro"]
+metric_ids = ["primary_metric"]
+model_sizes = ["150M", "1B"]
+checkpoints = ["final-common-complete"]
+sensitivity_ids = ["dd-0011-preceding-common-complete-1", "dd-0011-preceding-common-complete-2", "dd-0011-paper-step"]
+transformation_ids = ["mmlu-subject-macro-v1", "olmes-task-macro-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "approximately-one-point-v1"
+
+[[attempts]]
+id = "dd-0164-default"
+claim_id = "DD-0164"
+default = true
+analysis_id = "single_scale"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["olmes-macro"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["mmlu-subject-macro-v1", "olmes-task-macro-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "predicate-true-v1"
+
+[[attempts]]
+id = "dd-0165-default"
+claim_id = "DD-0165"
+default = true
+analysis_id = "single_scale"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["olmes-macro"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["mmlu-subject-macro-v1", "olmes-task-macro-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "predicate-true-v1"
+
+[[attempts]]
+id = "dd-0169-default"
+claim_id = "DD-0169"
+default = true
+analysis_id = "single_scale"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["olmes-macro"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["mmlu-subject-macro-v1", "olmes-task-macro-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "nonempty-paper-plot-v1"
+
+[[attempts]]
+id = "dd-0356-default"
+claim_id = "DD-0356"
+default = true
+analysis_id = "single_scale"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["olmes-macro"]
+metric_ids = ["primary_metric"]
+model_sizes = ["150M", "1B"]
+checkpoints = ["final-common-complete"]
+sensitivity_ids = ["dd-0356-preceding-common-complete-1", "dd-0356-preceding-common-complete-2", "dd-0356-paper-step"]
+transformation_ids = ["mmlu-subject-macro-v1", "olmes-task-macro-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "nonempty-paper-plot-v1"
+
+[[attempts]]
+id = "dd-0051-default"
+claim_id = "DD-0051"
+default = true
+analysis_id = "per_task"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "predicate-true-v1"
+
+[[attempts]]
+id = "dd-0052-default"
+claim_id = "DD-0052"
+default = true
+analysis_id = "per_task"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "predicate-true-v1"
+
+[[attempts]]
+id = "dd-0053-default"
+claim_id = "DD-0053"
+default = true
+analysis_id = "per_task"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "predicate-true-v1"
+
+[[attempts]]
+id = "dd-0142-default"
+claim_id = "DD-0142"
+default = true
+analysis_id = "per_task"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["all-five"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["paper-model-sizes"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "predicate-true-v1"
+
+[[attempts]]
+id = "dd-0148-default"
+claim_id = "DD-0148"
+default = true
+analysis_id = "per_task"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "nonempty-paper-plot-v1"
+
+[[attempts]]
+id = "dd-0149-default"
+claim_id = "DD-0149"
+default = true
+analysis_id = "per_task"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["arc_easy"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "nonempty-paper-plot-v1"
+
+[[attempts]]
+id = "dd-0150-default"
+claim_id = "DD-0150"
+default = true
+analysis_id = "per_task"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["hellaswag", "arc_easy"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "nonempty-paper-plot-v1"
+
+[[attempts]]
+id = "dd-0166-default"
+claim_id = "DD-0166"
+default = true
+analysis_id = "per_task"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "predicate-true-v1"
+
+[[attempts]]
+id = "dd-0167-default"
+claim_id = "DD-0167"
+default = true
+analysis_id = "per_task"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["arc_challenge", "arc_easy", "mmlu", "hellaswag"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "predicate-true-v1"
+
+[[attempts]]
+id = "dd-0168-default"
+claim_id = "DD-0168"
+default = true
+analysis_id = "per_task"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "predicate-true-v1"
+
+[[attempts]]
+id = "dd-0174-default"
+claim_id = "DD-0174"
+default = true
+analysis_id = "per_task"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "nonempty-paper-plot-v1"
+
+[[attempts]]
+id = "dd-0175-default"
+claim_id = "DD-0175"
+default = true
+analysis_id = "per_task"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["arc_easy"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "nonempty-paper-plot-v1"
+
+[[attempts]]
+id = "dd-0176-default"
+claim_id = "DD-0176"
+default = true
+analysis_id = "per_task"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["boolq"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "nonempty-paper-plot-v1"
+
+[[attempts]]
+id = "dd-0177-default"
+claim_id = "DD-0177"
+default = true
+analysis_id = "per_task"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["hellaswag"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "nonempty-paper-plot-v1"
+
+[[attempts]]
+id = "dd-0178-default"
+claim_id = "DD-0178"
+default = true
+analysis_id = "per_task"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["socialiqa"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "nonempty-paper-plot-v1"
+
+[[attempts]]
+id = "dd-0179-default"
+claim_id = "DD-0179"
+default = true
+analysis_id = "per_task"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["winogrande"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "nonempty-paper-plot-v1"
+
+[[attempts]]
+id = "dd-0013-default"
+claim_id = "DD-0013"
+default = true
+analysis_id = "scaling_law"
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "predicate-true-v1"
+
+[[attempts]]
+id = "dd-0054-default"
+claim_id = "DD-0054"
+default = true
+analysis_id = "scaling_law"
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "predicate-true-v1"
+
+[[attempts]]
+id = "dd-0119-default"
+claim_id = "DD-0119"
+default = true
+analysis_id = "scaling_law"
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "predicate-true-v1"
+
+[[attempts]]
+id = "dd-0180-default"
+claim_id = "DD-0180"
+default = true
+analysis_id = "scaling_law"
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "nonempty-paper-plot-v1"
+
+[[attempts]]
+id = "dd-0181-default"
+claim_id = "DD-0181"
+default = true
+analysis_id = "scaling_law"
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "predicate-true-v1"
+
+[[attempts]]
+id = "dd-0189-default"
+claim_id = "DD-0189"
+default = true
+analysis_id = "scaling_law"
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "predicate-true-v1"
+
+[[attempts]]
+id = "dd-0192-default"
+claim_id = "DD-0192"
+default = true
+analysis_id = "scaling_law"
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "predicate-true-v1"
+
+[[attempts]]
+id = "dd-0301-default"
+claim_id = "DD-0301"
+default = true
+analysis_id = "scaling_law"
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "rounded-one-decimal-v1"
+
+[[attempts]]
+id = "dd-0302-default"
+claim_id = "DD-0302"
+default = true
+analysis_id = "scaling_law"
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "rounded-one-decimal-v1"
+
+[[attempts]]
+id = "dd-0303-default"
+claim_id = "DD-0303"
+default = true
+analysis_id = "scaling_law"
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "rounded-one-decimal-v1"
+
+[[attempts]]
+id = "dd-0304-default"
+claim_id = "DD-0304"
+default = true
+analysis_id = "scaling_law"
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "rounded-one-decimal-v1"
+
+[[attempts]]
+id = "dd-0305-default"
+claim_id = "DD-0305"
+default = true
+analysis_id = "scaling_law"
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "rounded-one-decimal-v1"
+
+[[attempts]]
+id = "dd-0306-default"
+claim_id = "DD-0306"
+default = true
+analysis_id = "scaling_law"
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "rounded-one-decimal-v1"
+
+[[attempts]]
+id = "dd-0307-default"
+claim_id = "DD-0307"
+default = true
+analysis_id = "scaling_law"
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "rounded-one-decimal-v1"
+
+[[attempts]]
+id = "dd-0308-default"
+claim_id = "DD-0308"
+default = true
+analysis_id = "scaling_law"
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "rounded-one-decimal-v1"
+
+[[attempts]]
+id = "dd-0311-default"
+claim_id = "DD-0311"
+default = true
+analysis_id = "scaling_law"
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "predicate-true-v1"
+
+[[attempts]]
+id = "dd-0312-default"
+claim_id = "DD-0312"
+default = true
+analysis_id = "scaling_law"
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "predicate-true-v1"
+
+[[attempts]]
+id = "dd-0330-default"
+claim_id = "DD-0330"
+default = true
+analysis_id = "scaling_law"
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "predicate-true-v1"
+
+[[attempts]]
+id = "dd-0368-default"
+claim_id = "DD-0368"
+default = true
+analysis_id = "scaling_law"
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "nonempty-paper-plot-v1"
+
+[[attempts]]
+id = "dd-0369-default"
+claim_id = "DD-0369"
+default = true
+analysis_id = "scaling_law"
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "nonempty-paper-plot-v1"
+
+[[attempts]]
+id = "dd-0014-default"
+claim_id = "DD-0014"
+default = true
+analysis_id = "proxy_metrics"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["mmlu"]
+metric_ids = ["paper-16-metrics"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "directional-v1"
+
+[[attempts]]
+id = "dd-0015-default"
+claim_id = "DD-0015"
+default = true
+analysis_id = "proxy_metrics"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["arc_challenge", "arc_easy"]
+metric_ids = ["paper-16-metrics"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "directional-v1"
+
+[[attempts]]
+id = "dd-0016-default"
+claim_id = "DD-0016"
+default = true
+analysis_id = "proxy_metrics"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["hellaswag"]
+metric_ids = ["paper-16-metrics"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "directional-v1"
+
+[[attempts]]
+id = "dd-0055-default"
+claim_id = "DD-0055"
+default = true
+analysis_id = "proxy_metrics"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["paper-16-metrics"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "predicate-true-v1"
+
+[[attempts]]
+id = "dd-0057-default"
+claim_id = "DD-0057"
+default = true
+analysis_id = "proxy_metrics"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["all-five"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["paper-16-metrics"]
+model_sizes = ["150M", "1B"]
+checkpoints = ["final-common-complete"]
+sensitivity_ids = ["dd-0057-preceding-common-complete-1", "dd-0057-preceding-common-complete-2", "dd-0057-paper-step"]
+transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "predicate-true-v1"
+
+[[attempts]]
+id = "dd-0196-default"
+claim_id = "DD-0196"
+default = true
+analysis_id = "proxy_metrics"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric", "correct_prob_per_char", "total_prob_per_char"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "predicate-true-v1"
+
+[[attempts]]
+id = "dd-0197-default"
+claim_id = "DD-0197"
+default = true
+analysis_id = "proxy_metrics"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["per-token-proxies", "per-character-proxies"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "predicate-true-v1"
+
+[[attempts]]
+id = "dd-0198-default"
+claim_id = "DD-0198"
+default = true
+analysis_id = "proxy_metrics"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["paper-16-metrics"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "predicate-true-v1"
+
+[[attempts]]
+id = "dd-0199-default"
+claim_id = "DD-0199"
+default = true
+analysis_id = "proxy_metrics"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["paper-16-metrics"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "predicate-true-v1"
+
+[[attempts]]
+id = "dd-0202-default"
+claim_id = "DD-0202"
+default = true
+analysis_id = "proxy_metrics"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["paper-16-metrics"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "predicate-true-v1"
+
+[[attempts]]
+id = "dd-0203-default"
+claim_id = "DD-0203"
+default = true
+analysis_id = "proxy_metrics"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["paper-16-metrics"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "predicate-true-v1"
+
+[[attempts]]
+id = "dd-0204-default"
+claim_id = "DD-0204"
+default = true
+analysis_id = "proxy_metrics"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["paper-16-metrics"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "predicate-true-v1"
+
+[[attempts]]
+id = "dd-0205-default"
+claim_id = "DD-0205"
+default = true
+analysis_id = "proxy_metrics"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["paper-16-metrics"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "predicate-true-v1"
+
+[[attempts]]
+id = "dd-0206-default"
+claim_id = "DD-0206"
+default = true
+analysis_id = "proxy_metrics"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["correct_prob", "total_prob"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "predicate-true-v1"
+
+[[attempts]]
+id = "dd-0207-default"
+claim_id = "DD-0207"
+default = true
+analysis_id = "proxy_metrics"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["norm_correct_prob", "margin", "primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "predicate-true-v1"
+
+[[attempts]]
+id = "dd-0208-default"
+claim_id = "DD-0208"
+default = true
+analysis_id = "proxy_metrics"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["paper-16-metrics"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "nonempty-paper-plot-v1"
+
+[[attempts]]
+id = "dd-0056-default"
+claim_id = "DD-0056"
+default = true
+analysis_id = "noise_spread"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["all-five"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["paper-16-metrics"]
+model_sizes = ["150M", "1B"]
+checkpoints = ["final-common-complete"]
+sensitivity_ids = ["dd-0056-preceding-common-complete-1", "dd-0056-preceding-common-complete-2", "dd-0056-paper-step"]
+transformation_ids = ["task-score-v1", "sample-seed-sd-v1", "recipe-spread-v1"]
+comparison_rule_id = "predicate-true-v1"
+
+[[attempts]]
+id = "dd-0098-default"
+claim_id = "DD-0098"
+default = true
+analysis_id = "noise_spread"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["1B"]
+checkpoints = ["final-common-complete"]
+sensitivity_ids = ["dd-0098-preceding-common-complete-1", "dd-0098-preceding-common-complete-2", "dd-0098-paper-step"]
+transformation_ids = ["task-score-v1", "sample-seed-sd-v1", "recipe-spread-v1"]
+comparison_rule_id = "approximately-one-point-v1"
+
+[[attempts]]
+id = "dd-0194-default"
+claim_id = "DD-0194"
+default = true
+analysis_id = "noise_spread"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["all-five"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["paper-model-sizes"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["task-score-v1", "sample-seed-sd-v1", "recipe-spread-v1"]
+comparison_rule_id = "predicate-true-v1"
+
+[[attempts]]
+id = "dd-0209-default"
+claim_id = "DD-0209"
+default = true
+analysis_id = "noise_spread"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["prediction-three"]
+task_ids = ["hellaswag"]
+metric_ids = ["correct_prob"]
+model_sizes = ["150M"]
+checkpoints = ["final-common-complete"]
+sensitivity_ids = ["dd-0209-preceding-common-complete-1", "dd-0209-preceding-common-complete-2", "dd-0209-paper-step"]
+transformation_ids = ["task-score-v1", "sample-seed-sd-v1", "recipe-spread-v1"]
+comparison_rule_id = "nonempty-paper-plot-v1"
+
+[[attempts]]
+id = "dd-0210-default"
+claim_id = "DD-0210"
+default = true
+analysis_id = "noise_spread"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["prediction-three"]
+task_ids = ["socialiqa"]
+metric_ids = ["correct_prob"]
+model_sizes = ["150M"]
+checkpoints = ["final-common-complete"]
+sensitivity_ids = ["dd-0210-preceding-common-complete-1", "dd-0210-preceding-common-complete-2", "dd-0210-paper-step"]
+transformation_ids = ["task-score-v1", "sample-seed-sd-v1", "recipe-spread-v1"]
+comparison_rule_id = "nonempty-paper-plot-v1"
+
+[[attempts]]
+id = "dd-0211-default"
+claim_id = "DD-0211"
+default = true
+analysis_id = "noise_spread"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["paper-16-metrics"]
+model_sizes = ["150M"]
+checkpoints = ["final-common-complete"]
+sensitivity_ids = ["dd-0211-preceding-common-complete-1", "dd-0211-preceding-common-complete-2", "dd-0211-paper-step"]
+transformation_ids = ["task-score-v1", "sample-seed-sd-v1", "recipe-spread-v1"]
+comparison_rule_id = "predicate-true-v1"
+
+[[attempts]]
+id = "dd-0212-default"
+claim_id = "DD-0212"
+default = true
+analysis_id = "noise_spread"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["correct_prob", "primary_metric"]
+model_sizes = ["150M"]
+checkpoints = ["final-common-complete"]
+sensitivity_ids = ["dd-0212-preceding-common-complete-1", "dd-0212-preceding-common-complete-2", "dd-0212-paper-step"]
+transformation_ids = ["task-score-v1", "sample-seed-sd-v1", "recipe-spread-v1"]
+comparison_rule_id = "predicate-true-v1"
+
+[[attempts]]
+id = "dd-0218-default"
+claim_id = "DD-0218"
+default = true
+analysis_id = "noise_spread"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["prediction-three"]
+task_ids = ["mmlu"]
+metric_ids = ["paper-16-metrics"]
+model_sizes = ["150M"]
+checkpoints = ["final-common-complete"]
+sensitivity_ids = ["dd-0218-preceding-common-complete-1", "dd-0218-preceding-common-complete-2", "dd-0218-paper-step"]
+transformation_ids = ["task-score-v1", "sample-seed-sd-v1", "recipe-spread-v1"]
+comparison_rule_id = "nonempty-paper-plot-v1"
+
+[[attempts]]
+id = "dd-0219-default"
+claim_id = "DD-0219"
+default = true
+analysis_id = "noise_spread"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["prediction-three"]
+task_ids = ["arc_easy"]
+metric_ids = ["paper-16-metrics"]
+model_sizes = ["150M"]
+checkpoints = ["final-common-complete"]
+sensitivity_ids = ["dd-0219-preceding-common-complete-1", "dd-0219-preceding-common-complete-2", "dd-0219-paper-step"]
+transformation_ids = ["task-score-v1", "sample-seed-sd-v1", "recipe-spread-v1"]
+comparison_rule_id = "nonempty-paper-plot-v1"
+
+[[attempts]]
+id = "dd-0220-default"
+claim_id = "DD-0220"
+default = true
+analysis_id = "noise_spread"
+inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["correct_prob", "primary_metric"]
+model_sizes = ["150M"]
+checkpoints = ["final-common-complete"]
+sensitivity_ids = ["dd-0220-preceding-common-complete-1", "dd-0220-preceding-common-complete-2", "dd-0220-paper-step"]
+transformation_ids = ["task-score-v1", "sample-seed-sd-v1", "recipe-spread-v1"]
+comparison_rule_id = "nonempty-paper-plot-v1"

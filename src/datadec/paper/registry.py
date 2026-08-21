@@ -1,94 +1,64 @@
 from __future__ import annotations
 
-from enum import UNIQUE, StrEnum, verify
-
 from datadec.paper.models import (
+    PRIMARY_CLAIM_KINDS,
     ClaimRegistry,
-    MethodProvenance,
-    PaperReproductionContract,
+    PaperValidationContract,
+    ValidationOutcome,
 )
 
 
-@verify(UNIQUE)
-class VerifierId(StrEnum):
-    SOURCE_TRACE = "source_trace"
-    CITATION_TRACE = "citation_trace"
-    SUITE_CONFIG = "suite_config"
-    OLMES_AGGREGATE = "olmes_aggregate"
-    AUTHOR_ARTIFACT = "author_artifact"
-    ARTIFACT_INVENTORY = "artifact_inventory"
-    OLMES_CHOICE = "olmes_choice"
-    SCALING_LAW = "scaling_law"
-
-
-def validate_static_references(
+def validate_cross_contracts(
     registry: ClaimRegistry,
-    contract: PaperReproductionContract,
+    contract: PaperValidationContract,
 ) -> None:
-    """Validate claim references against the repository-owned static registries."""
-    verifier_ids = {verifier.value for verifier in VerifierId}
-    method_ids = {method.id for method in contract.methods}
-    policy_ids = {policy.id for policy in contract.policies}
+    """Validate executable attempts against the source-linked claim inventory."""
+    claims = {claim.id: claim for claim in registry.claims}
+    attempts = {attempt.id: attempt for attempt in contract.attempts}
 
-    dotted_references = {
-        reference
-        for claim in registry.claims
-        for reference in (claim.verifier_id, claim.method_id, claim.policy_id)
-        if reference is not None and "." in reference
+    declared_attempt_ids = {
+        attempt_id for claim in registry.claims for attempt_id in claim.attempt_ids
     }
-    if dotted_references:
-        dotted = ", ".join(sorted(dotted_references))
+    configured_attempt_ids = set(attempts)
+    if declared_attempt_ids != configured_attempt_ids:
+        missing = sorted(declared_attempt_ids - configured_attempt_ids)
+        unexpected = sorted(configured_attempt_ids - declared_attempt_ids)
         raise ValueError(
-            "paper claims must use registry IDs, not dotted callable references: "
-            f"{dotted}"
+            "claim and validation attempt IDs differ: "
+            f"missing={missing}, unexpected={unexpected}"
         )
 
-    unknown_verifier_ids = {
-        claim.verifier_id
-        for claim in registry.claims
-        if claim.verifier_id is not None and claim.verifier_id not in verifier_ids
-    }
-    unknown_method_ids = {
-        claim.method_id
-        for claim in registry.claims
-        if claim.method_id is not None and claim.method_id not in method_ids
-    }
-    unknown_policy_ids = {
-        claim.policy_id
-        for claim in registry.claims
-        if claim.policy_id is not None and claim.policy_id not in policy_ids
-    }
+    for attempt in contract.attempts:
+        claim = claims.get(attempt.claim_id)
+        if claim is None:
+            raise ValueError(f"attempt {attempt.id} references unknown claim")
+        if attempt.id not in claim.attempt_ids:
+            raise ValueError(f"attempt {attempt.id} is attached to the wrong claim")
+        if claim.kind not in PRIMARY_CLAIM_KINDS:
+            raise ValueError(f"nonempirical claim {claim.id} has an executable attempt")
 
-    failures = (
-        ("verifier", unknown_verifier_ids),
-        ("method", unknown_method_ids),
-        ("policy", unknown_policy_ids),
-    )
-    for description, unknown_ids in failures:
-        if unknown_ids:
-            unknown = ", ".join(sorted(unknown_ids))
+    for claim in registry.claims:
+        if claim.kind not in PRIMARY_CLAIM_KINDS:
+            continue
+        is_assessable = (
+            claim.supporting_outcome
+            is not ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED
+        )
+        defaults = [
+            attempts[attempt_id]
+            for attempt_id in claim.attempt_ids
+            if attempts[attempt_id].default
+        ]
+        if is_assessable and len(defaults) != 1:
             raise ValueError(
-                f"paper claims reference unknown {description} IDs: {unknown}"
+                f"assessable primary claim {claim.id} requires one default attempt"
+            )
+        if not is_assessable and claim.attempt_ids:
+            raise ValueError(
+                f"non-assessable primary claim {claim.id} cannot have attempts"
             )
 
 
-def resolve_method_provenance(
-    contract: PaperReproductionContract,
-    method_id: str | None,
-) -> MethodProvenance | None:
-    if method_id is None:
-        return None
-    methods = {method.id: method.provenance for method in contract.methods}
-    try:
-        return methods[method_id]
-    except KeyError as error:  # pragma: no cover - repository validation owns this
-        raise ValueError(
-            f"unknown paper reproduction method ID: {method_id}"
-        ) from error
-
-
 __all__ = [
-    "VerifierId",
-    "resolve_method_provenance",
-    "validate_static_references",
+    "validate_cross_contracts",
 ]
