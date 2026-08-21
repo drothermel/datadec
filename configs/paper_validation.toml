@@ -6,10 +6,10 @@ source_root = "docs/paper"
 entrypoint = "example_paper.tex"
 
 [[inputs]]
-id = "olmes_tasks"
-path = "processed/olmes-details/{recipe}/tasks.parquet"
-remote_path = "olmes-details/{recipe}/tasks.parquet"
-columns = ["recipe", "params", "seed", "step", "tokens", "compute", "task", "primary_metric", "acc_raw", "acc_per_token", "acc_per_char", "primary_score"]
+id = "olmes_aggregate"
+path = "processed/olmes.parquet"
+remote_path = "olmes.parquet"
+columns = ["data", "params", "seed", "step", "task", "tokens", "compute", "exact_parameter_count", "primary_metric", "logits_per_byte_corr", "acc_raw", "acc_per_token", "acc_per_char", "correct_prob", "correct_prob_per_token", "correct_prob_per_char", "margin", "margin_per_token", "margin_per_char", "total_prob", "total_prob_per_token", "total_prob_per_char", "norm_correct_prob", "norm_correct_prob_per_token", "norm_correct_prob_per_char"]
 
 [[inputs]]
 id = "olmes_choices"
@@ -21,13 +21,7 @@ columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index",
 id = "scaling_evaluations"
 path = "processed/scaling-law/evaluations.parquet"
 remote_path = "scaling-law/evaluations.parquet"
-columns = ["recipe", "params", "seed", "step", "task", "tokens", "compute", "exact_parameter_count", "primary_metric"]
-
-[[inputs]]
-id = "scaling_checkpoint_losses"
-path = "processed/scaling-law/checkpoint-losses.parquet"
-remote_path = "scaling-law/checkpoint-losses.parquet"
-columns = ["recipe", "params", "seed", "step", "tokens", "compute", "exact_parameter_count", "c4_en_validation_cross_entropy", "dolma_common_crawl_validation_cross_entropy", "pile_validation_cross_entropy", "wikitext_103_validation_cross_entropy", "train_cross_entropy"]
+columns = ["recipe", "params", "seed", "step", "task", "tokens", "compute", "exact_parameter_count", "primary_metric", "logits_per_byte_corr"]
 
 [[comparison_rules]]
 id = "predicate-true-v1"
@@ -97,7 +91,7 @@ id = "dd-0010-default"
 claim_id = "DD-0010"
 default = true
 analysis_id = "single_scale"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["olmes-macro"]
@@ -113,7 +107,7 @@ id = "dd-0011-default"
 claim_id = "DD-0011"
 default = true
 analysis_id = "single_scale"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["olmes-macro"]
@@ -129,7 +123,7 @@ id = "dd-0164-default"
 claim_id = "DD-0164"
 default = true
 analysis_id = "single_scale"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["olmes-macro"]
@@ -144,7 +138,7 @@ id = "dd-0165-default"
 claim_id = "DD-0165"
 default = true
 analysis_id = "single_scale"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["olmes-macro"]
@@ -159,7 +153,7 @@ id = "dd-0169-default"
 claim_id = "DD-0169"
 default = true
 analysis_id = "single_scale"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["olmes-macro"]
@@ -174,7 +168,7 @@ id = "dd-0356-default"
 claim_id = "DD-0356"
 default = true
 analysis_id = "single_scale"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["olmes-macro"]
@@ -190,7 +184,7 @@ id = "dd-0051-default"
 claim_id = "DD-0051"
 default = true
 analysis_id = "per_task"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["paper-olmes-tasks"]
@@ -205,7 +199,7 @@ id = "dd-0052-default"
 claim_id = "DD-0052"
 default = true
 analysis_id = "per_task"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["paper-olmes-tasks"]
@@ -220,7 +214,7 @@ id = "dd-0053-default"
 claim_id = "DD-0053"
 default = true
 analysis_id = "per_task"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["paper-olmes-tasks"]
@@ -235,7 +229,7 @@ id = "dd-0142-default"
 claim_id = "DD-0142"
 default = true
 analysis_id = "per_task"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["all-five"]
 task_ids = ["paper-olmes-tasks"]
@@ -250,7 +244,7 @@ id = "dd-0148-default"
 claim_id = "DD-0148"
 default = true
 analysis_id = "per_task"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["paper-olmes-tasks"]
@@ -265,7 +259,7 @@ id = "dd-0149-default"
 claim_id = "DD-0149"
 default = true
 analysis_id = "per_task"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["arc_easy"]
@@ -280,7 +274,7 @@ id = "dd-0150-default"
 claim_id = "DD-0150"
 default = true
 analysis_id = "per_task"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["hellaswag", "arc_easy"]
@@ -295,7 +289,7 @@ id = "dd-0166-default"
 claim_id = "DD-0166"
 default = true
 analysis_id = "per_task"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["paper-olmes-tasks"]
@@ -310,7 +304,7 @@ id = "dd-0167-default"
 claim_id = "DD-0167"
 default = true
 analysis_id = "per_task"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["arc_challenge", "arc_easy", "mmlu", "hellaswag"]
@@ -325,7 +319,7 @@ id = "dd-0168-default"
 claim_id = "DD-0168"
 default = true
 analysis_id = "per_task"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["paper-olmes-tasks"]
@@ -340,7 +334,7 @@ id = "dd-0174-default"
 claim_id = "DD-0174"
 default = true
 analysis_id = "per_task"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["paper-olmes-tasks"]
@@ -355,7 +349,7 @@ id = "dd-0175-default"
 claim_id = "DD-0175"
 default = true
 analysis_id = "per_task"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["arc_easy"]
@@ -370,7 +364,7 @@ id = "dd-0176-default"
 claim_id = "DD-0176"
 default = true
 analysis_id = "per_task"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["boolq"]
@@ -385,7 +379,7 @@ id = "dd-0177-default"
 claim_id = "DD-0177"
 default = true
 analysis_id = "per_task"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["hellaswag"]
@@ -400,7 +394,7 @@ id = "dd-0178-default"
 claim_id = "DD-0178"
 default = true
 analysis_id = "per_task"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["socialiqa"]
@@ -415,7 +409,7 @@ id = "dd-0179-default"
 claim_id = "DD-0179"
 default = true
 analysis_id = "per_task"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["winogrande"]
@@ -430,7 +424,7 @@ id = "dd-0013-default"
 claim_id = "DD-0013"
 default = true
 analysis_id = "scaling_law"
-inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "tokens", "compute", "exact_parameter_count", "primary_metric", "logits_per_byte_corr"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["default"]
 task_ids = ["paper-olmes-tasks"]
@@ -445,7 +439,7 @@ id = "dd-0054-default"
 claim_id = "DD-0054"
 default = true
 analysis_id = "scaling_law"
-inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "tokens", "compute", "exact_parameter_count", "primary_metric", "logits_per_byte_corr"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["default"]
 task_ids = ["paper-olmes-tasks"]
@@ -460,7 +454,7 @@ id = "dd-0119-default"
 claim_id = "DD-0119"
 default = true
 analysis_id = "scaling_law"
-inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "tokens", "compute", "exact_parameter_count", "primary_metric", "logits_per_byte_corr"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["default"]
 task_ids = ["paper-olmes-tasks"]
@@ -475,7 +469,7 @@ id = "dd-0180-default"
 claim_id = "DD-0180"
 default = true
 analysis_id = "scaling_law"
-inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "tokens", "compute", "exact_parameter_count", "primary_metric", "logits_per_byte_corr"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["default"]
 task_ids = ["paper-olmes-tasks"]
@@ -490,7 +484,7 @@ id = "dd-0181-default"
 claim_id = "DD-0181"
 default = true
 analysis_id = "scaling_law"
-inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "tokens", "compute", "exact_parameter_count", "primary_metric", "logits_per_byte_corr"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["default"]
 task_ids = ["paper-olmes-tasks"]
@@ -505,7 +499,7 @@ id = "dd-0189-default"
 claim_id = "DD-0189"
 default = true
 analysis_id = "scaling_law"
-inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "tokens", "compute", "exact_parameter_count", "primary_metric", "logits_per_byte_corr"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["default"]
 task_ids = ["paper-olmes-tasks"]
@@ -520,7 +514,7 @@ id = "dd-0192-default"
 claim_id = "DD-0192"
 default = true
 analysis_id = "scaling_law"
-inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "tokens", "compute", "exact_parameter_count", "primary_metric", "logits_per_byte_corr"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["default"]
 task_ids = ["paper-olmes-tasks"]
@@ -535,7 +529,7 @@ id = "dd-0301-default"
 claim_id = "DD-0301"
 default = true
 analysis_id = "scaling_law"
-inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "tokens", "compute", "exact_parameter_count", "primary_metric", "logits_per_byte_corr"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["default"]
 task_ids = ["paper-olmes-tasks"]
@@ -550,7 +544,7 @@ id = "dd-0302-default"
 claim_id = "DD-0302"
 default = true
 analysis_id = "scaling_law"
-inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "tokens", "compute", "exact_parameter_count", "primary_metric", "logits_per_byte_corr"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["default"]
 task_ids = ["paper-olmes-tasks"]
@@ -565,7 +559,7 @@ id = "dd-0303-default"
 claim_id = "DD-0303"
 default = true
 analysis_id = "scaling_law"
-inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "tokens", "compute", "exact_parameter_count", "primary_metric", "logits_per_byte_corr"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["default"]
 task_ids = ["paper-olmes-tasks"]
@@ -580,7 +574,7 @@ id = "dd-0304-default"
 claim_id = "DD-0304"
 default = true
 analysis_id = "scaling_law"
-inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "tokens", "compute", "exact_parameter_count", "primary_metric", "logits_per_byte_corr"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["default"]
 task_ids = ["paper-olmes-tasks"]
@@ -595,7 +589,7 @@ id = "dd-0305-default"
 claim_id = "DD-0305"
 default = true
 analysis_id = "scaling_law"
-inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "tokens", "compute", "exact_parameter_count", "primary_metric", "logits_per_byte_corr"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["default"]
 task_ids = ["paper-olmes-tasks"]
@@ -610,7 +604,7 @@ id = "dd-0306-default"
 claim_id = "DD-0306"
 default = true
 analysis_id = "scaling_law"
-inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "tokens", "compute", "exact_parameter_count", "primary_metric", "logits_per_byte_corr"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["default"]
 task_ids = ["paper-olmes-tasks"]
@@ -625,7 +619,7 @@ id = "dd-0307-default"
 claim_id = "DD-0307"
 default = true
 analysis_id = "scaling_law"
-inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "tokens", "compute", "exact_parameter_count", "primary_metric", "logits_per_byte_corr"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["default"]
 task_ids = ["paper-olmes-tasks"]
@@ -640,7 +634,7 @@ id = "dd-0308-default"
 claim_id = "DD-0308"
 default = true
 analysis_id = "scaling_law"
-inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "tokens", "compute", "exact_parameter_count", "primary_metric", "logits_per_byte_corr"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["default"]
 task_ids = ["paper-olmes-tasks"]
@@ -655,7 +649,7 @@ id = "dd-0311-default"
 claim_id = "DD-0311"
 default = true
 analysis_id = "scaling_law"
-inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "tokens", "compute", "exact_parameter_count", "primary_metric", "logits_per_byte_corr"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["default"]
 task_ids = ["paper-olmes-tasks"]
@@ -670,7 +664,7 @@ id = "dd-0312-default"
 claim_id = "DD-0312"
 default = true
 analysis_id = "scaling_law"
-inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "tokens", "compute", "exact_parameter_count", "primary_metric", "logits_per_byte_corr"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["default"]
 task_ids = ["paper-olmes-tasks"]
@@ -685,7 +679,7 @@ id = "dd-0330-default"
 claim_id = "DD-0330"
 default = true
 analysis_id = "scaling_law"
-inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "tokens", "compute", "exact_parameter_count", "primary_metric", "logits_per_byte_corr"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["default"]
 task_ids = ["paper-olmes-tasks"]
@@ -700,7 +694,7 @@ id = "dd-0368-default"
 claim_id = "DD-0368"
 default = true
 analysis_id = "scaling_law"
-inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "tokens", "compute", "exact_parameter_count", "primary_metric", "logits_per_byte_corr"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["default"]
 task_ids = ["paper-olmes-tasks"]
@@ -715,7 +709,7 @@ id = "dd-0369-default"
 claim_id = "DD-0369"
 default = true
 analysis_id = "scaling_law"
-inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "scaling_checkpoint_losses", columns = ["recipe", "params", "seed", "step", "compute", "train_cross_entropy"] }]
+inputs = [{ table_id = "scaling_evaluations", columns = ["recipe", "params", "seed", "step", "task", "tokens", "compute", "exact_parameter_count", "primary_metric", "logits_per_byte_corr"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["default"]
 task_ids = ["paper-olmes-tasks"]
@@ -730,7 +724,7 @@ id = "dd-0014-default"
 claim_id = "DD-0014"
 default = true
 analysis_id = "proxy_metrics"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["mmlu"]
@@ -745,7 +739,7 @@ id = "dd-0015-default"
 claim_id = "DD-0015"
 default = true
 analysis_id = "proxy_metrics"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["arc_challenge", "arc_easy"]
@@ -760,7 +754,7 @@ id = "dd-0016-default"
 claim_id = "DD-0016"
 default = true
 analysis_id = "proxy_metrics"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["hellaswag"]
@@ -775,7 +769,7 @@ id = "dd-0055-default"
 claim_id = "DD-0055"
 default = true
 analysis_id = "proxy_metrics"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["paper-olmes-tasks"]
@@ -790,7 +784,7 @@ id = "dd-0057-default"
 claim_id = "DD-0057"
 default = true
 analysis_id = "proxy_metrics"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["all-five"]
 task_ids = ["paper-olmes-tasks"]
@@ -806,7 +800,7 @@ id = "dd-0196-default"
 claim_id = "DD-0196"
 default = true
 analysis_id = "proxy_metrics"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["paper-olmes-tasks"]
@@ -821,7 +815,7 @@ id = "dd-0197-default"
 claim_id = "DD-0197"
 default = true
 analysis_id = "proxy_metrics"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["paper-olmes-tasks"]
@@ -836,7 +830,7 @@ id = "dd-0198-default"
 claim_id = "DD-0198"
 default = true
 analysis_id = "proxy_metrics"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["paper-olmes-tasks"]
@@ -851,7 +845,7 @@ id = "dd-0199-default"
 claim_id = "DD-0199"
 default = true
 analysis_id = "proxy_metrics"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["paper-olmes-tasks"]
@@ -866,7 +860,7 @@ id = "dd-0202-default"
 claim_id = "DD-0202"
 default = true
 analysis_id = "proxy_metrics"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["paper-olmes-tasks"]
@@ -881,7 +875,7 @@ id = "dd-0203-default"
 claim_id = "DD-0203"
 default = true
 analysis_id = "proxy_metrics"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["paper-olmes-tasks"]
@@ -896,7 +890,7 @@ id = "dd-0204-default"
 claim_id = "DD-0204"
 default = true
 analysis_id = "proxy_metrics"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["paper-olmes-tasks"]
@@ -911,7 +905,7 @@ id = "dd-0205-default"
 claim_id = "DD-0205"
 default = true
 analysis_id = "proxy_metrics"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["paper-olmes-tasks"]
@@ -926,7 +920,7 @@ id = "dd-0206-default"
 claim_id = "DD-0206"
 default = true
 analysis_id = "proxy_metrics"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["paper-olmes-tasks"]
@@ -941,7 +935,7 @@ id = "dd-0207-default"
 claim_id = "DD-0207"
 default = true
 analysis_id = "proxy_metrics"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["paper-olmes-tasks"]
@@ -956,7 +950,7 @@ id = "dd-0208-default"
 claim_id = "DD-0208"
 default = true
 analysis_id = "proxy_metrics"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }, { table_id = "olmes_choices", columns = ["recipe", "params", "seed", "step", "task", "doc_id", "choice_index", "sum_logits", "num_tokens", "num_chars", "is_greedy"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three", "prediction-three"]
 task_ids = ["paper-olmes-tasks"]
@@ -971,7 +965,7 @@ id = "dd-0056-default"
 claim_id = "DD-0056"
 default = true
 analysis_id = "noise_spread"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "primary_metric"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "primary_metric"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["all-five"]
 task_ids = ["paper-olmes-tasks"]
@@ -987,7 +981,7 @@ id = "dd-0098-default"
 claim_id = "DD-0098"
 default = true
 analysis_id = "noise_spread"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "primary_metric"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "primary_metric"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["target-three"]
 task_ids = ["paper-olmes-tasks"]
@@ -1003,7 +997,7 @@ id = "dd-0194-default"
 claim_id = "DD-0194"
 default = true
 analysis_id = "noise_spread"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "primary_metric"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "primary_metric"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["all-five"]
 task_ids = ["paper-olmes-tasks"]
@@ -1018,7 +1012,7 @@ id = "dd-0209-default"
 claim_id = "DD-0209"
 default = true
 analysis_id = "noise_spread"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "primary_metric"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "primary_metric"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["prediction-three"]
 task_ids = ["hellaswag"]
@@ -1034,7 +1028,7 @@ id = "dd-0210-default"
 claim_id = "DD-0210"
 default = true
 analysis_id = "noise_spread"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "primary_metric"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "primary_metric"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["prediction-three"]
 task_ids = ["socialiqa"]
@@ -1050,7 +1044,7 @@ id = "dd-0211-default"
 claim_id = "DD-0211"
 default = true
 analysis_id = "noise_spread"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "primary_metric"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "primary_metric"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["prediction-three"]
 task_ids = ["paper-olmes-tasks"]
@@ -1066,7 +1060,7 @@ id = "dd-0212-default"
 claim_id = "DD-0212"
 default = true
 analysis_id = "noise_spread"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "primary_metric"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "primary_metric"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["prediction-three"]
 task_ids = ["paper-olmes-tasks"]
@@ -1082,7 +1076,7 @@ id = "dd-0218-default"
 claim_id = "DD-0218"
 default = true
 analysis_id = "noise_spread"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "primary_metric"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "primary_metric"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["prediction-three"]
 task_ids = ["mmlu"]
@@ -1098,7 +1092,7 @@ id = "dd-0219-default"
 claim_id = "DD-0219"
 default = true
 analysis_id = "noise_spread"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "primary_metric"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "primary_metric"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["prediction-three"]
 task_ids = ["arc_easy"]
@@ -1114,7 +1108,7 @@ id = "dd-0220-default"
 claim_id = "DD-0220"
 default = true
 analysis_id = "noise_spread"
-inputs = [{ table_id = "olmes_tasks", columns = ["recipe", "params", "seed", "step", "task", "primary_metric"] }]
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "primary_metric"] }]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["prediction-three"]
 task_ids = ["paper-olmes-tasks"]
