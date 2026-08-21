@@ -145,6 +145,51 @@ def test_current_repository_validation_is_complete_and_read_only() -> None:
     assert len(validation.suite.rows) == 14
 
 
+def test_repository_validation_uses_configured_entrypoint_for_source_checks(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    configured_entrypoint = "docs/paper/nondefault-entrypoint.tex"
+    current_entrypoint = "docs/paper/example_paper.tex"
+    seen_entrypoints: dict[str, str] = {}
+    original_coverage = run_module.validate_source_coverage
+    original_dependencies = run_module.scan_tex_dependencies
+    original_citations = run_module.validate_citations
+
+    monkeypatch.setattr(
+        run_module,
+        "_paper_entrypoint",
+        lambda _contract: configured_entrypoint,
+    )
+
+    def record_coverage(
+        root: str | Path,
+        registry: Any,
+        entrypoint: str,
+    ) -> Any:
+        seen_entrypoints["coverage"] = entrypoint
+        return original_coverage(root, registry, current_entrypoint)
+
+    def record_dependencies(root: str | Path, entrypoint: str) -> Any:
+        seen_entrypoints["dependencies"] = entrypoint
+        return original_dependencies(root, current_entrypoint)
+
+    def record_citations(root: str | Path, entrypoint: str) -> Any:
+        seen_entrypoints["citations"] = entrypoint
+        return original_citations(root, current_entrypoint)
+
+    monkeypatch.setattr(run_module, "validate_source_coverage", record_coverage)
+    monkeypatch.setattr(run_module, "scan_tex_dependencies", record_dependencies)
+    monkeypatch.setattr(run_module, "validate_citations", record_citations)
+
+    validate_repository(_REPOSITORY_ROOT)
+
+    assert seen_entrypoints == {
+        "coverage": configured_entrypoint,
+        "dependencies": configured_entrypoint,
+        "citations": configured_entrypoint,
+    }
+
+
 def test_first_run_builds_one_truthful_terminal_observation_per_claim(
     validation: run_module.RepositoryValidation,
 ) -> None:

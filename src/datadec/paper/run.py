@@ -178,8 +178,8 @@ def validate_repository(root: str | Path) -> RepositoryValidation:
         published_results_manifest=published_results,
     )
 
-    coverage = validate_source_coverage(repository_root, registry)
     entrypoint = _paper_entrypoint(contract)
+    coverage = validate_source_coverage(repository_root, registry, entrypoint)
     dependencies = scan_tex_dependencies(repository_root, entrypoint)
     active_dependency_files = {
         *dependencies.tex_files,
