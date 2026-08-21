@@ -1,10 +1,19 @@
 from __future__ import annotations
 
+from datetime import datetime
 from enum import UNIQUE, StrEnum, verify
+from math import isfinite
 from pathlib import PurePosixPath
-from typing import Self
+from typing import Literal, Self
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    JsonValue,
+    field_validator,
+    model_validator,
+)
 
 
 class PaperModel(BaseModel):
@@ -50,6 +59,34 @@ class ExpectationKind(StrEnum):
 class PolicyStatus(StrEnum):
     SETTLED = "settled"
     UNRESOLVED = "unresolved"
+
+
+@verify(UNIQUE)
+class Verdict(StrEnum):
+    REPRODUCED = "reproduced"
+    CONTRADICTED = "contradicted"
+    INTERNALLY_INCONSISTENT = "internally_inconsistent"
+    SOURCE_ONLY_MATCH = "source_only_match"
+    BLOCKED_MISSING_INPUT = "blocked_missing_input"
+    BLOCKED_UNSPECIFIED_METHOD = "blocked_unspecified_method"
+    EXTERNAL_OR_CITATION_DEPENDENT = "external_or_citation_dependent"
+    NOT_ATTEMPTED = "not_attempted"
+    NOT_APPLICABLE = "not_applicable"
+
+
+@verify(UNIQUE)
+class CodeTreeState(StrEnum):
+    CLEAN = "clean"
+    DIRTY = "dirty"
+
+
+@verify(UNIQUE)
+class BlockerKind(StrEnum):
+    MISSING_INPUT = "missing_input"
+    UNSPECIFIED_METHOD = "unspecified_method"
+    EXTERNAL_OR_CITATION_DEPENDENT = "external_or_citation_dependent"
+    NOT_ATTEMPTED = "not_attempted"
+    NOT_APPLICABLE = "not_applicable"
 
 
 def _validate_repository_path(value: str) -> str:
@@ -253,19 +290,282 @@ class PaperReproductionContract(PaperModel):
         return self
 
 
+class ContentIdentity(PaperModel):
+    id: str = Field(min_length=1)
+    sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+
+class CodeIdentity(PaperModel):
+    commit_sha: str = Field(pattern=r"^[0-9a-f]{40,64}$")
+    tree_state: CodeTreeState
+    dirty_diff_artifact_id: str | None = Field(default=None, min_length=1)
+
+    @model_validator(mode="after")
+    def validate_tree_state(self) -> Self:
+        if self.tree_state is CodeTreeState.DIRTY:
+            if self.dirty_diff_artifact_id is None:
+                raise ValueError(
+                    "dirty code identity requires a canonical diff artifact ID"
+                )
+        elif self.dirty_diff_artifact_id is not None:
+            raise ValueError(
+                "clean code identity cannot reference a dirty diff artifact"
+            )
+        return self
+
+
+class RuntimeIdentity(PaperModel):
+    python_version: str = Field(min_length=1)
+    implementation: str = Field(min_length=1)
+    platform: str = Field(min_length=1)
+    dependency_lock_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+
+class ObservationCount(PaperModel):
+    name: str = Field(min_length=1)
+    value: int = Field(ge=0)
+
+
+class ObservationBlocker(PaperModel):
+    kind: BlockerKind
+    reason: str = Field(min_length=1)
+    missing_input_ids: tuple[str, ...] = ()
+    unresolved_method_id: str | None = Field(default=None, min_length=1)
+
+    @model_validator(mode="after")
+    def validate_blocker(self) -> Self:
+        if len(self.missing_input_ids) != len(set(self.missing_input_ids)):
+            raise ValueError("blocker missing input IDs must be unique")
+        if tuple(sorted(self.missing_input_ids)) != self.missing_input_ids:
+            raise ValueError("blocker missing input IDs must be sorted")
+        if self.kind is BlockerKind.MISSING_INPUT:
+            if not self.missing_input_ids:
+                raise ValueError("missing-input blocker requires missing input IDs")
+            if self.unresolved_method_id is not None:
+                raise ValueError(
+                    "missing-input blocker cannot include an unresolved method ID"
+                )
+        elif self.kind is BlockerKind.UNSPECIFIED_METHOD:
+            if self.unresolved_method_id is None:
+                raise ValueError(
+                    "unspecified-method blocker requires an unresolved method ID"
+                )
+            if self.missing_input_ids:
+                raise ValueError(
+                    "unspecified-method blocker cannot include missing input IDs"
+                )
+        elif self.missing_input_ids or self.unresolved_method_id is not None:
+            raise ValueError(
+                "this blocker kind cannot include missing inputs or an unresolved method"
+            )
+        return self
+
+
+def _validate_finite_json(value: JsonValue, path: str = "observed_value") -> None:
+    if isinstance(value, float) and not isfinite(value):
+        raise ValueError(f"{path} must contain only finite JSON numbers")
+    if isinstance(value, list):
+        for index, item in enumerate(value):
+            _validate_finite_json(item, f"{path}[{index}]")
+    elif isinstance(value, dict):
+        for key, item in value.items():
+            _validate_finite_json(item, f"{path}.{key}")
+
+
+class Observation(PaperModel):
+    claim_id: str = Field(min_length=1)
+    verifier_id: str | None = Field(default=None, min_length=1)
+    method_id: str | None = Field(default=None, min_length=1)
+    method_provenance: MethodProvenance | None = None
+    method_reference_artifact_id: str | None = Field(default=None, min_length=1)
+    policy_id: str | None = Field(default=None, min_length=1)
+    actual_evidence_boundary: EvidenceBoundary | None = None
+    verdict: Verdict
+    observed_value: JsonValue | None = None
+    diagnostics: tuple[str, ...] = ()
+    denominator: int | None = Field(default=None, ge=0)
+    counts: tuple[ObservationCount, ...] = ()
+    input_ids: tuple[str, ...] = ()
+    artifact_ids: tuple[str, ...] = ()
+    blocker: ObservationBlocker | None = None
+
+    @field_validator("observed_value")
+    @classmethod
+    def validate_observed_value(cls, value: JsonValue | None) -> JsonValue | None:
+        if value is not None:
+            _validate_finite_json(value)
+        return value
+
+    @model_validator(mode="after")
+    def validate_observation(self) -> Self:
+        for description, values in (
+            ("input IDs", self.input_ids),
+            ("artifact IDs", self.artifact_ids),
+        ):
+            if len(values) != len(set(values)):
+                raise ValueError(f"observation {description} must be unique")
+            if tuple(sorted(values)) != values:
+                raise ValueError(f"observation {description} must be sorted")
+
+        count_names = tuple(count.name for count in self.counts)
+        if len(count_names) != len(set(count_names)):
+            raise ValueError("observation count names must be unique")
+        if tuple(sorted(count_names)) != count_names:
+            raise ValueError("observation counts must be sorted by name")
+
+        if (self.method_id is None) != (self.method_provenance is None):
+            raise ValueError(
+                "observation method ID and method provenance must be provided together"
+            )
+        if self.method_provenance is MethodProvenance.UPSTREAM_INFORMED:
+            if self.method_reference_artifact_id is None:
+                raise ValueError(
+                    "upstream-informed method requires a reference artifact ID"
+                )
+        elif self.method_reference_artifact_id is not None:
+            raise ValueError(
+                "method reference artifact is only valid for upstream-informed methods"
+            )
+        if (
+            self.method_reference_artifact_id is not None
+            and self.method_reference_artifact_id not in self.artifact_ids
+        ):
+            raise ValueError(
+                "method reference artifact must appear in observation artifact IDs"
+            )
+
+        blocker_kind_by_verdict = {
+            Verdict.BLOCKED_MISSING_INPUT: BlockerKind.MISSING_INPUT,
+            Verdict.BLOCKED_UNSPECIFIED_METHOD: BlockerKind.UNSPECIFIED_METHOD,
+            Verdict.EXTERNAL_OR_CITATION_DEPENDENT: (
+                BlockerKind.EXTERNAL_OR_CITATION_DEPENDENT
+            ),
+            Verdict.NOT_ATTEMPTED: BlockerKind.NOT_ATTEMPTED,
+            Verdict.NOT_APPLICABLE: BlockerKind.NOT_APPLICABLE,
+        }
+        required_blocker_kind = blocker_kind_by_verdict.get(self.verdict)
+        if required_blocker_kind is None:
+            if self.blocker is not None:
+                raise ValueError("evidence verdicts cannot include a blocker")
+            if self.actual_evidence_boundary is None:
+                raise ValueError(
+                    "evidence verdicts require an actual evidence boundary"
+                )
+            if self.observed_value is None and not self.diagnostics:
+                raise ValueError(
+                    "evidence verdicts require an observed value or diagnostics"
+                )
+        elif self.blocker is None or self.blocker.kind is not required_blocker_kind:
+            raise ValueError(
+                "terminal non-evidence verdict requires a matching blocker"
+            )
+
+        if (
+            self.verdict is Verdict.SOURCE_ONLY_MATCH
+            and self.actual_evidence_boundary
+            not in {
+                EvidenceBoundary.PAPER_OR_FINAL_ARTIFACT,
+                EvidenceBoundary.AUTHOR_DOWNSTREAM_TABLE,
+            }
+        ):
+            raise ValueError(
+                "source-only match requires paper, final-artifact, or author-table evidence"
+            )
+        if self.verdict is Verdict.REPRODUCED and self.actual_evidence_boundary in {
+            EvidenceBoundary.PAPER_OR_FINAL_ARTIFACT,
+            EvidenceBoundary.AUTHOR_DOWNSTREAM_TABLE,
+        }:
+            raise ValueError(
+                "reproduced verdict requires independently recomputed evidence"
+            )
+        return self
+
+
+class ObservationFileIdentity(PaperModel):
+    filename: str
+    sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    byte_count: int = Field(ge=0)
+    observation_count: int = Field(ge=0)
+
+    _validate_filename = field_validator("filename")(_validate_repository_path)
+
+    @model_validator(mode="after")
+    def validate_filename(self) -> Self:
+        if len(PurePosixPath(self.filename).parts) != 1:
+            raise ValueError("observation filename must be a bare filename")
+        return self
+
+
+class RunManifest(PaperModel):
+    run_format: Literal[1] = 1
+    run_id: str = Field(pattern=r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
+    started_at: datetime
+    completed_at: datetime
+    paper_identity: ContentIdentity
+    config_identity: ContentIdentity
+    claims_identity: ContentIdentity
+    code_identity: CodeIdentity
+    runtime_identity: RuntimeIdentity
+    input_identities: tuple[ContentIdentity, ...] = ()
+    artifact_identities: tuple[ContentIdentity, ...] = ()
+    observations_identity: ObservationFileIdentity
+    complete: Literal[True] = True
+
+    @model_validator(mode="after")
+    def validate_manifest(self) -> Self:
+        if self.started_at.tzinfo is None or self.completed_at.tzinfo is None:
+            raise ValueError("run timestamps must include timezone offsets")
+        if self.completed_at < self.started_at:
+            raise ValueError("run completion timestamp cannot precede start timestamp")
+        for description, identities in (
+            ("input", self.input_identities),
+            ("artifact", self.artifact_identities),
+        ):
+            ids = tuple(identity.id for identity in identities)
+            if len(ids) != len(set(ids)):
+                raise ValueError(f"run {description} identity IDs must be unique")
+            if tuple(sorted(ids)) != ids:
+                raise ValueError(f"run {description} identities must be sorted by ID")
+        dirty_diff_id = self.code_identity.dirty_diff_artifact_id
+        if dirty_diff_id is not None and dirty_diff_id not in {
+            identity.id for identity in self.artifact_identities
+        }:
+            raise ValueError(
+                "dirty code diff artifact must appear in run artifact identities"
+            )
+        return self
+
+
+class RunBundle(PaperModel):
+    manifest: RunManifest
+    observations: tuple[Observation, ...]
+
+
 __all__ = [
+    "BlockerKind",
     "ClaimOwnership",
     "ClaimRegistry",
+    "CodeIdentity",
+    "CodeTreeState",
+    "ContentIdentity",
     "EvidenceBoundary",
     "ExpectationKind",
     "MethodProvenance",
     "MethodProvenanceEntry",
     "NamedPolicy",
+    "Observation",
+    "ObservationBlocker",
+    "ObservationCount",
+    "ObservationFileIdentity",
     "PaperClaim",
     "PaperContractReferences",
     "PaperIdentity",
     "PaperOutputs",
     "PaperReproductionContract",
     "PolicyStatus",
+    "RunBundle",
+    "RunManifest",
+    "RuntimeIdentity",
     "SourceRegion",
+    "Verdict",
 ]
