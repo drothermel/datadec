@@ -1,8 +1,8 @@
 # Paper verification report
 
 - Paper identity: `arxiv:2504.11393v2`
-- Selected run ID: `20260821T141605-qualified`
-- Manifest SHA256: `6b2fded0a35bd209fd99effc542c7176999fc9114c17ab4fce2c3f6325c22d86`
+- Selected run ID: `20260821T1458-remediated`
+- Manifest SHA256: `2262a25ccd9e15dbab42a4357cfa23442baa7b028ec9b153623880d4efe839c1`
 
 ## Pinned run identities
 
@@ -10,27 +10,29 @@
 | --- | --- | --- |
 | Paper | arxiv:2504.11393v2 | SHA256=20dc7aa3f920fe465ddf2e12d6f72fff6e8bb3567f53e34f5555a6da138542d1 |
 | Reproduction config | configs/paper\_reproduction.toml | SHA256=55b2a956c94d1d2625a5e7aa02f9d34010c17714eb3d19931b54ab5cf4630f84 |
-| Claim registry | docs/paper/claims.toml | SHA256=172e0bf01fb2f4e56750fc9cae89129feef21e7d534d406feaf2601b291654e6 |
-| Code | 5bddcd2fac10c0b8ae80dd254eafafd93125c7dc | tree=clean; dirty diff artifact=— |
-| Observations | observations.json | SHA256=093d52f2d221ca8cb2538028be7bbc930c75daecfca5d196e57ec53d4006962f; count=442 |
+| Claim registry | docs/paper/claims.toml | SHA256=83edb531b67ddafcda685acf0635806750517d6991c7d78c1702c877e4ac7793 |
+| Code | 8c78e506e1e25b11af3e1910551426010c786a5c | tree=clean; dirty diff artifact=— |
+| Observations | observations.json | SHA256=5cee141d9b73fc4d9710c699bd18d00724764210a5a3565c87af94e50411aca1; count=455 |
 
 ## Evidence and method interpretation
 
-The required evidence boundary is the static claim target; the actual evidence boundary records what this selected run reached. Method provenance records whether a method is paper-derived, upstream-informed, or artifact-derived; provenance does not by itself establish independence. A `source_only_match` confirms only source or author-artifact agreement and is not an independent reproduction. Blocked and contradicted verdicts are successful scientific outcomes, not process failures. This report renders the selected observations as recorded and does not recompute scientific results. Full per-claim details remain in the immutable selected-run observations identity: run `20260821T141605-qualified`, file `observations.json`, SHA256 `093d52f2d221ca8cb2538028be7bbc930c75daecfca5d196e57ec53d4006962f`, 251325 bytes.
+The required evidence boundary is the static claim target; the actual evidence boundary records what this selected run reached. Method provenance records whether a method is paper-derived, upstream-informed, or artifact-derived; provenance does not by itself establish independence. A `source_only_match` confirms only source or author-artifact agreement and is not an independent reproduction. Blocked and contradicted verdicts are successful scientific outcomes, not process failures. This report renders the selected observations as recorded and does not recompute scientific results. Full per-claim details remain in the immutable selected-run observations identity: run `20260821T1458-remediated`, file `observations.json`, SHA256 `5cee141d9b73fc4d9710c699bd18d00724764210a5a3565c87af94e50411aca1`, 1401587 bytes.
 
 ## Summary counts
 
 | Dimension | Value | Count |
 | --- | --- | ---: |
+| Verdict | reproduced | 1 |
 | Verdict | contradicted | 15 |
-| Verdict | source_only_match | 154 |
+| Verdict | source_only_match | 167 |
 | Verdict | blocked_missing_input | 64 |
 | Verdict | blocked_unspecified_method | 108 |
 | Verdict | external_or_citation_dependent | 39 |
-| Verdict | not_attempted | 62 |
-| Actual evidence boundary | paper_or_final_artifact | 160 |
+| Verdict | not_attempted | 61 |
+| Actual evidence boundary | paper_or_final_artifact | 173 |
 | Actual evidence boundary | author_downstream_table | 9 |
-| Actual evidence boundary | none | 273 |
+| Actual evidence boundary | aggregate_evaluation | 1 |
+| Actual evidence boundary | none | 272 |
 
 ## Known contradictions and inconsistencies
 
@@ -56,7 +58,9 @@ The required evidence boundary is the static claim target; the actual evidence b
 
 ## Reproduced
 
-None in the selected run.
+| ID and locator | Expected | Observed / diagnostics | Evidence boundary | Counts | Method / policy / verifier | Artifacts |
+| --- | --- | --- | --- | --- | --- | --- |
+| DD-0045; docs/paper/example\_paper.tex:270-270 | "prediction\_attempt\_count\_per\_point = 3" | 4128 recorded values; full values remain in the selected run observations; diagnostics=\["mapped fact: single\_scale\_mean\_decision\_accuracy","predicate: every complete checkpoint summary has seed\_count = 3"\] | required=aggregate\_evaluation; actual=aggregate\_evaluation | denominator=4128; exclusions=0; predicted\_ties=83296; seed\_count=3; target\_ties=0 | method=olmes\_aggregate\_verification; provenance=paper\_derived; policy=olmes\_v1; verifier=olmes\_aggregate | \[\] |
 
 ## Source-only matches
 
@@ -64,7 +68,7 @@ These results are not independent reproductions. Full recorded details are in th
 
 | Group | Count | Claim IDs |
 | --- | ---: | --- |
-| source or author-artifact agreement only | 154 | DD-0001, DD-0022, DD-0025, DD-0030, DD-0031, DD-0037, DD-0102, DD-0126, DD-0151, DD-0152<br>DD-0163, DD-0171, DD-0172, DD-0173, DD-0182, DD-0187, DD-0217, DD-0243, DD-0245, DD-0250<br>DD-0252, DD-0253, DD-0260, DD-0262, DD-0264, DD-0266, DD-0267, DD-0270, DD-0271, DD-0297<br>DD-0298, DD-0299, DD-0301, DD-0302, DD-0303, DD-0304, DD-0305, DD-0306, DD-0307, DD-0308<br>DD-0310, DD-0316, DD-0331, DD-0332, DD-0333, DD-0334, DD-0335, DD-0336, DD-0337, DD-0338<br>DD-0339, DD-0340, DD-0341, DD-0342, DD-0343, DD-0344, DD-0345, DD-0346, DD-0347, DD-0348<br>DD-0349, DD-0350, DD-0351, DD-0352, DD-0353, DD-0354, DD-0355, DD-0356, DD-0357, DD-0358<br>DD-0359, DD-0360, DD-0361, DD-0362, DD-0363, DD-0364, DD-0365, DD-0366, DD-0367, DD-0368<br>DD-0369, DD-0370, DD-0371, DD-0372, DD-0373, DD-0374, DD-0375, DD-0376, DD-0377, DD-0378<br>DD-0379, DD-0380, DD-0381, DD-0382, DD-0383, DD-0384, DD-0385, DD-0386, DD-0387, DD-0388<br>DD-0389, DD-0390, DD-0391, DD-0392, DD-0393, DD-0394, DD-0395, DD-0396, DD-0397, DD-0398<br>DD-0399, DD-0400, DD-0401, DD-0402, DD-0403, DD-0404, DD-0405, DD-0406, DD-0407, DD-0408<br>DD-0409, DD-0410, DD-0411, DD-0412, DD-0413, DD-0414, DD-0415, DD-0416, DD-0417, DD-0418<br>DD-0419, DD-0420, DD-0421, DD-0422, DD-0423, DD-0424, DD-0425, DD-0426, DD-0427, DD-0428<br>DD-0429, DD-0430, DD-0431, DD-0432, DD-0433, DD-0434, DD-0435, DD-0436, DD-0437, DD-0438<br>DD-0439, DD-0440, DD-0441, DD-0442 |
+| source or author-artifact agreement only | 167 | DD-0001, DD-0022, DD-0025, DD-0030, DD-0031, DD-0037, DD-0102, DD-0126, DD-0151, DD-0152<br>DD-0163, DD-0171, DD-0172, DD-0173, DD-0182, DD-0187, DD-0217, DD-0243, DD-0245, DD-0250<br>DD-0252, DD-0253, DD-0260, DD-0262, DD-0264, DD-0266, DD-0267, DD-0270, DD-0271, DD-0297<br>DD-0298, DD-0299, DD-0301, DD-0302, DD-0303, DD-0304, DD-0305, DD-0306, DD-0307, DD-0308<br>DD-0310, DD-0316, DD-0331, DD-0332, DD-0333, DD-0334, DD-0335, DD-0336, DD-0337, DD-0338<br>DD-0339, DD-0340, DD-0341, DD-0342, DD-0343, DD-0344, DD-0345, DD-0346, DD-0347, DD-0348<br>DD-0349, DD-0350, DD-0351, DD-0352, DD-0353, DD-0354, DD-0355, DD-0356, DD-0357, DD-0358<br>DD-0359, DD-0360, DD-0361, DD-0362, DD-0363, DD-0364, DD-0365, DD-0366, DD-0367, DD-0368<br>DD-0369, DD-0370, DD-0371, DD-0372, DD-0373, DD-0374, DD-0375, DD-0376, DD-0377, DD-0378<br>DD-0379, DD-0380, DD-0381, DD-0382, DD-0383, DD-0384, DD-0385, DD-0386, DD-0387, DD-0388<br>DD-0389, DD-0390, DD-0391, DD-0392, DD-0393, DD-0394, DD-0395, DD-0396, DD-0397, DD-0398<br>DD-0399, DD-0400, DD-0401, DD-0402, DD-0403, DD-0404, DD-0405, DD-0406, DD-0407, DD-0408<br>DD-0409, DD-0410, DD-0411, DD-0412, DD-0413, DD-0414, DD-0415, DD-0416, DD-0417, DD-0418<br>DD-0419, DD-0420, DD-0421, DD-0422, DD-0423, DD-0424, DD-0425, DD-0426, DD-0427, DD-0428<br>DD-0429, DD-0430, DD-0431, DD-0432, DD-0433, DD-0434, DD-0435, DD-0436, DD-0437, DD-0438<br>DD-0439, DD-0440, DD-0441, DD-0442, DD-0443, DD-0444, DD-0445, DD-0446, DD-0447, DD-0448<br>DD-0449, DD-0450, DD-0451, DD-0452, DD-0453, DD-0454, DD-0455 |
 
 ## Blocked: missing input
 
@@ -145,11 +149,11 @@ Claims are grouped by citation keys when present, otherwise by the recorded exte
 
 | Group | Count | Claim IDs |
 | --- | ---: | --- |
-| citation keys=\["2019t5","Penedo2023TheRD"\] | 1 | DD-0072 |
 | citation keys=\["2019t5","commoncrawl"\] | 1 | DD-0068 |
 | citation keys=\["Dubey2024TheL3","bhagia2024establishingtaskscalinglaws","gadre2024languagemodelsscalereliably"\] | 2 | DD-0027, DD-0231 |
 | citation keys=\["Kang2024AutoScaleAP","Ye2024DataML"\] | 1 | DD-0234 |
 | citation keys=\["Penedo2023TheRD","commoncrawl"\] | 1 | DD-0071 |
+| citation keys=\["Penedo2023TheRD"\] | 1 | DD-0072 |
 | citation keys=\["Porian2024ResolvingDI"\] | 2 | DD-0101, DD-0268 |
 | citation keys=\["austin2021program","chen2021evaluatinglargelanguagemodels"\] | 1 | DD-0223 |
 | citation keys=\["benallal2024smollmcorpus"\] | 1 | DD-0070 |
@@ -163,7 +167,7 @@ Claims are grouped by citation keys when present, otherwise by the recorded exte
 | citation keys=\["brandfonbrener2024losstolosspredictionscalinglaws"\] | 1 | DD-0238 |
 | citation keys=\["choshen2024hitchhikersguidescalinglaw","hoffmann2022trainingcomputeoptimallargelanguage","kaplan2020scalinglawsneurallanguage"\] | 1 | DD-0026 |
 | citation keys=\["choshen2024hitchhikersguidescalinglaw"\] | 1 | DD-0235 |
-| citation keys=\["commoncrawl","li2024datacomplmsearchgenerationtraining"\] | 1 | DD-0078 |
+| citation keys=\["commoncrawl"\] | 1 | DD-0078 |
 | citation keys=\["dolma"\] | 1 | DD-0061 |
 | citation keys=\["du2024understanding"\] | 1 | DD-0232 |
 | citation keys=\["goyal2024scaling","muennighoff2023scaling"\] | 1 | DD-0229 |
@@ -182,4 +186,4 @@ Claims are grouped by verdict and recorded reason.
 
 | Group | Count | Claim IDs |
 | --- | ---: | --- |
-| verdict=not\_attempted; reason=no claim-specific mapping to the available normalized evaluation facts is implemented | 62 | DD-0002, DD-0012, DD-0019, DD-0042, DD-0043, DD-0045, DD-0051, DD-0097, DD-0103, DD-0107<br>DD-0111, DD-0112, DD-0113, DD-0115, DD-0117, DD-0118, DD-0120, DD-0121, DD-0130, DD-0143<br>DD-0145, DD-0155, DD-0156, DD-0157, DD-0158, DD-0159, DD-0160, DD-0161, DD-0162, DD-0170<br>DD-0184, DD-0185, DD-0186, DD-0188, DD-0190, DD-0193, DD-0195, DD-0200, DD-0201, DD-0255<br>DD-0263, DD-0290, DD-0291, DD-0292, DD-0293, DD-0294, DD-0295, DD-0296, DD-0300, DD-0314<br>DD-0315, DD-0317, DD-0318, DD-0319, DD-0320, DD-0321, DD-0322, DD-0324, DD-0325, DD-0326<br>DD-0328, DD-0329 |
+| verdict=not\_attempted; reason=no claim-specific mapping to the available normalized evaluation facts is implemented | 61 | DD-0002, DD-0012, DD-0019, DD-0042, DD-0043, DD-0051, DD-0097, DD-0103, DD-0107, DD-0111<br>DD-0112, DD-0113, DD-0115, DD-0117, DD-0118, DD-0120, DD-0121, DD-0130, DD-0143, DD-0145<br>DD-0155, DD-0156, DD-0157, DD-0158, DD-0159, DD-0160, DD-0161, DD-0162, DD-0170, DD-0184<br>DD-0185, DD-0186, DD-0188, DD-0190, DD-0193, DD-0195, DD-0200, DD-0201, DD-0255, DD-0263<br>DD-0290, DD-0291, DD-0292, DD-0293, DD-0294, DD-0295, DD-0296, DD-0300, DD-0314, DD-0315<br>DD-0317, DD-0318, DD-0319, DD-0320, DD-0321, DD-0322, DD-0324, DD-0325, DD-0326, DD-0328<br>DD-0329 |
