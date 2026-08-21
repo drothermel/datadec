@@ -23,6 +23,7 @@ from datadec.paper.models import (
     CheckpointSelection,
     ClaimRegistry,
     ComparisonPredicate,
+    ComparisonParameterName,
     ComparisonRule,
     ContentIdentity,
     DimensionValue,
@@ -39,10 +40,11 @@ from datadec.paper.models import (
 )
 from datadec.paper.proxy_metrics import (
     CheckpointTaskScore,
+    CrossoverTiePolicy,
     LogicalTaskScore,
-    PredictedTiePolicy,
-    compare_logical_task_scores,
+    ScaleRecipeScore,
     latest_common_complete_noise_spread,
+    summarize_crossovers,
 )
 from datadec.paper.single_scale import (
     DEFAULT_TASK_GROUPING,
@@ -50,8 +52,6 @@ from datadec.paper.single_scale import (
     MetricObservation,
     SingleScaleUniverse,
     observations_from_olmes_frame,
-    select_common_complete_checkpoints,
-    select_exact_common_complete_checkpoint,
 )
 
 _AGGREGATE_INPUT_ID = "olmes_aggregate"
@@ -161,6 +161,31 @@ class _NoisePoint:
     spread: float
 
 
+@dataclass(frozen=True, slots=True)
+class _CurvePoint:
+    task: str
+    metric: str
+    model_size: str
+    step: int
+    compute: float
+    percent_target_compute: float
+    accuracy: float
+    denominator: int
+    target_ties: int
+    predicted_ties: int
+
+
+type _CurveSurface = tuple[
+    CheckpointRows | None,
+    tuple[CheckpointRows, ...],
+    tuple[_CurvePoint, ...],
+]
+
+
+def _parameter(rule: ComparisonRule, name: ComparisonParameterName) -> float:
+    return rule.parameter(name).default
+
+
 def _sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as file:
@@ -236,6 +261,24 @@ def _prediction_seeds(attempt: AttemptSpec) -> tuple[str, ...]:
     )
     selected = tuple(seed for seed in seeds if seed in _PREDICTION_SEEDS)
     return selected or seeds
+
+
+def _declared_seeds(attempt: AttemptSpec) -> tuple[str, ...]:
+    return _resolve_values(
+        attempt.seed_ids,
+        groups={
+            "target-three": _TARGET_SEEDS,
+            "prediction-three": _PREDICTION_SEEDS,
+            "all-five": _ALL_SEEDS,
+        },
+    )
+
+
+def _seeds_for_model(attempt: AttemptSpec, model_size: str) -> tuple[str, ...]:
+    declared = _declared_seeds(attempt)
+    if set(declared) == set(_ALL_SEEDS):
+        return _TARGET_SEEDS if model_size == "1B" else _PREDICTION_SEEDS
+    return declared
 
 
 def _logical_tasks(attempt: AttemptSpec) -> tuple[str, ...]:
@@ -422,32 +465,73 @@ def _common_checkpoints(
     *,
     preceding_count: int,
 ) -> tuple[CheckpointRows, ...]:
-    if not any(value.model_size == universe.model_size for value in observations):
-        return ()
-    try:
-        selected = select_common_complete_checkpoints(
-            observations, universe, preceding_count=preceding_count
-        )
-    except ValueError as error:
-        if "no common complete checkpoint" in str(error):
-            return ()
-        raise
-    return (selected.default, *selected.preceding)
+    checkpoints = _all_common_checkpoints(observations, universe)
+    return tuple(reversed(checkpoints[-(preceding_count + 1) :]))
 
 
 def _all_common_checkpoints(
     observations: tuple[MetricObservation, ...], universe: SingleScaleUniverse
 ) -> tuple[CheckpointRows, ...]:
-    selected = _common_checkpoints(observations, universe, preceding_count=0)
-    if not selected:
-        return ()
-    common = select_common_complete_checkpoints(
-        observations, universe, preceding_count=0
-    )
-    return tuple(
-        select_exact_common_complete_checkpoint(observations, universe, step=step)
-        for step in common.complete_steps
-    )
+    recipe_set = set(universe.recipes)
+    seed_set = set(universe.seeds)
+    task_set = set(universe.source_tasks)
+    metric_set = set(universe.metrics)
+    expected = {
+        (recipe, seed, task, metric)
+        for recipe in universe.recipes
+        for seed in universe.seeds
+        for task in universe.source_tasks
+        for metric in universe.metrics
+    }
+    by_step: dict[int, list[MetricObservation]] = {}
+    for observation in observations:
+        if (
+            observation.model_size == universe.model_size
+            and observation.recipe in recipe_set
+            and observation.seed in seed_set
+            and observation.source_task in task_set
+            and observation.metric in metric_set
+        ):
+            by_step.setdefault(observation.step, []).append(observation)
+    checkpoints: list[CheckpointRows] = []
+    for step, selected in sorted(by_step.items()):
+        actual = {
+            (value.recipe, value.seed, value.source_task, value.metric)
+            for value in selected
+        }
+        if actual != expected or len(selected) != len(actual):
+            continue
+        computes = {value.compute for value in selected}
+        if len(computes) != 1:
+            raise ValueError(
+                "checkpoint compute differs across the declared grid: "
+                f"model_size={universe.model_size!r}, step={step}"
+            )
+        raw_keys = {(value.recipe, value.seed, value.source_task) for value in selected}
+        if len(raw_keys) != universe.expected_raw_row_count:
+            raise ValueError("checkpoint raw-row grid is incomplete")
+        checkpoints.append(
+            CheckpointRows(
+                universe=universe,
+                step=step,
+                observations=tuple(
+                    sorted(
+                        selected,
+                        key=lambda value: (
+                            value.recipe,
+                            value.seed,
+                            value.source_task,
+                            value.metric,
+                        ),
+                    )
+                ),
+                raw_row_count=len(raw_keys),
+                selected_observation_count=len(selected),
+                expected_observation_count=len(expected),
+                actual_compute=next(iter(computes)),
+            )
+        )
+    return tuple(checkpoints)
 
 
 def _logical_values(
@@ -525,36 +609,47 @@ def _decision_rows(
 ) -> tuple[_SeedTaskDecision, ...]:
     values = _logical_values(checkpoint)
     tasks = _logical_tasks_from_sources(checkpoint.universe.source_tasks)
+    target_lookup = {(score.task, score.recipe): score.score for score in target_scores}
     rows: list[_SeedTaskDecision] = []
     for metric in checkpoint.universe.metrics:
         for seed in checkpoint.universe.seeds:
-            predicted = tuple(
-                LogicalTaskScore(
-                    task=task,
-                    recipe=recipe,
-                    score=values[(task, recipe, seed, metric)],
+            for task in tasks:
+                correct = 0
+                denominator = 0
+                target_ties = 0
+                predicted_ties = 0
+                recipes = checkpoint.universe.recipes
+                for index, recipe_a in enumerate(recipes):
+                    for recipe_b in recipes[index + 1 :]:
+                        target_a = target_lookup[(task, recipe_a)]
+                        target_b = target_lookup[(task, recipe_b)]
+                        predicted_a = values[(task, recipe_a, seed, metric)]
+                        predicted_b = values[(task, recipe_b, seed, metric)]
+                        target_sign = (target_a > target_b) - (target_a < target_b)
+                        predicted_sign = (predicted_a > predicted_b) - (
+                            predicted_a < predicted_b
+                        )
+                        if target_sign == 0:
+                            target_ties += 1
+                            continue
+                        denominator += 1
+                        if predicted_sign == 0:
+                            predicted_ties += 1
+                        elif predicted_sign == target_sign:
+                            correct += 1
+                if denominator == 0:
+                    raise ValueError("target ties exclude every recipe pair")
+                rows.append(
+                    _SeedTaskDecision(
+                        task=task,
+                        metric=metric,
+                        seed=seed,
+                        accuracy=correct / denominator,
+                        denominator=denominator,
+                        target_ties=target_ties,
+                        predicted_ties=predicted_ties,
+                    )
                 )
-                for task in tasks
-                for recipe in checkpoint.universe.recipes
-            )
-            summary = compare_logical_task_scores(
-                target_scores,
-                predicted,
-                logical_tasks=tasks,
-                predicted_tie_policy=PredictedTiePolicy.COUNT_AS_INCORRECT,
-            )
-            rows.extend(
-                _SeedTaskDecision(
-                    task=task_summary.task,
-                    metric=metric,
-                    seed=seed,
-                    accuracy=task_summary.result.accuracy,
-                    denominator=task_summary.result.denominator,
-                    target_ties=task_summary.result.target_ties,
-                    predicted_ties=task_summary.result.predicted_ties,
-                )
-                for task_summary in summary.tasks
-            )
     return tuple(rows)
 
 
@@ -566,6 +661,65 @@ def _sample_sd(values: Iterable[float]) -> float:
     return math.sqrt(
         math.fsum((value - mean) ** 2 for value in ordered) / (len(ordered) - 1)
     )
+
+
+def _mean(values: Iterable[float]) -> float:
+    ordered = tuple(sorted(values))
+    if not ordered:
+        raise ValueError("mean requires at least one value")
+    return math.fsum(ordered) / len(ordered)
+
+
+def _linear_slope(xs: Iterable[float], ys: Iterable[float]) -> float:
+    x_values = tuple(xs)
+    y_values = tuple(ys)
+    if len(x_values) != len(y_values) or len(x_values) < 2:
+        return 0.0
+    x_mean = _mean(x_values)
+    y_mean = _mean(y_values)
+    denominator = math.fsum((value - x_mean) ** 2 for value in x_values)
+    if denominator == 0:
+        return 0.0
+    return (
+        math.fsum(
+            (x - x_mean) * (y - y_mean) for x, y in zip(x_values, y_values, strict=True)
+        )
+        / denominator
+    )
+
+
+def _ranks(values: tuple[float, ...]) -> tuple[float, ...]:
+    order = sorted(range(len(values)), key=lambda index: (values[index], index))
+    ranks = [0.0] * len(values)
+    start = 0
+    while start < len(order):
+        end = start + 1
+        while end < len(order) and values[order[end]] == values[order[start]]:
+            end += 1
+        rank = (start + 1 + end) / 2
+        for position in range(start, end):
+            ranks[order[position]] = rank
+        start = end
+    return tuple(ranks)
+
+
+def _spearman(xs: Iterable[float], ys: Iterable[float]) -> float:
+    x_values = tuple(xs)
+    y_values = tuple(ys)
+    if len(x_values) != len(y_values) or len(x_values) < 2:
+        return 0.0
+    x_ranks = _ranks(x_values)
+    y_ranks = _ranks(y_values)
+    x_mean = _mean(x_ranks)
+    y_mean = _mean(y_ranks)
+    numerator = math.fsum(
+        (x - x_mean) * (y - y_mean) for x, y in zip(x_ranks, y_ranks, strict=True)
+    )
+    denominator = math.sqrt(
+        math.fsum((value - x_mean) ** 2 for value in x_ranks)
+        * math.fsum((value - y_mean) ** 2 for value in y_ranks)
+    )
+    return 0.0 if denominator == 0 else numerator / denominator
 
 
 def _decision_aggregates(
@@ -1035,6 +1189,295 @@ def _run_proxy_plot_attempt(
     return result, series
 
 
+def _curve_surface(
+    context: _Context,
+    observations: tuple[MetricObservation, ...],
+) -> _CurveSurface:
+    recipes = _recipes(context.attempt)
+    target_seeds = _target_seeds(context.attempt)
+    prediction_seeds = _prediction_seeds(context.attempt)
+    source_tasks = _source_tasks(_logical_tasks(context.attempt))
+    metrics = tuple(dict.fromkeys((_PRIMARY_METRIC, *_metrics(context.attempt))))
+    target_universe = _universe(
+        model_size="1B",
+        recipes=recipes,
+        seeds=target_seeds,
+        source_tasks=source_tasks,
+        metrics=(_PRIMARY_METRIC,),
+    )
+    targets = _common_checkpoints(observations, target_universe, preceding_count=0)
+    if not targets:
+        return None, (), ()
+    target = targets[0]
+    target_scores = _target_scores(target)
+    checkpoints: list[CheckpointRows] = []
+    for model_size in _model_sizes(context.attempt):
+        if model_size == "1B":
+            continue
+        universe = _universe(
+            model_size=model_size,
+            recipes=recipes,
+            seeds=prediction_seeds,
+            source_tasks=source_tasks,
+            metrics=metrics,
+        )
+        checkpoints.extend(_all_common_checkpoints(observations, universe))
+    points: list[_CurvePoint] = []
+    for checkpoint in checkpoints:
+        for row in _decision_aggregates(_decision_rows(target_scores, checkpoint)):
+            points.append(
+                _CurvePoint(
+                    task=row.task,
+                    metric=row.metric,
+                    model_size=checkpoint.universe.model_size,
+                    step=checkpoint.step,
+                    compute=checkpoint.actual_compute,
+                    percent_target_compute=(
+                        checkpoint.actual_compute / target.actual_compute * 100
+                    ),
+                    accuracy=row.accuracy,
+                    denominator=row.denominator,
+                    target_ties=row.target_ties,
+                    predicted_ties=row.predicted_ties,
+                )
+            )
+    return target, tuple(checkpoints), tuple(points)
+
+
+def _curve_surface_key(context: _Context) -> tuple[tuple[str, ...], ...]:
+    return (
+        _recipes(context.attempt),
+        _target_seeds(context.attempt),
+        _prediction_seeds(context.attempt),
+        _source_tasks(_logical_tasks(context.attempt)),
+        tuple(dict.fromkeys((_PRIMARY_METRIC, *_metrics(context.attempt)))),
+        _model_sizes(context.attempt),
+    )
+
+
+def _qualitative_result(
+    context: _Context,
+    input_data: _Input,
+    *,
+    columns: tuple[str, ...],
+    target: CheckpointRows | None,
+    checkpoints: tuple[CheckpointRows, ...],
+    computed_value: dict[str, object],
+    outcome: ValidationOutcome,
+    diagnostics: tuple[str, ...],
+) -> AttemptResult:
+    recipes = _recipes(context.attempt)
+    source_tasks = _source_tasks(_logical_tasks(context.attempt))
+    target_seeds = _target_seeds(context.attempt)
+    prediction_seeds = _prediction_seeds(context.attempt)
+    selections: list[RowSelection] = []
+    checkpoint_selections: list[CheckpointSelection] = []
+    if target is not None:
+        selections.append(
+            _row_selection(
+                input_data,
+                columns=columns,
+                model_size="1B",
+                recipes=recipes,
+                seeds=target_seeds,
+                source_tasks=source_tasks,
+                steps=(target.step,),
+            )
+        )
+        checkpoint_selections.append(
+            _checkpoint_selection(
+                context,
+                target,
+                requested_meaning="target final common complete",
+                rule=CheckpointRule.LATEST_COMMON_COMPLETE,
+            )
+        )
+    for model_size in _MODEL_SIZES:
+        selected = tuple(
+            checkpoint
+            for checkpoint in checkpoints
+            if checkpoint.universe.model_size == model_size
+        )
+        if not selected:
+            continue
+        selections.append(
+            _row_selection(
+                input_data,
+                columns=columns,
+                model_size=model_size,
+                recipes=recipes,
+                seeds=selected[0].universe.seeds,
+                source_tasks=source_tasks,
+                steps=tuple(checkpoint.step for checkpoint in selected),
+            )
+        )
+        checkpoint_selections.extend(
+            _checkpoint_selection(
+                context,
+                checkpoint,
+                requested_meaning="configured common-complete curve point",
+                rule=CheckpointRule.EXACT,
+            )
+            for checkpoint in selected
+        )
+    if not selections:
+        raise ValueError(f"{context.attempt.id} produced no row selections")
+    return AttemptResult(
+        attempt_id=context.attempt.id,
+        claim_id=context.claim.id,
+        role=AttemptRole.DEFAULT,
+        comparison_rule_id=context.rule.id,
+        comparison_rule_version=context.rule.version,
+        transformation_ids=context.attempt.transformation_ids,
+        row_selections=tuple(selections),
+        checkpoint_selections=tuple(checkpoint_selections),
+        target_value=context.claim.paper_target,
+        computed_value=computed_value,
+        seeds=tuple(dict.fromkeys((*target_seeds, *prediction_seeds))),
+        denominator=sum(
+            int(value)
+            for key, value in computed_value.items()
+            if key == "denominator" and isinstance(value, int)
+        )
+        or None,
+        outcome=outcome,
+        diagnostics=diagnostics,
+        limitations=(
+            "Predicates and sensitivity grids are versioned in paper_validation.toml.",
+            "Decision curves use common-complete checkpoints and no interpolation.",
+        ),
+    )
+
+
+def _metric_family(metric: str) -> tuple[str, str]:
+    if metric.endswith("_per_token"):
+        return metric.removesuffix("_per_token"), "per_token"
+    if metric.endswith("_per_char"):
+        return metric.removesuffix("_per_char"), "per_char"
+    return metric, "raw"
+
+
+def _curve_correlation(
+    points: tuple[_CurvePoint, ...], metric_a: str, metric_b: str, task: str
+) -> float:
+    lookup = {
+        (point.model_size, point.step, point.metric): point.accuracy
+        for point in points
+        if point.task == task
+    }
+    keys = tuple(
+        sorted(
+            (model_size, step)
+            for model_size, step, metric in lookup
+            if metric == metric_a and (model_size, step, metric_b) in lookup
+        )
+    )
+    return _spearman(
+        (lookup[(*key, metric_a)] for key in keys),
+        (lookup[(*key, metric_b)] for key in keys),
+    )
+
+
+def _standardized_task_vectors(
+    points: tuple[_CurvePoint, ...],
+) -> tuple[tuple[str, tuple[float, ...]], ...]:
+    tasks = tuple(sorted({point.task for point in points}))
+    feature_sets = {
+        task: {
+            (point.metric, point.model_size, point.step)
+            for point in points
+            if point.task == task
+        }
+        for task in tasks
+    }
+    common_features = set.intersection(
+        *(features for features in feature_sets.values())
+    )
+    features = tuple(sorted(common_features))
+    vectors: list[tuple[str, tuple[float, ...]]] = []
+    for task in tasks:
+        lookup = {
+            (point.metric, point.model_size, point.step): point.accuracy
+            for point in points
+            if point.task == task
+        }
+        values = tuple(lookup[feature] for feature in features)
+        mean = _mean(values)
+        scale = _sample_sd(values)
+        standardized = (
+            tuple(0.0 for _ in values)
+            if scale == 0
+            else tuple((value - mean) / scale for value in values)
+        )
+        vectors.append((task, standardized))
+    return tuple(vectors)
+
+
+def _distance(left: tuple[float, ...], right: tuple[float, ...]) -> float:
+    return math.sqrt(math.fsum((a - b) ** 2 for a, b in zip(left, right, strict=True)))
+
+
+def _cluster_tasks(
+    points: tuple[_CurvePoint, ...],
+) -> tuple[dict[str, int], float]:
+    vectors = _standardized_task_vectors(points)
+    if len(vectors) < 3 or not vectors[0][1]:
+        return {}, 0.0
+    farthest = max(
+        (
+            (_distance(left[1], right[1]), left, right)
+            for index, left in enumerate(vectors)
+            for right in vectors[index + 1 :]
+        ),
+        key=lambda item: (item[0], item[1][0], item[2][0]),
+    )
+    centers = [farthest[1][1], farthest[2][1]]
+    assignments: dict[str, int] = {}
+    for _ in range(100):
+        updated = {
+            task: min(
+                range(2),
+                key=lambda cluster: (_distance(vector, centers[cluster]), cluster),
+            )
+            for task, vector in vectors
+        }
+        if updated == assignments:
+            break
+        assignments = updated
+        new_centers: list[tuple[float, ...]] = []
+        for cluster in range(2):
+            members = tuple(
+                vector for task, vector in vectors if assignments[task] == cluster
+            )
+            if not members:
+                return assignments, 0.0
+            new_centers.append(
+                tuple(
+                    _mean(vector[index] for vector in members)
+                    for index in range(len(members[0]))
+                )
+            )
+        centers = new_centers
+    vector_lookup = dict(vectors)
+    silhouettes: list[float] = []
+    for task, vector in vectors:
+        own = tuple(
+            other
+            for other, _ in vectors
+            if other != task and assignments[other] == assignments[task]
+        )
+        other = tuple(
+            other for other, _ in vectors if assignments[other] != assignments[task]
+        )
+        if not own or not other:
+            silhouettes.append(0.0)
+            continue
+        a = _mean(_distance(vector, vector_lookup[name]) for name in own)
+        b = _mean(_distance(vector, vector_lookup[name]) for name in other)
+        silhouettes.append(0.0 if max(a, b) == 0 else (b - a) / max(a, b))
+    return assignments, _mean(silhouettes)
+
+
 def _noise_points(
     checkpoint: CheckpointRows,
 ) -> tuple[_NoisePoint, ...]:
@@ -1074,6 +1517,925 @@ def _noise_points(
             )
         )
     return tuple(points)
+
+
+def _run_proxy_curve_qualitative_attempt(
+    context: _Context,
+    input_data: _Input,
+    *,
+    columns: tuple[str, ...],
+    observations: tuple[MetricObservation, ...],
+    surface: _CurveSurface | None = None,
+) -> AttemptResult:
+    target, checkpoints, points = (
+        _curve_surface(context, observations) if surface is None else surface
+    )
+    if target is None or not checkpoints or not points:
+        return _missing_result(
+            context,
+            input_data,
+            columns=columns,
+            recipes=_recipes(context.attempt),
+            seeds=_prediction_seeds(context.attempt),
+            source_tasks=_source_tasks(_logical_tasks(context.attempt)),
+            model_size=_model_sizes(context.attempt)[0],
+            reason="Configured qualitative curve surface has no common-complete evidence.",
+        )
+    outcome = ValidationOutcome.NOT_REPRODUCED
+    computed: dict[str, object]
+    diagnostic: str
+
+    if context.attempt.id in {"dd-0055-default", "dd-0196-default"}:
+        minimum = _parameter(
+            context.rule,
+            ComparisonParameterName.EQUIVALENCE_DIFFERENCE_MINIMUM,
+        )
+        maximum_scale = _parameter(
+            context.rule, ComparisonParameterName.MAXIMUM_SCALE_PERCENT
+        )
+        proxy_metrics = set(_metrics(context.attempt)).difference({_PRIMARY_METRIC})
+        grouped: dict[tuple[str, str, int], dict[str, float]] = {}
+        for point in points:
+            if point.percent_target_compute <= maximum_scale:
+                grouped.setdefault((point.task, point.model_size, point.step), {})[
+                    point.metric
+                ] = point.accuracy
+        differences = tuple(
+            max(values[metric] for metric in proxy_metrics if metric in values)
+            - values[_PRIMARY_METRIC]
+            for values in grouped.values()
+            if _PRIMARY_METRIC in values
+            and any(metric in values for metric in proxy_metrics)
+        )
+        mean_difference = _mean(differences) if differences else -1.0
+        satisfied = bool(differences) and mean_difference >= minimum
+        computed = {
+            "maximum_scale_percent": maximum_scale,
+            "comparison_count": len(differences),
+            "mean_best_proxy_minus_accuracy": mean_difference,
+            "minimum_allowed_difference": minimum,
+            "satisfied": satisfied,
+        }
+        outcome = (
+            ValidationOutcome.REPRODUCED
+            if satisfied
+            else ValidationOutcome.NOT_REPRODUCED
+        )
+        diagnostic = f"Mean best-proxy minus Accuracy={mean_difference:.12g} over {len(differences)} small-scale comparisons."
+    elif context.attempt.id in {"dd-0197-default", "dd-0207-default"}:
+        correlations: dict[str, float] = {}
+        if context.attempt.id == "dd-0197-default":
+            bases = tuple(
+                sorted(
+                    {
+                        _metric_family(metric)[0]
+                        for metric in _metrics(context.attempt)
+                        if _metric_family(metric)[1] != "raw"
+                    }
+                )
+            )
+            for task in _logical_tasks(context.attempt):
+                for base in bases:
+                    correlations[f"{task}:{base}"] = _curve_correlation(
+                        points,
+                        f"{base}_per_token",
+                        f"{base}_per_char",
+                        task,
+                    )
+        else:
+            for task in _logical_tasks(context.attempt):
+                for metric in ("norm_correct_prob", "margin"):
+                    correlations[f"{task}:{metric}"] = _curve_correlation(
+                        points, _PRIMARY_METRIC, metric, task
+                    )
+        mean_correlation = _mean(correlations.values())
+        required = _parameter(context.rule, ComparisonParameterName.SPEARMAN_MINIMUM)
+        satisfied = mean_correlation >= required
+        outcome = (
+            ValidationOutcome.REPRODUCED
+            if satisfied
+            else ValidationOutcome.DIRECTIONALLY_CONSISTENT
+            if mean_correlation > 0
+            else ValidationOutcome.NOT_REPRODUCED
+        )
+        computed = {
+            "curve_spearman": correlations,
+            "mean_spearman": mean_correlation,
+            "required_spearman": required,
+            "satisfied": satisfied,
+        }
+        diagnostic = f"Mean paired-curve Spearman={mean_correlation:.12g}."
+    elif context.attempt.id == "dd-0198-default":
+        task_results: dict[str, bool] = {}
+        task_scores: dict[str, dict[str, float]] = {}
+        for task in _logical_tasks(context.attempt):
+            normalization_values: dict[str, list[float]] = {}
+            for point in points:
+                if point.task != task or point.metric == _PRIMARY_METRIC:
+                    continue
+                normalization = _metric_family(point.metric)[1]
+                normalization_values.setdefault(normalization, []).append(
+                    point.accuracy
+                )
+            means = {
+                normalization: _mean(values)
+                for normalization, values in normalization_values.items()
+            }
+            task_scores[task] = means
+            task_results[task] = bool(means) and means.get("per_char", -1.0) >= max(
+                means.values()
+            )
+        fraction = sum(task_results.values()) / len(task_results)
+        required = _parameter(context.rule, ComparisonParameterName.FRACTION_THRESHOLD)
+        satisfied = fraction > required
+        computed = {
+            "normalization_mean_accuracy_by_task": task_scores,
+            "per_character_optimal_by_task": task_results,
+            "fraction": fraction,
+            "required_fraction_exclusive": required,
+            "satisfied": satisfied,
+        }
+        outcome = (
+            ValidationOutcome.REPRODUCED
+            if satisfied
+            else ValidationOutcome.NOT_REPRODUCED
+        )
+        diagnostic = f"Per-character normalization was optimal on {sum(task_results.values())}/{len(task_results)} tasks."
+    elif context.attempt.id == "dd-0199-default":
+        maximum_scale = _parameter(
+            context.rule, ComparisonParameterName.MAXIMUM_SCALE_PERCENT
+        )
+        grouped: dict[tuple[str, str, int], dict[str, float]] = {}
+        for point in points:
+            if point.percent_target_compute <= maximum_scale:
+                grouped.setdefault((point.task, point.model_size, point.step), {})[
+                    point.metric
+                ] = point.accuracy
+        comparisons: list[bool] = []
+        for values in grouped.values():
+            raw = tuple(
+                values[metric]
+                for metric in ("correct_prob", "total_prob")
+                if metric in values
+            )
+            others = tuple(
+                value
+                for metric, value in values.items()
+                if metric not in {"correct_prob", "total_prob"}
+            )
+            if raw and others:
+                comparisons.append(max(raw) >= max(others))
+        fraction = sum(comparisons) / len(comparisons) if comparisons else 0.0
+        required = _parameter(context.rule, ComparisonParameterName.FRACTION_THRESHOLD)
+        satisfied = fraction > required
+        computed = {
+            "maximum_scale_percent": maximum_scale,
+            "comparison_count": len(comparisons),
+            "satisfied_count": sum(comparisons),
+            "fraction": fraction,
+            "required_fraction_exclusive": required,
+            "satisfied": satisfied,
+        }
+        outcome = (
+            ValidationOutcome.REPRODUCED
+            if satisfied
+            else ValidationOutcome.NOT_REPRODUCED
+        )
+        diagnostic = f"Raw likelihood metrics matched/exceeded alternatives at {sum(comparisons)}/{len(comparisons)} eligible points."
+    elif context.attempt.id == "dd-0202-default":
+        configured_clusters = int(
+            _parameter(context.rule, ComparisonParameterName.CLUSTER_COUNT)
+        )
+        if configured_clusters != 2:
+            raise ValueError(
+                f"{context.rule.id} requires cluster_count=2 for the frozen "
+                "deterministic farthest-pair algorithm"
+            )
+        assignments, silhouette = _cluster_tasks(points)
+        required = _parameter(context.rule, ComparisonParameterName.SILHOUETTE_MINIMUM)
+        clusters = len(set(assignments.values()))
+        satisfied = clusters == configured_clusters and silhouette >= required
+        computed = {
+            "initialization": "deterministic farthest pair",
+            "cluster_count": clusters,
+            "required_cluster_count": configured_clusters,
+            "assignments": assignments,
+            "silhouette": silhouette,
+            "required_silhouette": required,
+            "satisfied": satisfied,
+        }
+        outcome = (
+            ValidationOutcome.REPRODUCED
+            if satisfied
+            else ValidationOutcome.DIRECTIONALLY_CONSISTENT
+            if clusters == configured_clusters and silhouette > 0
+            else ValidationOutcome.NOT_REPRODUCED
+        )
+        diagnostic = f"Deterministic k=2 silhouette={silhouette:.12g}."
+    elif context.attempt.id in {"dd-0203-default", "dd-0204-default"}:
+        assignments, silhouette = _cluster_tasks(points)
+        cluster_ids = tuple(sorted(set(assignments.values())))
+        overlap_by_task: dict[str, float] = {}
+        slope_by_task: dict[str, float] = {}
+        for task in _logical_tasks(context.attempt):
+            task_points = tuple(point for point in points if point.task == task)
+            grouped: dict[tuple[str, int], list[float]] = {}
+            for point in task_points:
+                grouped.setdefault((point.model_size, point.step), []).append(
+                    point.accuracy
+                )
+            overlap_by_task[task] = _mean(
+                max(values) - min(values) for values in grouped.values()
+            )
+            ordered = sorted(
+                (
+                    _mean(values),
+                    next(
+                        point.compute
+                        for point in task_points
+                        if (point.model_size, point.step) == key
+                    ),
+                )
+                for key, values in grouped.items()
+            )
+            slope_by_task[task] = _linear_slope(
+                (math.log10(value[1]) for value in ordered if value[1] > 0),
+                (value[0] for value in ordered if value[1] > 0),
+            )
+        cluster_overlap = {
+            cluster: _mean(
+                overlap_by_task[task]
+                for task in assignments
+                if assignments[task] == cluster
+            )
+            for cluster in cluster_ids
+        }
+        overlap_cluster = min(
+            cluster_overlap, key=lambda cluster: (cluster_overlap[cluster], cluster)
+        )
+        selected_cluster = (
+            overlap_cluster
+            if context.attempt.id == "dd-0203-default"
+            else next(
+                (cluster for cluster in cluster_ids if cluster != overlap_cluster),
+                overlap_cluster,
+            )
+        )
+        selected_tasks = tuple(
+            sorted(
+                task for task in assignments if assignments[task] == selected_cluster
+            )
+        )
+        if context.attempt.id == "dd-0203-default":
+            maximum_overlap = _parameter(
+                context.rule, ComparisonParameterName.OVERLAP_RANGE_MAXIMUM
+            )
+            slope_minimum = _parameter(
+                context.rule, ComparisonParameterName.OLS_SLOPE_MINIMUM
+            )
+            observed_overlap = _mean(overlap_by_task[task] for task in selected_tasks)
+            observed_slope = _mean(slope_by_task[task] for task in selected_tasks)
+            satisfied = (
+                observed_overlap <= maximum_overlap and observed_slope > slope_minimum
+            )
+            outcome = (
+                ValidationOutcome.REPRODUCED
+                if satisfied
+                else ValidationOutcome.DIRECTIONALLY_CONSISTENT
+                if observed_slope > slope_minimum
+                else ValidationOutcome.NOT_REPRODUCED
+            )
+            computed = {
+                "cluster_tasks": list(selected_tasks),
+                "cluster_silhouette": silhouette,
+                "mean_metric_range": observed_overlap,
+                "maximum_metric_range": maximum_overlap,
+                "mean_slope_per_decade": observed_slope,
+                "satisfied": satisfied,
+            }
+            diagnostic = f"Overlap cluster mean range={observed_overlap:.12g}, mean slope={observed_slope:.12g}."
+        else:
+            flat_maximum = _parameter(
+                context.rule,
+                ComparisonParameterName.EARLY_SLOPE_ABSOLUTE_MAXIMUM,
+            )
+            convergence = _parameter(
+                context.rule, ComparisonParameterName.CONVERGENCE_TOLERANCE
+            )
+            raw_metrics = {"correct_prob", "total_prob"}
+            raw_slopes: list[float] = []
+            final_gaps: list[float] = []
+            initial_gaps: list[float] = []
+            for task in selected_tasks:
+                task_points = tuple(point for point in points if point.task == task)
+                for metric in raw_metrics:
+                    curve = sorted(
+                        (point.compute, point.accuracy)
+                        for point in task_points
+                        if point.metric == metric and point.compute > 0
+                    )
+                    raw_slopes.append(
+                        _linear_slope(
+                            (math.log10(item[0]) for item in curve),
+                            (item[1] for item in curve),
+                        )
+                    )
+                by_checkpoint: dict[tuple[str, int], dict[str, float]] = {}
+                compute_by_checkpoint: dict[tuple[str, int], float] = {}
+                for point in task_points:
+                    key = (point.model_size, point.step)
+                    by_checkpoint.setdefault(key, {})[point.metric] = point.accuracy
+                    compute_by_checkpoint[key] = point.compute
+                ordered = tuple(
+                    values
+                    for key, values in sorted(
+                        by_checkpoint.items(),
+                        key=lambda item: (compute_by_checkpoint[item[0]], item[0]),
+                    )
+                )
+                gaps = [
+                    abs(
+                        max(values.get(metric, -1.0) for metric in raw_metrics)
+                        - max(
+                            value
+                            for metric, value in values.items()
+                            if metric not in raw_metrics
+                        )
+                    )
+                    for values in ordered
+                    if any(metric in values for metric in raw_metrics)
+                    and any(metric not in raw_metrics for metric in values)
+                ]
+                if gaps:
+                    initial_gaps.append(gaps[0])
+                    final_gaps.append(gaps[-1])
+            maximum_raw_slope = max((abs(value) for value in raw_slopes), default=1.0)
+            final_gap = _mean(final_gaps) if final_gaps else 1.0
+            initial_gap = _mean(initial_gaps) if initial_gaps else 1.0
+            direction = final_gap < initial_gap
+            satisfied = maximum_raw_slope <= flat_maximum and final_gap <= convergence
+            outcome = (
+                ValidationOutcome.REPRODUCED
+                if satisfied
+                else ValidationOutcome.DIRECTIONALLY_CONSISTENT
+                if direction
+                else ValidationOutcome.NOT_REPRODUCED
+            )
+            computed = {
+                "cluster_tasks": list(selected_tasks),
+                "cluster_silhouette": silhouette,
+                "maximum_absolute_raw_slope": maximum_raw_slope,
+                "flat_slope_maximum": flat_maximum,
+                "initial_mean_gap": initial_gap,
+                "final_mean_gap": final_gap,
+                "convergence_tolerance": convergence,
+                "direction_satisfied": direction,
+                "satisfied": satisfied,
+            }
+            diagnostic = f"Raw max abs slope={maximum_raw_slope:.12g}; final convergence gap={final_gap:.12g}."
+    elif context.attempt.id == "dd-0205-default":
+        maximum_compute = max(point.compute for point in points)
+        eligible = tuple(
+            point for point in points if point.compute >= maximum_compute / 10
+        )
+        grouped: dict[tuple[str, str, int], dict[str, float]] = {}
+        for point in eligible:
+            grouped.setdefault((point.task, point.model_size, point.step), {})[
+                point.metric
+            ] = point.accuracy
+        comparisons = []
+        raw_metrics = {"correct_prob", "total_prob"}
+        for values in grouped.values():
+            raw = tuple(
+                value for metric, value in values.items() if metric in raw_metrics
+            )
+            others = tuple(
+                value for metric, value in values.items() if metric not in raw_metrics
+            )
+            if raw and others:
+                comparisons.append(max(others) > max(raw))
+        fraction = sum(comparisons) / len(comparisons) if comparisons else 0.0
+        required = _parameter(context.rule, ComparisonParameterName.FRACTION_THRESHOLD)
+        satisfied = fraction > required
+        computed = {
+            "last_decade_minimum_compute": maximum_compute / 10,
+            "comparison_count": len(comparisons),
+            "overtake_count": sum(comparisons),
+            "fraction": fraction,
+            "required_fraction_exclusive": required,
+            "satisfied": satisfied,
+        }
+        outcome = (
+            ValidationOutcome.REPRODUCED
+            if satisfied
+            else ValidationOutcome.NOT_REPRODUCED
+        )
+        diagnostic = f"Other metrics overtook raw likelihood at {sum(comparisons)}/{len(comparisons)} last-decade points."
+    elif context.attempt.id == "dd-0206-default":
+        threshold = _parameter(context.rule, ComparisonParameterName.DECLINE_THRESHOLD)
+        declines: list[dict[str, object]] = []
+        for task in _logical_tasks(context.attempt):
+            for metric in ("correct_prob", "total_prob"):
+                curve = sorted(
+                    (point.compute, point.accuracy, point.model_size, point.step)
+                    for point in points
+                    if point.task == task and point.metric == metric
+                )
+                for before, after in zip(curve, curve[1:], strict=False):
+                    drop = before[1] - after[1]
+                    if drop >= threshold:
+                        declines.append(
+                            {
+                                "task": task,
+                                "metric": metric,
+                                "compute_before": before[0],
+                                "compute_after": after[0],
+                                "drop": drop,
+                            }
+                        )
+        satisfied = bool(declines)
+        computed = {
+            "decline_threshold": threshold,
+            "decline_count": len(declines),
+            "declines": declines,
+            "satisfied": satisfied,
+        }
+        outcome = (
+            ValidationOutcome.REPRODUCED
+            if satisfied
+            else ValidationOutcome.NOT_REPRODUCED
+        )
+        diagnostic = f"Found {len(declines)} adjacent raw-likelihood declines at least {threshold:.12g}."
+    else:
+        raise ValueError(
+            f"no qualitative proxy implementation for {context.attempt.id}"
+        )
+    return _qualitative_result(
+        context,
+        input_data,
+        columns=columns,
+        target=target,
+        checkpoints=checkpoints,
+        computed_value=computed,
+        outcome=outcome,
+        diagnostics=(diagnostic,),
+    )
+
+
+def _configured_noise_checkpoints(
+    context: _Context,
+    observations: tuple[MetricObservation, ...],
+) -> tuple[CheckpointRows, ...]:
+    model_size = next(
+        (size for size in _model_sizes(context.attempt) if size != "1B"),
+        "1B",
+    )
+    if context.attempt.id == "dd-0098-default":
+        model_size = "1B"
+    universe = _universe(
+        model_size=model_size,
+        recipes=_recipes(context.attempt),
+        seeds=_seeds_for_model(context.attempt, model_size),
+        source_tasks=_source_tasks(_logical_tasks(context.attempt)),
+        metrics=tuple(dict.fromkeys((_PRIMARY_METRIC, *_metrics(context.attempt)))),
+    )
+    preceding_ids = tuple(
+        sensitivity_id
+        for sensitivity_id in context.attempt.sensitivity_ids
+        if "preceding-common-complete" in sensitivity_id
+    )
+    return _common_checkpoints(
+        observations, universe, preceding_count=len(preceding_ids)
+    )
+
+
+def _noise_improvement_result(
+    context: _Context,
+    input_data: _Input,
+    *,
+    columns: tuple[str, ...],
+    checkpoint: CheckpointRows,
+    result_id: str,
+    role: AttemptRole,
+) -> AttemptResult:
+    points = _noise_points(checkpoint)
+    by_task: dict[str, dict[str, _NoisePoint]] = {}
+    for point in points:
+        by_task.setdefault(point.task, {})[point.metric] = point
+    task_results: dict[str, bool] = {}
+    details: dict[str, dict[str, object]] = {}
+    allowed_metrics = set(_metrics(context.attempt)).difference({_PRIMARY_METRIC})
+    for task, metrics in sorted(by_task.items()):
+        primary = metrics.get(_PRIMARY_METRIC)
+        if primary is None:
+            continue
+        candidates = tuple(
+            point for metric, point in metrics.items() if metric in allowed_metrics
+        )
+        improved = tuple(
+            point
+            for point in candidates
+            if point.noise < primary.noise or point.spread > primary.spread
+        )
+        task_results[task] = bool(improved)
+        details[task] = {
+            "primary_noise": primary.noise,
+            "primary_spread": primary.spread,
+            "improving_metrics": sorted(point.metric for point in improved),
+        }
+    fraction = sum(task_results.values()) / len(task_results) if task_results else 0.0
+    required = _parameter(context.rule, ComparisonParameterName.FRACTION_THRESHOLD)
+    satisfied = fraction > required
+    base = _qualitative_result(
+        context,
+        input_data,
+        columns=columns,
+        target=None,
+        checkpoints=(checkpoint,),
+        computed_value={
+            "task_details": details,
+            "improved_task_count": sum(task_results.values()),
+            "task_count": len(task_results),
+            "fraction": fraction,
+            "required_fraction_exclusive": required,
+            "satisfied": satisfied,
+        },
+        outcome=(
+            ValidationOutcome.REPRODUCED
+            if satisfied
+            else ValidationOutcome.NOT_REPRODUCED
+        ),
+        diagnostics=(
+            f"A configured proxy improved noise or spread on {sum(task_results.values())}/{len(task_results)} tasks at step {checkpoint.step}.",
+        ),
+    )
+    if role is AttemptRole.DEFAULT:
+        return base
+    return base.model_copy(
+        update={
+            "attempt_id": result_id,
+            "role": AttemptRole.SENSITIVITY,
+            "parent_attempt_id": context.attempt.id,
+        }
+    )
+
+
+def _run_noise_improvement_attempt(
+    context: _Context,
+    input_data: _Input,
+    *,
+    columns: tuple[str, ...],
+    observations: tuple[MetricObservation, ...],
+) -> tuple[AttemptResult, ...]:
+    checkpoints = _configured_noise_checkpoints(context, observations)
+    if not checkpoints:
+        return (
+            _missing_result(
+                context,
+                input_data,
+                columns=columns,
+                recipes=_recipes(context.attempt),
+                seeds=_declared_seeds(context.attempt),
+                source_tasks=_source_tasks(_logical_tasks(context.attempt)),
+                model_size=_model_sizes(context.attempt)[0],
+                reason="No common-complete checkpoint exists for the configured noise/spread comparison.",
+            ),
+        )
+    preceding_ids = tuple(
+        sensitivity_id
+        for sensitivity_id in context.attempt.sensitivity_ids
+        if "preceding-common-complete" in sensitivity_id
+    )
+    ids = (context.attempt.id, *preceding_ids)
+    return tuple(
+        _noise_improvement_result(
+            context,
+            input_data,
+            columns=columns,
+            checkpoint=checkpoint,
+            result_id=result_id,
+            role=AttemptRole.DEFAULT if index == 0 else AttemptRole.SENSITIVITY,
+        )
+        for index, (result_id, checkpoint) in enumerate(
+            zip(ids, checkpoints, strict=False)
+        )
+    )
+
+
+def _noise_association_result(
+    context: _Context,
+    input_data: _Input,
+    *,
+    columns: tuple[str, ...],
+    observations: tuple[MetricObservation, ...],
+    checkpoint: CheckpointRows,
+    result_id: str,
+    role: AttemptRole,
+) -> AttemptResult:
+    target_universe = _universe(
+        model_size="1B",
+        recipes=_recipes(context.attempt),
+        seeds=_TARGET_SEEDS,
+        source_tasks=checkpoint.universe.source_tasks,
+        metrics=(_PRIMARY_METRIC,),
+    )
+    targets = _common_checkpoints(observations, target_universe, preceding_count=0)
+    if not targets:
+        raise ValueError(f"{context.attempt.id} has no common-complete 1B target")
+    target = targets[0]
+    decisions = _decision_aggregates(_decision_rows(_target_scores(target), checkpoint))
+    decision_lookup = {(row.task, row.metric): row.accuracy for row in decisions}
+    noise = _noise_points(checkpoint)
+    usable = tuple(
+        point
+        for point in noise
+        if point.noise > 0 and (point.task, point.metric) in decision_lookup
+    )
+    ratios = tuple(point.spread / point.noise for point in usable)
+    accuracies = tuple(decision_lookup[(point.task, point.metric)] for point in usable)
+    correlation = _spearman(ratios, accuracies)
+    minimum = _parameter(context.rule, ComparisonParameterName.SPEARMAN_MINIMUM)
+    satisfied = correlation > minimum
+    base = _qualitative_result(
+        context,
+        input_data,
+        columns=columns,
+        target=target,
+        checkpoints=(checkpoint,),
+        computed_value={
+            "association_point_count": len(usable),
+            "spread_noise_ratio_spearman": correlation,
+            "required_spearman_exclusive": minimum,
+            "satisfied": satisfied,
+        },
+        outcome=(
+            ValidationOutcome.REPRODUCED
+            if satisfied
+            else ValidationOutcome.NOT_REPRODUCED
+        ),
+        diagnostics=(
+            f"Spread/noise ratio versus decision-accuracy Spearman={correlation:.12g} over {len(usable)} points.",
+        ),
+    )
+    if role is AttemptRole.DEFAULT:
+        return base
+    return base.model_copy(
+        update={
+            "attempt_id": result_id,
+            "role": AttemptRole.SENSITIVITY,
+            "parent_attempt_id": context.attempt.id,
+        }
+    )
+
+
+def _run_noise_association_attempt(
+    context: _Context,
+    input_data: _Input,
+    *,
+    columns: tuple[str, ...],
+    observations: tuple[MetricObservation, ...],
+) -> tuple[AttemptResult, ...]:
+    checkpoints = _configured_noise_checkpoints(context, observations)
+    if not checkpoints:
+        return (
+            _missing_result(
+                context,
+                input_data,
+                columns=columns,
+                recipes=_recipes(context.attempt),
+                seeds=_declared_seeds(context.attempt),
+                source_tasks=_source_tasks(_logical_tasks(context.attempt)),
+                model_size=_model_sizes(context.attempt)[0],
+                reason="No common-complete checkpoint exists for the configured association.",
+            ),
+        )
+    preceding_ids = tuple(
+        sensitivity_id
+        for sensitivity_id in context.attempt.sensitivity_ids
+        if "preceding-common-complete" in sensitivity_id
+    )
+    ids = (context.attempt.id, *preceding_ids)
+    return tuple(
+        _noise_association_result(
+            context,
+            input_data,
+            columns=columns,
+            observations=observations,
+            checkpoint=checkpoint,
+            result_id=result_id,
+            role=AttemptRole.DEFAULT if index == 0 else AttemptRole.SENSITIVITY,
+        )
+        for index, (result_id, checkpoint) in enumerate(
+            zip(ids, checkpoints, strict=False)
+        )
+    )
+
+
+def _sd_claim_result(
+    context: _Context,
+    input_data: _Input,
+    *,
+    columns: tuple[str, ...],
+    checkpoint: CheckpointRows,
+    result_id: str,
+    role: AttemptRole,
+) -> AttemptResult:
+    logical = _logical_values(checkpoint)
+    tasks = _logical_tasks_from_sources(checkpoint.universe.source_tasks)
+    expected_task_count = int(
+        _parameter(context.rule, ComparisonParameterName.TASK_COUNT)
+    )
+    if len(tasks) != expected_task_count:
+        raise ValueError(
+            f"{context.rule.id} expected {expected_task_count} logical tasks, "
+            f"found {len(tasks)}"
+        )
+    target_sd = _parameter(
+        context.rule, ComparisonParameterName.STANDARD_DEVIATION_TARGET
+    )
+    tolerance = _parameter(
+        context.rule, ComparisonParameterName.STANDARD_DEVIATION_TOLERANCE
+    )
+    task_maxima: dict[str, float] = {}
+    matching_recipes: dict[str, list[str]] = {}
+    for task in tasks:
+        recipe_sds = {
+            recipe: _sample_sd(
+                logical[(task, recipe, seed, _PRIMARY_METRIC)]
+                for seed in checkpoint.universe.seeds
+            )
+            for recipe in checkpoint.universe.recipes
+        }
+        task_maxima[task] = max(recipe_sds.values())
+        matching_recipes[task] = sorted(
+            recipe
+            for recipe, value in recipe_sds.items()
+            if abs(value - target_sd) <= tolerance
+        )
+    matching_tasks = tuple(task for task in tasks if matching_recipes[task])
+    required = _parameter(
+        context.rule, ComparisonParameterName.TASK_COUNT_MINIMUM_EXCLUSIVE
+    )
+    satisfied = len(matching_tasks) > required
+    base = _qualitative_result(
+        context,
+        input_data,
+        columns=columns,
+        target=None,
+        checkpoints=(checkpoint,),
+        computed_value={
+            "standard_deviation_target": target_sd,
+            "tolerance": tolerance,
+            "task_maximum_sample_sd": task_maxima,
+            "matching_recipes_by_task": matching_recipes,
+            "matching_task_count": len(matching_tasks),
+            "expected_task_count": expected_task_count,
+            "required_task_count_exclusive": required,
+            "maximum_observed_sample_sd": max(task_maxima.values()),
+            "satisfied": satisfied,
+        },
+        outcome=(
+            ValidationOutcome.APPROXIMATELY_REPRODUCED
+            if satisfied
+            else ValidationOutcome.NOT_REPRODUCED
+        ),
+        diagnostics=(
+            f"{len(matching_tasks)}/{len(tasks)} tasks have some recipe sample SD within {tolerance:.12g} of {target_sd:.12g}; maximum={max(task_maxima.values()):.12g}.",
+        ),
+    )
+    if role is AttemptRole.DEFAULT:
+        return base
+    return base.model_copy(
+        update={
+            "attempt_id": result_id,
+            "role": AttemptRole.SENSITIVITY,
+            "parent_attempt_id": context.attempt.id,
+        }
+    )
+
+
+def _run_sd_claim_attempt(
+    context: _Context,
+    input_data: _Input,
+    *,
+    columns: tuple[str, ...],
+    observations: tuple[MetricObservation, ...],
+) -> tuple[AttemptResult, ...]:
+    checkpoints = _configured_noise_checkpoints(context, observations)
+    if not checkpoints:
+        return (
+            _missing_result(
+                context,
+                input_data,
+                columns=columns,
+                recipes=_recipes(context.attempt),
+                seeds=_declared_seeds(context.attempt),
+                source_tasks=_source_tasks(_logical_tasks(context.attempt)),
+                model_size="1B",
+                reason="No common-complete 1B checkpoint exists for the configured seed-SD claim.",
+            ),
+        )
+    preceding_ids = tuple(
+        sensitivity_id
+        for sensitivity_id in context.attempt.sensitivity_ids
+        if "preceding-common-complete" in sensitivity_id
+    )
+    ids = (context.attempt.id, *preceding_ids)
+    return tuple(
+        _sd_claim_result(
+            context,
+            input_data,
+            columns=columns,
+            checkpoint=checkpoint,
+            result_id=result_id,
+            role=AttemptRole.DEFAULT if index == 0 else AttemptRole.SENSITIVITY,
+        )
+        for index, (result_id, checkpoint) in enumerate(
+            zip(ids, checkpoints, strict=False)
+        )
+    )
+
+
+def _run_crossover_attempt(
+    context: _Context,
+    input_data: _Input,
+    *,
+    columns: tuple[str, ...],
+    observations: tuple[MetricObservation, ...],
+) -> AttemptResult:
+    recipes = _recipes(context.attempt)
+    source_tasks = _source_tasks(_logical_tasks(context.attempt))
+    checkpoints: list[CheckpointRows] = []
+    for model_size in _model_sizes(context.attempt):
+        seeds = _seeds_for_model(context.attempt, model_size)
+        universe = _universe(
+            model_size=model_size,
+            recipes=recipes,
+            seeds=seeds,
+            source_tasks=source_tasks,
+            metrics=(_PRIMARY_METRIC,),
+        )
+        checkpoints.extend(_all_common_checkpoints(observations, universe))
+    by_compute: dict[float, dict[str, list[float]]] = {}
+    for checkpoint in checkpoints:
+        logical = _logical_values(checkpoint)
+        tasks = _logical_tasks_from_sources(checkpoint.universe.source_tasks)
+        for recipe in recipes:
+            score = _mean(
+                logical[(task, recipe, seed, _PRIMARY_METRIC)]
+                for task in tasks
+                for seed in checkpoint.universe.seeds
+            )
+            by_compute.setdefault(checkpoint.actual_compute, {}).setdefault(
+                recipe, []
+            ).append(score)
+    complete = {
+        compute: values
+        for compute, values in by_compute.items()
+        if set(values) == set(recipes)
+    }
+    scores = tuple(
+        ScaleRecipeScore(
+            scale=compute,
+            recipe=recipe,
+            score=_mean(values[recipe]),
+        )
+        for compute, values in sorted(complete.items())
+        for recipe in recipes
+    )
+    summary = summarize_crossovers(
+        scores,
+        expected_recipes=recipes,
+        tie_policy=CrossoverTiePolicy.BRIDGE_TIED_POINTS,
+    )
+    fraction = summary.pairs_with_crossover / summary.pair_count
+    required = _parameter(context.rule, ComparisonParameterName.FRACTION_THRESHOLD)
+    satisfied = fraction > required
+    return _qualitative_result(
+        context,
+        input_data,
+        columns=columns,
+        target=None,
+        checkpoints=tuple(checkpoints),
+        computed_value={
+            "scale_count": summary.scale_count,
+            "pair_count": summary.pair_count,
+            "pairs_with_crossover": summary.pairs_with_crossover,
+            "crossover_count": summary.crossover_count,
+            "pair_fraction": fraction,
+            "required_fraction_exclusive": required,
+            "tie_policy": summary.tie_policy.value,
+            "satisfied": satisfied,
+        },
+        outcome=(
+            ValidationOutcome.REPRODUCED
+            if satisfied
+            else ValidationOutcome.NOT_REPRODUCED
+        ),
+        diagnostics=(
+            f"{summary.pairs_with_crossover}/{summary.pair_count} recipe pairs cross at least once across {summary.scale_count} compute levels.",
+        ),
+    )
 
 
 def _run_noise_plot_attempt(
@@ -1345,11 +2707,7 @@ def run_proxy_metrics_attempts(
 ) -> tuple[tuple[AttemptResult, ...], tuple[PlotSeries, ...]]:
     """Run the objectively specified proxy-metric format-2 attempts."""
     del repository_root
-    contexts = tuple(
-        context
-        for context in _contexts(registry, contract, AnalysisId.PROXY_METRICS)
-        if context.attempt.id in _THRESHOLD_ATTEMPTS | _PROXY_PLOT_ATTEMPTS
-    )
+    contexts = _contexts(registry, contract, AnalysisId.PROXY_METRICS)
     if not contexts:
         return (), ()
     recipes = tuple(
@@ -1382,12 +2740,13 @@ def run_proxy_metrics_attempts(
     )
     metrics = tuple(
         dict.fromkeys(
-            metric
-            for context in contexts
-            for metric in (
-                _PAPER_METRICS
-                if context.attempt.id in _THRESHOLD_ATTEMPTS
-                else _PER_CHARACTER_PLOT_METRICS
+            (
+                _PRIMARY_METRIC,
+                *(
+                    metric
+                    for context in contexts
+                    for metric in _metrics(context.attempt)
+                ),
             )
         )
     )
@@ -1405,6 +2764,7 @@ def run_proxy_metrics_attempts(
     observations = _observations(input_data, metrics)
     results: list[AttemptResult] = []
     series: list[PlotSeries] = []
+    curve_surfaces: dict[tuple[tuple[str, ...], ...], _CurveSurface] = {}
     for context in contexts:
         if context.attempt.id in _THRESHOLD_ATTEMPTS:
             attempt_columns = (*_BASE_COLUMNS, *_PAPER_METRICS)
@@ -1416,7 +2776,7 @@ def run_proxy_metrics_attempts(
                     observations=observations,
                 )
             )
-        else:
+        elif context.attempt.id in _PROXY_PLOT_ATTEMPTS:
             attempt_columns = (*_BASE_COLUMNS, *_PER_CHARACTER_PLOT_METRICS)
             result, plot = _run_proxy_plot_attempt(
                 context,
@@ -1427,6 +2787,40 @@ def run_proxy_metrics_attempts(
             results.append(result)
             if plot is not None:
                 series.append(plot)
+        elif context.attempt.id == "dd-0057-default":
+            attempt_columns = tuple(
+                dict.fromkeys(
+                    (*_BASE_COLUMNS, _PRIMARY_METRIC, *_metrics(context.attempt))
+                )
+            )
+            results.extend(
+                _run_noise_improvement_attempt(
+                    context,
+                    input_data,
+                    columns=attempt_columns,
+                    observations=observations,
+                )
+            )
+        else:
+            attempt_columns = tuple(
+                dict.fromkeys(
+                    (*_BASE_COLUMNS, _PRIMARY_METRIC, *_metrics(context.attempt))
+                )
+            )
+            surface_key = _curve_surface_key(context)
+            surface = curve_surfaces.get(surface_key)
+            if surface is None:
+                surface = _curve_surface(context, observations)
+                curve_surfaces[surface_key] = surface
+            results.append(
+                _run_proxy_curve_qualitative_attempt(
+                    context,
+                    input_data,
+                    columns=attempt_columns,
+                    observations=observations,
+                    surface=surface,
+                )
+            )
     return tuple(sorted(results, key=lambda result: result.attempt_id)), tuple(
         sorted(series, key=lambda plot: plot.id)
     )
@@ -1442,11 +2836,7 @@ def run_noise_spread_attempts(
 ) -> tuple[tuple[AttemptResult, ...], tuple[PlotSeries, ...]]:
     """Run the objectively specified noise/spread format-2 attempts."""
     del repository_root
-    contexts = tuple(
-        context
-        for context in _contexts(registry, contract, AnalysisId.NOISE_SPREAD)
-        if context.attempt.id in _NOISE_PLOT_ATTEMPTS
-    )
+    contexts = _contexts(registry, contract, AnalysisId.NOISE_SPREAD)
     if not contexts:
         return (), ()
     recipes = tuple(
@@ -1503,15 +2893,54 @@ def run_noise_spread_attempts(
         attempt_columns = tuple(
             dict.fromkeys((*_BASE_COLUMNS, _PRIMARY_METRIC, *_metrics(context.attempt)))
         )
-        attempt_results, plot = _run_noise_plot_attempt(
-            context,
-            input_data,
-            columns=attempt_columns,
-            observations=observations,
-        )
-        results.extend(attempt_results)
-        if plot is not None:
-            series.append(plot)
+        if context.attempt.id in _NOISE_PLOT_ATTEMPTS:
+            attempt_results, plot = _run_noise_plot_attempt(
+                context,
+                input_data,
+                columns=attempt_columns,
+                observations=observations,
+            )
+            results.extend(attempt_results)
+            if plot is not None:
+                series.append(plot)
+        elif context.attempt.id in {"dd-0056-default", "dd-0211-default"}:
+            results.extend(
+                _run_noise_association_attempt(
+                    context,
+                    input_data,
+                    columns=attempt_columns,
+                    observations=observations,
+                )
+            )
+        elif context.attempt.id == "dd-0098-default":
+            results.extend(
+                _run_sd_claim_attempt(
+                    context,
+                    input_data,
+                    columns=attempt_columns,
+                    observations=observations,
+                )
+            )
+        elif context.attempt.id == "dd-0194-default":
+            results.append(
+                _run_crossover_attempt(
+                    context,
+                    input_data,
+                    columns=attempt_columns,
+                    observations=observations,
+                )
+            )
+        elif context.attempt.id == "dd-0212-default":
+            results.extend(
+                _run_noise_improvement_attempt(
+                    context,
+                    input_data,
+                    columns=attempt_columns,
+                    observations=observations,
+                )
+            )
+        else:
+            raise ValueError(f"no noise/spread implementation for {context.attempt.id}")
     return tuple(sorted(results, key=lambda result: result.attempt_id)), tuple(
         sorted(series, key=lambda plot: plot.id)
     )

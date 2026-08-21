@@ -31,6 +31,7 @@ from datadec.paper import (
     SourceRegion,
     ValidationOutcome,
 )
+from datadec.paper.models import ComparisonParameter, ComparisonParameterName
 
 _REPOSITORY_ROOT = Path(__file__).parents[2]
 _SHA256 = "a" * 64
@@ -156,6 +157,56 @@ def test_current_validation_config_declares_all_assessable_defaults() -> None:
         contract.outputs.report = "other.md"
 
 
+def test_qualitative_attempts_use_frozen_typed_rules() -> None:
+    contract = load_paper_validation_contract()
+    attempt_ids = {
+        "dd-0010-default",
+        "dd-0051-default",
+        "dd-0052-default",
+        "dd-0053-default",
+        "dd-0055-default",
+        "dd-0056-default",
+        "dd-0057-default",
+        "dd-0098-default",
+        "dd-0142-default",
+        "dd-0149-default",
+        "dd-0150-default",
+        "dd-0164-default",
+        "dd-0165-default",
+        "dd-0166-default",
+        "dd-0167-default",
+        "dd-0168-default",
+        *(f"dd-{claim:04d}-default" for claim in range(174, 180)),
+        "dd-0194-default",
+        *(f"dd-{claim:04d}-default" for claim in range(196, 200)),
+        *(f"dd-{claim:04d}-default" for claim in range(202, 208)),
+        "dd-0211-default",
+        "dd-0212-default",
+        "dd-0356-default",
+    }
+    attempts = {attempt.id: attempt for attempt in contract.attempts}
+    rules = {rule.id: rule for rule in contract.comparison_rules}
+
+    assert attempt_ids <= attempts.keys()
+    assert all(
+        rules[attempts[attempt_id].comparison_rule_id].parameters
+        for attempt_id in attempt_ids
+    )
+    assert all(
+        parameter.default in parameter.sensitivity_grid
+        for attempt_id in attempt_ids
+        for parameter in rules[attempts[attempt_id].comparison_rule_id].parameters
+    )
+    predictable = rules[attempts["dd-0356-default"].comparison_rule_id]
+    assert predictable.parameter(
+        ComparisonParameterName.ACCURACY_THRESHOLD
+    ).sensitivity_grid == (0.75, 0.8, 0.85)
+    clustering = rules[attempts["dd-0202-default"].comparison_rule_id]
+    assert clustering.parameter(
+        ComparisonParameterName.SILHOUETTE_MINIMUM
+    ).sensitivity_grid == (0.15, 0.25, 0.35)
+
+
 @pytest.mark.parametrize(
     ("updates", "error"),
     [
@@ -236,6 +287,37 @@ def test_comparison_rules_freeze_default_and_sensitivity_thresholds() -> None:
             predicate=ComparisonPredicate.ABSOLUTE_TOLERANCE,
             absolute_tolerance=0.01,
             threshold_grid=(0.005, 0.02),
+        )
+
+
+def test_typed_comparison_parameters_freeze_defaults_and_sensitivities() -> None:
+    rule = ComparisonRule(
+        id="predictable-v1",
+        version=1,
+        predicate=ComparisonPredicate.BOOLEAN_TRUE,
+        parameters=(
+            ComparisonParameter(
+                name=ComparisonParameterName.ACCURACY_THRESHOLD,
+                default=0.8,
+                sensitivity_grid=(0.75, 0.8, 0.85),
+            ),
+        ),
+    )
+
+    assert rule.parameter(ComparisonParameterName.ACCURACY_THRESHOLD).default == 0.8
+
+    with pytest.raises(ValidationError, match="must include the default"):
+        ComparisonParameter(
+            name=ComparisonParameterName.ACCURACY_THRESHOLD,
+            default=0.8,
+            sensitivity_grid=(0.75, 0.85),
+        )
+    with pytest.raises(ValidationError, match="parameter names"):
+        ComparisonRule(
+            id="duplicate",
+            version=1,
+            predicate=ComparisonPredicate.BOOLEAN_TRUE,
+            parameters=rule.parameters * 2,
         )
 
 

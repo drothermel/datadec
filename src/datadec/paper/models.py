@@ -95,6 +95,36 @@ class ComparisonPredicate(StrEnum):
 
 
 @verify(UNIQUE)
+class ComparisonParameterName(StrEnum):
+    ACCURACY_THRESHOLD = "accuracy_threshold"
+    CHANCE_BASELINE = "chance_baseline"
+    CLUSTER_COUNT = "cluster_count"
+    COMPUTE_RATIO_THRESHOLD = "compute_ratio_threshold"
+    CONVERGENCE_TOLERANCE = "convergence_tolerance"
+    DECLINE_THRESHOLD = "decline_threshold"
+    EARLY_SLOPE_ABSOLUTE_MAXIMUM = "early_slope_absolute_maximum"
+    EQUIVALENCE_DIFFERENCE_MINIMUM = "equivalence_difference_minimum"
+    FIXED_COMPUTE_RANGE_MINIMUM = "fixed_compute_range_minimum"
+    FRACTION_THRESHOLD = "fraction_threshold"
+    LATE_SLOPE_MINIMUM = "late_slope_minimum"
+    LOW_RELIABILITY_MAXIMUM = "low_reliability_maximum"
+    MARKED_GAP_MINIMUM = "marked_gap_minimum"
+    MAXIMUM_SCALE_PERCENT = "maximum_scale_percent"
+    NONTRIVIAL_ACCURACY_THRESHOLD = "nontrivial_accuracy_threshold"
+    OLS_SLOPE_MINIMUM = "ols_slope_minimum"
+    OVERLAP_RANGE_MAXIMUM = "overlap_range_maximum"
+    PLATEAU_SSE_IMPROVEMENT_MINIMUM = "plateau_sse_improvement_minimum"
+    SILHOUETTE_MINIMUM = "silhouette_minimum"
+    SPEARMAN_MINIMUM = "spearman_minimum"
+    STANDARD_DEVIATION_TARGET = "standard_deviation_target"
+    STANDARD_DEVIATION_TOLERANCE = "standard_deviation_tolerance"
+    STRONG_BASELINE_THRESHOLD = "strong_baseline_threshold"
+    TASK_COUNT = "task_count"
+    TASK_COUNT_MINIMUM_EXCLUSIVE = "task_count_minimum_exclusive"
+    TRIVIAL_TOLERANCE = "trivial_tolerance"
+
+
+@verify(UNIQUE)
 class CheckpointRule(StrEnum):
     EXACT = "exact"
     LATEST_COMMON_COMPLETE = "latest_common_complete"
@@ -373,6 +403,30 @@ class AttemptSpec(PaperModel):
         return self
 
 
+class ComparisonParameter(PaperModel):
+    name: ComparisonParameterName
+    default: float
+    sensitivity_grid: tuple[float, ...]
+
+    @model_validator(mode="after")
+    def validate_parameter(self) -> Self:
+        if not isfinite(self.default):
+            raise ValueError("comparison parameter defaults must be finite")
+        if not self.sensitivity_grid:
+            raise ValueError("comparison parameters require a sensitivity grid")
+        if any(not isfinite(value) for value in self.sensitivity_grid):
+            raise ValueError("comparison parameter sensitivities must be finite")
+        if tuple(sorted(set(self.sensitivity_grid))) != self.sensitivity_grid:
+            raise ValueError(
+                "comparison parameter sensitivities must be sorted and unique"
+            )
+        if self.default not in self.sensitivity_grid:
+            raise ValueError(
+                "comparison parameter sensitivity grid must include the default"
+            )
+        return self
+
+
 class ComparisonRule(PaperModel):
     id: str = Field(min_length=1)
     version: int = Field(ge=1)
@@ -380,9 +434,22 @@ class ComparisonRule(PaperModel):
     displayed_decimal_places: int | None = Field(default=None, ge=0)
     absolute_tolerance: float | None = Field(default=None, gt=0)
     threshold_grid: tuple[float, ...] = ()
+    parameters: tuple[ComparisonParameter, ...] = ()
 
     @model_validator(mode="after")
     def validate_rule(self) -> Self:
+        _require_unique(
+            tuple(parameter.name.value for parameter in self.parameters),
+            "comparison parameter names",
+        )
+        if self.parameters and (
+            self.displayed_decimal_places is not None
+            or self.absolute_tolerance is not None
+            or self.threshold_grid
+        ):
+            raise ValueError(
+                "typed comparison parameters cannot be mixed with legacy numeric fields"
+            )
         if self.predicate is ComparisonPredicate.ROUNDED:
             if (
                 self.displayed_decimal_places is None
@@ -411,6 +478,16 @@ class ComparisonRule(PaperModel):
         if tuple(sorted(set(self.threshold_grid))) != self.threshold_grid:
             raise ValueError("comparison thresholds must be sorted and unique")
         return self
+
+    def parameter(self, name: ComparisonParameterName) -> ComparisonParameter:
+        try:
+            return next(
+                parameter for parameter in self.parameters if parameter.name is name
+            )
+        except StopIteration as error:
+            raise ValueError(
+                f"comparison rule {self.id} has no parameter {name.value}"
+            ) from error
 
 
 class CheckpointPolicy(PaperModel):
@@ -871,6 +948,8 @@ __all__ = [
     "ClaimRegistry",
     "CodeTrace",
     "ComparisonPredicate",
+    "ComparisonParameter",
+    "ComparisonParameterName",
     "ComparisonRule",
     "ContentIdentity",
     "DimensionValue",

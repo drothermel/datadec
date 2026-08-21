@@ -18,6 +18,7 @@ from datadec.paper.models import (
     PaperValidationContract,
     ValidationOutcome,
 )
+from datadec.paper.single_scale import DEFAULT_TASK_GROUPING
 from datadec.paper.verifiers.proxy_metrics import (
     run_noise_spread_attempts,
     run_proxy_metrics_attempts,
@@ -107,10 +108,11 @@ def test_threshold_attempt_uses_latest_complete_point_within_fixed_budget(
             recipe=recipe,
             seed=seed,
             step=100,
-            task="hellaswag",
+            task=task,
             compute=10_000.0,
             value=index / 100,
         )
+        for task in DEFAULT_TASK_GROUPING.source_tasks
         for index, recipe in enumerate(_RECIPES)
         for seed in _TARGET_SEEDS
     ]
@@ -120,10 +122,11 @@ def test_threshold_attempt_uses_latest_complete_point_within_fixed_budget(
             recipe=recipe,
             seed=seed,
             step=10,
-            task="hellaswag",
+            task=task,
             compute=1.0,
             value=index / 100,
         )
+        for task in DEFAULT_TASK_GROUPING.source_tasks
         for index, recipe in enumerate(_RECIPES)
         for seed in _PREDICTION_SEEDS
     )
@@ -170,10 +173,11 @@ def test_proxy_adapter_hashes_actual_input_and_does_not_require_choice_files(
             recipe=recipe,
             seed=seed,
             step=100,
-            task="hellaswag",
+            task=task,
             compute=10_000.0,
             value=index / 100,
         )
+        for task in DEFAULT_TASK_GROUPING.source_tasks
         for index, recipe in enumerate(_RECIPES)
         for seed in _TARGET_SEEDS
     ]
@@ -263,7 +267,7 @@ def test_noise_plot_uses_declared_canonical_series_id(tmp_path: Path) -> None:
     assert len(series[0].points) == 1
 
 
-def test_unfrozen_qualitative_claims_are_not_serialized_as_missing_data(
+def test_qualitative_claims_execute_instead_of_being_silently_omitted(
     tmp_path: Path,
 ) -> None:
     proxy_ids = (
@@ -288,10 +292,99 @@ def test_unfrozen_qualitative_claims_are_not_serialized_as_missing_data(
     ):
         registry, contract = _contracts(claim_id)
 
-        assert runner(
-            repository_root=_REPOSITORY_ROOT,
-            data_root=tmp_path,
-            registry=registry,
-            contract=contract,
-            input_identities={},
-        ) == ((), ())
+        with pytest.raises(FileNotFoundError, match="aggregate input does not exist"):
+            runner(
+                repository_root=_REPOSITORY_ROOT,
+                data_root=tmp_path,
+                registry=registry,
+                contract=contract,
+                input_identities={},
+            )
+
+
+def test_small_scale_proxy_equivalence_uses_frozen_compute_and_difference_rules(
+    tmp_path: Path,
+) -> None:
+    registry, contract = _contracts("DD-0196")
+    rows = [
+        _metric_row(
+            model_size="1B",
+            recipe=recipe,
+            seed=seed,
+            step=100,
+            task=task,
+            compute=10_000.0,
+            value=index / 100,
+        )
+        for task in DEFAULT_TASK_GROUPING.source_tasks
+        for index, recipe in enumerate(_RECIPES)
+        for seed in _TARGET_SEEDS
+    ]
+    rows.extend(
+        _metric_row(
+            model_size="10M",
+            recipe=recipe,
+            seed=seed,
+            step=10,
+            task=task,
+            compute=1.0,
+            value=index / 100,
+        )
+        for task in DEFAULT_TASK_GROUPING.source_tasks
+        for index, recipe in enumerate(_RECIPES)
+        for seed in _PREDICTION_SEEDS
+    )
+    _, digest = _write_aggregate(tmp_path, rows)
+
+    attempts, series = run_proxy_metrics_attempts(
+        repository_root=_REPOSITORY_ROOT,
+        data_root=tmp_path,
+        registry=registry,
+        contract=contract,
+        input_identities=_identity(digest),
+    )
+
+    assert series == ()
+    assert len(attempts) == 1
+    assert attempts[0].attempt_id == "dd-0196-default"
+    assert attempts[0].outcome is ValidationOutcome.REPRODUCED
+    assert attempts[0].computed_value["comparison_count"] == 10
+    assert attempts[0].computed_value["mean_best_proxy_minus_accuracy"] == 0.0
+
+
+def test_one_billion_seed_sd_claim_counts_tasks_and_reports_maximum(
+    tmp_path: Path,
+) -> None:
+    registry, contract = _contracts("DD-0098")
+    tasks = DEFAULT_TASK_GROUPING.source_tasks
+    seed_offsets = dict(zip(_TARGET_SEEDS, (-0.02, 0.0, 0.02), strict=True))
+    rows = [
+        _metric_row(
+            model_size="1B",
+            recipe=recipe,
+            seed=seed,
+            step=100,
+            task=task,
+            compute=10_000.0,
+            value=index / 100 + (seed_offsets[seed] if index == 0 else 0.0),
+        )
+        for task in tasks
+        for index, recipe in enumerate(_RECIPES)
+        for seed in _TARGET_SEEDS
+    ]
+    _, digest = _write_aggregate(tmp_path, rows)
+
+    attempts, series = run_noise_spread_attempts(
+        repository_root=_REPOSITORY_ROOT,
+        data_root=tmp_path,
+        registry=registry,
+        contract=contract,
+        input_identities=_identity(digest),
+    )
+
+    assert series == ()
+    assert attempts[0].outcome is ValidationOutcome.APPROXIMATELY_REPRODUCED
+    assert attempts[0].computed_value["matching_task_count"] == 10
+    assert attempts[0].computed_value["maximum_observed_sample_sd"] == pytest.approx(
+        0.02
+    )

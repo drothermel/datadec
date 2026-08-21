@@ -53,13 +53,17 @@ def test_single_scale_adapter_persists_headline_and_aggregate_series(
         input_identities={identity.id: identity},
     )
 
-    assert tuple(item.attempt_id for item in attempts) == (
+    assert {
+        item.attempt_id for item in attempts if item.role is AttemptRole.DEFAULT
+    } == {
+        "dd-0010-default",
         "dd-0011-default",
-        "dd-0011-preceding-common-complete-1",
-        "dd-0011-preceding-common-complete-2",
+        "dd-0164-default",
+        "dd-0165-default",
         "dd-0169-default",
-    )
-    default = attempts[0]
+        "dd-0356-default",
+    }
+    default = next(item for item in attempts if item.attempt_id == "dd-0011-default")
     assert default.role is AttemptRole.DEFAULT
     assert default.target_value == 0.8
     assert default.computed_value == 0.8033333333333333
@@ -79,21 +83,29 @@ def test_single_scale_adapter_persists_headline_and_aggregate_series(
         selection.local_parquet_sha256 == identity.sha256
         for selection in default.row_selections
     )
-    assert tuple(item.computed_value for item in attempts[1:3]) == (
+    headline_sensitivities = tuple(
+        item for item in attempts if item.parent_attempt_id == "dd-0011-default"
+    )
+    assert tuple(item.computed_value for item in headline_sensitivities) == (
         0.7977777777777778,
         0.7999999999999999,
     )
-    assert all(item.role is AttemptRole.SENSITIVITY for item in attempts[1:3])
-    assert tuple(item.checkpoint_selections[1].rule for item in attempts[1:3]) == (
+    assert all(item.role is AttemptRole.SENSITIVITY for item in headline_sensitivities)
+    assert tuple(
+        item.checkpoint_selections[1].rule for item in headline_sensitivities
+    ) == (
         CheckpointRule.PRECEDING_COMMON_COMPLETE,
         CheckpointRule.PRECEDING_COMMON_COMPLETE,
     )
     assert tuple(
-        item.checkpoint_selections[1].actual_step for item in attempts[1:3]
+        item.checkpoint_selections[1].actual_step for item in headline_sensitivities
     ) == (36_250, 35_000)
 
-    assert len(series) == 1
-    aggregate = series[0]
+    assert {item.id for item in series} == {
+        "dd-0169-paper-analog",
+        "dd-0356-paper-analog",
+    }
+    aggregate = next(item for item in series if item.id == "dd-0169-paper-analog")
     assert aggregate.id == "dd-0169-paper-analog"
     assert aggregate.attempt_id == "dd-0169-default"
     assert len(aggregate.points) == 6
@@ -101,7 +113,10 @@ def test_single_scale_adapter_persists_headline_and_aggregate_series(
         "150M",
         "1B",
     }
-    assert attempts[-1].plot_series_ids == (aggregate.id,)
+    aggregate_result = next(
+        item for item in attempts if item.attempt_id == "dd-0169-default"
+    )
+    assert aggregate_result.plot_series_ids == (aggregate.id,)
 
 
 def test_per_task_adapter_persists_all_ten_logical_task_curves(
@@ -118,11 +133,35 @@ def test_per_task_adapter_persists_all_ten_logical_task_curves(
         input_identities={identity.id: identity},
     )
 
-    assert tuple(item.attempt_id for item in attempts) == ("dd-0148-default",)
-    assert attempts[0].outcome is ValidationOutcome.REPRODUCED
-    assert attempts[0].plot_series_ids == ("dd-0148-paper-analog",)
-    assert len(series) == 1
-    per_task = series[0]
+    assert {item.attempt_id for item in attempts} == {
+        "dd-0051-default",
+        "dd-0052-default",
+        "dd-0053-default",
+        "dd-0142-default",
+        "dd-0148-default",
+        "dd-0149-default",
+        "dd-0150-default",
+        "dd-0166-default",
+        "dd-0167-default",
+        "dd-0168-default",
+        *(f"dd-{claim:04d}-default" for claim in range(174, 180)),
+    }
+    assert all(
+        item.outcome is not ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED
+        for item in attempts
+    )
+    plot_result = next(
+        item for item in attempts if item.attempt_id == "dd-0148-default"
+    )
+    assert plot_result.outcome is ValidationOutcome.REPRODUCED
+    assert plot_result.plot_series_ids == ("dd-0148-paper-analog",)
+    assert {item.id for item in series} == {
+        "dd-0148-paper-analog",
+        "dd-0149-paper-analog",
+        "dd-0150-paper-analog",
+        *(f"dd-{claim:04d}-paper-analog" for claim in range(174, 180)),
+    }
+    per_task = next(item for item in series if item.id == "dd-0148-paper-analog")
     assert per_task.id == "dd-0148-paper-analog"
     assert len(per_task.points) == 60
     assert {point.dimensions[0].value for point in per_task.points} == {

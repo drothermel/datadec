@@ -95,6 +95,51 @@ Cross-contract validation requires unique IDs, exact claim/attempt references,
 one default attempt per assessable primary claim, existing method-dependency
 claims, and no executable attempt for a nonempirical claim.
 
+### Frozen qualitative comparison parameters
+
+Every qualitative rule composes named `ComparisonParameter` values. Each value
+stores one default and a sorted sensitivity grid containing that default;
+duplicate parameter names and mixtures of typed parameters with the earlier
+predicate-specific numeric fields are invalid. Verifiers read these values from
+the parsed rule and do not carry analytical thresholds as code constants.
+
+The single-scale and per-task defaults are: predictable accuracy at least
+`0.80` (sensitivities `0.75`, `0.85`); strong-baseline accuracy at least
+`0.75`; trivial accuracy within `0.05` of `0.50`; small scale at most `1%` of
+target compute (sensitivities `0.1%`, `10%`); compute-equivalent accuracy
+difference at least `-1/300`; matched accuracy at the minimum observed compute
+reaching `0.80`, without interpolation; directional cheaper comparisons for
+ordinary wording and a `10x` ratio for “much” or “substantially” (sensitivities
+`3x`, `30x`); positive OLS slope per log10-compute decade and positive
+Spearman correlation for “more compute”; maximum/minimum task threshold-compute
+ratio at least `10`; low reliability below `0.80`; nontrivial accuracy above
+`0.55`; markedly lower reliability gap at least `0.05`; fixed-compute task
+range at least `0.20`; and a compute ratio at least `100000` while accuracy
+remains at least `0.80` for the five-orders claim. BoolQ nontrivial points must
+be above `0.55` and occur only at 1B intermediate checkpoints.
+
+Plateau-then-rise claims use the best deterministic two-segment fit over
+log10 compute. The two-segment SSE must improve on one segment by at least
+`20%` (sensitivities `10%`, `30%`), the absolute early slope must be at most
+`0.02` accuracy per decade, and the late slope must be positive.
+
+Proxy and noise defaults are: small-scale proxy-minus-accuracy difference at
+least `-1/300`; curve Spearman at least `0.90`; “most” and “strict majority”
+strictly above `0.50` (sensitivities `1/3`, `2/3`, and, where configured,
+`0.80`); maximum proxy overlap range `0.05`; flat absolute slope at most
+`0.02`; convergence gap at most `0.05`; any adjacent decline at least `1/300`;
+and positive Spearman association between decision accuracy and the
+spread/noise ratio. Noise or spread must improve on a strict majority of tasks.
+The 1B seed-SD claim requires more than five of the ten logical tasks to have
+some recipe sample SD within `0.01` of `0.02`, and records the maximum observed
+SD. Frequent crossover requires more than half of recipe pairs to cross
+(sensitivities `1/3`, `2/3`).
+
+The two-trend-type claim standardizes each task curve, initializes deterministic
+`k=2` clustering from the farthest task pair, and requires mean silhouette at
+least `0.25` (sensitivities `0.15`, `0.35`). The initialization has no random
+seed or observed-outcome tuning step.
+
 ## Persisted result models
 
 Persisted/config boundaries use frozen Pydantic models. Internal calculation

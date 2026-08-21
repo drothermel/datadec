@@ -51,6 +51,235 @@ version = 1
 predicate = "rounded"
 displayed_decimal_places = 1
 
+[[comparison_rules]]
+id = "dd-0010-strong-baseline-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "strong_baseline_threshold", default = 0.75, sensitivity_grid = [0.75] }]
+
+[[comparison_rules]]
+id = "dd-0164-positive-compute-trend-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [
+  { name = "ols_slope_minimum", default = 0.0, sensitivity_grid = [0.0] },
+  { name = "spearman_minimum", default = 0.0, sensitivity_grid = [0.0] },
+]
+
+[[comparison_rules]]
+id = "dd-0165-compute-equivalent-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "equivalence_difference_minimum", default = -0.0033333333333333335, sensitivity_grid = [-0.0033333333333333335] }]
+
+[[comparison_rules]]
+id = "dd-0356-annotation-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "accuracy_threshold", default = 0.8, sensitivity_grid = [0.75, 0.8, 0.85] }]
+
+[[comparison_rules]]
+id = "dd-0051-task-compute-dependence-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [
+  { name = "accuracy_threshold", default = 0.8, sensitivity_grid = [0.75, 0.8, 0.85] },
+  { name = "compute_ratio_threshold", default = 10.0, sensitivity_grid = [10.0] },
+]
+
+[[comparison_rules]]
+id = "dd-0052-matched-accuracy-cheaper-v1"
+version = 1
+predicate = "directional"
+parameters = [{ name = "accuracy_threshold", default = 0.8, sensitivity_grid = [0.75, 0.8, 0.85] }]
+
+[[comparison_rules]]
+id = "dd-0053-low-reliability-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "low_reliability_maximum", default = 0.8, sensitivity_grid = [0.8] }]
+
+[[comparison_rules]]
+id = "dd-0142-nontrivial-except-boolq-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "nontrivial_accuracy_threshold", default = 0.55, sensitivity_grid = [0.55] }]
+
+[[comparison_rules]]
+id = "dd-0149-small-scale-predictable-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [
+  { name = "accuracy_threshold", default = 0.8, sensitivity_grid = [0.75, 0.8, 0.85] },
+  { name = "maximum_scale_percent", default = 1.0, sensitivity_grid = [0.1, 1.0, 10.0] },
+]
+
+[[comparison_rules]]
+id = "dd-0150-substantially-more-compute-v1"
+version = 1
+predicate = "directional"
+parameters = [
+  { name = "accuracy_threshold", default = 0.8, sensitivity_grid = [0.75, 0.8, 0.85] },
+  { name = "compute_ratio_threshold", default = 10.0, sensitivity_grid = [3.0, 10.0, 30.0] },
+]
+
+[[comparison_rules]]
+id = "dd-0166-task-threshold-ratio-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [
+  { name = "accuracy_threshold", default = 0.8, sensitivity_grid = [0.75, 0.8, 0.85] },
+  { name = "compute_ratio_threshold", default = 10.0, sensitivity_grid = [10.0] },
+]
+
+[[comparison_rules]]
+id = "dd-0167-much-less-compute-v1"
+version = 1
+predicate = "directional"
+parameters = [
+  { name = "accuracy_threshold", default = 0.8, sensitivity_grid = [0.75, 0.8, 0.85] },
+  { name = "compute_ratio_threshold", default = 10.0, sensitivity_grid = [3.0, 10.0, 30.0] },
+]
+
+[[comparison_rules]]
+id = "dd-0168-markedly-less-reliable-v1"
+version = 1
+predicate = "directional"
+parameters = [{ name = "marked_gap_minimum", default = 0.05, sensitivity_grid = [0.05] }]
+
+[[comparison_rules]]
+id = "dd-0174-fixed-compute-task-range-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "fixed_compute_range_minimum", default = 0.2, sensitivity_grid = [0.2] }]
+
+[[comparison_rules]]
+id = "dd-0175-five-orders-predictable-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [
+  { name = "accuracy_threshold", default = 0.8, sensitivity_grid = [0.75, 0.8, 0.85] },
+  { name = "compute_ratio_threshold", default = 100000.0, sensitivity_grid = [100000.0] },
+]
+
+[[comparison_rules]]
+id = "dd-0176-boolq-intermediate-only-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [
+  { name = "chance_baseline", default = 0.5, sensitivity_grid = [0.5] },
+  { name = "trivial_tolerance", default = 0.05, sensitivity_grid = [0.05] },
+  { name = "nontrivial_accuracy_threshold", default = 0.55, sensitivity_grid = [0.55] },
+]
+
+[[comparison_rules]]
+id = "plateau-then-rise-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [
+  { name = "plateau_sse_improvement_minimum", default = 0.2, sensitivity_grid = [0.1, 0.2, 0.3] },
+  { name = "early_slope_absolute_maximum", default = 0.02, sensitivity_grid = [0.02] },
+  { name = "late_slope_minimum", default = 0.0, sensitivity_grid = [0.0] },
+]
+
+[[comparison_rules]]
+id = "small-scale-proxy-equivalent-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [
+  { name = "equivalence_difference_minimum", default = -0.0033333333333333335, sensitivity_grid = [-0.0033333333333333335] },
+  { name = "maximum_scale_percent", default = 1.0, sensitivity_grid = [0.1, 1.0, 10.0] },
+]
+
+[[comparison_rules]]
+id = "proxy-noise-spread-majority-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "fraction_threshold", default = 0.5, sensitivity_grid = [0.5, 0.6666666666666666, 0.8] }]
+
+[[comparison_rules]]
+id = "curve-similarity-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "spearman_minimum", default = 0.9, sensitivity_grid = [0.9] }]
+
+[[comparison_rules]]
+id = "strict-majority-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "fraction_threshold", default = 0.5, sensitivity_grid = [0.5, 0.6666666666666666, 0.8] }]
+
+[[comparison_rules]]
+id = "small-scale-strict-majority-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [
+  { name = "fraction_threshold", default = 0.5, sensitivity_grid = [0.5, 0.6666666666666666, 0.8] },
+  { name = "maximum_scale_percent", default = 1.0, sensitivity_grid = [0.1, 1.0, 10.0] },
+]
+
+[[comparison_rules]]
+id = "two-trend-clusters-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [
+  { name = "cluster_count", default = 2.0, sensitivity_grid = [2.0] },
+  { name = "silhouette_minimum", default = 0.25, sensitivity_grid = [0.15, 0.25, 0.35] },
+]
+
+[[comparison_rules]]
+id = "overlap-and-rise-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [
+  { name = "overlap_range_maximum", default = 0.05, sensitivity_grid = [0.05] },
+  { name = "ols_slope_minimum", default = 0.0, sensitivity_grid = [0.0] },
+]
+
+[[comparison_rules]]
+id = "flat-then-converge-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [
+  { name = "early_slope_absolute_maximum", default = 0.02, sensitivity_grid = [0.02] },
+  { name = "convergence_tolerance", default = 0.05, sensitivity_grid = [0.05] },
+]
+
+[[comparison_rules]]
+id = "last-decade-overtake-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "fraction_threshold", default = 0.5, sensitivity_grid = [0.5, 0.6666666666666666, 0.8] }]
+
+[[comparison_rules]]
+id = "adjacent-decline-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "decline_threshold", default = 0.0033333333333333335, sensitivity_grid = [0.0033333333333333335] }]
+
+[[comparison_rules]]
+id = "noise-spread-positive-association-v1"
+version = 1
+predicate = "directional"
+parameters = [{ name = "spearman_minimum", default = 0.0, sensitivity_grid = [0.0] }]
+
+[[comparison_rules]]
+id = "one-billion-sd-most-tasks-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [
+  { name = "standard_deviation_target", default = 0.02, sensitivity_grid = [0.02] },
+  { name = "standard_deviation_tolerance", default = 0.01, sensitivity_grid = [0.01] },
+  { name = "task_count", default = 10.0, sensitivity_grid = [10.0] },
+  { name = "task_count_minimum_exclusive", default = 5.0, sensitivity_grid = [5.0] },
+]
+
+[[comparison_rules]]
+id = "frequent-crossovers-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "fraction_threshold", default = 0.5, sensitivity_grid = [0.3333333333333333, 0.5, 0.6666666666666666] }]
+
 [checkpoint_policy]
 final_rule = "latest_common_complete"
 completeness_dimensions = ["recipe", "seed", "task", "metric"]
@@ -100,7 +329,7 @@ model_sizes = ["150M", "1B"]
 checkpoints = ["final-common-complete"]
 sensitivity_ids = ["dd-0010-preceding-common-complete-1", "dd-0010-preceding-common-complete-2", "dd-0010-paper-step"]
 transformation_ids = ["mmlu-subject-macro-v1", "olmes-task-macro-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
-comparison_rule_id = "predicate-true-v1"
+comparison_rule_id = "dd-0010-strong-baseline-v1"
 
 [[attempts]]
 id = "dd-0011-default"
@@ -131,7 +360,7 @@ metric_ids = ["primary_metric"]
 model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["mmlu-subject-macro-v1", "olmes-task-macro-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
-comparison_rule_id = "predicate-true-v1"
+comparison_rule_id = "dd-0164-positive-compute-trend-v1"
 
 [[attempts]]
 id = "dd-0165-default"
@@ -146,7 +375,7 @@ metric_ids = ["primary_metric"]
 model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["mmlu-subject-macro-v1", "olmes-task-macro-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
-comparison_rule_id = "predicate-true-v1"
+comparison_rule_id = "dd-0165-compute-equivalent-v1"
 
 [[attempts]]
 id = "dd-0169-default"
@@ -178,7 +407,7 @@ model_sizes = ["150M", "1B"]
 checkpoints = ["final-common-complete"]
 sensitivity_ids = ["dd-0356-preceding-common-complete-1", "dd-0356-preceding-common-complete-2", "dd-0356-paper-step"]
 transformation_ids = ["mmlu-subject-macro-v1", "olmes-task-macro-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
-comparison_rule_id = "nonempty-paper-plot-v1"
+comparison_rule_id = "dd-0356-annotation-v1"
 plot_series_ids = ["dd-0356-paper-analog"]
 
 [[attempts]]
@@ -194,7 +423,7 @@ metric_ids = ["primary_metric"]
 model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
-comparison_rule_id = "predicate-true-v1"
+comparison_rule_id = "dd-0051-task-compute-dependence-v1"
 
 [[attempts]]
 id = "dd-0052-default"
@@ -209,7 +438,7 @@ metric_ids = ["primary_metric"]
 model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
-comparison_rule_id = "predicate-true-v1"
+comparison_rule_id = "dd-0052-matched-accuracy-cheaper-v1"
 
 [[attempts]]
 id = "dd-0053-default"
@@ -224,7 +453,7 @@ metric_ids = ["primary_metric"]
 model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
-comparison_rule_id = "predicate-true-v1"
+comparison_rule_id = "dd-0053-low-reliability-v1"
 
 [[attempts]]
 id = "dd-0142-default"
@@ -239,7 +468,7 @@ metric_ids = ["primary_metric"]
 model_sizes = ["paper-model-sizes"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
-comparison_rule_id = "predicate-true-v1"
+comparison_rule_id = "dd-0142-nontrivial-except-boolq-v1"
 
 [[attempts]]
 id = "dd-0148-default"
@@ -270,7 +499,7 @@ metric_ids = ["primary_metric"]
 model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
-comparison_rule_id = "nonempty-paper-plot-v1"
+comparison_rule_id = "dd-0149-small-scale-predictable-v1"
 plot_series_ids = ["dd-0149-paper-analog"]
 
 [[attempts]]
@@ -286,7 +515,7 @@ metric_ids = ["primary_metric"]
 model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
-comparison_rule_id = "nonempty-paper-plot-v1"
+comparison_rule_id = "dd-0150-substantially-more-compute-v1"
 plot_series_ids = ["dd-0150-paper-analog"]
 
 [[attempts]]
@@ -302,7 +531,7 @@ metric_ids = ["primary_metric"]
 model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
-comparison_rule_id = "predicate-true-v1"
+comparison_rule_id = "dd-0166-task-threshold-ratio-v1"
 
 [[attempts]]
 id = "dd-0167-default"
@@ -317,7 +546,7 @@ metric_ids = ["primary_metric"]
 model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
-comparison_rule_id = "predicate-true-v1"
+comparison_rule_id = "dd-0167-much-less-compute-v1"
 
 [[attempts]]
 id = "dd-0168-default"
@@ -332,7 +561,7 @@ metric_ids = ["primary_metric"]
 model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
-comparison_rule_id = "predicate-true-v1"
+comparison_rule_id = "dd-0168-markedly-less-reliable-v1"
 
 [[attempts]]
 id = "dd-0174-default"
@@ -347,7 +576,7 @@ metric_ids = ["primary_metric"]
 model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
-comparison_rule_id = "nonempty-paper-plot-v1"
+comparison_rule_id = "dd-0174-fixed-compute-task-range-v1"
 plot_series_ids = ["dd-0174-paper-analog"]
 
 [[attempts]]
@@ -363,7 +592,7 @@ metric_ids = ["primary_metric"]
 model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
-comparison_rule_id = "nonempty-paper-plot-v1"
+comparison_rule_id = "dd-0175-five-orders-predictable-v1"
 plot_series_ids = ["dd-0175-paper-analog"]
 
 [[attempts]]
@@ -379,7 +608,7 @@ metric_ids = ["primary_metric"]
 model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
-comparison_rule_id = "nonempty-paper-plot-v1"
+comparison_rule_id = "dd-0176-boolq-intermediate-only-v1"
 plot_series_ids = ["dd-0176-paper-analog"]
 
 [[attempts]]
@@ -395,7 +624,7 @@ metric_ids = ["primary_metric"]
 model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
-comparison_rule_id = "nonempty-paper-plot-v1"
+comparison_rule_id = "plateau-then-rise-v1"
 plot_series_ids = ["dd-0177-paper-analog"]
 
 [[attempts]]
@@ -411,7 +640,7 @@ metric_ids = ["primary_metric"]
 model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
-comparison_rule_id = "nonempty-paper-plot-v1"
+comparison_rule_id = "plateau-then-rise-v1"
 plot_series_ids = ["dd-0178-paper-analog"]
 
 [[attempts]]
@@ -427,7 +656,7 @@ metric_ids = ["primary_metric"]
 model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
-comparison_rule_id = "nonempty-paper-plot-v1"
+comparison_rule_id = "plateau-then-rise-v1"
 plot_series_ids = ["dd-0179-paper-analog"]
 
 [[attempts]]
@@ -791,7 +1020,7 @@ metric_ids = ["paper-16-metrics"]
 model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
-comparison_rule_id = "predicate-true-v1"
+comparison_rule_id = "small-scale-proxy-equivalent-v1"
 
 [[attempts]]
 id = "dd-0057-default"
@@ -807,7 +1036,7 @@ model_sizes = ["150M", "1B"]
 checkpoints = ["final-common-complete"]
 sensitivity_ids = ["dd-0057-preceding-common-complete-1", "dd-0057-preceding-common-complete-2", "dd-0057-paper-step"]
 transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
-comparison_rule_id = "predicate-true-v1"
+comparison_rule_id = "proxy-noise-spread-majority-v1"
 
 [[attempts]]
 id = "dd-0196-default"
@@ -822,7 +1051,7 @@ metric_ids = ["primary_metric", "correct_prob_per_char", "total_prob_per_char"]
 model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
-comparison_rule_id = "predicate-true-v1"
+comparison_rule_id = "small-scale-proxy-equivalent-v1"
 
 [[attempts]]
 id = "dd-0197-default"
@@ -837,7 +1066,7 @@ metric_ids = ["per-token-proxies", "per-character-proxies"]
 model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
-comparison_rule_id = "predicate-true-v1"
+comparison_rule_id = "curve-similarity-v1"
 
 [[attempts]]
 id = "dd-0198-default"
@@ -852,7 +1081,7 @@ metric_ids = ["paper-16-metrics"]
 model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
-comparison_rule_id = "predicate-true-v1"
+comparison_rule_id = "strict-majority-v1"
 
 [[attempts]]
 id = "dd-0199-default"
@@ -867,7 +1096,7 @@ metric_ids = ["paper-16-metrics"]
 model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
-comparison_rule_id = "predicate-true-v1"
+comparison_rule_id = "small-scale-strict-majority-v1"
 
 [[attempts]]
 id = "dd-0202-default"
@@ -882,7 +1111,7 @@ metric_ids = ["paper-16-metrics"]
 model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
-comparison_rule_id = "predicate-true-v1"
+comparison_rule_id = "two-trend-clusters-v1"
 
 [[attempts]]
 id = "dd-0203-default"
@@ -897,7 +1126,7 @@ metric_ids = ["paper-16-metrics"]
 model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
-comparison_rule_id = "predicate-true-v1"
+comparison_rule_id = "overlap-and-rise-v1"
 
 [[attempts]]
 id = "dd-0204-default"
@@ -912,7 +1141,7 @@ metric_ids = ["paper-16-metrics"]
 model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
-comparison_rule_id = "predicate-true-v1"
+comparison_rule_id = "flat-then-converge-v1"
 
 [[attempts]]
 id = "dd-0205-default"
@@ -927,7 +1156,7 @@ metric_ids = ["paper-16-metrics"]
 model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
-comparison_rule_id = "predicate-true-v1"
+comparison_rule_id = "last-decade-overtake-v1"
 
 [[attempts]]
 id = "dd-0206-default"
@@ -942,7 +1171,7 @@ metric_ids = ["correct_prob", "total_prob"]
 model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
-comparison_rule_id = "predicate-true-v1"
+comparison_rule_id = "adjacent-decline-v1"
 
 [[attempts]]
 id = "dd-0207-default"
@@ -957,7 +1186,7 @@ metric_ids = ["norm_correct_prob", "margin", "primary_metric"]
 model_sizes = ["prediction-sizes", "1B"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
-comparison_rule_id = "predicate-true-v1"
+comparison_rule_id = "curve-similarity-v1"
 
 [[attempts]]
 id = "dd-0208-default"
@@ -989,7 +1218,7 @@ model_sizes = ["150M", "1B"]
 checkpoints = ["final-common-complete"]
 sensitivity_ids = ["dd-0056-preceding-common-complete-1", "dd-0056-preceding-common-complete-2", "dd-0056-paper-step"]
 transformation_ids = ["task-score-v1", "sample-seed-sd-v1", "recipe-spread-v1"]
-comparison_rule_id = "predicate-true-v1"
+comparison_rule_id = "noise-spread-positive-association-v1"
 
 [[attempts]]
 id = "dd-0098-default"
@@ -1005,7 +1234,7 @@ model_sizes = ["1B"]
 checkpoints = ["final-common-complete"]
 sensitivity_ids = ["dd-0098-preceding-common-complete-1", "dd-0098-preceding-common-complete-2", "dd-0098-paper-step"]
 transformation_ids = ["task-score-v1", "sample-seed-sd-v1", "recipe-spread-v1"]
-comparison_rule_id = "approximately-one-point-v1"
+comparison_rule_id = "one-billion-sd-most-tasks-v1"
 
 [[attempts]]
 id = "dd-0194-default"
@@ -1020,7 +1249,7 @@ metric_ids = ["primary_metric"]
 model_sizes = ["paper-model-sizes"]
 checkpoints = ["all-common-complete"]
 transformation_ids = ["task-score-v1", "sample-seed-sd-v1", "recipe-spread-v1"]
-comparison_rule_id = "predicate-true-v1"
+comparison_rule_id = "frequent-crossovers-v1"
 
 [[attempts]]
 id = "dd-0209-default"
@@ -1070,7 +1299,7 @@ model_sizes = ["150M"]
 checkpoints = ["final-common-complete"]
 sensitivity_ids = ["dd-0211-preceding-common-complete-1", "dd-0211-preceding-common-complete-2", "dd-0211-paper-step"]
 transformation_ids = ["task-score-v1", "sample-seed-sd-v1", "recipe-spread-v1"]
-comparison_rule_id = "predicate-true-v1"
+comparison_rule_id = "noise-spread-positive-association-v1"
 
 [[attempts]]
 id = "dd-0212-default"
@@ -1086,7 +1315,7 @@ model_sizes = ["150M"]
 checkpoints = ["final-common-complete"]
 sensitivity_ids = ["dd-0212-preceding-common-complete-1", "dd-0212-preceding-common-complete-2", "dd-0212-paper-step"]
 transformation_ids = ["task-score-v1", "sample-seed-sd-v1", "recipe-spread-v1"]
-comparison_rule_id = "predicate-true-v1"
+comparison_rule_id = "proxy-noise-spread-majority-v1"
 
 [[attempts]]
 id = "dd-0218-default"

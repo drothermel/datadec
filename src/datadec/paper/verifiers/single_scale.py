@@ -10,6 +10,7 @@ import pandas as pd
 import pyarrow.parquet as pq
 
 from datadec.paper.models import (
+    AnalysisId,
     AttemptResult,
     AttemptRole,
     AttemptSpec,
@@ -19,6 +20,7 @@ from datadec.paper.models import (
     CheckpointSelection,
     ClaimRegistry,
     ComparisonPredicate,
+    ComparisonParameterName,
     ComparisonRule,
     ContentIdentity,
     DimensionValue,
@@ -103,6 +105,70 @@ _MODEL_SIZE_ORDER = (
     "1B",
 )
 _LOGICAL_TASKS = (*DEFAULT_TASK_GROUPING.non_mmlu_tasks, "mmlu")
+
+
+def _parameter(rule: ComparisonRule, name: ComparisonParameterName) -> float:
+    return rule.parameter(name).default
+
+
+def _linear_slope(xs: Iterable[float], ys: Iterable[float]) -> float:
+    x_values = tuple(xs)
+    y_values = tuple(ys)
+    if len(x_values) != len(y_values) or len(x_values) < 2:
+        raise ValueError("linear slope requires paired observations")
+    x_mean = _mean(x_values)
+    y_mean = _mean(y_values)
+    denominator = math.fsum((value - x_mean) ** 2 for value in x_values)
+    if denominator == 0:
+        return 0.0
+    return (
+        math.fsum(
+            (x - x_mean) * (y - y_mean) for x, y in zip(x_values, y_values, strict=True)
+        )
+        / denominator
+    )
+
+
+def _rank(values: tuple[float, ...]) -> tuple[float, ...]:
+    order = sorted(range(len(values)), key=lambda index: (values[index], index))
+    ranks = [0.0] * len(values)
+    start = 0
+    while start < len(order):
+        end = start + 1
+        while end < len(order) and values[order[end]] == values[order[start]]:
+            end += 1
+        average_rank = (start + 1 + end) / 2
+        for position in range(start, end):
+            ranks[order[position]] = average_rank
+        start = end
+    return tuple(ranks)
+
+
+def _spearman(xs: Iterable[float], ys: Iterable[float]) -> float:
+    x_values = tuple(xs)
+    y_values = tuple(ys)
+    if len(x_values) != len(y_values) or len(x_values) < 2:
+        raise ValueError("Spearman correlation requires paired observations")
+    x_ranks = _rank(x_values)
+    y_ranks = _rank(y_values)
+    x_mean = _mean(x_ranks)
+    y_mean = _mean(y_ranks)
+    numerator = math.fsum(
+        (x - x_mean) * (y - y_mean) for x, y in zip(x_ranks, y_ranks, strict=True)
+    )
+    denominator = math.sqrt(
+        math.fsum((value - x_mean) ** 2 for value in x_ranks)
+        * math.fsum((value - y_mean) ** 2 for value in y_ranks)
+    )
+    return 0.0 if denominator == 0 else numerator / denominator
+
+
+def _dimensions(point: PlotPoint) -> dict[str, str | int | float | bool | None]:
+    return {item.name: item.value for item in point.dimensions}
+
+
+def _measures(point: PlotPoint) -> dict[str, float]:
+    return {item.name: item.value for item in point.measures}
 
 
 def _sha256_file(path: Path) -> str:
@@ -190,12 +256,9 @@ def _load_observations(
             "olmes_aggregate identity differs from the configured local Parquet"
         )
     implemented_attempts = tuple(
-        _attempt(contract, attempt_id)
-        for attempt_id in (
-            "dd-0011-default",
-            "dd-0169-default",
-            "dd-0148-default",
-        )
+        attempt
+        for attempt in contract.attempts
+        if attempt.analysis_id in {AnalysisId.SINGLE_SCALE, AnalysisId.PER_TASK}
     )
     if any(
         len(attempt.inputs) != 1 or attempt.inputs[0].table_id != _OLMES_TABLE_ID
@@ -204,6 +267,8 @@ def _load_observations(
         raise ValueError(
             "implemented single-scale attempts require only olmes_aggregate"
         )
+    if not implemented_attempts:
+        raise ValueError("validation contract has no single-scale attempts")
     required_columns = implemented_attempts[0].inputs[0].columns
     if any(
         attempt.inputs[0].columns != required_columns
@@ -994,6 +1059,776 @@ def _per_task_plot(
     return result, series
 
 
+def _clone_series(
+    base: PlotSeries,
+    attempt: AttemptSpec,
+    points: tuple[PlotPoint, ...],
+) -> PlotSeries:
+    if len(attempt.plot_series_ids) != 1:
+        raise ValueError(f"{attempt.id} must declare exactly one plot-series ID")
+    counts = tuple(count for count in base.counts if count.name != "points") + (
+        NamedCount(name="points", value=len(points)),
+    )
+    return PlotSeries(
+        id=attempt.plot_series_ids[0],
+        figure=base.figure,
+        panel=attempt.claim_id,
+        semantic_kind=base.semantic_kind,
+        x_axis=base.x_axis,
+        y_axis=base.y_axis,
+        dimensions=base.dimensions,
+        measures=base.measures,
+        attempt_id=attempt.id,
+        actual_checkpoint=base.actual_checkpoint,
+        counts=counts,
+        points=points,
+    )
+
+
+def _qualitative_result(
+    *,
+    registry: ClaimRegistry,
+    contract: PaperValidationContract,
+    attempt_id: str,
+    evidence: AttemptResult,
+    computed_value: dict[str, object],
+    outcome: ValidationOutcome,
+    diagnostics: tuple[str, ...],
+    plot_series_ids: tuple[str, ...] = (),
+) -> AttemptResult:
+    attempt = _attempt(contract, attempt_id)
+    claim = _claim(registry, attempt.claim_id)
+    rule = _comparison_rule(contract, attempt)
+    return AttemptResult(
+        attempt_id=attempt.id,
+        claim_id=claim.id,
+        role=AttemptRole.DEFAULT,
+        comparison_rule_id=rule.id,
+        comparison_rule_version=rule.version,
+        transformation_ids=attempt.transformation_ids,
+        row_selections=evidence.row_selections,
+        checkpoint_selections=evidence.checkpoint_selections,
+        target_value=claim.paper_target,
+        computed_value=computed_value,
+        seeds=evidence.seeds,
+        denominator=evidence.denominator,
+        exclusions=evidence.exclusions,
+        target_ties=evidence.target_ties,
+        predicted_ties=evidence.predicted_ties,
+        outcome=outcome,
+        diagnostics=diagnostics,
+        limitations=(
+            "Predicates and sensitivity grids are versioned in paper_validation.toml.",
+            "Matched-accuracy thresholds use the minimum observed compute without interpolation.",
+        ),
+        plot_series_ids=plot_series_ids,
+    )
+
+
+def _single_scale_qualitative_attempts(
+    *,
+    registry: ClaimRegistry,
+    contract: PaperValidationContract,
+    headline: tuple[AttemptResult, ...],
+    aggregate_result: AttemptResult,
+    aggregate_series: PlotSeries,
+) -> tuple[tuple[AttemptResult, ...], tuple[PlotSeries, ...]]:
+    headline_values = headline[:3]
+    results: list[AttemptResult] = []
+    series: list[PlotSeries] = []
+    for attempt_id in ("dd-0010-default", "dd-0356-default"):
+        attempt = _attempt(contract, attempt_id)
+        rule = _comparison_rule(contract, attempt)
+        threshold_name = (
+            ComparisonParameterName.STRONG_BASELINE_THRESHOLD
+            if attempt_id == "dd-0010-default"
+            else ComparisonParameterName.ACCURACY_THRESHOLD
+        )
+        threshold = _parameter(rule, threshold_name)
+        for index, evidence in enumerate(headline_values):
+            result_id = attempt.id if index == 0 else attempt.sensitivity_ids[index - 1]
+            value = float(evidence.computed_value)
+            outcome = (
+                ValidationOutcome.APPROXIMATELY_REPRODUCED
+                if attempt_id == "dd-0356-default" and value >= threshold
+                else ValidationOutcome.REPRODUCED
+                if value >= threshold
+                else ValidationOutcome.NOT_REPRODUCED
+            )
+            result = _qualitative_result(
+                registry=registry,
+                contract=contract,
+                attempt_id=attempt.id,
+                evidence=evidence,
+                computed_value={
+                    "decision_accuracy": value,
+                    "threshold": threshold,
+                    "satisfied": value >= threshold,
+                },
+                outcome=outcome,
+                diagnostics=(
+                    f"Observed decision accuracy {value:.12g} against frozen threshold {threshold:.12g}.",
+                ),
+                plot_series_ids=attempt.plot_series_ids if index == 0 else (),
+            )
+            if index:
+                result = result.model_copy(
+                    update={
+                        "attempt_id": result_id,
+                        "role": AttemptRole.SENSITIVITY,
+                        "parent_attempt_id": attempt.id,
+                        "plot_series_ids": (),
+                    }
+                )
+            results.append(result)
+        if attempt.plot_series_ids:
+            selected = tuple(
+                point
+                for point in aggregate_series.points
+                if _dimensions(point).get("model_size") == _HEADLINE_PREDICTION_SIZE
+                and _dimensions(point).get("step")
+                == headline_values[0].checkpoint_selections[1].actual_step
+            )
+            series.append(_clone_series(aggregate_series, attempt, selected))
+
+    aggregate_points = tuple(
+        point
+        for point in aggregate_series.points
+        if _measures(point)["percent_target_compute"] > 0
+    )
+    log_compute = tuple(
+        math.log10(_measures(point)["percent_target_compute"])
+        for point in aggregate_points
+    )
+    accuracies = tuple(
+        _measures(point)["decision_accuracy"] for point in aggregate_points
+    )
+    trend_attempt = _attempt(contract, "dd-0164-default")
+    trend_rule = _comparison_rule(contract, trend_attempt)
+    slope = _linear_slope(log_compute, accuracies)
+    correlation = _spearman(log_compute, accuracies)
+    slope_minimum = _parameter(trend_rule, ComparisonParameterName.OLS_SLOPE_MINIMUM)
+    correlation_minimum = _parameter(
+        trend_rule, ComparisonParameterName.SPEARMAN_MINIMUM
+    )
+    trend_satisfied = slope > slope_minimum and correlation > correlation_minimum
+    results.append(
+        _qualitative_result(
+            registry=registry,
+            contract=contract,
+            attempt_id=trend_attempt.id,
+            evidence=aggregate_result,
+            computed_value={
+                "ols_slope_per_compute_decade": slope,
+                "spearman": correlation,
+                "point_count": len(aggregate_points),
+                "satisfied": trend_satisfied,
+            },
+            outcome=(
+                ValidationOutcome.REPRODUCED
+                if trend_satisfied
+                else ValidationOutcome.NOT_REPRODUCED
+            ),
+            diagnostics=(
+                f"OLS slope={slope:.12g}; Spearman={correlation:.12g} over {len(aggregate_points)} points.",
+            ),
+        )
+    )
+
+    equivalent_attempt = _attempt(contract, "dd-0165-default")
+    equivalent_rule = _comparison_rule(contract, equivalent_attempt)
+    minimum_difference = _parameter(
+        equivalent_rule,
+        ComparisonParameterName.EQUIVALENCE_DIFFERENCE_MINIMUM,
+    )
+    by_size: dict[str, list[PlotPoint]] = {}
+    for point in aggregate_points:
+        by_size.setdefault(str(_dimensions(point)["model_size"]), []).append(point)
+    final_points = {
+        size: max(points, key=lambda point: int(_dimensions(point)["step"]))
+        for size, points in by_size.items()
+    }
+    matches: list[dict[str, object]] = []
+    for size, points in sorted(by_size.items()):
+        final_step = int(_dimensions(final_points[size])["step"])
+        for point in points:
+            if int(_dimensions(point)["step"]) == final_step:
+                continue
+            compute = _measures(point)["compute"]
+            for final_size, final in sorted(final_points.items()):
+                if final_size == size or _measures(final)["compute"] != compute:
+                    continue
+                difference = (
+                    _measures(point)["decision_accuracy"]
+                    - _measures(final)["decision_accuracy"]
+                )
+                matches.append(
+                    {
+                        "intermediate_model_size": size,
+                        "intermediate_step": int(_dimensions(point)["step"]),
+                        "final_model_size": final_size,
+                        "final_step": int(_dimensions(final)["step"]),
+                        "compute": compute,
+                        "accuracy_difference": difference,
+                    }
+                )
+    minimum_observed = min(
+        (float(match["accuracy_difference"]) for match in matches), default=-1.0
+    )
+    equivalent = bool(matches) and minimum_observed >= minimum_difference
+    results.append(
+        _qualitative_result(
+            registry=registry,
+            contract=contract,
+            attempt_id=equivalent_attempt.id,
+            evidence=aggregate_result,
+            computed_value={
+                "matched_pairs": matches,
+                "matched_pair_count": len(matches),
+                "minimum_accuracy_difference": minimum_observed,
+                "minimum_allowed_difference": minimum_difference,
+                "satisfied": equivalent,
+            },
+            outcome=(
+                ValidationOutcome.REPRODUCED
+                if equivalent
+                else ValidationOutcome.NOT_REPRODUCED
+            ),
+            diagnostics=(
+                f"Found {len(matches)} exact-compute intermediate/final matches; minimum accuracy difference={minimum_observed:.12g}.",
+            ),
+        )
+    )
+    return tuple(results), tuple(series)
+
+
+def _task_curve_rows(series: PlotSeries) -> tuple[dict[str, object], ...]:
+    return tuple(
+        {
+            **_dimensions(point),
+            **_measures(point),
+            "point": point,
+        }
+        for point in series.points
+    )
+
+
+def _threshold_compute(
+    rows: Iterable[dict[str, object]], task: str, threshold: float
+) -> float | None:
+    values = tuple(
+        float(row["compute"])
+        for row in rows
+        if row["task"] == task
+        and float(row["decision_accuracy"]) >= threshold
+        and float(row["compute"]) > 0
+    )
+    return min(values) if values else None
+
+
+def _fit_sse(xs: tuple[float, ...], ys: tuple[float, ...]) -> tuple[float, float]:
+    slope = _linear_slope(xs, ys)
+    intercept = _mean(ys) - slope * _mean(xs)
+    return slope, math.fsum(
+        (y - (intercept + slope * x)) ** 2 for x, y in zip(xs, ys, strict=True)
+    )
+
+
+def _plateau_diagnostic(
+    rows: Iterable[dict[str, object]], task: str
+) -> dict[str, object]:
+    by_compute: dict[float, list[float]] = {}
+    for row in rows:
+        if row["task"] != task or float(row["compute"]) <= 0:
+            continue
+        by_compute.setdefault(float(row["compute"]), []).append(
+            float(row["decision_accuracy"])
+        )
+    curve = tuple(
+        (math.log10(compute), _mean(values))
+        for compute, values in sorted(by_compute.items())
+    )
+    if len(curve) < 4:
+        return {
+            "point_count": len(curve),
+            "sse_improvement": 0.0,
+            "early_slope": 0.0,
+            "late_slope": 0.0,
+            "split_index": None,
+        }
+    xs = tuple(item[0] for item in curve)
+    ys = tuple(item[1] for item in curve)
+    _, single_sse = _fit_sse(xs, ys)
+    candidates: list[tuple[float, int, float, float]] = []
+    for split in range(2, len(curve) - 1):
+        early_slope, early_sse = _fit_sse(xs[:split], ys[:split])
+        late_slope, late_sse = _fit_sse(xs[split:], ys[split:])
+        candidates.append((early_sse + late_sse, split, early_slope, late_slope))
+    best_sse, split, early_slope, late_slope = min(candidates)
+    improvement = 0.0 if single_sse == 0 else (single_sse - best_sse) / single_sse
+    return {
+        "point_count": len(curve),
+        "sse_improvement": improvement,
+        "early_slope": early_slope,
+        "late_slope": late_slope,
+        "split_index": split,
+    }
+
+
+def _per_task_qualitative_attempts(
+    *,
+    registry: ClaimRegistry,
+    contract: PaperValidationContract,
+    evidence: AttemptResult,
+    base_series: PlotSeries,
+) -> tuple[tuple[AttemptResult, ...], tuple[PlotSeries, ...]]:
+    rows = _task_curve_rows(base_series)
+    results: list[AttemptResult] = []
+    series: list[PlotSeries] = []
+
+    def add(
+        attempt_id: str,
+        computed: dict[str, object],
+        outcome: ValidationOutcome,
+        diagnostics: tuple[str, ...],
+    ) -> None:
+        attempt = _attempt(contract, attempt_id)
+        plot_ids = attempt.plot_series_ids
+        results.append(
+            _qualitative_result(
+                registry=registry,
+                contract=contract,
+                attempt_id=attempt_id,
+                evidence=evidence,
+                computed_value=computed,
+                outcome=outcome,
+                diagnostics=diagnostics,
+                plot_series_ids=plot_ids,
+            )
+        )
+        if plot_ids:
+            tasks = set(attempt.task_ids)
+            if "paper-olmes-tasks" in tasks:
+                tasks = set(_LOGICAL_TASKS)
+            selected = tuple(row["point"] for row in rows if str(row["task"]) in tasks)
+            series.append(_clone_series(base_series, attempt, selected))
+
+    threshold_attempts = {
+        attempt_id: _attempt(contract, attempt_id)
+        for attempt_id in (
+            "dd-0051-default",
+            "dd-0052-default",
+            "dd-0149-default",
+            "dd-0150-default",
+            "dd-0166-default",
+            "dd-0167-default",
+            "dd-0175-default",
+        )
+    }
+    accuracy_thresholds = {
+        attempt_id: _parameter(
+            _comparison_rule(contract, attempt),
+            ComparisonParameterName.ACCURACY_THRESHOLD,
+        )
+        for attempt_id, attempt in threshold_attempts.items()
+    }
+    threshold_computes = {
+        attempt_id: {
+            task: _threshold_compute(rows, task, threshold) for task in _LOGICAL_TASKS
+        }
+        for attempt_id, threshold in accuracy_thresholds.items()
+    }
+
+    for attempt_id in ("dd-0051-default", "dd-0166-default"):
+        attempt = threshold_attempts[attempt_id]
+        rule = _comparison_rule(contract, attempt)
+        available = {
+            task: compute
+            for task, compute in threshold_computes[attempt_id].items()
+            if compute is not None
+        }
+        ratio = (
+            max(available.values()) / min(available.values())
+            if len(available) >= 2
+            else 0.0
+        )
+        required = _parameter(rule, ComparisonParameterName.COMPUTE_RATIO_THRESHOLD)
+        satisfied = ratio >= required
+        add(
+            attempt_id,
+            {
+                "accuracy_threshold": accuracy_thresholds[attempt_id],
+                "threshold_compute_by_task": available,
+                "missing_threshold_tasks": sorted(
+                    set(_LOGICAL_TASKS).difference(available)
+                ),
+                "max_min_compute_ratio": ratio,
+                "required_ratio": required,
+                "satisfied": satisfied,
+            },
+            ValidationOutcome.REPRODUCED
+            if satisfied
+            else ValidationOutcome.NOT_REPRODUCED,
+            (f"Observed max/min threshold-compute ratio {ratio:.12g}.",),
+        )
+
+    for attempt_id, comparison_tasks in (
+        ("dd-0052-default", ("mmlu", "arc_challenge", "arc_easy")),
+        ("dd-0167-default", ("arc_challenge", "arc_easy", "mmlu")),
+    ):
+        rule = _comparison_rule(contract, threshold_attempts[attempt_id])
+        computes = threshold_computes[attempt_id]
+        hellaswag = computes["hellaswag"]
+        ratios = {
+            task: (
+                hellaswag / computes[task]
+                if hellaswag is not None and computes[task] not in {None, 0.0}
+                else 0.0
+            )
+            for task in comparison_tasks
+        }
+        directional = all(value > 1 for value in ratios.values())
+        if attempt_id == "dd-0167-default":
+            required = _parameter(rule, ComparisonParameterName.COMPUTE_RATIO_THRESHOLD)
+            magnitude = all(value >= required for value in ratios.values())
+        else:
+            required = 1.0
+            magnitude = directional
+        outcome = (
+            ValidationOutcome.REPRODUCED
+            if magnitude
+            else ValidationOutcome.DIRECTIONALLY_CONSISTENT
+            if directional
+            else ValidationOutcome.NOT_REPRODUCED
+        )
+        add(
+            attempt_id,
+            {
+                "accuracy_threshold": accuracy_thresholds[attempt_id],
+                "hellaswag_compute": hellaswag,
+                "hellaswag_to_task_compute_ratios": ratios,
+                "required_ratio": required,
+                "direction_satisfied": directional,
+                "magnitude_satisfied": magnitude,
+            },
+            outcome,
+            (f"HellaSwag/task matched-accuracy compute ratios: {ratios!r}.",),
+        )
+
+    social_attempt = _attempt(contract, "dd-0053-default")
+    social_rule = _comparison_rule(contract, social_attempt)
+    reliability_maximum = _parameter(
+        social_rule, ComparisonParameterName.LOW_RELIABILITY_MAXIMUM
+    )
+    social_max = max(
+        float(row["decision_accuracy"]) for row in rows if row["task"] == "socialiqa"
+    )
+    social_satisfied = social_max < reliability_maximum
+    add(
+        social_attempt.id,
+        {
+            "maximum_decision_accuracy": social_max,
+            "low_reliability_maximum": reliability_maximum,
+            "satisfied": social_satisfied,
+        },
+        ValidationOutcome.REPRODUCED
+        if social_satisfied
+        else ValidationOutcome.NOT_REPRODUCED,
+        (f"SocialIQA maximum observed decision accuracy={social_max:.12g}.",),
+    )
+
+    nontrivial_attempt = _attempt(contract, "dd-0142-default")
+    nontrivial_rule = _comparison_rule(contract, nontrivial_attempt)
+    nontrivial_threshold = _parameter(
+        nontrivial_rule, ComparisonParameterName.NONTRIVIAL_ACCURACY_THRESHOLD
+    )
+    task_maxima = {
+        task: max(
+            float(row["decision_accuracy"]) for row in rows if row["task"] == task
+        )
+        for task in _LOGICAL_TASKS
+    }
+    non_boolq = {task: value for task, value in task_maxima.items() if task != "boolq"}
+    nontrivial_satisfied = all(
+        value > nontrivial_threshold for value in non_boolq.values()
+    )
+    add(
+        nontrivial_attempt.id,
+        {
+            "nontrivial_threshold": nontrivial_threshold,
+            "maximum_decision_accuracy_by_task": task_maxima,
+            "satisfied": nontrivial_satisfied,
+        },
+        ValidationOutcome.REPRODUCED
+        if nontrivial_satisfied
+        else ValidationOutcome.NOT_REPRODUCED,
+        (f"Checked {len(non_boolq)} non-BoolQ logical tasks.",),
+    )
+
+    small_attempt = threshold_attempts["dd-0149-default"]
+    small_rule = _comparison_rule(contract, small_attempt)
+    small_percent = _parameter(
+        small_rule, ComparisonParameterName.MAXIMUM_SCALE_PERCENT
+    )
+    small_points = tuple(
+        row
+        for row in rows
+        if row["task"] == "arc_easy"
+        and float(row["percent_target_compute"]) <= small_percent
+    )
+    small_max = max(
+        (float(row["decision_accuracy"]) for row in small_points), default=0.0
+    )
+    small_satisfied = small_max >= accuracy_thresholds[small_attempt.id]
+    add(
+        small_attempt.id,
+        {
+            "maximum_scale_percent": small_percent,
+            "accuracy_threshold": accuracy_thresholds[small_attempt.id],
+            "eligible_point_count": len(small_points),
+            "maximum_eligible_accuracy": small_max,
+            "satisfied": small_satisfied,
+        },
+        ValidationOutcome.REPRODUCED
+        if small_satisfied
+        else ValidationOutcome.NOT_REPRODUCED,
+        (
+            f"ARC Easy has {len(small_points)} points within {small_percent}% target compute.",
+        ),
+    )
+
+    ratio_attempt = threshold_attempts["dd-0150-default"]
+    ratio_rule = _comparison_rule(contract, ratio_attempt)
+    ratio_required = _parameter(
+        ratio_rule, ComparisonParameterName.COMPUTE_RATIO_THRESHOLD
+    )
+    arc_compute = threshold_computes[ratio_attempt.id]["arc_easy"]
+    hella_compute = threshold_computes[ratio_attempt.id]["hellaswag"]
+    hella_ratio = (
+        hella_compute / arc_compute
+        if hella_compute is not None and arc_compute not in {None, 0.0}
+        else 0.0
+    )
+    ratio_direction = hella_ratio > 1
+    ratio_magnitude = hella_ratio >= ratio_required
+    add(
+        ratio_attempt.id,
+        {
+            "accuracy_threshold": accuracy_thresholds[ratio_attempt.id],
+            "arc_easy_compute": arc_compute,
+            "hellaswag_compute": hella_compute,
+            "compute_ratio": hella_ratio,
+            "required_ratio": ratio_required,
+            "direction_satisfied": ratio_direction,
+            "magnitude_satisfied": ratio_magnitude,
+        },
+        ValidationOutcome.REPRODUCED
+        if ratio_magnitude
+        else ValidationOutcome.DIRECTIONALLY_CONSISTENT
+        if ratio_direction
+        else ValidationOutcome.NOT_REPRODUCED,
+        (f"HellaSwag/ARC Easy matched-accuracy compute ratio={hella_ratio:.12g}.",),
+    )
+
+    marked_attempt = _attempt(contract, "dd-0168-default")
+    marked_rule = _comparison_rule(contract, marked_attempt)
+    marked_minimum = _parameter(marked_rule, ComparisonParameterName.MARKED_GAP_MINIMUM)
+    highlighted = {"arc_challenge", "arc_easy", "mmlu", "hellaswag"}
+    highlighted_mean = _mean(
+        float(row["decision_accuracy"]) for row in rows if row["task"] in highlighted
+    )
+    remaining_mean = _mean(
+        float(row["decision_accuracy"])
+        for row in rows
+        if row["task"] not in highlighted
+    )
+    marked_gap = highlighted_mean - remaining_mean
+    marked_direction = marked_gap > 0
+    marked_magnitude = marked_gap >= marked_minimum
+    add(
+        marked_attempt.id,
+        {
+            "highlighted_mean_accuracy": highlighted_mean,
+            "remaining_mean_accuracy": remaining_mean,
+            "gap": marked_gap,
+            "required_gap": marked_minimum,
+            "direction_satisfied": marked_direction,
+            "magnitude_satisfied": marked_magnitude,
+        },
+        ValidationOutcome.REPRODUCED
+        if marked_magnitude
+        else ValidationOutcome.DIRECTIONALLY_CONSISTENT
+        if marked_direction
+        else ValidationOutcome.NOT_REPRODUCED,
+        (f"Highlighted-minus-remaining mean reliability gap={marked_gap:.12g}.",),
+    )
+
+    range_attempt = _attempt(contract, "dd-0174-default")
+    range_rule = _comparison_rule(contract, range_attempt)
+    range_minimum = _parameter(
+        range_rule, ComparisonParameterName.FIXED_COMPUTE_RANGE_MINIMUM
+    )
+    by_compute: dict[float, dict[str, float]] = {}
+    for row in rows:
+        compute = float(row["compute"])
+        task = str(row["task"])
+        by_compute.setdefault(compute, {})[task] = float(row["decision_accuracy"])
+    ranges = {
+        compute: max(values.values()) - min(values.values())
+        for compute, values in by_compute.items()
+        if set(values) == set(_LOGICAL_TASKS)
+    }
+    max_range_compute, max_range = max(
+        ranges.items(), key=lambda item: (item[1], item[0]), default=(0.0, 0.0)
+    )
+    range_satisfied = max_range >= range_minimum
+    add(
+        range_attempt.id,
+        {
+            "fixed_compute_ranges": {
+                f"{compute:.17g}": value for compute, value in sorted(ranges.items())
+            },
+            "maximum_range": max_range,
+            "maximum_range_compute": max_range_compute,
+            "required_range": range_minimum,
+            "satisfied": range_satisfied,
+        },
+        ValidationOutcome.REPRODUCED
+        if range_satisfied
+        else ValidationOutcome.NOT_REPRODUCED,
+        (f"Maximum complete fixed-compute task range={max_range:.12g}.",),
+    )
+
+    orders_attempt = threshold_attempts["dd-0175-default"]
+    orders_rule = _comparison_rule(contract, orders_attempt)
+    required_orders_ratio = _parameter(
+        orders_rule, ComparisonParameterName.COMPUTE_RATIO_THRESHOLD
+    )
+    predictable_compute = tuple(
+        float(row["compute"])
+        for row in rows
+        if row["task"] == "arc_easy"
+        and float(row["decision_accuracy"]) >= accuracy_thresholds[orders_attempt.id]
+        and float(row["compute"]) > 0
+    )
+    observed_orders_ratio = (
+        max(predictable_compute) / min(predictable_compute)
+        if predictable_compute
+        else 0.0
+    )
+    orders_satisfied = observed_orders_ratio >= required_orders_ratio
+    add(
+        orders_attempt.id,
+        {
+            "accuracy_threshold": accuracy_thresholds[orders_attempt.id],
+            "minimum_predictable_compute": min(predictable_compute, default=0.0),
+            "maximum_predictable_compute": max(predictable_compute, default=0.0),
+            "compute_ratio": observed_orders_ratio,
+            "required_ratio": required_orders_ratio,
+            "satisfied": orders_satisfied,
+        },
+        ValidationOutcome.REPRODUCED
+        if orders_satisfied
+        else ValidationOutcome.NOT_REPRODUCED,
+        (f"ARC Easy predictable-compute span ratio={observed_orders_ratio:.12g}.",),
+    )
+
+    boolq_attempt = _attempt(contract, "dd-0176-default")
+    boolq_rule = _comparison_rule(contract, boolq_attempt)
+    boolq_threshold = _parameter(
+        boolq_rule, ComparisonParameterName.NONTRIVIAL_ACCURACY_THRESHOLD
+    )
+    chance_baseline = _parameter(boolq_rule, ComparisonParameterName.CHANCE_BASELINE)
+    trivial_tolerance = _parameter(
+        boolq_rule, ComparisonParameterName.TRIVIAL_TOLERANCE
+    )
+    if not math.isclose(
+        boolq_threshold,
+        chance_baseline + trivial_tolerance,
+        rel_tol=0.0,
+        abs_tol=1e-12,
+    ):
+        raise ValueError(
+            f"{boolq_rule.id} nontrivial threshold must equal chance baseline plus "
+            "trivial tolerance"
+        )
+    latest_1b = max(
+        int(row["step"])
+        for row in rows
+        if row["task"] == "boolq" and row["model_size"] == "1B"
+    )
+    boolq_nontrivial = tuple(
+        row
+        for row in rows
+        if row["task"] == "boolq" and float(row["decision_accuracy"]) > boolq_threshold
+    )
+    boolq_satisfied = bool(boolq_nontrivial) and all(
+        row["model_size"] == "1B" and int(row["step"]) < latest_1b
+        for row in boolq_nontrivial
+    )
+    add(
+        boolq_attempt.id,
+        {
+            "chance_baseline": chance_baseline,
+            "trivial_tolerance": trivial_tolerance,
+            "nontrivial_threshold": boolq_threshold,
+            "nontrivial_point_count": len(boolq_nontrivial),
+            "nontrivial_points": [
+                {
+                    "model_size": row["model_size"],
+                    "step": row["step"],
+                    "decision_accuracy": row["decision_accuracy"],
+                }
+                for row in boolq_nontrivial
+            ],
+            "latest_1b_step": latest_1b,
+            "satisfied": boolq_satisfied,
+        },
+        ValidationOutcome.REPRODUCED
+        if boolq_satisfied
+        else ValidationOutcome.NOT_REPRODUCED,
+        (f"Found {len(boolq_nontrivial)} nontrivial BoolQ points.",),
+    )
+
+    for attempt_id, task in (
+        ("dd-0177-default", "hellaswag"),
+        ("dd-0178-default", "socialiqa"),
+        ("dd-0179-default", "winogrande"),
+    ):
+        attempt = _attempt(contract, attempt_id)
+        rule = _comparison_rule(contract, attempt)
+        diagnostic = _plateau_diagnostic(rows, task)
+        required_improvement = _parameter(
+            rule, ComparisonParameterName.PLATEAU_SSE_IMPROVEMENT_MINIMUM
+        )
+        early_maximum = _parameter(
+            rule, ComparisonParameterName.EARLY_SLOPE_ABSOLUTE_MAXIMUM
+        )
+        late_minimum = _parameter(rule, ComparisonParameterName.LATE_SLOPE_MINIMUM)
+        satisfied = (
+            float(diagnostic["sse_improvement"]) >= required_improvement
+            and abs(float(diagnostic["early_slope"])) <= early_maximum
+            and float(diagnostic["late_slope"]) > late_minimum
+        )
+        add(
+            attempt_id,
+            {
+                **diagnostic,
+                "required_sse_improvement": required_improvement,
+                "early_slope_absolute_maximum": early_maximum,
+                "late_slope_minimum": late_minimum,
+                "satisfied": satisfied,
+            },
+            ValidationOutcome.REPRODUCED
+            if satisfied
+            else ValidationOutcome.NOT_REPRODUCED,
+            (
+                f"{task}: SSE improvement={float(diagnostic['sse_improvement']):.12g}, early slope={float(diagnostic['early_slope']):.12g}, late slope={float(diagnostic['late_slope']):.12g}.",
+            ),
+        )
+    return tuple(results), tuple(series)
+
+
 def run_single_scale_attempts(
     *,
     repository_root: Path,
@@ -1024,9 +1859,16 @@ def run_single_scale_attempts(
         columns=columns,
         parquet_sha256=digest,
     )
-    return tuple(sorted((*headline, plot_result), key=lambda item: item.attempt_id)), (
-        series,
+    qualitative, qualitative_series = _single_scale_qualitative_attempts(
+        registry=registry,
+        contract=contract,
+        headline=headline,
+        aggregate_result=plot_result,
+        aggregate_series=series,
     )
+    return tuple(
+        sorted((*headline, plot_result, *qualitative), key=lambda item: item.attempt_id)
+    ), tuple(sorted((series, *qualitative_series), key=lambda item: item.id))
 
 
 def run_per_task_attempts(
@@ -1052,7 +1894,15 @@ def run_per_task_attempts(
         columns=columns,
         parquet_sha256=digest,
     )
-    return (result,), (series,)
+    qualitative, qualitative_series = _per_task_qualitative_attempts(
+        registry=registry,
+        contract=contract,
+        evidence=result,
+        base_series=series,
+    )
+    return tuple(
+        sorted((result, *qualitative), key=lambda item: item.attempt_id)
+    ), tuple(sorted((series, *qualitative_series), key=lambda item: item.id))
 
 
 __all__ = ["run_per_task_attempts", "run_single_scale_attempts"]
