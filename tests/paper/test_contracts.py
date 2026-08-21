@@ -80,10 +80,32 @@ def test_current_paper_reproduction_contract_pins_sources_and_boundaries() -> No
         MethodProvenance.PAPER_DERIVED,
         MethodProvenance.ARTIFACT_DERIVED,
     }
+    method_provenance = {method.id: method.provenance for method in contract.methods}
+    assert method_provenance["suite_config_comparison"] is (
+        MethodProvenance.PAPER_DERIVED
+    )
+    assert method_provenance["olmes_aggregate_verification"] is (
+        MethodProvenance.PAPER_DERIVED
+    )
+    assert method_provenance["author_artifact_comparison"] is (
+        MethodProvenance.ARTIFACT_DERIVED
+    )
+    assert method_provenance["artifact_inventory"] is (
+        MethodProvenance.ARTIFACT_DERIVED
+    )
     policy_statuses = {policy.id: policy.status for policy in contract.policies}
     assert policy_statuses["external_citation_scope"] == "settled"
     assert policy_statuses["comparison_universe"] == "unresolved"
     assert policy_statuses["statistical_fit"] == "unresolved"
+    assert policy_statuses["source_coverage_v1"] == "settled"
+    assert policy_statuses["citation_trace_v1"] == "settled"
+    assert policy_statuses["suite_config_v1"] == "settled"
+    assert policy_statuses["olmes_v1"] == "settled"
+    olmes_policy = next(
+        policy for policy in contract.policies if policy.id == "olmes_v1"
+    )
+    assert "olmes_analysis" in olmes_policy.statement
+    assert "does not settle scaling-law" in olmes_policy.statement
     assert contract.outputs.runs_root == "data/paper-reproduction/runs"
     assert contract.outputs.report == "docs/paper-reproduction-report.md"
 

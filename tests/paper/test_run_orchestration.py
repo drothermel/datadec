@@ -9,7 +9,13 @@ from typing import Any
 import pytest
 
 import datadec.paper.run as run_module
-from datadec.paper.models import CodeIdentity, CodeTreeState, ContentIdentity, Verdict
+from datadec.paper.models import (
+    CodeIdentity,
+    CodeTreeState,
+    ContentIdentity,
+    MethodProvenance,
+    Verdict,
+)
 from datadec.paper.run import (
     build_observations,
     render_repository,
@@ -77,6 +83,43 @@ def test_first_run_builds_one_truthful_terminal_observation_per_claim(
     assert by_id["DD-0276"].verdict is Verdict.CONTRADICTED
     assert by_id["DD-0289"].verdict is Verdict.CONTRADICTED
     assert by_id["DD-0268"].verdict is (Verdict.EXTERNAL_OR_CITATION_DEPENDENT)
+
+    suite_observation = by_id["DD-0267"]
+    assert (
+        suite_observation.verifier_id,
+        suite_observation.method_id,
+        suite_observation.method_provenance,
+        suite_observation.policy_id,
+    ) == (
+        "suite_config",
+        "suite_config_comparison",
+        MethodProvenance.PAPER_DERIVED,
+        "suite_config_v1",
+    )
+    assert by_id["DD-0272"].verifier_id == "suite_config"
+
+    source_observation = by_id["DD-0001"]
+    assert (
+        source_observation.verifier_id,
+        source_observation.method_id,
+        source_observation.policy_id,
+    ) == ("source_trace", "paper_source_trace", "source_coverage_v1")
+
+    citation_observation = by_id["DD-0268"]
+    assert (
+        citation_observation.verifier_id,
+        citation_observation.method_id,
+        citation_observation.policy_id,
+    ) == (
+        "citation_trace",
+        "external_citation_trace",
+        "citation_trace_v1",
+    )
+
+    planned_olmes = by_id["DD-0002"]
+    assert planned_olmes.verdict is Verdict.NOT_ATTEMPTED
+    assert planned_olmes.verifier_id == "olmes_aggregate"
+    assert planned_olmes.policy_id == "olmes_v1"
 
 
 def test_source_only_diagnostics_do_not_claim_independent_reproduction(

@@ -43,6 +43,7 @@ from datadec.paper.models import (
     Verdict,
 )
 from datadec.paper.policies import resolve_olmes_policy
+from datadec.paper.registry import VerifierId, validate_static_references
 from datadec.paper.runs import (
     create_run_bundle,
     load_run_bundle,
@@ -96,6 +97,7 @@ __all__ = [
     "RepositoryValidation",
     "SourceRegion",
     "Verdict",
+    "VerifierId",
     "build_observations",
     "create_run_bundle",
     "load_claim_registry",
@@ -106,4 +108,5 @@ __all__ = [
     "run_repository",
     "validate_repository",
     "validate_run_qualification",
+    "validate_static_references",
 ]

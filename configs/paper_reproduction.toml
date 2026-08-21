@@ -31,6 +31,30 @@ provenance = "artifact_derived"
 description = "Compare paper-facing values with pinned final author artifacts without treating the comparison as independent reproduction."
 paper_elements = ["tables", "figures", "release_claims"]
 
+[[methods]]
+id = "suite_config_comparison"
+provenance = "paper_derived"
+description = "Compare the paper's suite configuration and displayed model-ladder values with the typed repository catalog."
+paper_elements = ["tab:suite_stats", "sec:suite"]
+
+[[methods]]
+id = "olmes_aggregate_verification"
+provenance = "paper_derived"
+description = "Recompute aggregate OLMES facts under the typed OLMES analysis contract derived from the paper."
+paper_elements = ["OLMES aggregate analysis"]
+
+[[methods]]
+id = "author_artifact_comparison"
+provenance = "artifact_derived"
+description = "Compare claims with author-produced downstream tables without treating those tables as independently recomputed evidence."
+paper_elements = ["author downstream tables"]
+
+[[methods]]
+id = "artifact_inventory"
+provenance = "artifact_derived"
+description = "Audit the identities and declared contents of available author-produced release artifacts."
+paper_elements = ["release claims", "artifact inventories"]
+
 [[policies]]
 id = "external_citation_scope"
 status = "settled"
@@ -65,6 +89,26 @@ statement = "Aggregation order, uncertainty convention, scaling-law variants, op
 id = "qualitative_predicates"
 status = "unresolved"
 statement = "Qualitative phrases require explicit claim-specific predicates before independent verification."
+
+[[policies]]
+id = "source_coverage_v1"
+status = "settled"
+statement = "Source-trace observations bind each claim to its hashed active-paper source region and do not claim independent reproduction."
+
+[[policies]]
+id = "citation_trace_v1"
+status = "settled"
+statement = "Citation-trace observations preserve the active citation keys for externally attributed claims and remain citation-dependent."
+
+[[policies]]
+id = "suite_config_v1"
+status = "settled"
+statement = "Suite configuration comparisons use the active paper table and the typed repository catalog, preserving contradictions as verdicts."
+
+[[policies]]
+id = "olmes_v1"
+status = "settled"
+statement = "Aggregate OLMES verification follows the typed olmes_analysis subtree; this policy does not settle scaling-law fitting."
 
 [olmes_analysis]
 target_model_size = "1B"

@@ -36,6 +36,10 @@ from datadec.paper.models import (
     Verdict,
 )
 from datadec.paper.policies import resolve_olmes_policy
+from datadec.paper.registry import (
+    resolve_method_provenance,
+    validate_static_references,
+)
 from datadec.paper.report import render_report_file
 from datadec.paper.runs import (
     create_run_bundle,
@@ -128,6 +132,7 @@ def validate_repository(root: str | Path) -> RepositoryValidation:
     registry = load_claim_registry(
         _repository_file(repository_root, contract.contracts.claims_contract)
     )
+    validate_static_references(registry, contract)
 
     catalog = _load_toml_model(
         repository_root, contract.contracts.catalog, DataDecideCatalog
@@ -269,6 +274,25 @@ def _not_attempted_observation(claim: PaperClaim) -> Observation:
             kind=BlockerKind.NOT_ATTEMPTED,
             reason="no claim-specific mapping to the available normalized evaluation facts is implemented",
         ),
+    )
+
+
+def _with_static_references(
+    observation: Observation,
+    claim: PaperClaim,
+    contract: PaperReproductionContract,
+) -> Observation:
+    return Observation.model_validate(
+        {
+            **observation.model_dump(),
+            "verifier_id": claim.verifier_id,
+            "method_id": claim.method_id,
+            "method_provenance": resolve_method_provenance(
+                contract,
+                claim.method_id,
+            ),
+            "policy_id": claim.policy_id,
+        }
     )
 
 
@@ -447,7 +471,13 @@ def build_observations(
                 f"unclassified evidence boundary for claim {claim.id}: "
                 f"{claim.required_evidence_boundary}"
             )
-        observations.append(observation)
+        observations.append(
+            _with_static_references(
+                observation,
+                claim,
+                validation.contract,
+            )
+        )
 
     ordered = tuple(sorted(observations, key=lambda value: value.claim_id))
     if len(ordered) != len(validation.registry.claims):
