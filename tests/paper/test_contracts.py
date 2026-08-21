@@ -245,7 +245,7 @@ def test_current_claim_registry_is_complete_and_contiguous() -> None:
     assert tuple(claim.id for claim in registry.claims) == tuple(
         f"DD-{index:04d}" for index in range(1, 443)
     )
-    assert registry.source_regions == ()
+    assert len(registry.source_regions) == 128
 
 
 def test_config_file_prefers_packaged_resource(
