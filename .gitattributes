@@ -1,0 +1,3 @@
+# Preserve the downloaded arXiv source bundle byte-for-byte.
+docs/paper/** -whitespace
+docs/paper/figures/*.pdf binary

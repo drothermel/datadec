@@ -1,0 +1,108 @@
+% \begin{tabular}{lp{0.75\textwidth}}
+% \toprule
+% \textbf{Name} & \textbf{Description} \\ \midrule
+% \dolmaSeventeen{} & The 1.7 release of the Dolma dataset \citep{dolma}, a 2.3 trillion token corpus that samples sources commonly used to train LMs in order to enable open research on pretraining data. We use this corpus for ablations of the following sources. \\ \midrule
+% \noCode{} & Dolma 1.7 with the starcoder and stackexchange subsets removed. \\ \midrule
+% \noMathNoCode{} & Dolma 1.7 with the following subsets removed: openwebmath, pes20 stem papers, starcoder, stackexchange, algebraic stack. \\ \midrule
+% \noReddit{} & Dolma 1.7 with the reddit subset removed. \\ \midrule
+% \noFlan{} & Dolma 1.7 with the flan subset removed. \\ \midrule
+% \dolmaVSixteenAndSourcesBaseline{} & This contains the data from the 1.6 release of Dolma along with the following additional sources used in Dolma 1.7: RedPajama's arxiv subset, openwebmath, algebraic stack, flan, starcoder, falcon. \\ \midrule
+% \cFour{} & The C4 dataset \citep{2019t5} as prepared in Dolma 1.7, a standard contemporary LM pretraining corpus automatically filtered from the April 2019 Common Crawl scrape. \\ \midrule
+% \proxFinewebPro{} & This is the FineWeb Pro corpus \citep{zhou2024programming}, which uses a model to select programmatic data cleaning operations and refinements on top of FineWeb. \\ \midrule
+% \finewebEduDedup{} & This is the FineWeb-Edu deduplicated subset of the SmolLM-Corpus \citep{benallal2024smollmcorpus}, consisting of educational web pages filtered using an educational quality classifier. \\ \midrule
+% \falcon{} & The Falcon RefinedWeb corpus \citep{Penedo2023TheRD} as prepared in Dolma 1.7, a corpus of English sampled from all Common Crawl scrapes until June 2023, more aggressively filtered and deduplicated than C4. \\ \midrule
+% \falconAndCc{} & The same Falcon RefinedWeb data as \falcon{} combined with the Common Crawl data from Dolma 1.7. This is the corpus on which we apply the following quality filters. \\ \midrule
+% \falconAndCcEliFiveOhTopTenP{} & Applying our reproduction of the quality filter proposed in \citet{li2024datacomplmsearchgenerationtraining} on top of the \falconAndCc{} data and taking the top 10\% of documents ranked by the filter. \\ \midrule
+% \falconAndCcEliFiveOhTopTwentyP{} & Applying our reproduction of the quality filter proposed in \citet{li2024datacomplmsearchgenerationtraining} on top of the \falconAndCc{} data and taking the top 20\% of documents ranked by the filter. \\ \midrule
+% \falconAndCcOgEliFiveOhTopTenP{} & Applying the original quality filter proposed in \citet{li2024datacomplmsearchgenerationtraining} on top of the \falconAndCc{} data and taking the top 10\% of documents ranked by the filter. \\ \midrule
+% \falconAndCcTuluQcTopTen{} & We train a FastText classifier \citep{joulin2017bag} on a pre-release version of Tulu-v3 \citep{lambert2024tulu3} and apply it to \falconAndCc{} data and taking the top 10\% of documents ranked by the filter. \\ \midrule
+% \DCLMBaseline{} & The proposed corpus from \citep{li2024datacomplmsearchgenerationtraining}, which uses duplication and cleaning heuristics combined with a trained quality filter to process Common Crawl into a SOTA pretraining corpus. \\ \midrule
+% \dolmaSeventeenSeventyFivePDCLMBaselineTwentyFiveP{} & Fractional combinations of \dolmaSeventeen{} and \DCLMBaseline{} with 25\% of one dataset and the rest from the other. \\ \midrule
+% \dolmaSeventeenFiftyPDCLMBaselineFiftyP{} & Fractional combinations of \dolmaSeventeen{} and \DCLMBaseline{} with 50\% of one dataset and the rest from the other. \\ \midrule
+% \dolmaSeventeenTwentyFivePDCLMBaselineSeventyFiveP{} & Fractional combinations of \dolmaSeventeen{} and \DCLMBaseline{} with 75\% of one dataset and the rest from the other. \\ \midrule
+% \dclmFtSevenPercentileFwTwo{} & DCLM baseline dataset, top 7\% based on DCLM classifier, then filtered using FineWeb-edu classifier, only scores 2+ taken \\ \midrule
+% \dclmFtSevenPercentileFwThree{} & DCLM baseline dataset, top 7\% based on DCLM classifier, then filtered using FineWeb-edu classifier, only scores 3+ taken \\ \midrule
+% \dclmFwTopTen{} & DCLM baseline dataset, filtered using FineWeb-edu classifier, 10\% kept. \\ \midrule
+% \dclmFwTopThree{} & DCLM baseline dataset, filtered using FineWeb-edu classifier, 3\% kept. \\ \midrule
+% \posEliFiveOhNegDclmRefinedwebStepsTwoThousandLrThreeEFourTopTenP{} & DCLM baseline dataset, filtered using a fine-tuned classifier (trained on OpenHermes and Reddit ELI5), 10\% kept. \\ \midrule
+% \posEliFiveOhNegDclmRefinedwebStepsTwoThousandLrThreeEFourTopTwentyP{} & DCLM baseline dataset, filtered using a fine-tuned classifier (trained on OpenHermes and Reddit ELI5), 20\% kept. \\ \bottomrule
+% \end{tabular}
+
+% \begin{tabular}{lp{0.75\textwidth}}
+% \toprule
+% \textbf{Name} & \textbf{Description} \\ \midrule
+% \dolmaSeventeen{} & The 1.7 release of the Dolma dataset \citep{dolma}, a 2.3 trillion token corpus that samples sources commonly used to train LMs in order to enable open research on pretraining data. Includes ablations: no code (starcoder and stackexchange subsets removed), no math/code (openwebmath, pes20 stem papers, starcoder, stackexchange, algebraic stack removed), no Reddit (reddit subset removed), and no Flan (flan subset removed). \\ \midrule
+% \dolmaVSixteenAndSourcesBaseline{} & This contains the data from the 1.6 release of Dolma along with the following additional sources used in Dolma 1.7: RedPajama's arxiv subset, openwebmath, algebraic stack, flan, starcoder, falcon. \\ \midrule
+% \cFour{} & The C4 dataset \citep{2019t5} as prepared in Dolma 1.7, a standard contemporary LM pretraining corpus automatically filtered from the April 2019 Common Crawl scrape. \\ \midrule
+% \proxFinewebPro{} & This is the FineWeb Pro corpus \citep{zhou2024programming}, which uses a model to select programmatic data cleaning operations and refinements on top of FineWeb. \\ \midrule
+% \finewebEduDedup{} & This is the FineWeb-Edu deduplicated subset of the SmolLM-Corpus \citep{benallal2024smollmcorpus}, consisting of educational web pages filtered using an educational quality classifier. \\ \midrule
+% \falcon{} & The Falcon RefinedWeb corpus \citep{Penedo2023TheRD} as prepared in Dolma 1.7, a corpus of English sampled from all Common Crawl scrapes until June 2023, more aggressively filtered and deduplicated than C4. \\ \midrule
+% \falconAndCc{} & The same Falcon RefinedWeb data as \falcon{} combined with the Common Crawl data from Dolma 1.7. Includes quality filters: QC 10\% (top 10\% of documents ranked by the filter), QC 20\% (top 20\% of documents ranked by the filter), QC Orig 10\% (original quality filter taking top 10\% of documents), and QC Tulu 10\% (trained on a pre-release version of Tulu-v3 and taking top 10\% of documents). \\ \midrule
+% \DCLMBaseline{} & The proposed corpus from \citep{li2024datacomplmsearchgenerationtraining}, which uses duplication and cleaning heuristics combined with a trained quality filter to process Common Crawl into a SOTA pretraining corpus. Includes variations: QC 7\% FW2 (top 7\% based on DCLM classifier, filtered using FineWeb-edu classifier, only scores 2+ taken), QC 7\% FW3 (same, but scores 3+ taken), QC FW 10\% (filtered using FineWeb-edu classifier, 10\% kept), QC FW 3\% (filtered using FineWeb-edu classifier, 3\% kept), QC 10\% (filtered using a fine-tuned classifier trained on OpenHermes and Reddit ELI5, 10\% kept), and QC 20\% (same, but 20\% kept). \\ \bottomrule
+% \end{tabular}
+
+% \begin{tabular}{lp{0.2\textwidth}p{0.55\textwidth}}
+% \toprule
+% \textbf{Name} & \textbf{Recipes} & \textbf{Description} \\ \midrule
+% \dolmaSeventeen{} & No code, No math/code, No Reddit, No Flan & The 1.7 release of the Dolma dataset \citep{dolma}, a 2.3 trillion token corpus that samples sources commonly used to train LMs in order to enable open research on pretraining data. \\ \midrule
+% \dolmaVSixteenAndSourcesBaseline{} & Original & This contains the data from the 1.6 release of Dolma along with the following additional sources used in Dolma 1.7: RedPajama's arxiv subset, openwebmath, algebraic stack, flan, starcoder, falcon. \\ \midrule
+% \cFour{} & Original & The C4 dataset \citep{2019t5} as prepared in Dolma 1.7, a standard contemporary LM pretraining corpus automatically filtered from the April 2019 Common Crawl scrape. \\ \midrule
+% \proxFinewebPro{} & Original & This is the FineWeb Pro corpus \citep{zhou2024programming}, which uses a model to select programmatic data cleaning operations and refinements on top of FineWeb. \\ \midrule
+% \finewebEduDedup{} & Original & This is the FineWeb-Edu deduplicated subset of the SmolLM-Corpus \citep{benallal2024smollmcorpus}, consisting of educational web pages filtered using an educational quality classifier. \\ \midrule
+% \falcon{} & Original & The Falcon RefinedWeb corpus \citep{Penedo2023TheRD} as prepared in Dolma 1.7, a corpus of English sampled from all Common Crawl scrapes until June 2023, more aggressively filtered and deduplicated than C4. \\ \midrule
+% \falconAndCc{} & QC 10\%, QC 20\%, QC Orig 10\%, QC Tulu 10\% & The same Falcon RefinedWeb data as \falcon{} combined with the Common Crawl data from Dolma 1.7, with applied quality filters. \\ \midrule
+% \DCLMBaseline{} & QC 7\% FW2, QC 7\% FW3, QC FW 10\%, QC FW 3\%, QC 10\%, QC 20\% & The proposed corpus from \citep{li2024datacomplmsearchgenerationtraining}, which uses duplication and cleaning heuristics combined with a trained quality filter to process Common Crawl into a SOTA pretraining corpus. \\ \bottomrule
+% \end{tabular}
+
+% \begin{tabular}{p{0.1\textwidth}p{0.15\textwidth}p{0.6\textwidth}}
+% \toprule
+% \textbf{Source} & \textbf{Recipes} & \textbf{Description} \\ \midrule
+% \dolmaSeventeen{} & No code, No math/code, No Reddit, No Flan & The 1.7 release of the Dolma dataset \citep{dolma}, a 2.3 trillion token corpus that samples sources commonly used to train LMs in order to enable open research on pretraining data. Includes ablations: no code (starcoder and stackexchange subsets removed), no math/code (openwebmath, pes20 stem papers, starcoder, stackexchange, algebraic stack removed), no Reddit (reddit subset removed), and no Flan (flan subset removed). \\ \midrule
+% \dolmaVSixteenAndSourcesBaseline{} & Original & This contains the data from the 1.6 release of Dolma along with the following additional sources used in Dolma 1.7: RedPajama's arxiv subset, openwebmath, algebraic stack, flan, starcoder, falcon. \\ \midrule
+% \cFour{} & Original & The C4 dataset \citep{2019t5} as prepared in Dolma 1.7, a standard contemporary LM pretraining corpus automatically filtered from the April 2019 Common Crawl scrape. \\ \midrule
+% \proxFinewebPro{} & Original & This is the FineWeb Pro corpus \citep{zhou2024programming}, which uses a model to select programmatic data cleaning operations and refinements on top of FineWeb. \\ \midrule
+% \finewebEduDedup{} & Original & This is the FineWeb-Edu deduplicated subset of the SmolLM-Corpus \citep{benallal2024smollmcorpus}, consisting of educational web pages filtered using an educational quality classifier. \\ \midrule
+% \falcon{} & Original & The Falcon RefinedWeb corpus \citep{Penedo2023TheRD} as prepared in Dolma 1.7, a corpus of English sampled from all Common Crawl scrapes until June 2023, more aggressively filtered and deduplicated than C4. \\ \midrule
+% \falconAndCc{} & QC 10\%, QC 20\%, QC Orig 10\%, QC Tulu 10\% & The same Falcon RefinedWeb data as \falcon{} combined with the Common Crawl data from Dolma 1.7. Includes quality filters: QC 10\% (top 10\% of documents ranked by reproduction of \citet{li2024datacomplmsearchgenerationtraining} quality filter), QC 20\% (top 20\% of documents ranked by the reproduced filter), QC Orig 10\% (original quality filter taking top 10\% of documents), and QC Tulu 10\% (trained on a pre-release version of Tulu-v3 \citep{lambert2024tulu3} and taking top 10\% of documents). \\ \midrule
+% \DCLMBaseline{} & QC 7\% FW2, QC 7\% FW3, QC FW 10\%, QC FW 3\%, QC 10\%, QC 20\% & The proposed corpus from \citep{li2024datacomplmsearchgenerationtraining}, which uses duplication and cleaning heuristics combined with a trained quality filter to process Common Crawl into a SOTA pretraining corpus. Includes variations: QC 7\% FW2 (top 7\% based on DCLM classifier, filtered using FineWeb-edu classifier, only scores 2+ taken), QC 7\% FW3 (same, but scores 3+ taken), QC FW 10\% (filtered using FineWeb-edu classifier, 10\% kept), QC FW 3\% (same, but 3\% kept), QC 10\% (filtered using a fine-tuned classifier trained on OpenHermes and Reddit ELI5, 10\% kept), and QC 20\% (same, but 20\% kept). \\  \midrule
+% \DCLMBaseline{} + \dolmaSeventeen{} & 75\% Dolma / 25\% DCLM, 50\% Dolma / 50\% DCLM, 25\% Dolma / 75\% DCLM & Fractional combinations of \dolmaSeventeen{} and \DCLMBaseline{} mixing different proportions of the two datasets. \\ \bottomrule
+
+% \end{tabular}
+
+
+\begin{tabular}{p{0.25\textwidth} p{0.70\textwidth}}
+
+\toprule
+\textbf{Source / Recipe} & \textbf{Description}\\
+\midrule
+
+\textbf{\dolmaSeventeen{}} \emph{Original, No code, No math/code, No Reddit, No Flan}
+& A 2.3T-token corpus (Dolma 1.7 \citealp{dolma}) sampling common LM sources for open research. We ablate code, math/code, Reddit, or Flan subsets.\\
+
+\textbf{\dolmaVSixteenAndSourcesBaseline{}} \emph{Original}
+& Dolma 1.6 plus additional sources from Dolma 1.7: RedPajama’s arxiv subset, openwebmath, algebraic stack, flan, starcoder, falcon. \\
+
+\textbf{\cFour{}} \emph{Original}
+& The C4 dataset \citep{2019t5} as prepared in Dolma 1.7, heuristically filtered from the April 2019 \citet{commoncrawl}. \\
+
+\textbf{\proxFinewebPro{}} \emph{Original}
+& The FineWeb Pro corpus \citep{zhou2024programming}, featuring model-driven data cleaning on FineWeb. \\
+
+\textbf{\finewebEduDedup{}} \emph{Original}
+& The deduplicated FineWeb-Edu subset of SmolLM-Corpus \citep{benallal2024smollmcorpus}, focused on educational web pages. \\
+
+\textbf{\falcon{}} \emph{Original}
+& The Falcon RefinedWeb corpus \citep{Penedo2023TheRD} in Dolma 1.7, derived from \citet{commoncrawl} through June 2023 and more aggressively filtered/deduplicated than C4. \\
+
+\textbf{\falconAndCc{}} \emph{Original, QC 10\%, QC 20\%, QC Orig 10\%, QC Tulu 10\%}
+& \falcon{} and Dolma 1.7’s \citet{commoncrawl}. We quality filter to top 10\% or 20\% documents with reproduced or original \cite{li2024datacomplmsearchgenerationtraining} filter or retrain filter on pre-release version of Tulu-v3 \citep{lambert2024tulu3}. \\
+
+\textbf{\DCLMBaseline{}} \emph{Original, QC 7\% FW2, QC 7\% FW3, QC FW 3\%, QC FW 10\%, QC 10\%, QC 20\%}
+& A SOTA \citet{commoncrawl} corpus using best ablated deduplication, cleaning heuristics, and quality filter. We quality filter to top 7\% of DCLM classified documents and further take 2+ or 3+ scores with FineWeb-edu classifier; or filter to top 3\% or 10\%  with FineWeb-edu classifier; or take top 
+10\% or 20\% with reproduced DCLM classifier. \\
+ \emph{$\lambda$\%} \textbf{\DCLMBaseline{}} + \emph{$1-\lambda$\%} \textbf{\dolmaSeventeen{}}
+& Fractional combinations of \dolmaSeventeen{} and \DCLMBaseline{}
+mixing different proportions of the two datasets for $\lambda \in \{25\%, 50\%, 75\%\}$. \\
+
+\bottomrule
+\end{tabular}
