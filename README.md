@@ -1,161 +1,181 @@
 # DataDecide
 
-DataDecide is a Python library for downloading, processing, and analyzing machine learning experiment data, specifically focusing on language model evaluation results.
+Library and scripts for downloading, preprocessing, and publishing DataDecide
+evaluation artifacts.
 
-> For project-wide context and onboarding, see the [Agent Guide](../dr_ref/docs/guides/AGENT_GUIDE_datadec.md).
+## Data layout
 
-## Features
+Artifacts live under `data/` by default:
 
--   **Data Pipeline:** A multi-stage pipeline that downloads raw data from Hugging Face, processes it, and enriches it with additional details.
--   **Easy Data Access:** A simple interface to load and access various dataframes, including raw data, parsed data, and aggregated results.
--   **Advanced Filtering:** Multiple filter types including perplexity (`ppl`), OLMES metrics (`olmes`), and training steps (`max_steps`) with composable combinations.
--   **Scripting Utilities:** Powerful parameter and data selection with `"all"` keyword, exclusion lists, and intelligent validation for reproducible analysis scripts.
--   **WandB Integration:** Download and store ML experiment data from Weights & Biases with PostgreSQL backend and incremental updates.
+| Path | Description |
+|------|-------------|
+| `raw/ppl.parquet` | Raw perplexity export |
+| `raw/olmes.parquet` | Raw aggregate OLMES export |
+| `raw/olmes-details/models/{recipe}.tar.gz` | Per-recipe OLMES detail archive; removed after verified publication by default |
+| `raw/scaling-law/*.csv` | Three Google Drive scaling-law sources; removed after verified publication by default |
+| `reference/published-results/{structured source path}` | 51 Google Drive CSV/JSON sources; removed per verified publication unit by default |
+| `reference/published-results/{figure path}` | 80 download-only PDF/PNG figures |
+| `processed/ppl.parquet` | Typed PPL output |
+| `processed/olmes.parquet` | Typed aggregate OLMES output |
+| `processed/scaling-law/evaluations.parquet` | Typed, precedence-resolved scaling-law task evaluations |
+| `processed/scaling-law/checkpoint-losses.parquet` | Typed, reconciled scaling-law checkpoint losses and throughput |
+| `processed/olmes-details/{recipe}/tasks.parquet` | Detail task summaries |
+| `processed/olmes-details/{recipe}/instances.parquet` | Per-instance detail rows |
+| `processed/olmes-details/{recipe}/choices.parquet` | Per-choice detail rows |
+| `processed/published-results/{source path with .parquet suffix}` | One-to-one typed conversion of each structured published result |
 
-## Getting Started
+OLMES table schemas are declared in [`configs/olmes.toml`](configs/olmes.toml).
+Scaling-law source precedence, aliases, seed policy, and table schemas are
+declared in [`configs/scaling_law.toml`](configs/scaling_law.toml).
+Published-result schemas and atomic publication units are declared in
+[`configs/published_results.toml`](configs/published_results.toml). Hugging
+Face destination paths and commit messages are declared in
+[`configs/publishing.toml`](configs/publishing.toml).
+Model definitions and training constants are declared in
+[`configs/catalog.toml`](configs/catalog.toml). Each model distinguishes its
+nominal parameter count (the size label), training parameter count (the value
+used to scale batch size and learning-rate schedules), and exact architectural
+parameter count (the value used for FLOP estimates). The configured
+`flops_per_token_per_parameter` constant owns the compute multiplier.
 
-### Installation
+Every checkpoint-bearing processed table except the detail instance and choice
+tables carries the canonical checkpoint derivations directly, without a later
+join: tokens, exact-parameter FLOP compute, model architecture/training details,
+`lr_at_step`, and `cumulative_lr`. These fields are present in PPL, aggregate
+OLMES, both scaling-law tables, and OLMES detail tasks. Instances and choices
+remain evaluation-detail tables keyed to their parent task checkpoint.
 
-To install the necessary dependencies, run:
+## Download, preprocess, and publish
+
+Download and preprocess are separate steps. Preprocess functions read local
+files only and never trigger downloads or network work. Their repository CLIs
+publish final Parquet outputs to `drotherm/dd_parsed` by default after local
+preprocessing succeeds. Pass `--no-upload` for a local-only run or
+`--keep-sources` to retain cleanup-eligible non-Parquet sources after a verified
+upload.
 
 ```bash
-uv sync
-source .venv/bin/activate
+# Download selected sources
+uv run python scripts/download.py --ppl --olmes --olmes-details dolma1.7-no-math-no-code
+
+# Download the three raw scaling-law CSVs (2.86 GB)
+uv run python scripts/download.py --scaling-law
+
+# Download the 51 structured published results (8.97 GB)
+uv run python scripts/download.py --published-results
+
+# Optionally download the 80 published PDF/PNG figures (83 MB)
+uv run python scripts/download.py --published-figures
+
+# Preprocess and publish aggregate sources
+uv run python scripts/preprocess_ppl.py
+uv run python scripts/preprocess_olmes.py
+uv run python scripts/preprocess_scaling_law.py
+
+# Preprocess and publish OLMES detail archives (tasks + instances + choices)
+uv run python scripts/preprocess_olmes_details.py --recipe dolma1.7-no-math-no-code
+
+# Convert and publish all structured published-result units
+uv run python scripts/preprocess_published_results.py
+
+# Publish already-processed outputs without recomputing them
+uv run python scripts/publish.py --ppl --olmes --scaling-law
+uv run python scripts/publish.py --olmes-details dolma1.7-no-math-no-code
+uv run python scripts/publish.py --published-results
 ```
 
-### Usage
+Scaling-law preprocessing requires all three local raw CSVs. It validates the
+fixed source schema, excludes the recorded blank/6198 legacy-seed rows and
+invalid source groups, resolves the historical `baseline` alias and source
+overlaps by configured policy, and derives corrected token/compute schedules
+from the pinned batch sizes and exact model parameter counts. It writes both
+output tables only after both temporary parquet files validate successfully.
+After both final tables validate, the CLI publishes them in one atomic commit
+and deletes the three raw CSVs only after immutable remote verification.
 
-The main entry point to the library is the `DataDecide` class. Here's how to use it:
+Select all three Drive-backed options to reconstruct all 134 source files
+(11.92 GB). The downloads use a pinned inventory from the public Drive folder
+rather than crawling its current contents.
 
-#### Basic Usage
+All preprocess CLIs accept `--data-dir` (default: repo `data/`). Override paths explicitly when needed:
 
-```python
-from datadec import DataDecide
-
-# Initialize the DataDecide class, which will run the data processing pipeline
-dd = DataDecide(data_dir="./data")
-
-# Access the full evaluation dataframe
-full_eval_df = dd.full_eval
-
-# Example of easy indexing
-indexed_df = dd.easy_index_df(
-    df_name="full_eval",
-    data="C4",
-    params="10M",
-    seed=0,
-)
-
-print(indexed_df.head())
-```
-
-#### Advanced Filtering
-
-```python
-# Filter data with multiple criteria
-filtered_df = dd.get_filtered_df(
-    filter_types=["ppl", "max_steps"],  # Remove NaN perplexity + apply step limits
-    min_params="150M",                  # Only models 150M and larger
-    verbose=True                        # Show filtering progress
-)
-
-# Filter by specific combinations only
-olmes_only_df = dd.get_filtered_df(
-    filter_types=["olmes"],            # Keep only rows with OLMES metrics
-    return_means=False                 # Get individual seed results
-)
-```
-
-#### Scripting Utilities
-
-```python
-from datadec.script_utils import select_params, select_data
-
-# Flexible parameter selection
-params = select_params(["150M", "1B"])                    # Specific models
-all_params = select_params("all")                          # All available (sorted)  
-large_models = select_params("all", exclude=["4M", "6M"]) # All except smallest
-
-# Data recipe selection  
-data_recipes = select_data(["C4", "Dolma1.7"])           # Specific datasets
-limited_data = select_data("all", exclude=["C4"])         # All except C4
-
-print(f"Selected {len(params)} models: {params}")
-print(f"Selected {len(data_recipes)} datasets: {data_recipes}")
-```
-
-### WandB Integration
-
-Download experiment data from Weights & Biases projects with PostgreSQL storage and bulk optimizations:
-
-#### Full Database Download (Optimized)
 ```bash
-# Initial download - uses bulk API optimization (5-6x faster)
-python scripts/wandb_download.py --entity your-entity --project your-project --force-refresh
+uv run python scripts/preprocess_olmes.py --input path/to/raw.parquet --output path/to/out.parquet
 
-# With parquet export
-python scripts/wandb_download.py --entity your-entity --project your-project --force-refresh --output-dir ./wandb_data/
+uv run python scripts/preprocess_olmes_details.py \
+  --recipe dolma1.7-no-math-no-code \
+  --input path/to/recipe.tar.gz \
+  --output-tasks path/to/tasks.parquet \
+  --output-instances path/to/instances.parquet \
+  --output-choices path/to/choices.parquet
 ```
 
-#### Incremental Updates (Daily Use)
+OLMES detail path overrides require exactly one recipe. A custom `--input` is
+never deleted automatically. To convert or publish selected published-result
+units, repeat `--unit` on `preprocess_published_results.py`; omit it for all 15
+units.
+
+## OLMES detail preprocessing
+
+Detail preprocessing streams one checkpoint at a time through the recipe archive, writing three contract-typed parquet files per recipe:
+
+- **tasks** — task-level metrics and config JSON
+- **instances** — one row per `(recipe, params, seed_value, step, task, doc_id)`; heterogeneous native IDs normalized to nullable `native_id` + `native_id_kind`
+- **choices** — one row per choice index in each instance's `model_output`
+
+Nullable byte/unconditional fields remain null when absent in the source checkpoint.
+
+## Verification
+
+**Default tests** (`uv run pytest`) use small tar fixtures and run in about a second. They cover schema mapping, nullability, CLI wiring, and verification logic — but not full live archives.
+
+**Manual verification** is for representative recipes after download + preprocess. This checks:
+
+- task / instance / choice counts and primary-key uniqueness
+- cross-source parity on the 482 overlapping checkpoints between aggregate and detail for a recipe such as `dolma1.7-no-math-no-code`
+- reconstruction of task metrics from instance rows
+
+`bits_per_byte_corr` is declared non-reconstructible from the detail slice in `configs/olmes.toml` and is excluded from reconstruction checks.
+
 ```bash
-# Fast incremental updates - only downloads new/changed runs
-python scripts/wandb_download.py --entity your-entity --project your-project
-
-# Custom database connection
-python scripts/wandb_download.py --entity your-entity --project your-project --database-url postgresql+psycopg://localhost/custom_db
+uv run python scripts/preprocess_olmes_details.py --recipe dolma1.7-no-math-no-code --no-upload
+uv run python scripts/verify_olmes_details.py --recipe dolma1.7-no-math-no-code
+uv run python scripts/verify_preprocessed_derivations.py
 ```
 
-#### Tag Synchronization
-```bash
-# Sync tags only (very fast)
-python scripts/wandb_download.py --entity your-entity --project your-project --sync-tags-only
+The derivation verifier covers PPL, aggregate OLMES, scaling-law evaluations,
+scaling-law checkpoint losses, and OLMES detail task outputs. It excludes the
+instance and choice tables. It checks every available raw token/compute value
+against the canonical schedule and reports when a raw source instead encodes
+nominal-parameter compute. No current preprocessing source records learning-rate
+schedule values, so LR derivations can be checked for internal consistency but
+not independently confirmed against raw evidence.
 
-# Download + sync tags in one operation
-python scripts/wandb_download.py --entity your-entity --project your-project --also-sync-tags
+The 2026-08-19 full-data validation produced zero token, exact-compute,
+model-detail, or LR contradictions in all five processed outputs: 22,709 PPL
+rows; 1,410,750 aggregate OLMES rows; 1,788,996 scaling-law evaluation rows;
+27,106 scaling-law checkpoint-loss rows; and 35,772 OLMES detail task rows.
+The aggregate OLMES raw source also had zero token or exact-compute
+contradictions across 1,410,750 rows. Of 2,245,848 raw Google Drive scaling-law
+rows, 489,258 contained token and compute evidence: their token values all
+matched, their compute values all matched nominal-parameter compute, and all
+therefore differed from the standardized exact-parameter compute. Embedded
+OLMES detail model configuration had zero contradictions across 35,772 task
+rows. Because the raw Google Drive distinction is intentional evidence rather
+than a standardized-output failure, the verifier reports those 489,258 raw
+exact-compute differences and exits nonzero.
 
-# Tag sync modes: recent (default), all, finished
-python scripts/wandb_download.py --entity your-entity --project your-project --sync-tags-only --sync-tags-mode all
-```
+Measured full local preprocessing wall times for that validation were 0.78s
+for PPL, 30.58s for aggregate OLMES, 228.94s for scaling-law, and 863.36s for
+the 542-checkpoint OLMES detail archive. The detail run wrote 20,423,644
+instance rows and 74,384,622 choice rows in addition to its task rows.
 
-#### Performance Features
-- **Bulk API optimization**: 5-6x faster full downloads using bulk history retrieval
-- **Incremental updates**: Smart detection of new/unfinished runs
-- **Progress reporting**: Real-time progress for all operations
-- **Batch processing**: Efficient tag updates with 50-run batches
-- **Automatic fallbacks**: Individual downloads if bulk operations fail
-
-See [docs/wandb_integration.md](docs/wandb_integration.md) for complete setup and usage guide.
-
-The `notebooks/explore_data.py` file provides a more detailed example of how to use the library.
-
-## Data
-
-This library uses the following Hugging Face datasets:
-
--   [allenai/DataDecide-ppl-results](https://huggingface.co/datasets/allenai/DataDecide-ppl-results): Perplexity evaluation results.
--   [allenai/DataDecide-eval-results](https://huggingface.co/datasets/allenai/DataDecide-eval-results): Downstream task evaluation results.
-
-The data processing pipeline downloads these datasets and stores them in the `data_dir` specified during the `DataDecide` initialization.  Then does some filtering, parsing, merging, and pulling in external information about hpms and other training settings.
-
-## Project Structure
-
-```
-├── src/datadec/           # Main library code
-│   ├── data.py           # Main DataDecide class
-│   ├── df_utils.py       # DataFrame utilities and filtering
-│   ├── script_utils.py   # Parameter/data selection utilities
-│   ├── wandb_store.py    # WandB PostgreSQL storage backend
-│   ├── wandb_downloader.py # WandB download logic with incremental updates
-│   └── ...              # Pipeline, parsing, constants, etc.
-├── scripts/               # Utilities and analysis scripts
-├── docs/                  # Documentation and reports
-│   ├── processes/         # Templates and guides
-│   ├── wandb_integration.md # WandB system setup and usage guide
-│   └── reports/          # Project documentation
-└── notebooks/            # Analysis notebooks
-```
+Full-recipe detail preprocessing and verification can take a long time and require multi-GB local data; they are intentionally excluded from the default test suite.
 
 ## Development
 
-See `docs/processes/reporting_guide.md` for project documentation standards and `CLAUDE.md` for development setup.
+```bash
+uv run ruff check src scripts tests
+uv run ty check src
+uv run pytest
+```

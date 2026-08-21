@@ -3,7 +3,7 @@ from __future__ import annotations
 import pandas as pd
 import pytest
 
-from datadec.wandb_eval.wandb_transforms import (
+from datadec.data.wandb.wandb_transforms import (
     add_datadecide_columns,
     convert_objects_and_normalize_dtypes,
     drop_wandb_constant_ignored_cols,
@@ -15,7 +15,7 @@ from datadec.wandb_eval.wandb_transforms import (
     map_wandb_dataset_to_datadecide,
     map_wandb_model_size_to_datadecide,
 )
-from datadec.wandb_eval import wandb_constants as wconsts
+from datadec.data.wandb import wandb_constants as wconsts
 
 
 class TestExtractDatasetFromModelPath:

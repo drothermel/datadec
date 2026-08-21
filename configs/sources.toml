@@ -1,0 +1,155 @@
+[ppl]
+id = "ppl"
+provider = "datasets"
+repo_id = "allenai/DataDecide-ppl-results"
+revision = "c4a9fa360a0c8351e71f3ede04dd165995fab68c"
+split = "train"
+output = "raw/ppl.parquet"
+
+[olmes]
+id = "olmes"
+provider = "datasets"
+repo_id = "allenai/DataDecide-eval-results"
+revision = "9919b5a0e61e57a85021263918fa82d6ceaee038"
+split = "train"
+output = "raw/olmes.parquet"
+
+[olmes_details]
+id = "olmes-details"
+provider = "huggingface_hub"
+repo_type = "dataset"
+repo_id = "allenai/DataDecide-eval-instances"
+revision = "23f3b2e186ca6c39026e3efa00e4af397680c075"
+filename_template = "models/{recipe}.tar.gz"
+output_root = "raw/olmes-details"
+
+[[olmes_details.files]]
+recipe = "c4"
+expected_size = 4886124480
+sha256 = "791e5a82f0091bb4ddd0111bf677df30cde5f29b9111152ce4164777e263569c"
+
+[[olmes_details.files]]
+recipe = "dclm-baseline-25p-dolma1.7-75p"
+expected_size = 5065163629
+sha256 = "8b4354f6609ac540ee8fb5a3c254cf7a451645b713683d59ecccf9ec3c5397f9"
+
+[[olmes_details.files]]
+recipe = "dclm-baseline-50p-dolma1.7-50p"
+expected_size = 5082570178
+sha256 = "1e2f7e8bde726633400ca8fd692a1364f423a0f4d1e69dd155615176534baabc"
+
+[[olmes_details.files]]
+recipe = "dclm-baseline-75p-dolma1.7-25p"
+expected_size = 4877671054
+sha256 = "63de6978f96a56ea4b5248e14ecd199209de0ec5f71989c73a60cf6d505b31bc"
+
+[[olmes_details.files]]
+recipe = "dclm-baseline-top-10p"
+expected_size = 4635051501
+sha256 = "4c5f1f69e6ea93dddb362b5e3e0fbb6c4000a001ce5a026c133c57911f66953d"
+
+[[olmes_details.files]]
+recipe = "dclm-baseline-top-20p"
+expected_size = 4578130966
+sha256 = "82d14c08c4efc5b826d4f63f7b8861a2aaf7c3e48691c190c50aa4d4e56f04a2"
+
+[[olmes_details.files]]
+recipe = "dclm-baseline-top-fw-10p"
+expected_size = 5265369246
+sha256 = "37a7e51e39029b0c5bf7b2d388a476738ca67d4c6d5b2f132108d78e69a79d6e"
+
+[[olmes_details.files]]
+recipe = "dclm-baseline-top-fw-3p"
+expected_size = 5086716071
+sha256 = "12f79e3e3f18fd0c0caee2ad1b5bb02423912250870538107e140e0fa274266b"
+
+[[olmes_details.files]]
+recipe = "dclm-baseline-top-fw2-7p"
+expected_size = 5086964912
+sha256 = "a73aa2f8a27785c5f5742961d92e3e595557bede9b1e13fea50a4f95512b3090"
+
+[[olmes_details.files]]
+recipe = "dclm-baseline-top-fw3-7p"
+expected_size = 5079035586
+sha256 = "f8047429266560c5e414afbabf3679bad9b6e65fa4f3bfc4e57505fdd1cecbf8"
+
+[[olmes_details.files]]
+recipe = "dclm-baseline"
+expected_size = 5117565111
+sha256 = "772d4cf75f058820e01809e1221cb7b710665a742309f8e66c70c072b7fcd87e"
+
+[[olmes_details.files]]
+recipe = "dolma1.6++"
+expected_size = 5060335865
+sha256 = "6f00729b9a6737826a194b16f6d3edfdee4a9027e4cd2410a54db6decd489552"
+
+[[olmes_details.files]]
+recipe = "dolma1.7-no-code"
+expected_size = 4888566199
+sha256 = "13195cb304870dd9f7d8afe369562ff2f82aa515db19312c73a33ffe08a381a2"
+
+[[olmes_details.files]]
+recipe = "dolma1.7-no-flan"
+expected_size = 4886924293
+sha256 = "cc04032cdc1dfc0adafc7498269887cd23b459e722b4f86b42f46cb9c8f608c9"
+
+[[olmes_details.files]]
+recipe = "dolma1.7-no-math-no-code"
+expected_size = 4430453715
+sha256 = "c7b64b686eb0034d926280c497c5127c617f5a5b8fde50ba2453afba2a613fea"
+
+[[olmes_details.files]]
+recipe = "dolma1.7-no-reddit"
+expected_size = 4904813774
+sha256 = "23ce98f88d27d29fb5a927a9383789b5009ecbab26c1703076a5258994d8f806"
+
+[[olmes_details.files]]
+recipe = "dolma1.7"
+expected_size = 4892710078
+sha256 = "7f75b7b63a886e5f0ba1b489de70b455c917b7572c468a20ec54438e597e813e"
+
+[[olmes_details.files]]
+recipe = "falcon-with-cc-top-10p"
+expected_size = 4871654082
+sha256 = "9be5a0b52acb04883e92d55b26298ad08854365b3228970b6549e4004086b896"
+
+[[olmes_details.files]]
+recipe = "falcon-with-cc-top-20p"
+expected_size = 4862433316
+sha256 = "277842f8bcd66b4301d6343101057ae94c13218d0d6926917a38ced939a919c0"
+
+[[olmes_details.files]]
+recipe = "falcon-with-cc-top-orig-10p"
+expected_size = 4912093949
+sha256 = "dbf890bc654fe1fb003fcad0d481d3975dabe0390bf5babf61c9a6da43f62177"
+
+[[olmes_details.files]]
+recipe = "falcon-with-cc-top-tulu-10p"
+expected_size = 4865776935
+sha256 = "bcc4c446a4362092bd9eac3fd1956fb861349567fcc2dc77cf56c77ae6d91170"
+
+[[olmes_details.files]]
+recipe = "falcon-with-cc"
+expected_size = 4889532627
+sha256 = "b1617cc78651e22606c793f940733214923fe5ac159a34b95ac8765c964ba6c3"
+
+[[olmes_details.files]]
+recipe = "falcon"
+expected_size = 4870160904
+sha256 = "633750cd279d5027bf50d0e0b51e4cd56c8395707c8416ca4b89d9fe1c4f4b22"
+
+[[olmes_details.files]]
+recipe = "fineweb-edu"
+expected_size = 4882430652
+sha256 = "abddd11746d14f4c1d16bb537a04d5b5a3ef6d43271665fd9dcc0e50a7b401b7"
+
+[[olmes_details.files]]
+recipe = "fineweb-pro"
+expected_size = 4945554599
+sha256 = "da824026431e243b7b5ed27233cab8ab17e0702ae9fb588e669b43c1c38c0c71"
+
+[[archives]]
+id = "published_results"
+provider = "google_drive_folder"
+url = "https://drive.google.com/drive/folders/1weYlEOlHrA_fzT2OsRa40uLc4EKTGz1D"
+downloaded_on = 2025-09-19

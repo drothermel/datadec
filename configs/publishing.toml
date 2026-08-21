@@ -1,0 +1,26 @@
+[target]
+repo_id = "drotherm/dd_parsed"
+revision = "main"
+
+[ppl]
+remote_path = "ppl.parquet"
+commit_message = "Publish PPL results"
+
+[olmes]
+remote_path = "olmes.parquet"
+commit_message = "Publish aggregate OLMES results"
+
+[scaling_law]
+evaluations_remote_path = "scaling-law/evaluations.parquet"
+checkpoint_losses_remote_path = "scaling-law/checkpoint-losses.parquet"
+commit_message = "Publish scaling-law results"
+
+[olmes_details]
+tasks_remote_path_template = "olmes-details/{recipe}/tasks.parquet"
+instances_remote_path_template = "olmes-details/{recipe}/instances.parquet"
+choices_remote_path_template = "olmes-details/{recipe}/choices.parquet"
+commit_message_template = "Publish OLMES details for {recipe}"
+
+[published_results]
+remote_root = "published-results"
+commit_message_template = "Publish published results for {unit}"

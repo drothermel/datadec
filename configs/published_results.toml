@@ -1,0 +1,1041 @@
+folder_url = "https://drive.google.com/drive/folders/1weYlEOlHrA_fzT2OsRa40uLc4EKTGz1D"
+
+[[files]]
+id = "1ECbz0BMOdAReXyhIqoqSjHH9BaDsOk9f"
+path = "raw_data/results_ladder_5xC_seeds.csv"
+expected_size = 1807261804
+sha256 = "9c02be4c22f9ff597164f593bbdefe27fa38e45b16301cc2144c2973d244b044"
+category = "scaling_law"
+
+[[files]]
+id = "1YDNu1cuWWO8CO6TSg1tTUVBpErMNfi4v"
+path = "raw_data/results_ladder_5xC_small_seed_extras.csv"
+expected_size = 527061496
+sha256 = "35c6581302ff872f2f806b5bf8fe74f156e0de6127f581b8c36dca16aa0d7e7a"
+category = "scaling_law"
+
+[[files]]
+id = "1ARdPfq7R5FDt9JRxr5-6tlB8mIQ-ibK2"
+path = "raw_data/results_ladder_5xC_small_seeds_extra_real.csv"
+expected_size = 527426471
+sha256 = "81efa485a08494716ecfa2d6b6dcdcc2c8a1c6a0e3b4102f1c4b61d03573e192"
+category = "scaling_law"
+
+[[files]]
+id = "1nK-9u_UcI07QGcNN63sGQF77klyNzOYp"
+path = "cheap_decisions_stacked_rc_pred_all.csv"
+expected_size = 277377057
+sha256 = "bed62b8a403e0ba659963345ece71028dad0d0065f1020b6bd61118b3c67be3b"
+category = "published_results"
+publication_unit = "cheap-decisions"
+schema = "cheap_decisions"
+
+[[files]]
+id = "1RXjWMMAjEI_4Ou7V09jfQYSlsKJLaQ-6"
+path = "new_eval_intermediates/davidh_new_evals_decision_accuracy.csv"
+expected_size = 3651
+sha256 = "edc716389a33e378cb34ffcdd8c6ee7f9012fbc88af5b1b4d7299b8ed957cd10"
+category = "published_results"
+publication_unit = "new-eval-intermediates"
+schema = "new_eval_decision_accuracy"
+
+[[files]]
+id = "188Qsnvp4fewhPQNaaiDQOryaMHyym91K"
+path = "new_eval_intermediates/davidh_new_evals_means_df.csv"
+expected_size = 2245
+sha256 = "2efd74f92309e5162c170901edbe05b9b88a5e6bf273b0c37807c9469b0d383d"
+category = "published_results"
+publication_unit = "new-eval-intermediates"
+schema = "new_eval_means"
+
+[[files]]
+id = "1jqL8fxx_SJvGMYJs49YlXiglFO0upZFN"
+path = "outputs2/0_target_pairs.json"
+expected_size = 23354
+sha256 = "7f7ef43c268f44db91ee8094751c96194ce227d56990431554f3afe644ab3305"
+category = "published_results"
+publication_unit = "outputs2"
+schema = "target_pairs"
+
+[[files]]
+id = "1OryNNXDrkrUazbrDphqUjjB6k3MRS_tl"
+path = "outputs2/1_metric_transformed.csv"
+expected_size = 165609339
+sha256 = "310e9a1f47890e383b481e1dff70fe7d031cdeef09959c24cb9eebe2960c0d02"
+category = "published_results"
+publication_unit = "outputs2"
+schema = "transformed"
+
+[[files]]
+id = "1hx0X6YwpKwn4uR01MiNF9JuR6gJAswtf"
+path = "outputs2/1_primary_transformed.csv"
+expected_size = 934425
+sha256 = "e5b0981091bcf850c9f639705e6de8b5cf4f054edd418d74b5f3bf91262ab285"
+category = "published_results"
+publication_unit = "outputs2"
+schema = "transformed"
+
+[[files]]
+id = "1uzhtmfWx73ZR3QJyIrdzQL2hHr4t_9sN"
+path = "outputs2/2_prediction_model_scale.csv"
+expected_size = 215487889
+sha256 = "802762889064fcaa05773609213182cf0e09f520687e74b315f9d414400bb9b3"
+category = "published_results"
+publication_unit = "outputs2"
+schema = "prediction_model_scale"
+
+[[files]]
+id = "11z-kpOh0M36tQkjZzn6pQlbzpTKgo357"
+path = "per_task_out/arc_challenge_out/0_target_pairs.json"
+expected_size = 23354
+sha256 = "ae9dd0d557070dcca56b0fdb491b97a57e9f0b01e815e5b28b5870f01a31f7c5"
+category = "published_results"
+publication_unit = "per-task-arc-challenge"
+schema = "target_pairs"
+
+[[files]]
+id = "1AecyWzooRFXvN7lMO0QqT_YJT9epLkOI"
+path = "per_task_out/arc_challenge_out/1_metric_transformed.csv"
+expected_size = 166713539
+sha256 = "11a117f8dd45b96086fa9dc6c4044420f18229652ec0316f4b0a96d9b8715a4f"
+category = "published_results"
+publication_unit = "per-task-arc-challenge"
+schema = "transformed"
+
+[[files]]
+id = "1gT4KpBtNmGHFvLMshWuEW4AxqgEB6Vly"
+path = "per_task_out/arc_challenge_out/1_primary_transformed.csv"
+expected_size = 941880
+sha256 = "f28100c07d82d26ebc546fb5be31be4571722462d4cc130b95e34dc4e42c8451"
+category = "published_results"
+publication_unit = "per-task-arc-challenge"
+schema = "transformed"
+
+[[files]]
+id = "1a4VLFIZ-RAm52X802tb4B_bu1DlpTZYc"
+path = "per_task_out/arc_challenge_out/2_prediction_model_scale.csv"
+expected_size = 215471825
+sha256 = "343695eb95964364a4e18baff8883103d0448c37de4dc4a1ef8c9566b8a5d2a6"
+category = "published_results"
+publication_unit = "per-task-arc-challenge"
+schema = "prediction_model_scale"
+
+[[files]]
+id = "1Z8OrN8KR0f24XPbUSYkFljJfahm8B1kh"
+path = "per_task_out/arc_challenge_out/figures/heatmap_model_scale.pdf"
+expected_size = 1340393
+sha256 = "99ed6d56f807c07ce133f54d3dac28d150ec31e9547038f24ce839df50ed8101"
+category = "published_figures"
+
+[[files]]
+id = "1CsrzhFXOorSo9NSgnqWRWG6Co7BK8iAx"
+path = "per_task_out/arc_challenge_out/figures/heatmap_model_scale.png"
+expected_size = 731554
+sha256 = "ea756de9c02a94838d5fe029a5efc55353419bcadea325bbcf197421c3f18d0a"
+category = "published_figures"
+
+[[files]]
+id = "1WIq4Nw7tvXaYiZVv8c4jEC39UaBv2vXE"
+path = "per_task_out/arc_challenge_out/figures/heatmap_model_scale_NDCG.pdf"
+expected_size = 1334443
+sha256 = "ebd9a718927eb32c1fa8b88fa300bf7fcab0aef0d8bb84878f1008efdcb9e8f5"
+category = "published_figures"
+
+[[files]]
+id = "1AoGPsT9UHO6IVVCEe9q8FMniTZau9HSr"
+path = "per_task_out/arc_challenge_out/figures/heatmap_model_scale_NDCG.png"
+expected_size = 728178
+sha256 = "0f70cd66694f321074e0c1e0a0409bfd64a323040cde99bad45f4bdad677264c"
+category = "published_figures"
+
+[[files]]
+id = "1y0J9xxY-wxGhm7PsyxQ9NbX4Ob-XsmmZ"
+path = "per_task_out/arc_challenge_out/figures/heatmap_model_scale_pearson_correlation.pdf"
+expected_size = 1334713
+sha256 = "1976244687fa9a4e277964af300e6d179ef2a276a7fd1ec764644effde4013db"
+category = "published_figures"
+
+[[files]]
+id = "1SWiYQ6HmflBQXABftYSK3Nu4A9zjiIGV"
+path = "per_task_out/arc_challenge_out/figures/heatmap_model_scale_pearson_correlation.png"
+expected_size = 729971
+sha256 = "0b61b4854cded0c00a52ff3085108a04c88a9eaaaddadbd37eec04167d0bcea1"
+category = "published_figures"
+
+[[files]]
+id = "1tUck2v9IrSC9e5-P-66-0Y7lEzBUHVc1"
+path = "per_task_out/arc_challenge_out/figures/heatmap_model_scale_weighted_pearson_correlation.pdf"
+expected_size = 1361296
+sha256 = "3cc6e06e1efb7f32eb1398366527ea4eb22f24dea4d32bbcc8f65fccaa05c1b2"
+category = "published_figures"
+
+[[files]]
+id = "18iBGm6eIckdVc0_Oxbn7mQbCvUMKUdDT"
+path = "per_task_out/arc_challenge_out/figures/heatmap_model_scale_weighted_pearson_correlation.png"
+expected_size = 734223
+sha256 = "d06f492c9505625d8306e995daccd4175165307598df4062df9e40f1fe07d4d5"
+category = "published_figures"
+
+[[files]]
+id = "1G9H3yQuzijjsrUnX788XZB525sL9nSU1"
+path = "per_task_out/arc_easy_out/0_target_pairs.json"
+expected_size = 23354
+sha256 = "4d1237f1c8e95dd5b6d1a43f7e0b09b99c577e003f59bfc54f3ad71570c39c8b"
+category = "published_results"
+publication_unit = "per-task-arc-easy"
+schema = "target_pairs"
+
+[[files]]
+id = "1b3D66rt3D9l2CmW2IegJlymvpGJ1pVUg"
+path = "per_task_out/arc_easy_out/1_metric_transformed.csv"
+expected_size = 165515039
+sha256 = "bb11958ec65731dc2f229c227988ecdb924150498d495fe2747d9f718fe6a65e"
+category = "published_results"
+publication_unit = "per-task-arc-easy"
+schema = "transformed"
+
+[[files]]
+id = "1gw0bnqm95S3_qnB_cHXRNzKRZQ-A5ick"
+path = "per_task_out/arc_easy_out/1_primary_transformed.csv"
+expected_size = 928569
+sha256 = "b151bfa2d0e0224751e5083485a83b28fe32e6f0dfcbe23489d4073c7526179c"
+category = "published_results"
+publication_unit = "per-task-arc-easy"
+schema = "transformed"
+
+[[files]]
+id = "12fPLRIihBUavnCpBqIUIUKKjoxMQoRHX"
+path = "per_task_out/arc_easy_out/2_prediction_model_scale.csv"
+expected_size = 215460901
+sha256 = "0ab2b2a0264c578b238920f594c63a10e862a63ef62ebcab33a6b5ef39205dc1"
+category = "published_results"
+publication_unit = "per-task-arc-easy"
+schema = "prediction_model_scale"
+
+[[files]]
+id = "1x6cM4Msyhzt_cuyO1HBBqY1ELBYVhLg2"
+path = "per_task_out/arc_easy_out/figures/heatmap_model_scale.pdf"
+expected_size = 1326982
+sha256 = "116b671c9ee9d83db0f6cfddc1e373c4b4f16e13f64dc824471194ccc682990c"
+category = "published_figures"
+
+[[files]]
+id = "1mGF2xrcSUUFG60kOrwPGaWDVkWN7xMVr"
+path = "per_task_out/arc_easy_out/figures/heatmap_model_scale.png"
+expected_size = 738099
+sha256 = "959e8c9bf56932106e47ad026567d949b073dfd930ef44260b65d1f10902e132"
+category = "published_figures"
+
+[[files]]
+id = "1IRHH7iJEAY1hbMkyjVKiDP8oVlWg7QsE"
+path = "per_task_out/arc_easy_out/figures/heatmap_model_scale_NDCG.pdf"
+expected_size = 1315627
+sha256 = "2534039f80151b4c7c9c90d04796588f8e5330dea5a01241178293c61d513398"
+category = "published_figures"
+
+[[files]]
+id = "1Ss-9f2WShJluiOuFP6IlVgrzfm53reph"
+path = "per_task_out/arc_easy_out/figures/heatmap_model_scale_NDCG.png"
+expected_size = 731613
+sha256 = "9e43ce91ee845589d1e4d9ebd1e9e76d66914556d316aec499f2ad44033c7f73"
+category = "published_figures"
+
+[[files]]
+id = "1al0z3Hn_tmuWK1flvquQenFObaJZREcr"
+path = "per_task_out/arc_easy_out/figures/heatmap_model_scale_pearson_correlation.pdf"
+expected_size = 1325360
+sha256 = "4731ebc1a9d512ca483c8a049bd0f13ffacb4e5292792c0e8af82639f21cc75f"
+category = "published_figures"
+
+[[files]]
+id = "1aQM1Mq6dwpB6Au4CAWtT8Zv-DzxFd_Bf"
+path = "per_task_out/arc_easy_out/figures/heatmap_model_scale_pearson_correlation.png"
+expected_size = 728516
+sha256 = "d37b3e72c3cf8f90748f5d8147bc360bebc28a04886ab5722db03598377b9417"
+category = "published_figures"
+
+[[files]]
+id = "1V800SevtrE7yAQWuLFBqoYpxCJN0OvX8"
+path = "per_task_out/arc_easy_out/figures/heatmap_model_scale_weighted_pearson_correlation.pdf"
+expected_size = 1337868
+sha256 = "7f0e97f3553e005a58ec4598001e247c090a0836a1caba1e6fa3b4d81a62d21d"
+category = "published_figures"
+
+[[files]]
+id = "1SAvGvyM9OgpzNn_qtbcG3ctLzAJ55Qk2"
+path = "per_task_out/arc_easy_out/figures/heatmap_model_scale_weighted_pearson_correlation.png"
+expected_size = 736437
+sha256 = "2fc7b63c8439efa618f5d878634e70beb5da79ac24b166bae92f7915f4d26a77"
+category = "published_figures"
+
+[[files]]
+id = "1XEYgvYU-1VevHJ8dMzuuldIvvrVmPz7d"
+path = "per_task_out/boolq_out/0_target_pairs.json"
+expected_size = 23354
+sha256 = "55ac281819dfb4acf38c5f591a490cc987e57dfbadcfa3d0d26b9756b5ceeafe"
+category = "published_results"
+publication_unit = "per-task-boolq"
+schema = "target_pairs"
+
+[[files]]
+id = "177v1xq3R91WHEAPKZ0joNxISk8ethuOU"
+path = "per_task_out/boolq_out/1_metric_transformed.csv"
+expected_size = 163165368
+sha256 = "8f4c6396ae6aae21d4cdc909f50557d44c0a73090fba319cc7820b3260fe45d6"
+category = "published_results"
+publication_unit = "per-task-boolq"
+schema = "transformed"
+
+[[files]]
+id = "14Lz-XDY_zVwIELDxQ1tQ0_r9n0rKk1EE"
+path = "per_task_out/boolq_out/1_primary_transformed.csv"
+expected_size = 930970
+sha256 = "d841fa4df974f7827499d5977dea856c8dde3282a286d9caa0c00884d77a6927"
+category = "published_results"
+publication_unit = "per-task-boolq"
+schema = "transformed"
+
+[[files]]
+id = "15FdVhhc5u9WVFDtoVDUkZTiOuANTzUKf"
+path = "per_task_out/boolq_out/2_prediction_model_scale.csv"
+expected_size = 215523501
+sha256 = "e2195f47c0d5c8153ebc37298d0b3cbcba4192f69172624bb999afa8a3d136b8"
+category = "published_results"
+publication_unit = "per-task-boolq"
+schema = "prediction_model_scale"
+
+[[files]]
+id = "1xLHwJEKs5Iw-rPAA-piQ-lHdcVDxfIKK"
+path = "per_task_out/boolq_out/figures/heatmap_model_scale.pdf"
+expected_size = 1368058
+sha256 = "191c5e730be74fe46525c9227f04323c5b0e3d79596de201786e7737a78d9c73"
+category = "published_figures"
+
+[[files]]
+id = "1ZaGHOB-h2HQ02yCi8V9LZRoBckQ6jTlE"
+path = "per_task_out/boolq_out/figures/heatmap_model_scale.png"
+expected_size = 748143
+sha256 = "0d0d6db6539246bd09e48f97fbfa5f3e85f8bfd408ba46e26f30f3d9e7350be9"
+category = "published_figures"
+
+[[files]]
+id = "1h1Cq4xf_T8iuaxfZkBO4XMJPJe286zcO"
+path = "per_task_out/boolq_out/figures/heatmap_model_scale_NDCG.pdf"
+expected_size = 1368698
+sha256 = "2d8d0bd26eb351cd5dacacb27669a91947382d8c03f77505da3ac30db1b89cd8"
+category = "published_figures"
+
+[[files]]
+id = "1_OTD-RpSvqArPdOw2w94jmqrUPk1MDXd"
+path = "per_task_out/boolq_out/figures/heatmap_model_scale_NDCG.png"
+expected_size = 740839
+sha256 = "1fad85d4825cd98a0f6cc27dbdc1291a22c2d76648f68f487f6d6c01380b8685"
+category = "published_figures"
+
+[[files]]
+id = "13OoI4sAgzMFC2OulvW7cwr6F4hUvMydw"
+path = "per_task_out/boolq_out/figures/heatmap_model_scale_pearson_correlation.pdf"
+expected_size = 1392496
+sha256 = "b6e6fc5579a615ef36192297a4835d64ab599c5d84b94c58ed84aa3b914c540c"
+category = "published_figures"
+
+[[files]]
+id = "1jEx3AY9J2r7PScspI4L3OgnkHgcY_Shx"
+path = "per_task_out/boolq_out/figures/heatmap_model_scale_pearson_correlation.png"
+expected_size = 728002
+sha256 = "0e76646b1583c4e23893f06af36bbb1f74d49225c7b653cd888c5747365deaa1"
+category = "published_figures"
+
+[[files]]
+id = "1gZgB5yYcSDCUzikY0dIHnRzHX88sq3UT"
+path = "per_task_out/boolq_out/figures/heatmap_model_scale_weighted_pearson_correlation.pdf"
+expected_size = 1379530
+sha256 = "3a43b652d6e7e1bd7c6f75f981917388270d815b6d58c8cef3d74b74a05baec0"
+category = "published_figures"
+
+[[files]]
+id = "1O7R7BwdcJ5YbWtrnJOU7mb2n5USX0j_x"
+path = "per_task_out/boolq_out/figures/heatmap_model_scale_weighted_pearson_correlation.png"
+expected_size = 725596
+sha256 = "551ffed2d030e5d897b3b09cf3aa5ea3da33c3a5e5788ce2b5a52adfc94898bb"
+category = "published_figures"
+
+[[files]]
+id = "1glWK7MZL28gI5Nh5yllsMrCB2Ijg9O60"
+path = "per_task_out/csqa_out/0_target_pairs.json"
+expected_size = 23354
+sha256 = "6b31b2a206d0a13d2b4c4d6dd0d2a32926e4e8c471a17b2e08fcd9f89998bb62"
+category = "published_results"
+publication_unit = "per-task-csqa"
+schema = "target_pairs"
+
+[[files]]
+id = "13DZm1BEzFPDw-JMwpaZop8AmK8fLrEXj"
+path = "per_task_out/csqa_out/1_metric_transformed.csv"
+expected_size = 167043660
+sha256 = "1e1029bb600e276ead8b4a0e63ca252f8bb3be9e17a9398d5f15adc4290232c5"
+category = "published_results"
+publication_unit = "per-task-csqa"
+schema = "transformed"
+
+[[files]]
+id = "1OZu3ZxFGLNnZjsdDbep3YYbDJI7lE9Cn"
+path = "per_task_out/csqa_out/1_primary_transformed.csv"
+expected_size = 932211
+sha256 = "02855146c9d24d1941e2c82bb117cc4560dd2ecf05fe8111568d4638df3a0a15"
+category = "published_results"
+publication_unit = "per-task-csqa"
+schema = "transformed"
+
+[[files]]
+id = "1vrIphNMl8xzRfn2-kyHzdHrDBevkONqd"
+path = "per_task_out/csqa_out/2_prediction_model_scale.csv"
+expected_size = 215499644
+sha256 = "26866ea2030257a7fbd21a3da18343a4a17f63abd33b6dd2418793b45bdbcaea"
+category = "published_results"
+publication_unit = "per-task-csqa"
+schema = "prediction_model_scale"
+
+[[files]]
+id = "1HZHj8I480STdHcaURLNt8PAz8YxVlood"
+path = "per_task_out/csqa_out/figures/heatmap_model_scale.pdf"
+expected_size = 1356373
+sha256 = "af56677f7870fe58319f1cc7e49e653e74044a5faf9c7ff4255000105b3a465d"
+category = "published_figures"
+
+[[files]]
+id = "17oApJyqhBO7_UaTCfN4CTIqBAPkp4VBD"
+path = "per_task_out/csqa_out/figures/heatmap_model_scale.png"
+expected_size = 727275
+sha256 = "d4f5a4bd446e112e088693a3d5fbdb9284803733ed5e6ea71dc899a82289a780"
+category = "published_figures"
+
+[[files]]
+id = "1FegLDnlGRDjYBWb6QHS_84Tba9lEuoVj"
+path = "per_task_out/csqa_out/figures/heatmap_model_scale_NDCG.pdf"
+expected_size = 1382174
+sha256 = "da06dae26d691c5f0d4b028aabf5788dbcfb5fc6a6e2f4de28d88202cb5edc9f"
+category = "published_figures"
+
+[[files]]
+id = "1YqyKi5ohBwXwwlANg0HrmfrKMLqWX5eB"
+path = "per_task_out/csqa_out/figures/heatmap_model_scale_NDCG.png"
+expected_size = 725999
+sha256 = "32ae5d7e2bd776c18ab8fdafe090e139450c251e60a763fd805941f4cd271882"
+category = "published_figures"
+
+[[files]]
+id = "1Iyh9Uvm8V251mJX71Qk6XVZJt11UzsLu"
+path = "per_task_out/csqa_out/figures/heatmap_model_scale_pearson_correlation.pdf"
+expected_size = 1369488
+sha256 = "bb45b6c0b0655d35ded27615aae34083bf44b78bcc1ff39820e2b168774cfe07"
+category = "published_figures"
+
+[[files]]
+id = "1bhqpl6LnVQClEBGDjLIHNQIz88W0qEDs"
+path = "per_task_out/csqa_out/figures/heatmap_model_scale_pearson_correlation.png"
+expected_size = 713791
+sha256 = "86a76e87d72080e0dbfb83d9f569b7ff7234965a92810d62dbee38f550e72b5e"
+category = "published_figures"
+
+[[files]]
+id = "1-3TBGQr9ceP-ZwvsSOh4MZ1jQg25u_Gb"
+path = "per_task_out/csqa_out/figures/heatmap_model_scale_weighted_pearson_correlation.pdf"
+expected_size = 1383071
+sha256 = "25ff293885ce059aeb1dc7fa8596791ae41ce808c519645bbf624f34283850d4"
+category = "published_figures"
+
+[[files]]
+id = "17CJFxNevvX9o29DEXVp3J8z2rSU3wtEN"
+path = "per_task_out/csqa_out/figures/heatmap_model_scale_weighted_pearson_correlation.png"
+expected_size = 722642
+sha256 = "ce573d3eb302feb3203770b3baca92eb97b5ed481956ae3bfe4ec41554cf0164"
+category = "published_figures"
+
+[[files]]
+id = "1VSHL_PKLI5HGQr-XwyUfjgumv9Gc6twz"
+path = "per_task_out/hellaswag_out/0_target_pairs.json"
+expected_size = 23354
+sha256 = "35d2ca7ecc979064aa4b013fa8bf81d9ddab25f3928d12301b062c5bb9d2626c"
+category = "published_results"
+publication_unit = "per-task-hellaswag"
+schema = "target_pairs"
+
+[[files]]
+id = "1rn3n0scl2n82U53Kn3JP-k1WaOTjjk49"
+path = "per_task_out/hellaswag_out/1_metric_transformed.csv"
+expected_size = 166971662
+sha256 = "be70a51290680898360a586cf6c5e693b2a94d4dec73f8e9cc1240f56ff8e249"
+category = "published_results"
+publication_unit = "per-task-hellaswag"
+schema = "transformed"
+
+[[files]]
+id = "1_-316bMAQDXoHxLUMs4ol0N4Islu5uwf"
+path = "per_task_out/hellaswag_out/1_primary_transformed.csv"
+expected_size = 933305
+sha256 = "e11fe63238e36325c7ce681c867fb92bb30fb46f9ac2d3ca8156028af784f738"
+category = "published_results"
+publication_unit = "per-task-hellaswag"
+schema = "transformed"
+
+[[files]]
+id = "1PsKAw9lBpjjCgUhAUgfb6_lRsp8tZTg3"
+path = "per_task_out/hellaswag_out/2_prediction_model_scale.csv"
+expected_size = 215489743
+sha256 = "938c16a8985d5fd95a9a7e52693b20882441eba610d2a56f1eb4bb97b7c87798"
+category = "published_results"
+publication_unit = "per-task-hellaswag"
+schema = "prediction_model_scale"
+
+[[files]]
+id = "1tRYRHGaOmcaJwpTMEnVCEVKrN2P1f8FK"
+path = "per_task_out/hellaswag_out/figures/heatmap_model_scale.pdf"
+expected_size = 1299127
+sha256 = "35cd36e4f9ab7c8a08207f956346c2493028c41a005a85d405ac17e871e9f205"
+category = "published_figures"
+
+[[files]]
+id = "1U0H4ephLQikaj944qQLPEYxBUSpvjcgF"
+path = "per_task_out/hellaswag_out/figures/heatmap_model_scale.png"
+expected_size = 715481
+sha256 = "c26ab57e94c4f5b1afc582b1d982126be115a56ccb32efc9b9738f6af0e5f722"
+category = "published_figures"
+
+[[files]]
+id = "1tPRGjU5pFW1O5Cf-xHtbgr2RWgMkSl7K"
+path = "per_task_out/hellaswag_out/figures/heatmap_model_scale_NDCG.pdf"
+expected_size = 1286129
+sha256 = "3c9d6654b61eaf6ff1be980f129ca480839c4bb990db8082eb2093170d8cd50c"
+category = "published_figures"
+
+[[files]]
+id = "1Dff3-Fx0d1LGXpsUu21PmtFxzeTv-D0n"
+path = "per_task_out/hellaswag_out/figures/heatmap_model_scale_NDCG.png"
+expected_size = 726410
+sha256 = "7585f7c541390ae3740dac830afcb63104cbf9b05be1c2f5deb1ee30a7f59c0d"
+category = "published_figures"
+
+[[files]]
+id = "1oO5z3h4uJzhdtfGdPaZ25lSn9hVOXDDD"
+path = "per_task_out/hellaswag_out/figures/heatmap_model_scale_pearson_correlation.pdf"
+expected_size = 1299665
+sha256 = "95ccfc7e3fa65c04e7dea7c5513b9d838fb8991b450a51129a3cf6e26a5c528e"
+category = "published_figures"
+
+[[files]]
+id = "1BLaJXRo4BmJONLBPqDwclsjm_8slrDXg"
+path = "per_task_out/hellaswag_out/figures/heatmap_model_scale_pearson_correlation.png"
+expected_size = 717730
+sha256 = "1f9a4a971166d5659598c319b726422f04fe330ab01cd4349b9712e6cd606120"
+category = "published_figures"
+
+[[files]]
+id = "1kUWCdHXXOav1JQX2eCifxWhKLxE8zYpe"
+path = "per_task_out/hellaswag_out/figures/heatmap_model_scale_weighted_pearson_correlation.pdf"
+expected_size = 1373492
+sha256 = "757036df4da91067bcdf5fa48f40508ca038c4888b48eee7ab8001304b62874f"
+category = "published_figures"
+
+[[files]]
+id = "1nl8fwEAcQebjENb7_FWoLVgqAxrCEW8g"
+path = "per_task_out/hellaswag_out/figures/heatmap_model_scale_weighted_pearson_correlation.png"
+expected_size = 720692
+sha256 = "b6f40172c6bc1828213c84a378883b392ce71123ed559ef4e0b82970271deafe"
+category = "published_figures"
+
+[[files]]
+id = "1uLIcvPpuPwysYX6SRGUMoV2kKRnoPoO9"
+path = "per_task_out/mmlu_out/0_target_pairs.json"
+expected_size = 23354
+sha256 = "d40dbbd87f0e42dcf17822397c6623f6afab52274aef5ad6fc9691c35ed894d0"
+category = "published_results"
+publication_unit = "per-task-mmlu"
+schema = "target_pairs"
+
+[[files]]
+id = "13qGRv2v9HFBzfgI7aJpgeZbf4VvccD1r"
+path = "per_task_out/mmlu_out/1_metric_transformed.csv"
+expected_size = 166218218
+sha256 = "5ccd4f991643c9226b9eca3f4ed77f57d5cff8ebefdce771b265369d65cfc735"
+category = "published_results"
+publication_unit = "per-task-mmlu"
+schema = "transformed"
+
+[[files]]
+id = "1j2AWcR-YuNIXjrLaO9IsTCkBDp7T3PgJ"
+path = "per_task_out/mmlu_out/1_primary_transformed.csv"
+expected_size = 941349
+sha256 = "67f8b74641ddc0dc9d257988d8544d99aa8281d133927290a3612789c26ac3b7"
+category = "published_results"
+publication_unit = "per-task-mmlu"
+schema = "transformed"
+
+[[files]]
+id = "1k1N_LiSyxiyiggbxP6b-MPaP0hMZSzH6"
+path = "per_task_out/mmlu_out/2_prediction_model_scale.csv"
+expected_size = 215470545
+sha256 = "9fa7f8509b7d8d7baedf8da7865e6cedacb59a309e5a7fa50d923d3ddc106925"
+category = "published_results"
+publication_unit = "per-task-mmlu"
+schema = "prediction_model_scale"
+
+[[files]]
+id = "1T4Bu4jdM71J7LUrz0oBN3Ss2jUzK6jU7"
+path = "per_task_out/mmlu_out/figures/heatmap_model_scale.pdf"
+expected_size = 1291785
+sha256 = "fbc369d4f4e0f3db301cffaf7b54dcd202dea5118ae5a0b0ea4a566243d22ad5"
+category = "published_figures"
+
+[[files]]
+id = "1RoyeRZwYW4E_6iXwRcrD0yzU0iwhvMnz"
+path = "per_task_out/mmlu_out/figures/heatmap_model_scale.png"
+expected_size = 728561
+sha256 = "75a2eb3e301ebe92bc3a93905bcb39911765955ab1facb10d440f1068f470a1b"
+category = "published_figures"
+
+[[files]]
+id = "1mBrWUU7JP3g37K5raPvJIAHK1dH6e3fG"
+path = "per_task_out/mmlu_out/figures/heatmap_model_scale_NDCG.pdf"
+expected_size = 1353715
+sha256 = "183e6aefdfb9a26ec450cc40ff969443653385afc072093a01aa1e6d13f52a18"
+category = "published_figures"
+
+[[files]]
+id = "1BQ67zaFcJ7nCvZHoWgUF8VcELrfivMeH"
+path = "per_task_out/mmlu_out/figures/heatmap_model_scale_NDCG.png"
+expected_size = 729269
+sha256 = "2f994eee031960876ccbffee5009c01784fb0cdc3a2637c539552e9ccbb6d115"
+category = "published_figures"
+
+[[files]]
+id = "1Pw1AEzKpjWeh0Fhh4buk6IMMg-ON-coc"
+path = "per_task_out/mmlu_out/figures/heatmap_model_scale_pearson_correlation.pdf"
+expected_size = 1339043
+sha256 = "47b5930c1bacc18f9181c06072a77f49ae6e4e53e2fec0fa2826befc1afad251"
+category = "published_figures"
+
+[[files]]
+id = "1DKPUO2v_Q_bNirFMdxjQstaaD-T8huZR"
+path = "per_task_out/mmlu_out/figures/heatmap_model_scale_pearson_correlation.png"
+expected_size = 729313
+sha256 = "326f58b7a68972ff6a9faedecea056e5832ac417ff6dd7ff90e848502f49a05d"
+category = "published_figures"
+
+[[files]]
+id = "13HiYBkksguU8n83gTP6zKLZB1gw8m21R"
+path = "per_task_out/mmlu_out/figures/heatmap_model_scale_weighted_pearson_correlation.pdf"
+expected_size = 1361717
+sha256 = "41711f0c99dcf04262845af2249184fa6555511f934fa035f2dc3e26c202db5c"
+category = "published_figures"
+
+[[files]]
+id = "1W7t0cVrW4RYaBqeOjoLls6y3WC5UlMa5"
+path = "per_task_out/mmlu_out/figures/heatmap_model_scale_weighted_pearson_correlation.png"
+expected_size = 729474
+sha256 = "042d8eec2b125faddfa4db7329e5e36ac16e5269bd67fde56be3bcecef62a59d"
+category = "published_figures"
+
+[[files]]
+id = "1IsuEvlpfO8WQ_lOketrBIkDiOh9JrH9D"
+path = "per_task_out/openbookqa_out/0_target_pairs.json"
+expected_size = 23354
+sha256 = "9308ed855507cee668237781d85348d8be1ea7741fbb2edd1df8643812d87e27"
+category = "published_results"
+publication_unit = "per-task-openbookqa"
+schema = "target_pairs"
+
+[[files]]
+id = "12fWlKboRt2aoF6NuV0aOWqycYPxHsgaF"
+path = "per_task_out/openbookqa_out/1_metric_transformed.csv"
+expected_size = 150167121
+sha256 = "7f88ff76eddd508592c926a38b55a0cd23ed29df9f70d875b94264255c2522f3"
+category = "published_results"
+publication_unit = "per-task-openbookqa"
+schema = "transformed"
+
+[[files]]
+id = "14hp5UGgjdEQ1j-PSDWVbZVXGnQUCjS70"
+path = "per_task_out/openbookqa_out/1_primary_transformed.csv"
+expected_size = 528351
+sha256 = "5122c0773f089d3b3ac40a5f7bcc7240669ad4d5034ebb49ad65f249bc2fe3d5"
+category = "published_results"
+publication_unit = "per-task-openbookqa"
+schema = "transformed"
+
+[[files]]
+id = "10-eJ-2VR8pQlfFA3v45OEborlyANiFul"
+path = "per_task_out/openbookqa_out/2_prediction_model_scale.csv"
+expected_size = 215487310
+sha256 = "3f4eaefc2661303703025ef4029a179c58bca5fb18d6d28538abb397c453c2ad"
+category = "published_results"
+publication_unit = "per-task-openbookqa"
+schema = "prediction_model_scale"
+
+[[files]]
+id = "1KTrC8X3Ndkh54LQComuUbkzcadEE6tS5"
+path = "per_task_out/openbookqa_out/figures/heatmap_model_scale.pdf"
+expected_size = 1346177
+sha256 = "8f08ec2f9a8e76739b80ab84e91a06117777173d275008b135c78ffc9e56c0d4"
+category = "published_figures"
+
+[[files]]
+id = "1mXnsbEUNp5uB7DydYWM8u9H9EHijQbic"
+path = "per_task_out/openbookqa_out/figures/heatmap_model_scale.png"
+expected_size = 730849
+sha256 = "7e028eb9f40ce833dd0550a53173b483d10829db3f635bb29c9097b7a702b694"
+category = "published_figures"
+
+[[files]]
+id = "1ps80KbJZMdIwwQNOfyD5kZT5ZVunL655"
+path = "per_task_out/openbookqa_out/figures/heatmap_model_scale_NDCG.pdf"
+expected_size = 1351121
+sha256 = "8d23572f2ac134252b59d1979363420283d2396704c3083def8fff971eb97dc7"
+category = "published_figures"
+
+[[files]]
+id = "10a8yDFbBq4nh_KpTSwMCA2-yvPgV5072"
+path = "per_task_out/openbookqa_out/figures/heatmap_model_scale_NDCG.png"
+expected_size = 730090
+sha256 = "c5ae07cd0962dec3d73e0ecf9db69db3e0dff0b7bdc831e99bb170c7372385ee"
+category = "published_figures"
+
+[[files]]
+id = "1CIoOwLC1igvGCxcCK__7T_Urs6HUHCO3"
+path = "per_task_out/openbookqa_out/figures/heatmap_model_scale_pearson_correlation.pdf"
+expected_size = 1353382
+sha256 = "deae3fc0d189b5552462b8a1f33ccf2bd031190b7247b7b4f11eaf685087d739"
+category = "published_figures"
+
+[[files]]
+id = "1WocuLfLz4prFV23cYMleN2byUmiPvcMz"
+path = "per_task_out/openbookqa_out/figures/heatmap_model_scale_pearson_correlation.png"
+expected_size = 731953
+sha256 = "83f08bd0ff4e389acea7f977ea944c729e205732deb71462fee2af0c5f80ca8e"
+category = "published_figures"
+
+[[files]]
+id = "1Z365-rELKLdNY79KVrcQdfXf1OB1Unui"
+path = "per_task_out/openbookqa_out/figures/heatmap_model_scale_weighted_pearson_correlation.pdf"
+expected_size = 1388428
+sha256 = "d512261a37894b72fc9e8215e51111a1539740db44a25971f1feefebacda68d1"
+category = "published_figures"
+
+[[files]]
+id = "13YTovH-CGUqGQTe-YDhLK8IYscN9uGZH"
+path = "per_task_out/openbookqa_out/figures/heatmap_model_scale_weighted_pearson_correlation.png"
+expected_size = 724212
+sha256 = "0549a1c5a814cf0bb20e0632e5829a09eb20209737a9074dda9311b86ed30797"
+category = "published_figures"
+
+[[files]]
+id = "1gclhV33T5aG2lZ2ri4OvLlP3DeplaVmB"
+path = "per_task_out/piqa_out/0_target_pairs.json"
+expected_size = 23354
+sha256 = "65fe8bc23e7caf2e5b14304e66c6c612cbe27b67ac392f52ea02221356897d45"
+category = "published_results"
+publication_unit = "per-task-piqa"
+schema = "target_pairs"
+
+[[files]]
+id = "1QSc4G0RzYeQthBXDh0Gb5upwGUSmF7sH"
+path = "per_task_out/piqa_out/1_metric_transformed.csv"
+expected_size = 165986548
+sha256 = "abecaf782e3c07c0b382a8654998f6556ce1c2a55dcc806d60d0cd2b29f9a56b"
+category = "published_results"
+publication_unit = "per-task-piqa"
+schema = "transformed"
+
+[[files]]
+id = "1BiLmnTBACU_guref6riCTJ8lguCuQd7e"
+path = "per_task_out/piqa_out/1_primary_transformed.csv"
+expected_size = 926029
+sha256 = "9879ad67c0110aad2e8e98f3af027d9e1f0d2ff6e757684fe2053a92367fa2f0"
+category = "published_results"
+publication_unit = "per-task-piqa"
+schema = "transformed"
+
+[[files]]
+id = "1nR-_aicV9OhybyeaExwjAkZ8JJrU_91K"
+path = "per_task_out/piqa_out/2_prediction_model_scale.csv"
+expected_size = 215483993
+sha256 = "31eddaca735dcdf203bf2e215ea401a82be113d04a32a5db7f5f41106498d6f0"
+category = "published_results"
+publication_unit = "per-task-piqa"
+schema = "prediction_model_scale"
+
+[[files]]
+id = "1ZUgf12lJZ8TLW6BWuRSXYqQOzC8U7Bbs"
+path = "per_task_out/piqa_out/figures/heatmap_model_scale.pdf"
+expected_size = 1346808
+sha256 = "2bd87f9d4e44202be3443b2e259ab9141cbcde987b5082adedac0ddfc808359c"
+category = "published_figures"
+
+[[files]]
+id = "1aKpOCJs9_DHGQ85gjMoQN2w6GMANTOWm"
+path = "per_task_out/piqa_out/figures/heatmap_model_scale.png"
+expected_size = 732117
+sha256 = "aef627cd3031d89e975ea4497a9fd12484003cc0e012a1ba1302335d43da3767"
+category = "published_figures"
+
+[[files]]
+id = "1MaBVBWRV_njVcZAoBNSSL4fwXPjVW1_D"
+path = "per_task_out/piqa_out/figures/heatmap_model_scale_NDCG.pdf"
+expected_size = 1285032
+sha256 = "f0699f81245c454684ee0a04b874969551ae8ac346e4c22bed9ae113b12e5ad2"
+category = "published_figures"
+
+[[files]]
+id = "17LK02MOwNZEkFLvd_OA9esIlmA3O8096"
+path = "per_task_out/piqa_out/figures/heatmap_model_scale_NDCG.png"
+expected_size = 731159
+sha256 = "dafaea69219b0f73de45df3f6abb84f4216ecae912def0d0cac115ab0c53a272"
+category = "published_figures"
+
+[[files]]
+id = "1voyJn4YQivISEMvIaIRkBUBSV-TMyKzT"
+path = "per_task_out/piqa_out/figures/heatmap_model_scale_pearson_correlation.pdf"
+expected_size = 1375553
+sha256 = "03905e6291127f27fe949070a6e73f0df06650504c8888debd95a5a78de355e0"
+category = "published_figures"
+
+[[files]]
+id = "1yoFN4mrUvhIcae_UBoPe5uijYlE1pgkp"
+path = "per_task_out/piqa_out/figures/heatmap_model_scale_pearson_correlation.png"
+expected_size = 730622
+sha256 = "34d97a6dd2dc47d3934a8edaa2d3e5d66e41571a563c281d382759ec53af6e25"
+category = "published_figures"
+
+[[files]]
+id = "1qljheBs7HQFye4wjhR98puN1oNZabDJt"
+path = "per_task_out/piqa_out/figures/heatmap_model_scale_weighted_pearson_correlation.pdf"
+expected_size = 1368708
+sha256 = "3df066a59865abf35e3b54fa81b15b9aab9772140b9c5afc59fb5b0669f61be5"
+category = "published_figures"
+
+[[files]]
+id = "1fEv8LN4gCF7N9-_NswizWRp3kWeIN7vE"
+path = "per_task_out/piqa_out/figures/heatmap_model_scale_weighted_pearson_correlation.png"
+expected_size = 729406
+sha256 = "9662c780898fc0b71f57a47c44562b25153666491c1f0854759bca784c853746"
+category = "published_figures"
+
+[[files]]
+id = "1y_RLvPJXwY3k6J24CBYUBdgMtU2Sm4BQ"
+path = "per_task_out/socialiqa_out/0_target_pairs.json"
+expected_size = 23354
+sha256 = "09d47d40178b8c209d65d927b0bb8f479d6314b9a55bd1bf6c16b70bc59d9278"
+category = "published_results"
+publication_unit = "per-task-socialiqa"
+schema = "target_pairs"
+
+[[files]]
+id = "1RhM8bzXwurLl1WVmEjlKCEx5B841FlxM"
+path = "per_task_out/socialiqa_out/1_metric_transformed.csv"
+expected_size = 167402556
+sha256 = "799d9187a7d152b20e364cb0f7554f684445b0942a4394e4c7e4ff8350b9c25c"
+category = "published_results"
+publication_unit = "per-task-socialiqa"
+schema = "transformed"
+
+[[files]]
+id = "13EFpQHRWAIDN66MMU2aKnN3kRF7S1vuh"
+path = "per_task_out/socialiqa_out/1_primary_transformed.csv"
+expected_size = 938688
+sha256 = "df23ac4f9a8a0d35afd5be78b08fd3ffaeafec6824c32050f948e48af3069add"
+category = "published_results"
+publication_unit = "per-task-socialiqa"
+schema = "transformed"
+
+[[files]]
+id = "1TZib-gZRgYBSfq0TNTit4VCmPfUEIHFU"
+path = "per_task_out/socialiqa_out/2_prediction_model_scale.csv"
+expected_size = 215496273
+sha256 = "91009cdf65dce640f35a056a7f491c183cb8921e666ceccd99bcfa84980cb000"
+category = "published_results"
+publication_unit = "per-task-socialiqa"
+schema = "prediction_model_scale"
+
+[[files]]
+id = "1wroHUjC-_2Ef_bqlHG6y3ZeapLfVfnoW"
+path = "per_task_out/socialiqa_out/figures/heatmap_model_scale.pdf"
+expected_size = 1362048
+sha256 = "04c69ecb678e2ee97c3b6bb3a77a38e5883d4e3bc3c0f062aea985a0baa9ecb3"
+category = "published_figures"
+
+[[files]]
+id = "129NMTe2bxFI7on8NzqSmO5yBvJGU7nfy"
+path = "per_task_out/socialiqa_out/figures/heatmap_model_scale.png"
+expected_size = 731840
+sha256 = "f448ea8f8ee37be57893f54edd1823bc8fe9d8fc1e8571f5a8590bf9eda661eb"
+category = "published_figures"
+
+[[files]]
+id = "1nA-YL9ccVl6Un5MkJlhkkVSag2FtYnP_"
+path = "per_task_out/socialiqa_out/figures/heatmap_model_scale_NDCG.pdf"
+expected_size = 1316001
+sha256 = "060cbc193bdc87d401df3ddf990443044a42863c54b071bb774e38e9b5a8d996"
+category = "published_figures"
+
+[[files]]
+id = "1kRVsn9a3O6sGuNFvCU0wUQKU9wXALV3h"
+path = "per_task_out/socialiqa_out/figures/heatmap_model_scale_NDCG.png"
+expected_size = 734958
+sha256 = "cbe53b3175f6aca5da757e3fd2b14fd1e7c6912fc2300a0b48db8d08725d1dd0"
+category = "published_figures"
+
+[[files]]
+id = "1gEOI_jjCHLhIDqwlNaSFEsx8wgupNmMq"
+path = "per_task_out/socialiqa_out/figures/heatmap_model_scale_pearson_correlation.pdf"
+expected_size = 1373209
+sha256 = "5ba9fb4e82eff4f8f362be0e04655d9d15b74bad44bdcbbac18321fd34bd876a"
+category = "published_figures"
+
+[[files]]
+id = "1pUT9ajq8D3rU42WqGjEVSf9D6UcOPSYG"
+path = "per_task_out/socialiqa_out/figures/heatmap_model_scale_pearson_correlation.png"
+expected_size = 723963
+sha256 = "458cd331dda7222e07023cf7f03bf9e14e221b8bc149a8c69f3fd87a4f87b268"
+category = "published_figures"
+
+[[files]]
+id = "1p0_FIVJSsJID_qtHne3Exx-hV-s87536"
+path = "per_task_out/socialiqa_out/figures/heatmap_model_scale_weighted_pearson_correlation.pdf"
+expected_size = 1406608
+sha256 = "4b3877e79b35930b540d9deddd2f80a9af5d35a4221cc215e399e31b3c8381f0"
+category = "published_figures"
+
+[[files]]
+id = "1-QC3kBbbskSvvz9q0WQxrYaQ0hYrj1h_"
+path = "per_task_out/socialiqa_out/figures/heatmap_model_scale_weighted_pearson_correlation.png"
+expected_size = 728812
+sha256 = "e1906fe4bcbe5a8650723ab42c3a480206e664c23099ca8f5e1e6b9e24371d17"
+category = "published_figures"
+
+[[files]]
+id = "18e8kZyhxKAPVmDvY9JAJ__F_qkcllxB1"
+path = "per_task_out/winogrande_out/0_target_pairs.json"
+expected_size = 23354
+sha256 = "6a12436f65580e4f49b6039c7674df10eae13ec12757a0d266085eb72a728cb0"
+category = "published_results"
+publication_unit = "per-task-winogrande"
+schema = "target_pairs"
+
+[[files]]
+id = "1lFMhT0lHOL9V_16gabl6780PdTa1e269"
+path = "per_task_out/winogrande_out/1_metric_transformed.csv"
+expected_size = 166010728
+sha256 = "a47dd3b2d6ad80c42d2a8985681d9820cf7072f018c4bfdb38fef1078217917b"
+category = "published_results"
+publication_unit = "per-task-winogrande"
+schema = "transformed"
+
+[[files]]
+id = "1s5TeT6Vd75dP-HmO6GIZXymR51f_zQDo"
+path = "per_task_out/winogrande_out/1_primary_transformed.csv"
+expected_size = 927275
+sha256 = "e99845a5a90f2bcb2429dd35e9e4b3210c3778cbb76318c63eaf2af06f733a83"
+category = "published_results"
+publication_unit = "per-task-winogrande"
+schema = "transformed"
+
+[[files]]
+id = "1KKq-6PxlUKN2_KsQNMPUeeOxp7EMjkXM"
+path = "per_task_out/winogrande_out/2_prediction_model_scale.csv"
+expected_size = 215505491
+sha256 = "1a3b302e606c4ce63cf922fbdf519b4a786eaa85fb9cfffa9c4ce444544dfeab"
+category = "published_results"
+publication_unit = "per-task-winogrande"
+schema = "prediction_model_scale"
+
+[[files]]
+id = "1MTi4OaHFYUA3pByrmDsSxKkHFItuydB0"
+path = "per_task_out/winogrande_out/figures/heatmap_model_scale.pdf"
+expected_size = 1364385
+sha256 = "849b9628163d8445ec50ad7cf187b8d6f06fcd592f6cee59f74b656b15c25e17"
+category = "published_figures"
+
+[[files]]
+id = "120j-qDrtjmsLVEETerE_pbmiKk34v0lI"
+path = "per_task_out/winogrande_out/figures/heatmap_model_scale.png"
+expected_size = 721593
+sha256 = "e64824b334633df3ef216ed6a354122bb21c9623aa5240b5f573b1f5ec128ceb"
+category = "published_figures"
+
+[[files]]
+id = "1NHcg1b_47I04fVb2GH1S40FflzV1_Do7"
+path = "per_task_out/winogrande_out/figures/heatmap_model_scale_NDCG.pdf"
+expected_size = 1369453
+sha256 = "701ae3581ba3268cba05654c2adaa56cccafd9a4b9158055fffe94648e2b7a94"
+category = "published_figures"
+
+[[files]]
+id = "1D4qJj3yuVoAfRkj_FSB1m5G6QW998Oya"
+path = "per_task_out/winogrande_out/figures/heatmap_model_scale_NDCG.png"
+expected_size = 717875
+sha256 = "4e7948deb558e41efa9a37faac0b0ba65ffa3d6b6724c5323e1740c6ea59b3f2"
+category = "published_figures"
+
+[[files]]
+id = "1NvQFjyv0nfdRFsDBtsJEC6kgdTiVjKK_"
+path = "per_task_out/winogrande_out/figures/heatmap_model_scale_pearson_correlation.pdf"
+expected_size = 1375697
+sha256 = "77bd51c98591ce1a25f73ad5b2de562c67a98f20d1b6f8d7c2dfd2bd5047ab64"
+category = "published_figures"
+
+[[files]]
+id = "1jzRJo_6yObMNcwCcgZOYqTG7q0JVxjOh"
+path = "per_task_out/winogrande_out/figures/heatmap_model_scale_pearson_correlation.png"
+expected_size = 717814
+sha256 = "470fe8a2058edc0bdaeb56686a3bd1196f42ac9a0708113f5d29df91a1071aae"
+category = "published_figures"
+
+[[files]]
+id = "1HKR-6ww_7TnG_Damv3GPfLaXxcExuNDn"
+path = "per_task_out/winogrande_out/figures/heatmap_model_scale_weighted_pearson_correlation.pdf"
+expected_size = 1382744
+sha256 = "1419a131f5474bd2d7773abde0c971fceff80ae52181b7cc30cf91a116370332"
+category = "published_figures"
+
+[[files]]
+id = "1WpKEFUtzmsilEBtesxNjeh46aygWWCz6"
+path = "per_task_out/winogrande_out/figures/heatmap_model_scale_weighted_pearson_correlation.png"
+expected_size = 726487
+sha256 = "b74084274c525ec2fdb7ab43d5caaa6f575e9ed8105f6c45255b17959df13c99"
+category = "published_figures"
+
+[[files]]
+id = "1R9cpgWmXKBGiAZCWmEvfMp6FA_ik1h2f"
+path = "processed_data/results_ladder_5xC_seeds_cleaned_correct_params.csv"
+expected_size = 1835632591
+sha256 = "74551c7cdc1d8d7f1237c6631c5c107fb70e56a090158cb620f3cea8eaf91dce"
+category = "published_results"
+publication_unit = "processed-data-current"
+schema = "processed_ladder"
+
+[[files]]
+id = "1T_gherEr-UVdeTjqAhdcg5FiRiukxtvD"
+path = "processed_data/results_ladder_5xC_seeds_cleaned_correct_params_pre_extra_real.csv"
+expected_size = 1392568094
+sha256 = "5aa599a966df7f095c94190dd48d3d5e1a868e3faacba6e88916e52dbeeb2318"
+category = "published_results"
+publication_unit = "processed-data-pre-extra-real"
+schema = "processed_ladder"
+
+[[files]]
+id = "1rlOOxnUpx1Lctw0dJzTDRak6pbc_Oguy"
+path = "processed_data/results_ladder_5xC_seeds_dirty_correct_params.csv"
+expected_size = 726858844
+sha256 = "86a076fa0430ac290bd0af12a3c8d3d57329424deab545b1c621ab75b5f943a2"
+category = "published_results"
+publication_unit = "processed-data-current"
+schema = "processed_ladder"
+
+[[files]]
+id = "1Qp-hO_OftC1lKsFF7Qz5Yk9Jfg0LjuUO"
+path = "processed_data/results_ladder_5xC_seeds_dirty_correct_params_pre_extra_real.csv"
+expected_size = 550430854
+sha256 = "d7ede2ebd4726f23a3032e817123fc136d64119e6f7c7ff0f5a6f2a0de71a047"
+category = "published_results"
+publication_unit = "processed-data-pre-extra-real"
+schema = "processed_ladder"
