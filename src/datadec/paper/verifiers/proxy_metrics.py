@@ -1239,7 +1239,7 @@ def _run_proxy_plot_attempt(
         denominator=denominator,
         target_ties=target_ties,
         predicted_ties=predicted_ties,
-        outcome=ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED,
+        outcome=ValidationOutcome.DESCRIPTIVE_ONLY,
         diagnostics=(f"Persisted {len(points)} finite paper-analog points.",),
         limitations=(
             "The derived plot series is available for visual comparison, but no frozen semantic predicate adjudicates the paper's benefiting-task count.",
@@ -2668,7 +2668,7 @@ def _run_noise_plot_attempt(
         denominator=sum(decision.denominator for decision in decisions),
         target_ties=sum(decision.target_ties for decision in decisions),
         predicted_ties=sum(decision.predicted_ties for decision in decisions),
-        outcome=ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED,
+        outcome=ValidationOutcome.DESCRIPTIVE_ONLY,
         diagnostics=(f"Persisted {len(points)} finite paper-analog points.",),
         limitations=(
             "The derived plot series is available for visual comparison, but no frozen semantic predicate adjudicates qualitative words such as low, high, often, or align.",
@@ -2748,7 +2748,7 @@ def _run_noise_plot_attempt(
                 predicted_ties=sum(
                     decision.predicted_ties for decision in sensitivity_decisions
                 ),
-                outcome=ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED,
+                outcome=ValidationOutcome.DESCRIPTIVE_ONLY,
                 diagnostics=(
                     f"Computed {len(sensitivity_noise)} points at fixed preceding step {sensitivity_checkpoint.step}.",
                 ),

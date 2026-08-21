@@ -261,7 +261,7 @@ def test_noise_plot_uses_declared_canonical_series_id(tmp_path: Path) -> None:
         30,
     ]
     assert attempts[0].plot_series_ids == ("dd-0209-paper-analog",)
-    assert attempts[0].outcome is ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED
+    assert attempts[0].outcome is ValidationOutcome.DESCRIPTIVE_ONLY
     assert series[0].id == "dd-0209-paper-analog"
     assert series[0].actual_checkpoint == 50
     assert len(series[0].points) == 1

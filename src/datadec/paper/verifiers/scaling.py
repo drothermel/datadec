@@ -1183,7 +1183,7 @@ def _result(
             spec.claim_id, evidence=evidence, analysis=analysis
         )
         if rule.predicate is ComparisonPredicate.NONEMPTY_PLOT:
-            outcome = ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED
+            outcome = ValidationOutcome.DESCRIPTIVE_ONLY
         else:
             outcome = (
                 ValidationOutcome.REPRODUCED

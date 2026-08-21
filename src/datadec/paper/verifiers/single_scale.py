@@ -606,10 +606,19 @@ def _headline_results(
     predictions = tuple(reversed(checkpoints[_HEADLINE_PREDICTION_SIZE][-3:]))
     if len(predictions) != 3:
         raise ValueError("DD-0011 requires a default and two preceding checkpoints")
+    threshold_sensitivities = tuple(
+        (
+            f"dd-0011-comparison-absolute-tolerance-grid-{index}",
+            threshold,
+        )
+        for index, threshold in enumerate(rule.threshold_grid, start=1)
+        if threshold != rule.absolute_tolerance
+    )
     expected_sensitivity_ids = (
         "dd-0011-preceding-common-complete-1",
         "dd-0011-preceding-common-complete-2",
         "dd-0011-paper-step",
+        *(sensitivity_id for sensitivity_id, _ in threshold_sensitivities),
     )
     if attempt.sensitivity_ids != expected_sensitivity_ids:
         raise ValueError("DD-0011 sensitivity IDs differ from the implemented contract")
@@ -708,6 +717,33 @@ def _headline_results(
                 ddof=summary.ddof,
                 outcome=outcome,
                 diagnostics=diagnostics,
+            )
+        )
+    default_result = results[0]
+    for sensitivity_id, threshold in threshold_sensitivities:
+        difference = float(default_result.unrounded_difference)
+        results.append(
+            default_result.model_copy(
+                update={
+                    "attempt_id": sensitivity_id,
+                    "role": AttemptRole.SENSITIVITY,
+                    "parent_attempt_id": attempt.id,
+                    "computed_value": {
+                        "decision_accuracy": default_result.computed_value,
+                        "absolute_tolerance": threshold,
+                        "satisfied": abs(difference) <= threshold,
+                    },
+                    "outcome": (
+                        ValidationOutcome.APPROXIMATELY_REPRODUCED
+                        if abs(difference) <= threshold
+                        else ValidationOutcome.NOT_REPRODUCED
+                    ),
+                    "diagnostics": (
+                        *default_result.diagnostics,
+                        "Compared the default checkpoint against frozen absolute "
+                        f"tolerance {threshold:.12g}.",
+                    ),
+                }
             )
         )
     return tuple(results)
@@ -876,7 +912,7 @@ def _aggregate_plot(
         ),
         target_ties=total_target_ties,
         predicted_ties=total_predicted_ties,
-        outcome=ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED,
+        outcome=ValidationOutcome.DESCRIPTIVE_ONLY,
         diagnostics=(
             f"Persisted {len(points)} common-complete aggregate plot points.",
         ),
@@ -1115,7 +1151,7 @@ def _per_task_plot(
         ),
         target_ties=total_target_ties,
         predicted_ties=total_predicted_ties,
-        outcome=ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED,
+        outcome=ValidationOutcome.DESCRIPTIVE_ONLY,
         diagnostics=(f"Persisted {len(points)} common-complete per-task plot points.",),
         limitations=(
             "The derived plot series is available for visual comparison, but no "

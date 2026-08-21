@@ -337,7 +337,7 @@ task_ids = ["olmes-macro"]
 metric_ids = ["primary_metric"]
 model_sizes = ["150M", "1B"]
 checkpoints = ["final-common-complete"]
-sensitivity_ids = ["dd-0011-preceding-common-complete-1", "dd-0011-preceding-common-complete-2", "dd-0011-paper-step"]
+sensitivity_ids = ["dd-0011-preceding-common-complete-1", "dd-0011-preceding-common-complete-2", "dd-0011-paper-step", "dd-0011-comparison-absolute-tolerance-grid-1", "dd-0011-comparison-absolute-tolerance-grid-3"]
 transformation_ids = ["mmlu-subject-macro-v1", "olmes-task-macro-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
 comparison_rule_id = "approximately-one-point-v1"
 

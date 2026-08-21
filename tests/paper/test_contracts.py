@@ -147,6 +147,8 @@ def test_current_validation_config_declares_all_assessable_defaults() -> None:
         "dd-0011-preceding-common-complete-1",
         "dd-0011-preceding-common-complete-2",
         "dd-0011-paper-step",
+        "dd-0011-comparison-absolute-tolerance-grid-1",
+        "dd-0011-comparison-absolute-tolerance-grid-3",
     )
     assert contract.outputs.runs_root == "data/paper-validation/runs"
     assert contract.outputs.report == "docs/paper-validation-report.md"

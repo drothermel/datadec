@@ -84,7 +84,10 @@ def test_single_scale_adapter_persists_headline_and_aggregate_series(
         for selection in default.row_selections
     )
     headline_sensitivities = tuple(
-        item for item in attempts if item.parent_attempt_id == "dd-0011-default"
+        item
+        for item in attempts
+        if item.parent_attempt_id == "dd-0011-default"
+        and "preceding-common-complete" in item.attempt_id
     )
     assert tuple(item.computed_value for item in headline_sensitivities) == (
         0.7977777777777778,
@@ -117,8 +120,30 @@ def test_single_scale_adapter_persists_headline_and_aggregate_series(
         item for item in attempts if item.attempt_id == "dd-0169-default"
     )
     assert aggregate.points
-    assert aggregate_result.outcome is ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED
+    assert aggregate_result.outcome is ValidationOutcome.DESCRIPTIVE_ONLY
     assert aggregate_result.plot_series_ids == (aggregate.id,)
+
+    tolerance_sensitivities = {
+        item.attempt_id: item
+        for item in attempts
+        if item.parent_attempt_id == "dd-0011-default"
+        and "absolute-tolerance" in item.attempt_id
+    }
+    assert {
+        attempt_id: result.outcome
+        for attempt_id, result in tolerance_sensitivities.items()
+    } == {
+        "dd-0011-comparison-absolute-tolerance-grid-1": (
+            ValidationOutcome.APPROXIMATELY_REPRODUCED
+        ),
+        "dd-0011-comparison-absolute-tolerance-grid-3": (
+            ValidationOutcome.APPROXIMATELY_REPRODUCED
+        ),
+    }
+    assert {
+        result.computed_value["absolute_tolerance"]
+        for result in tolerance_sensitivities.values()
+    } == {0.005, 0.02}
 
     annotation_results = {
         item.attempt_id: item
@@ -173,7 +198,7 @@ def test_per_task_adapter_persists_all_ten_logical_task_curves(
     plot_result = next(
         item for item in attempts if item.attempt_id == "dd-0148-default"
     )
-    assert plot_result.outcome is ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED
+    assert plot_result.outcome is ValidationOutcome.DESCRIPTIVE_ONLY
     assert plot_result.plot_series_ids == ("dd-0148-paper-analog",)
     assert {item.id for item in series} == {
         "dd-0148-paper-analog",
