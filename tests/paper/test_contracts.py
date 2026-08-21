@@ -238,6 +238,16 @@ required_evidence_boundary = "aggregate_evaluation"
     assert supplied.claims[0].id == "claim-1"
 
 
+def test_current_claim_registry_is_complete_and_contiguous() -> None:
+    registry = load_repository_claim_registry()
+
+    assert len(registry.claims) == 442
+    assert tuple(claim.id for claim in registry.claims) == tuple(
+        f"DD-{index:04d}" for index in range(1, 443)
+    )
+    assert registry.source_regions == ()
+
+
 def test_config_file_prefers_packaged_resource(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
