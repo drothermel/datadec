@@ -1,471 +1,250 @@
 from __future__ import annotations
 
-import os
-from datetime import datetime, timedelta, timezone
+import builtins
+import xml.etree.ElementTree as ET
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from typing import Any
 
 import pytest
 
-import datadec.paper.report as report_module
 from datadec.paper.models import (
-    ClaimRegistry,
-    CodeIdentity,
-    CodeTreeState,
+    AnalysisBundle,
+    AnalysisManifest,
+    AttemptResult,
+    AttemptRole,
+    CheckpointRule,
+    CheckpointSelection,
+    ClaimKind,
     ContentIdentity,
-    Observation,
-    ObservationFileIdentity,
-    PaperClaim,
-    RunManifest,
-    RuntimeIdentity,
-    Verdict,
+    MetadataDiscrepancy,
+    NamedCount,
+    PaperTarget,
+    PredicateOperator,
+    RowPredicate,
+    RowSelection,
+    ValidationOutcome,
 )
-from datadec.paper.report import render_report, render_report_file
+from datadec.paper.output_transaction import replace_output_set
+from datadec.paper.report import render_bundle_outputs, render_report
 
-_STARTED_AT = datetime(2026, 8, 21, 12, 0, tzinfo=timezone.utc)
-
-
-def _identity(identity_id: str, digit: str) -> ContentIdentity:
-    return ContentIdentity(id=identity_id, sha256=digit * 64)
-
-
-def _claim(claim_id: str = "claim-1", **updates: Any) -> PaperClaim:
-    value: dict[str, Any] = {
-        "id": claim_id,
-        "source_file": "docs/paper/example.tex",
-        "line_start": 10,
-        "line_end": 11,
-        "text": f"Static text for {claim_id}.",
-        "owner": "datadec_empirical",
-        "expectation_kind": "literal",
-        "expectation": "expected",
-        "required_evidence_boundary": "aggregate_evaluation",
-    }
-    value.update(updates)
-    return PaperClaim.model_validate(value)
+_SHA_A = "a" * 64
+_SHA_B = "b" * 64
+_SHA_C = "c" * 64
+_NOW = datetime(2026, 8, 21, 12, tzinfo=UTC)
 
 
-def _observation(claim_id: str = "claim-1", **updates: Any) -> Observation:
-    value: dict[str, Any] = {
-        "claim_id": claim_id,
-        "verdict": "reproduced",
-        "actual_evidence_boundary": "aggregate_evaluation",
-        "observed_value": {"value": 0.75},
-    }
-    value.update(updates)
-    return Observation.model_validate(value)
-
-
-def _manifest(observation_count: int = 1) -> RunManifest:
-    return RunManifest(
-        run_id="selected-run",
-        started_at=_STARTED_AT,
-        completed_at=_STARTED_AT + timedelta(minutes=2),
-        paper_identity=_identity("arxiv:2504.11393v2", "1"),
-        config_identity=_identity("configs/paper_reproduction.toml", "2"),
-        claims_identity=_identity("docs/paper/claims.toml", "3"),
-        code_identity=CodeIdentity(
-            commit_sha="4" * 40,
-            tree_state=CodeTreeState.CLEAN,
-        ),
-        runtime_identity=RuntimeIdentity(
-            python_version="3.12.5",
-            implementation="CPython",
-            platform="test-platform",
-            dependency_lock_sha256="5" * 64,
-        ),
-        input_identities=(_identity("evaluation-input", "6"),),
-        artifact_identities=(
-            _identity("method-reference", "7"),
-            _identity("result-table", "8"),
-        ),
-        observations_identity=ObservationFileIdentity(
-            filename="observations.json",
-            sha256="9" * 64,
-            byte_count=123,
-            observation_count=observation_count,
-        ),
+def _manifest() -> AnalysisManifest:
+    return AnalysisManifest(
+        run_id="validation-run",
+        started_at=_NOW,
+        completed_at=_NOW + timedelta(minutes=1),
+        input_identities=(ContentIdentity(id="olmes", sha256=_SHA_A),),
+        targets_identity=ContentIdentity(id="targets.json", sha256=_SHA_A),
+        attempts_identity=ContentIdentity(id="attempts.json", sha256=_SHA_B),
+        plot_series_identity=ContentIdentity(id="plot-series.json", sha256=_SHA_C),
     )
 
 
-def _all_verdict_values() -> tuple[ClaimRegistry, RunManifest, tuple[Observation, ...]]:
-    verdicts = tuple(Verdict)
-    claims = []
-    observations = []
-    for index, verdict in enumerate(reversed(verdicts), start=1):
-        claim_id = f"claim-{index:02d}"
-        claim_updates: dict[str, Any] = {}
-        observation_updates: dict[str, Any] = {"verdict": verdict.value}
-        if verdict is Verdict.REPRODUCED:
-            claim_updates = {
-                "text": "A | B \\ C\ncontinues.",
-                "expectation": "expected | value",
-                "verifier_id": "verifier-1",
-                "method_id": "method-1",
-                "policy_id": "policy-1",
-            }
-            observation_updates.update(
-                {
-                    "verifier_id": "verifier-1",
-                    "method_id": "method-1",
-                    "method_provenance": "upstream_informed",
-                    "method_reference_artifact_id": "method-reference",
-                    "policy_id": "policy-1",
-                    "observed_value": {"z": 2, "a": [False, None]},
-                    "diagnostics": ["diagnostic | value"],
-                    "denominator": 20,
-                    "counts": [
-                        {"name": "abstentions", "value": 1},
-                        {"name": "excluded", "value": 2},
-                        {"name": "failed_fits", "value": 3},
-                        {"name": "ties", "value": 4},
-                    ],
-                    "input_ids": ["evaluation-input"],
-                    "artifact_ids": ["method-reference", "result-table"],
-                }
-            )
-        elif verdict is Verdict.SOURCE_ONLY_MATCH:
-            observation_updates["actual_evidence_boundary"] = "paper_or_final_artifact"
-        elif verdict in {
-            Verdict.CONTRADICTED,
-            Verdict.INTERNALLY_INCONSISTENT,
-        }:
-            if verdict is Verdict.CONTRADICTED:
-                claim_updates.update(
-                    {
-                        "text": "A | B \\ C\ncontinues.",
-                        "expectation": "contradicted | expectation",
-                    }
-                )
-            observation_updates["diagnostics"] = ["recorded conflict"]
-        elif verdict is Verdict.EXTERNAL_OR_CITATION_DEPENDENT:
-            claim_updates["citation_keys"] = ("z-key", "citation_*key*")
-            observation_updates.update(
-                {
-                    "actual_evidence_boundary": None,
-                    "observed_value": None,
-                    "blocker": {
-                        "kind": verdict.value,
-                        "reason": f"recorded reason for {verdict.value}",
-                    },
-                }
-            )
-        else:
-            observation_updates.update(
-                {
-                    "actual_evidence_boundary": None,
-                    "observed_value": None,
-                }
-            )
-            blocker_kind = verdict.value
-            blocker: dict[str, Any] = {
-                "kind": blocker_kind,
-                "reason": f"recorded reason for {verdict.value}",
-            }
-            if verdict is Verdict.BLOCKED_MISSING_INPUT:
-                blocker["kind"] = "missing_input"
-                blocker["missing_input_ids"] = ["missing-input"]
-            elif verdict is Verdict.BLOCKED_UNSPECIFIED_METHOD:
-                blocker["kind"] = "unspecified_method"
-                blocker["unresolved_method_id"] = "unresolved-method"
-                claim_updates["unresolved_method_id"] = "unresolved-method"
-            observation_updates["blocker"] = blocker
-        claims.append(_claim(claim_id, **claim_updates))
-        observations.append(_observation(claim_id, **observation_updates))
-    return (
-        ClaimRegistry(claims=tuple(reversed(claims))),
-        _manifest(len(observations)),
-        tuple(observations),
+def _target(claim_id: str, family: str, value: object) -> PaperTarget:
+    return PaperTarget(
+        claim_id=claim_id,
+        family=family,
+        kind=ClaimKind.EMPIRICAL_NUMERIC,
+        source_file="docs/paper/example_paper.tex",
+        line_start=10,
+        line_end=11,
+        source_text=f"Paper text for {claim_id}",
+        value=value,
     )
 
 
-def test_report_covers_every_outcome_and_preserves_recorded_details() -> None:
-    registry, manifest, observations = _all_verdict_values()
-
-    report = render_report(registry, manifest, observations)
-
-    for verdict in Verdict:
-        assert f"| Verdict | {verdict.value} | 1 |" in report
-    for heading in (
-        "## Known contradictions and inconsistencies",
-        "## Reproduced",
-        "## Source-only matches",
-        "## Blocked: missing input",
-        "## Blocked: unspecified method",
-        "## External or citation-dependent",
-        "## Not attempted or not applicable",
-    ):
-        assert heading in report
-    assert (
-        "source_only_match` confirms only source or author-artifact agreement" in report
-    )
-    assert "is not an independent reproduction" in report
-    assert "successful scientific outcomes, not process failures" in report
-    assert "A \\| B \\\\ C<br>continues." in report
-    assert '"contradicted \\| expectation"' in report
-    assert '"expected \\| value"' in report
-    assert '{"a":\\[false,null\\],"z":2}' in report
-    assert "diagnostic \\| value" in report
-    assert (
-        "denominator=20; abstentions=1; excluded=2; failed\\_fits=3; ties=4" in report
-    )
-    assert "method=method-1; provenance=upstream\\_informed" in report
-    assert 'missing inputs=\\["missing-input"\\]' in report
-    assert "unresolved method=unresolved-method" in report
-    assert 'citation keys=\\["citation\\_\\*key\\*","z-key"\\]' in report
-    assert 'diagnostics=\\["recorded conflict"\\]' in report
-    for index in range(1, 10):
-        assert f"claim-{index:02d}" in report
-    for index in range(1, 7):
-        assert report.count(f"claim-{index:02d}") == 1
-    assert render_report(registry, manifest, reversed(observations)) == report
-
-
-def test_report_identity_and_summary_header_matches_golden() -> None:
-    registry = ClaimRegistry(claims=(_claim(),))
-
-    report = render_report(registry, _manifest(), (_observation(),))
-
-    assert report.startswith(
-        """# Paper verification report
-
-- Paper identity: `arxiv:2504.11393v2`
-- Selected run ID: `selected-run`
-- Manifest SHA256: `c5fd0c8d021f06b44ff526c9586a001b4fd3dffff3d7a85be1b1237b2c7d565b`
-
-## Pinned run identities
-
-| Identity | ID | Digest / state |
-| --- | --- | --- |
-| Paper | arxiv:2504.11393v2 | SHA256=1111111111111111111111111111111111111111111111111111111111111111 |
-| Reproduction config | configs/paper\\_reproduction.toml | SHA256=2222222222222222222222222222222222222222222222222222222222222222 |
-| Claim registry | docs/paper/claims.toml | SHA256=3333333333333333333333333333333333333333333333333333333333333333 |
-| Code | 4444444444444444444444444444444444444444 | tree=clean; dirty diff artifact=— |
-| Observations | observations.json | SHA256=9999999999999999999999999999999999999999999999999999999999999999; count=1 |
-
-## Evidence and method interpretation
-"""
-    )
-    assert (
-        """## Summary counts
-
-| Dimension | Value | Count |
-| --- | --- | ---: |
-| Verdict | reproduced | 1 |
-| Actual evidence boundary | aggregate_evaluation | 1 |
-"""
-        in report
-    )
-
-
-@pytest.mark.parametrize(
-    ("registry", "manifest", "observations", "error"),
-    [
-        (
-            ClaimRegistry(claims=(_claim(), _claim("claim-2"))),
-            _manifest(),
-            (_observation(),),
-            "must match exactly",
+def _selection(*, rows: int = 12) -> RowSelection:
+    return RowSelection(
+        logical_table_id="olmes",
+        columns=("size", "step", "metric"),
+        predicates=(
+            RowPredicate(column="size", operator=PredicateOperator.EQ, value="150M"),
         ),
-        (
-            ClaimRegistry(claims=(_claim(),)),
-            _manifest(2),
-            (_observation(), _observation()),
-            "duplicate observations",
-        ),
-        (
-            ClaimRegistry(claims=(_claim(),)),
-            _manifest(2),
-            (_observation(),),
-            "observation count",
-        ),
-        (
-            ClaimRegistry(claims=(_claim(verifier_id="expected-verifier"),)),
-            _manifest(),
-            (_observation(verifier_id="other-verifier"),),
-            "verifier ID does not match",
-        ),
-        (
-            ClaimRegistry(claims=(_claim(unresolved_method_id="expected-method"),)),
-            _manifest(),
-            (
-                _observation(
-                    verdict="blocked_unspecified_method",
-                    actual_evidence_boundary=None,
-                    observed_value=None,
-                    blocker={
-                        "kind": "unspecified_method",
-                        "reason": "method is absent",
-                        "unresolved_method_id": "other-method",
-                    },
-                ),
+        local_parquet_sha256=_SHA_A,
+        remote_dataset_revision="dd-parsed-rev",
+        selected_row_count=rows,
+        selected_key_sha256=_SHA_B,
+    )
+
+
+def _attempt(
+    attempt_id: str,
+    claim_id: str,
+    *,
+    role: AttemptRole = AttemptRole.DEFAULT,
+    parent: str | None = None,
+    outcome: ValidationOutcome = ValidationOutcome.REPRODUCED,
+    computed: object = 0.8033333333333333,
+    difference: float | None = 0.0033333333333332993,
+    diagnostics: tuple[str, ...] = (),
+    limitations: tuple[str, ...] = (),
+    missing_groups: tuple[str, ...] = (),
+) -> AttemptResult:
+    return AttemptResult(
+        attempt_id=attempt_id,
+        claim_id=claim_id,
+        role=role,
+        parent_attempt_id=parent,
+        comparison_rule_id="approximately-80-percent",
+        comparison_rule_version=2,
+        transformation_ids=("macro-average-mmlu", "pairwise-decisions"),
+        row_selections=(_selection(),),
+        checkpoint_selections=(
+            CheckpointSelection(
+                requested_meaning="final",
+                rule=CheckpointRule.LATEST_COMMON_COMPLETE,
+                actual_step=37_500,
+                completeness_dimensions=("recipe", "seed", "task"),
+                expected_group_count=4_950,
+                selected_group_count=4_950,
             ),
-            "unresolved method ID does not match",
         ),
-        (
-            ClaimRegistry(claims=(_claim(),)),
-            _manifest(),
-            (_observation(artifact_ids=["unknown-artifact"]),),
-            "unknown artifacts",
+        target_value=0.8,
+        computed_value=computed,
+        unrounded_difference=difference,
+        seeds=("2", "3", "4"),
+        denominator=900,
+        exclusions=(NamedCount(name="excluded_target_ties", value=2),),
+        missing_groups=missing_groups,
+        target_ties=2,
+        predicted_ties=1,
+        standard_deviation=0.029627314724385286,
+        ddof=1,
+        outcome=outcome,
+        diagnostics=diagnostics,
+        limitations=limitations,
+    )
+
+
+def _bundle() -> AnalysisBundle:
+    default = _attempt("dd-0001-default", "DD-0001")
+    sensitivity = _attempt(
+        "dd-0001-preceding-1",
+        "DD-0001",
+        role=AttemptRole.SENSITIVITY,
+        parent=default.attempt_id,
+        outcome=ValidationOutcome.DIRECTIONALLY_CONSISTENT,
+        computed=0.77,
+        difference=-0.03,
+    )
+    unavailable = _attempt(
+        "dd-0002-default",
+        "DD-0002",
+        outcome=ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED,
+        computed=None,
+        difference=None,
+        diagnostics=("required task observations are absent",),
+        limitations=("training is outside validation scope",),
+        missing_groups=("task=missing",),
+    )
+    return AnalysisBundle(
+        manifest=_manifest(),
+        targets=(
+            _target("DD-0003", "z-family", "trend & target"),
+            _target("DD-0002", "b-family", 0.9),
+            _target("DD-0001", "a_family", 0.8),
         ),
-    ],
-)
-def test_report_rejects_unresolved_joins(
-    registry: ClaimRegistry,
-    manifest: RunManifest,
-    observations: tuple[Observation, ...],
-    error: str,
-) -> None:
-    with pytest.raises(ValueError, match=error):
-        render_report(registry, manifest, observations)
-
-
-def test_report_does_not_recompute_scientific_outcomes() -> None:
-    registry = ClaimRegistry(claims=(_claim(expectation=1),))
-    observation = _observation(verdict="reproduced", observed_value=999)
-
-    report = render_report(registry, _manifest(), (observation,))
-
-    claim_row = next(
-        line for line in report.splitlines() if line.startswith("| claim-1; ")
-    )
-    assert "| 1 | value=999; diagnostics=\\[\\] | required=" in claim_row
-
-
-def test_large_source_only_report_grows_with_ids_not_repeated_details() -> None:
-    claim_count = 442
-    repeated_claim_text = "repeated claim prose " + "x" * 500
-    repeated_diagnostic = "repeated diagnostic " + "y" * 500
-    claims = tuple(
-        _claim(f"claim-{index:04d}", text=repeated_claim_text)
-        for index in range(claim_count)
-    )
-    observations = tuple(
-        _observation(
-            claim.id,
-            verdict="source_only_match",
-            actual_evidence_boundary="paper_or_final_artifact",
-            observed_value=None,
-            diagnostics=(repeated_diagnostic,),
-        )
-        for claim in claims
+        metadata_discrepancies=(
+            MetadataDiscrepancy(
+                claim_id="DD-META",
+                paper_locator="example_paper.tex:20",
+                paper_value="2024",
+                metadata_source="dd_parsed metadata",
+                metadata_value="2048",
+                note="description differs; not an empirical outcome",
+            ),
+        ),
+        attempts=(unavailable, sensitivity, default),
+        plot_series=(),
     )
 
-    large_report = render_report(
-        ClaimRegistry(claims=tuple(reversed(claims))),
-        _manifest(claim_count),
-        tuple(reversed(observations)),
-    )
-    single_report = render_report(
-        ClaimRegistry(claims=(claims[0],)),
-        _manifest(),
-        (observations[0],),
-    )
 
-    additional_id_bytes = sum(len(claim.id) for claim in claims[1:])
-    assert repeated_claim_text not in large_report
-    assert repeated_diagnostic not in large_report
-    assert len(large_report.encode()) < 30_000
-    assert len(large_report) - len(single_report) < additional_id_bytes * 3
-    assert "| source or author-artifact agreement only | 442 |" in large_report
+def test_report_is_deterministic_and_covers_finding_contract() -> None:
+    bundle = _bundle()
 
-
-def test_large_reproduced_fact_values_remain_in_observations() -> None:
-    claim = _claim("claim-1")
-    observation = _observation(
-        "claim-1",
-        verdict="reproduced",
-        actual_evidence_boundary="aggregate_evaluation",
-        observed_value=[{"fact": index, "value": "x" * 100} for index in range(50)],
-        diagnostics=("every recorded fact satisfies the predicate",),
-    )
-    manifest = _manifest()
-
-    report = render_report(ClaimRegistry(claims=(claim,)), manifest, (observation,))
-
-    assert "50 recorded values; full values remain" in report
-    assert "every recorded fact satisfies the predicate" in report
-    assert '"fact":49' not in report
-
-
-def test_external_groups_fall_back_to_escaped_blocker_reason() -> None:
-    claims = (_claim("claim-a"), _claim("claim-b"))
-    observations = tuple(
-        _observation(
-            claim.id,
-            verdict="external_or_citation_dependent",
-            actual_evidence_boundary=None,
-            observed_value=None,
-            blocker={
-                "kind": "external_or_citation_dependent",
-                "reason": "external *artifact* | unavailable",
-            },
-        )
-        for claim in claims
+    report = render_report(bundle)
+    reordered = bundle.model_copy(
+        update={
+            "targets": tuple(reversed(bundle.targets)),
+            "attempts": tuple(reversed(bundle.attempts)),
+        }
     )
 
-    report = render_report(ClaimRegistry(claims=claims), _manifest(2), observations)
-
+    assert render_report(reordered) == report
+    assert r"## Family: a\_family" in report
+    assert report.index(r"## Family: a\_family") < report.index(
+        "## Unassessable from dd_parsed"
+    )
     assert (
-        '| blocker reason="external \\*artifact\\* \\| unavailable" | 2 | '
-        "claim-a, claim-b |" in report
+        "| DD-0001 | dd-0001-default | default | 0.8 | "
+        "0.8033333333333333 | 0.00333333333333 | reproduced |"
+    ) in report
+    assert "dd-0001-preceding-1" in report
+    assert "Role and parent: `sensitivity`; dd-0001-preceding-1" not in report
+    assert "Role and parent: `sensitivity`; dd-0001-default" in report
+    assert "comparison rule `approximately-80-percent` version 2" in report
+    assert 'ordered transformations=\\["macro-average-mmlu"' in report
+    assert "selected rows=12" in report
+    assert "actual step=37500" in report
+    assert "groups=4950/4950" in report
+    assert "denominator=900" in report
+    assert "standard deviation=0.0296273147244 (DDOF=1)" in report
+    assert "DD-0002" in report and "task=missing" in report
+    assert "DD-0003" in report and "No attempt result persisted" in report
+    assert "## Metadata discrepancies" in report
+    assert "description differs; not an empirical outcome" in report
+    assert "Metadata comparisons are descriptive and are excluded" in report
+    assert "## Traceability appendix" in report
+    assert "| Input | olmes |" in report
+    assert "| Bundle | attempts.json |" in report
+
+
+def test_report_uses_persisted_results_without_input_reads_or_recomputation(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    bundle = _bundle()
+    attempt = bundle.attempts[-1].model_copy(
+        update={"computed_value": 999, "unrounded_difference": 123.456}
+    )
+    bundle = bundle.model_copy(update={"attempts": (*bundle.attempts[:-1], attempt)})
+
+    def fail_read(*args: object, **kwargs: object) -> None:
+        raise AssertionError("rendering must not open scientific or repository inputs")
+
+    monkeypatch.setattr(builtins, "open", fail_read)
+
+    report = render_report(bundle)
+
+    assert "| 0.8 | 999 | 123.456 | reproduced |" in report
+
+
+def test_render_bundle_outputs_returns_report_and_named_valid_svg_bytes() -> None:
+    outputs = render_bundle_outputs(_bundle())
+
+    assert outputs.report == render_report(_bundle()).encode()
+    assert tuple(name for name, _ in outputs.figures) == ("outcome-audit.svg",)
+    assert all(isinstance(content, bytes) for _, content in outputs.figures)
+    root = ET.fromstring(outputs.figures[0][1])
+    assert root.tag == "{http://www.w3.org/2000/svg}svg"
+    audit = outputs.figures[0][1].decode()
+    assert "reproduced: 1" in audit
+    assert "not_assessable_from_dd_parsed: 1" in audit
+    assert "metadata_discrepancy" not in audit
+
+
+def test_rendered_bytes_are_accepted_by_output_transaction(tmp_path: Path) -> None:
+    outputs = render_bundle_outputs(_bundle())
+    report_path = tmp_path / "report.md"
+    audit_path = tmp_path / outputs.figures[0][0]
+
+    replace_output_set(
+        ((report_path, outputs.report), (audit_path, outputs.figures[0][1]))
     )
 
-
-def test_report_file_validates_before_atomic_replacement(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    destination = tmp_path / "report.md"
-    destination.write_text("original")
-    registry = ClaimRegistry(claims=(_claim(),))
-    manifest = _manifest()
-    observation = _observation()
-
-    with pytest.raises(ValueError, match="must match exactly"):
-        render_report_file(
-            ClaimRegistry(claims=(_claim(), _claim("claim-2"))),
-            manifest,
-            (observation,),
-            destination,
-        )
-    assert destination.read_text() == "original"
-    assert sorted(tmp_path.iterdir()) == [destination]
-
-    original_replace = os.replace
-    replacement_contents: list[str] = []
-
-    def inspect_replace(source: str | Path, target: str | Path) -> None:
-        assert Path(target) == destination
-        assert destination.read_text() == "original"
-        replacement_contents.append(Path(source).read_text())
-        original_replace(source, target)
-
-    monkeypatch.setattr(report_module.os, "replace", inspect_replace)
-    render_report_file(registry, manifest, (observation,), destination)
-
-    assert destination.read_text() == replacement_contents[0]
-    assert destination.read_text() == render_report(registry, manifest, (observation,))
-    assert sorted(tmp_path.iterdir()) == [destination]
-
-
-def test_report_file_preserves_original_when_atomic_replace_fails(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    destination = tmp_path / "report.md"
-    destination.write_text("original")
-
-    def fail_replace(source: str | Path, target: str | Path) -> None:
-        raise OSError("injected replace failure")
-
-    monkeypatch.setattr(report_module.os, "replace", fail_replace)
-
-    with pytest.raises(OSError, match="injected replace failure"):
-        render_report_file(
-            ClaimRegistry(claims=(_claim(),)),
-            _manifest(),
-            (_observation(),),
-            destination,
-        )
-
-    assert destination.read_text() == "original"
-    assert sorted(tmp_path.iterdir()) == [destination]
+    assert report_path.read_bytes() == outputs.report
+    assert audit_path.read_bytes() == outputs.figures[0][1]

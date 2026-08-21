@@ -21,15 +21,18 @@ def _write_temporary(destination: Path, content: bytes, suffix: str) -> Path:
     return temporary_path
 
 
-def replace_output_set(outputs: Iterable[tuple[Path, str]]) -> None:
+def replace_output_set(outputs: Iterable[tuple[Path, bytes | str]]) -> None:
     """Replace rendered files and roll back completed replacements after an error.
 
-    Every string must already be rendered and validated. Rollback covers errors
+    Every content value must already be rendered and validated. Rollback covers errors
     raised during this process; it does not provide crash consistency or a single
     atomic view to concurrent readers. If rollback itself fails, the recovery
     backup is preserved and the original and rollback errors are both raised.
     """
-    rendered = tuple(outputs)
+    rendered = tuple(
+        (destination, content.encode() if isinstance(content, str) else content)
+        for destination, content in outputs
+    )
     destinations = tuple(destination for destination, _ in rendered)
     if len(set(destinations)) != len(destinations):
         raise ValueError("output destinations must be unique")
@@ -39,9 +42,7 @@ def replace_output_set(outputs: Iterable[tuple[Path, str]]) -> None:
     try:
         for destination, content in rendered:
             destination.parent.mkdir(parents=True, exist_ok=True)
-            staged.append(
-                (_write_temporary(destination, content.encode(), ".tmp"), destination)
-            )
+            staged.append((_write_temporary(destination, content, ".tmp"), destination))
 
         for destination in destinations:
             backups[destination] = (

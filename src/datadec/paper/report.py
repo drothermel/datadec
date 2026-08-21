@@ -1,591 +1,372 @@
 from __future__ import annotations
 
-import hashlib
-import os
-import tempfile
 from collections import Counter, defaultdict
-from collections.abc import Iterable
-from pathlib import Path
+from dataclasses import dataclass
 
 import orjson
 
+from datadec.paper.figures import render_figures
 from datadec.paper.models import (
-    ClaimRegistry,
-    EvidenceBoundary,
-    Observation,
-    PaperClaim,
-    RunManifest,
-    Verdict,
+    AnalysisBundle,
+    AttemptResult,
+    AttemptRole,
+    CheckpointSelection,
+    MetadataDiscrepancy,
+    PaperTarget,
+    RowSelection,
+    ValidationOutcome,
 )
 
-_CANONICAL_JSON_OPTIONS = orjson.OPT_APPEND_NEWLINE | orjson.OPT_SORT_KEYS
-_VERDICT_ORDER = (
-    Verdict.REPRODUCED,
-    Verdict.CONTRADICTED,
-    Verdict.INTERNALLY_INCONSISTENT,
-    Verdict.SOURCE_ONLY_MATCH,
-    Verdict.BLOCKED_MISSING_INPUT,
-    Verdict.BLOCKED_UNSPECIFIED_METHOD,
-    Verdict.EXTERNAL_OR_CITATION_DEPENDENT,
-    Verdict.NOT_ATTEMPTED,
-    Verdict.NOT_APPLICABLE,
+_PRIMARY_OUTCOMES = (
+    ValidationOutcome.REPRODUCED,
+    ValidationOutcome.APPROXIMATELY_REPRODUCED,
+    ValidationOutcome.DIRECTIONALLY_CONSISTENT,
+    ValidationOutcome.NOT_REPRODUCED,
+    ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED,
 )
-_CLAIM_TABLE_HEADER = (
-    "| ID | Static claim and locator | Expected | Observed / diagnostics | Verdict | "
-    "Evidence boundary | Counts | Method / policy / verifier | Blocker | Artifacts |\n"
-    "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
+_COMPARISON_HEADER = (
+    "| Claim | Attempt | Role | Paper target | Computed result | Difference | Outcome |\n"
+    "| --- | --- | --- | --- | --- | ---: | --- |\n"
 )
-_REPRODUCED_TABLE_HEADER = (
-    "| ID and locator | Expected | Observed / diagnostics | Evidence boundary | "
-    "Counts | Method / policy / verifier | Artifacts |\n"
-    "| --- | --- | --- | --- | --- | --- | --- |\n"
-)
-_COMPACT_TABLE_HEADER = "| Group | Count | Claim IDs |\n| --- | ---: | --- |\n"
-_CLAIM_ID_WRAP_WIDTH = 88
 
 
-def _canonical_json(value: object) -> str:
+@dataclass(frozen=True, slots=True)
+class RenderedBundleOutputs:
+    report: bytes
+    figures: tuple[tuple[str, bytes], ...]
+
+
+def _json(value: object) -> str:
     return orjson.dumps(value, option=orjson.OPT_SORT_KEYS).decode()
 
 
-def _escape_table_cell(value: str) -> str:
+def _escape(value: object) -> str:
     escaped: list[str] = []
-    for character in value:
+    for character in str(value):
         if character == "\n":
             escaped.append("<br>")
-        elif character in r"\\|`*_[]<>!":
+        elif character in r"\|`*_[]<>!":
             escaped.append(f"\\{character}")
         else:
             escaped.append(character)
     return "".join(escaped)
 
 
-def _render_code_span(value: str) -> str:
-    normalized = value.replace("\n", " ")
-    longest_run = 0
-    current_run = 0
-    for character in normalized:
-        if character == "`":
-            current_run += 1
-            longest_run = max(longest_run, current_run)
-        else:
-            current_run = 0
-    delimiter = "`" * max(1, longest_run + 1)
-    padding = " " if normalized.startswith("`") or normalized.endswith("`") else ""
-    return f"{delimiter}{padding}{normalized}{padding}{delimiter}"
+def _json_cell(value: object) -> str:
+    return _escape(_json(value))
 
 
-def _render_wrapped_claim_ids(claim_ids: Iterable[str]) -> str:
-    lines: list[str] = []
-    current: list[str] = []
-    current_width = 0
-    for claim_id in sorted(claim_ids):
-        escaped = _escape_table_cell(claim_id)
-        separator_width = 2 if current else 0
-        if (
-            current
-            and current_width + separator_width + len(escaped) > _CLAIM_ID_WRAP_WIDTH
-        ):
-            lines.append(", ".join(current))
-            current = []
-            current_width = 0
-        current.append(escaped)
-        current_width += (2 if current_width else 0) + len(escaped)
-    if current:
-        lines.append(", ".join(current))
-    return "<br>".join(lines) if lines else "—"
+def _attempt_sort_key(attempt: AttemptResult) -> tuple[int, str]:
+    return (0 if attempt.role is AttemptRole.DEFAULT else 1, attempt.attempt_id)
 
 
-def _manifest_sha256(manifest: RunManifest) -> str:
-    payload = orjson.dumps(
-        manifest.model_dump(mode="json"), option=_CANONICAL_JSON_OPTIONS
+def _attempts_by_claim(
+    bundle: AnalysisBundle,
+) -> dict[str, tuple[AttemptResult, ...]]:
+    grouped: defaultdict[str, list[AttemptResult]] = defaultdict(list)
+    for attempt in bundle.attempts:
+        grouped[attempt.claim_id].append(attempt)
+    return {
+        claim_id: tuple(sorted(attempts, key=_attempt_sort_key))
+        for claim_id, attempts in grouped.items()
+    }
+
+
+def _default_attempt(
+    attempts: tuple[AttemptResult, ...],
+) -> AttemptResult | None:
+    return next(
+        (attempt for attempt in attempts if attempt.role is AttemptRole.DEFAULT), None
     )
-    return hashlib.sha256(payload).hexdigest()
 
 
-def _validate_identity_join(
-    claim: PaperClaim,
-    observation: Observation,
-    *,
-    field: str,
-    description: str,
-) -> None:
-    expected = getattr(claim, field)
-    actual = getattr(observation, field)
-    if expected is not None and actual != expected:
-        raise ValueError(
-            f"observation {claim.id} {description} ID does not match its claim: "
-            f"expected {expected!r}, got {actual!r}"
-        )
-
-
-def _validated_claim_observations(
-    registry: ClaimRegistry,
-    manifest: RunManifest,
-    observations: Iterable[Observation],
-) -> tuple[tuple[PaperClaim, Observation], ...]:
-    supplied = tuple(observations)
-    supplied_ids = tuple(observation.claim_id for observation in supplied)
-    duplicate_ids = sorted(
-        claim_id for claim_id in set(supplied_ids) if supplied_ids.count(claim_id) > 1
+def _is_unassessable(attempts: tuple[AttemptResult, ...]) -> bool:
+    default = _default_attempt(attempts)
+    return default is None or (
+        default.outcome is ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED
     )
-    if duplicate_ids:
-        raise ValueError(
-            "duplicate observations for claim IDs: " + ", ".join(duplicate_ids)
-        )
-
-    claims_by_id = {claim.id: claim for claim in registry.claims}
-    observations_by_id = {observation.claim_id: observation for observation in supplied}
-    claim_ids = set(claims_by_id)
-    observation_ids = set(observations_by_id)
-    missing_ids = sorted(claim_ids - observation_ids)
-    unknown_ids = sorted(observation_ids - claim_ids)
-    if missing_ids or unknown_ids:
-        raise ValueError(
-            "claim and observation IDs must match exactly: "
-            f"missing={missing_ids!r}, unknown={unknown_ids!r}"
-        )
-    if manifest.observations_identity.observation_count != len(supplied):
-        raise ValueError(
-            "manifest observation count does not match supplied observations: "
-            f"expected {manifest.observations_identity.observation_count}, "
-            f"got {len(supplied)}"
-        )
-
-    input_ids = {identity.id for identity in manifest.input_identities}
-    artifact_ids = {identity.id for identity in manifest.artifact_identities}
-    result: list[tuple[PaperClaim, Observation]] = []
-    for claim_id in sorted(claim_ids):
-        claim = claims_by_id[claim_id]
-        observation = observations_by_id[claim_id]
-        _validate_identity_join(
-            claim, observation, field="verifier_id", description="verifier"
-        )
-        _validate_identity_join(
-            claim, observation, field="method_id", description="method"
-        )
-        _validate_identity_join(
-            claim, observation, field="policy_id", description="policy"
-        )
-
-        unknown_inputs = sorted(set(observation.input_ids) - input_ids)
-        if unknown_inputs:
-            raise ValueError(
-                f"observation {claim_id} references unknown inputs: "
-                + ", ".join(unknown_inputs)
-            )
-        unknown_artifacts = sorted(set(observation.artifact_ids) - artifact_ids)
-        if unknown_artifacts:
-            raise ValueError(
-                f"observation {claim_id} references unknown artifacts: "
-                + ", ".join(unknown_artifacts)
-            )
-        blocker = observation.blocker
-        if blocker is not None:
-            present_missing_inputs = sorted(set(blocker.missing_input_ids) & input_ids)
-            if present_missing_inputs:
-                raise ValueError(
-                    f"observation {claim_id} marks present inputs as missing: "
-                    + ", ".join(present_missing_inputs)
-                )
-            if blocker.unresolved_method_id is not None:
-                if blocker.unresolved_method_id != claim.unresolved_method_id:
-                    raise ValueError(
-                        f"observation {claim_id} unresolved method ID does not match "
-                        f"its claim: expected {claim.unresolved_method_id!r}, "
-                        f"got {blocker.unresolved_method_id!r}"
-                    )
-        result.append((claim, observation))
-    return tuple(result)
 
 
-def _render_observed(observation: Observation) -> str:
+def _comparison_row(target: PaperTarget, attempt: AttemptResult) -> str:
+    difference = (
+        "—"
+        if attempt.unrounded_difference is None
+        else _escape(f"{attempt.unrounded_difference:.12g}")
+    )
     return (
-        f"value={_canonical_json(observation.observed_value)}; "
-        f"diagnostics={_canonical_json(list(observation.diagnostics))}"
+        f"| {_escape(target.claim_id)} | {_escape(attempt.attempt_id)} | "
+        f"{attempt.role.value} | {_json_cell(target.value)} | "
+        f"{_json_cell(attempt.computed_value)} | {difference} | "
+        f"{attempt.outcome.value} |\n"
     )
 
 
-def _render_counts(observation: Observation) -> str:
+def _render_predicate(selection: RowSelection) -> str:
+    predicates = tuple(
+        predicate.model_dump(mode="json") for predicate in selection.predicates
+    )
+    return _json(predicates)
+
+
+def _render_row_selection(selection: RowSelection) -> str:
+    remote_revision = selection.remote_dataset_revision or "not recorded"
+    return (
+        f"table `{_escape(selection.logical_table_id)}`; "
+        f"columns={_escape(_json(selection.columns))}; "
+        f"predicates={_escape(_render_predicate(selection))}; "
+        f"selected rows={selection.selected_row_count}; "
+        f"Parquet SHA-256=`{selection.local_parquet_sha256}`; "
+        f"selected-key SHA-256=`{selection.selected_key_sha256}`; "
+        f"remote revision={_escape(remote_revision)}"
+    )
+
+
+def _render_checkpoint(selection: CheckpointSelection) -> str:
+    return (
+        f"{_escape(selection.requested_meaning)} via `{selection.rule.value}`: "
+        f"actual step={selection.actual_step}; completeness dimensions="
+        f"{_escape(_json(selection.completeness_dimensions))}; groups="
+        f"{selection.selected_group_count}/{selection.expected_group_count}"
+    )
+
+
+def _render_counts(attempt: AttemptResult) -> str:
     values: list[str] = []
-    if observation.denominator is not None:
-        values.append(f"denominator={observation.denominator}")
-    values.extend(f"{count.name}={count.value}" for count in observation.counts)
-    return "; ".join(values) if values else "—"
-
-
-def _render_method(observation: Observation) -> str:
-    values = (
-        ("method", observation.method_id),
+    if attempt.denominator is not None:
+        values.append(f"denominator={attempt.denominator}")
+    values.extend(f"{item.name}={item.value}" for item in attempt.exclusions)
+    values.extend(
         (
-            "provenance",
-            observation.method_provenance.value
-            if observation.method_provenance is not None
-            else None,
-        ),
-        ("method reference artifact", observation.method_reference_artifact_id),
-        ("policy", observation.policy_id),
-        ("verifier", observation.verifier_id),
-    )
-    rendered = [f"{name}={value}" for name, value in values if value is not None]
-    return "; ".join(rendered) if rendered else "—"
-
-
-def _render_blocker(observation: Observation) -> str:
-    blocker = observation.blocker
-    if blocker is None:
-        return "—"
-    values = [f"kind={blocker.kind.value}", f"reason={blocker.reason}"]
-    if blocker.missing_input_ids:
-        values.append(
-            f"missing inputs={_canonical_json(list(blocker.missing_input_ids))}"
+            f"target ties={attempt.target_ties}",
+            f"predicted ties={attempt.predicted_ties}",
         )
-    if blocker.unresolved_method_id is not None:
-        values.append(f"unresolved method={blocker.unresolved_method_id}")
+    )
+    if attempt.seeds:
+        values.append(f"seeds={_json(attempt.seeds)}")
+    if attempt.standard_deviation is not None:
+        values.append(
+            f"standard deviation={attempt.standard_deviation:.12g} (DDOF={attempt.ddof})"
+        )
+    if attempt.missing_groups:
+        values.append(f"missing groups={_json(attempt.missing_groups)}")
     return "; ".join(values)
 
 
-def _render_claim_row(claim: PaperClaim, observation: Observation) -> str:
-    locator = f"{claim.source_file}:{claim.line_start}-{claim.line_end}"
-    actual_boundary = (
-        observation.actual_evidence_boundary.value
-        if observation.actual_evidence_boundary is not None
-        else "none"
+def _render_attempt_details(target: PaperTarget, attempt: AttemptResult) -> str:
+    row_selections = "\n".join(
+        f"  - {_render_row_selection(selection)}"
+        for selection in attempt.row_selections
     )
-    static_claim_cell = (
-        f"{_escape_table_cell(claim.text)}<br>{_escape_table_cell(locator)}"
+    checkpoint_selections = (
+        "\n".join(
+            f"  - {_render_checkpoint(selection)}"
+            for selection in attempt.checkpoint_selections
+        )
+        if attempt.checkpoint_selections
+        else "  - None recorded."
     )
-    cells = (
-        _escape_table_cell(claim.id),
-        static_claim_cell,
-        _canonical_json(claim.expectation),
-        _render_observed(observation),
-        observation.verdict.value,
-        f"required={claim.required_evidence_boundary.value}; actual={actual_boundary}",
-        _render_counts(observation),
-        _render_method(observation),
-        _render_blocker(observation),
-        _canonical_json(list(observation.artifact_ids)),
-    )
-    escaped_cells = cells[:2] + tuple(_escape_table_cell(cell) for cell in cells[2:])
-    return "| " + " | ".join(escaped_cells) + " |\n"
-
-
-def _render_detailed_outcomes(
-    claim_observations: tuple[tuple[PaperClaim, Observation], ...],
-) -> str:
-    rows = "".join(
-        _render_claim_row(claim, observation)
-        for claim, observation in claim_observations
-        if observation.verdict
-        in {Verdict.CONTRADICTED, Verdict.INTERNALLY_INCONSISTENT}
-    )
-    if not rows:
-        rows = "None in the selected run.\n"
-        header = ""
-    else:
-        header = _CLAIM_TABLE_HEADER
+    parent = attempt.parent_attempt_id or "none"
+    diagnostics = _escape(_json(attempt.diagnostics))
+    limitations = _escape(_json(attempt.limitations))
+    plot_series = _escape(_json(attempt.plot_series_ids))
     return (
-        "## Known contradictions and inconsistencies\n\n"
-        "**These selected-run results contradict a claim or expose an internal "
-        "inconsistency and must remain visible.**\n\n"
-        f"{header}{rows}"
+        f"### {_escape(attempt.attempt_id)}\n\n"
+        f"- Paper source: `{_escape(target.source_file)}:{target.line_start}-"
+        f"{target.line_end}`\n"
+        f"- Paper source text: {_escape(target.source_text)}\n"
+        f"- Role and parent: `{attempt.role.value}`; {_escape(parent)}\n"
+        f"- Method: comparison rule `{_escape(attempt.comparison_rule_id)}` version "
+        f"{attempt.comparison_rule_version}; ordered transformations="
+        f"{_escape(_json(attempt.transformation_ids))}\n"
+        f"- Counts and uncertainty: {_escape(_render_counts(attempt))}\n"
+        f"- Diagnostics: {diagnostics}\n"
+        f"- Limitations: {limitations}\n"
+        f"- Plot-series trace: {plot_series}\n"
+        "- Row selections:\n"
+        f"{row_selections}\n"
+        "- Checkpoint selections:\n"
+        f"{checkpoint_selections}\n\n"
     )
 
 
-def _render_reproduced(
-    claim_observations: tuple[tuple[PaperClaim, Observation], ...],
+def _render_family(
+    family: str,
+    targets: tuple[PaperTarget, ...],
+    attempts_by_claim: dict[str, tuple[AttemptResult, ...]],
 ) -> str:
+    comparisons: list[str] = []
+    details: list[str] = []
+    for target in targets:
+        attempts = attempts_by_claim.get(target.claim_id, ())
+        for attempt in attempts:
+            comparisons.append(_comparison_row(target, attempt))
+            details.append(_render_attempt_details(target, attempt))
+    return (
+        f"## Family: {_escape(family)}\n\n"
+        f"{_COMPARISON_HEADER}{''.join(comparisons)}\n"
+        "### Methods, selections, counts, and sensitivities\n\n"
+        "Sensitivity attempts remain separate rows and retain their default parent.\n\n"
+        f"{''.join(details)}"
+    )
+
+
+def _render_unassessable(
+    targets: tuple[PaperTarget, ...],
+    attempts_by_claim: dict[str, tuple[AttemptResult, ...]],
+) -> str:
+    if not targets:
+        return "## Unassessable from dd_parsed\n\nNone in this bundle.\n\n"
     rows: list[str] = []
-    for claim, observation in claim_observations:
-        if observation.verdict is not Verdict.REPRODUCED:
-            continue
-        actual_boundary = (
-            observation.actual_evidence_boundary.value
-            if observation.actual_evidence_boundary is not None
-            else "none"
-        )
-        observed = _render_observed(observation)
-        if len(observed.encode()) > 1_000:
-            value = observation.observed_value
-            value_count = len(value) if isinstance(value, (dict, list)) else 1
-            observed = (
-                f"{value_count} recorded values; full values remain in the selected "
-                "run observations; diagnostics="
-                + _canonical_json(list(observation.diagnostics))
+    details: list[str] = []
+    for target in targets:
+        attempts = attempts_by_claim.get(target.claim_id, ())
+        default = _default_attempt(attempts)
+        if default is None:
+            rows.append(
+                f"| {_escape(target.claim_id)} | {_escape(target.family)} | "
+                f"{_json_cell(target.value)} | No attempt result persisted | — |\n"
             )
-        cells = (
-            f"{claim.id}; {claim.source_file}:{claim.line_start}-{claim.line_end}",
-            _canonical_json(claim.expectation),
-            observed,
-            f"required={claim.required_evidence_boundary.value}; actual={actual_boundary}",
-            _render_counts(observation),
-            _render_method(observation),
-            _canonical_json(list(observation.artifact_ids)),
-        )
+            continue
+        reason_parts = (*default.diagnostics, *default.limitations)
+        reason = _json(reason_parts) if reason_parts else "No diagnostic recorded"
         rows.append(
-            "| " + " | ".join(_escape_table_cell(cell) for cell in cells) + " |\n"
+            f"| {_escape(target.claim_id)} | {_escape(target.family)} | "
+            f"{_json_cell(target.value)} | {_escape(reason)} | "
+            f"{_escape(_json(default.missing_groups))} |\n"
         )
-    body = (
-        _REPRODUCED_TABLE_HEADER + "".join(rows)
-        if rows
-        else "None in the selected run.\n"
-    )
-    return f"## Reproduced\n\n{body}"
-
-
-def _render_compact_table(
-    title: str,
-    introduction: str,
-    grouped_claim_ids: Iterable[tuple[str, tuple[str, ...]]],
-) -> str:
-    rows = "".join(
-        f"| {_escape_table_cell(group)} | {len(claim_ids)} | "
-        f"{_render_wrapped_claim_ids(claim_ids)} |\n"
-        for group, claim_ids in grouped_claim_ids
-    )
-    body = _COMPACT_TABLE_HEADER + rows if rows else "None in the selected run.\n"
-    return f"## {title}\n\n{introduction}\n\n{body}"
-
-
-def _render_source_only(
-    claim_observations: tuple[tuple[PaperClaim, Observation], ...],
-) -> str:
-    claim_ids = tuple(
-        claim.id
-        for claim, observation in claim_observations
-        if observation.verdict is Verdict.SOURCE_ONLY_MATCH
-    )
-    groups = (
-        (("source or author-artifact agreement only", claim_ids),) if claim_ids else ()
-    )
-    return _render_compact_table(
-        "Source-only matches",
-        "These results are not independent reproductions. Full recorded details are "
-        "in the immutable observations file identified above.",
-        groups,
+        details.append(_render_attempt_details(target, default))
+    return (
+        "## Unassessable from dd_parsed\n\n"
+        "These targets lack a default assessable result in the persisted bundle.\n\n"
+        "| Claim | Family | Paper target | Recorded reason | Missing groups |\n"
+        "| --- | --- | --- | --- | --- |\n"
+        f"{''.join(rows)}\n{''.join(details)}"
     )
 
 
-def _render_missing_inputs(
-    claim_observations: tuple[tuple[PaperClaim, Observation], ...],
-) -> str:
-    grouped: defaultdict[tuple[tuple[str, ...], str], list[str]] = defaultdict(list)
-    for claim, observation in claim_observations:
-        if observation.verdict is Verdict.BLOCKED_MISSING_INPUT:
-            assert observation.blocker is not None
-            grouped[
-                (observation.blocker.missing_input_ids, observation.blocker.reason)
-            ].append(claim.id)
-    groups = tuple(
-        (
-            f"missing inputs={_canonical_json(list(missing_ids))}; reason={reason}",
-            tuple(grouped[(missing_ids, reason)]),
+def _metadata_row(discrepancy: MetadataDiscrepancy) -> str:
+    return (
+        f"| {_escape(discrepancy.claim_id)} | {_escape(discrepancy.paper_locator)} | "
+        f"{_json_cell(discrepancy.paper_value)} | "
+        f"{_escape(discrepancy.metadata_source)} | "
+        f"{_json_cell(discrepancy.metadata_value)} | {_escape(discrepancy.note)} |\n"
+    )
+
+
+def _render_metadata_appendix(bundle: AnalysisBundle) -> str:
+    discrepancies = tuple(
+        sorted(bundle.metadata_discrepancies, key=lambda item: item.claim_id)
+    )
+    if not discrepancies:
+        body = "None recorded.\n"
+    else:
+        body = (
+            "| Claim | Paper locator | Paper value | Metadata source | "
+            "Available value | Note |\n"
+            "| --- | --- | --- | --- | --- | --- |\n"
+            + "".join(_metadata_row(item) for item in discrepancies)
         )
-        for missing_ids, reason in sorted(grouped)
-    )
-    return _render_compact_table(
-        "Blocked: missing input",
-        "Claims are grouped by the stable missing input IDs and recorded blocker reason.",
-        groups,
+    return (
+        "## Metadata discrepancies\n\n"
+        "Metadata comparisons are descriptive and are excluded from empirical "
+        f"outcome counts.\n\n{body}\n"
     )
 
 
-def _render_unspecified_methods(
-    claim_observations: tuple[tuple[PaperClaim, Observation], ...],
-) -> str:
-    claim_ids_by_method: defaultdict[str, list[str]] = defaultdict(list)
-    reasons_by_method: defaultdict[str, set[str]] = defaultdict(set)
-    for claim, observation in claim_observations:
-        if observation.verdict is Verdict.BLOCKED_UNSPECIFIED_METHOD:
-            assert observation.blocker is not None
-            method_id = observation.blocker.unresolved_method_id
-            assert method_id is not None
-            claim_ids_by_method[method_id].append(claim.id)
-            reasons_by_method[method_id].add(observation.blocker.reason)
-    groups = tuple(
-        (
-            f"unresolved method={method_id}; "
-            f"reason(s)={_canonical_json(sorted(reasons_by_method[method_id]))}",
-            tuple(claim_ids_by_method[method_id]),
-        )
-        for method_id in sorted(claim_ids_by_method)
+def _render_traceability(bundle: AnalysisBundle) -> str:
+    manifest = bundle.manifest
+    identities = "".join(
+        f"| Input | {_escape(identity.id)} | `{identity.sha256}` |\n"
+        for identity in sorted(manifest.input_identities, key=lambda item: item.id)
     )
-    return _render_compact_table(
-        "Blocked: unspecified method",
-        "Claims are grouped by unresolved method ID; recorded reasons remain visible "
-        "for action.",
-        groups,
-    )
-
-
-def _render_external(
-    claim_observations: tuple[tuple[PaperClaim, Observation], ...],
-) -> str:
-    grouped: defaultdict[tuple[str, tuple[str, ...] | str], list[str]] = defaultdict(
-        list
-    )
-    for claim, observation in claim_observations:
-        if observation.verdict is Verdict.EXTERNAL_OR_CITATION_DEPENDENT:
-            assert observation.blocker is not None
-            key: tuple[str, tuple[str, ...] | str]
-            if claim.citation_keys:
-                key = ("citation keys", tuple(sorted(claim.citation_keys)))
-            else:
-                key = ("blocker reason", observation.blocker.reason)
-            grouped[key].append(claim.id)
-    groups = tuple(
-        (
-            f"{kind}={_canonical_json(list(value) if isinstance(value, tuple) else value)}",
-            tuple(grouped[(kind, value)]),
-        )
-        for kind, value in sorted(grouped, key=lambda item: (item[0], str(item[1])))
-    )
-    return _render_compact_table(
-        "External or citation-dependent",
-        "Claims are grouped by citation keys when present, otherwise by the recorded "
-        "external blocker reason.",
-        groups,
-    )
-
-
-def _render_unattempted(
-    claim_observations: tuple[tuple[PaperClaim, Observation], ...],
-) -> str:
-    grouped: defaultdict[tuple[Verdict, str], list[str]] = defaultdict(list)
-    for claim, observation in claim_observations:
-        if observation.verdict in {Verdict.NOT_ATTEMPTED, Verdict.NOT_APPLICABLE}:
-            assert observation.blocker is not None
-            grouped[(observation.verdict, observation.blocker.reason)].append(claim.id)
-    groups = tuple(
-        (
-            f"verdict={verdict.value}; reason={reason}",
-            tuple(grouped[(verdict, reason)]),
-        )
-        for verdict, reason in sorted(
-            grouped, key=lambda item: (item[0].value, item[1])
+    identities += "".join(
+        f"| Bundle | {_escape(identity.id)} | `{identity.sha256}` |\n"
+        for identity in (
+            manifest.targets_identity,
+            manifest.attempts_identity,
+            manifest.plot_series_identity,
         )
     )
-    return _render_compact_table(
-        "Not attempted or not applicable",
-        "Claims are grouped by verdict and recorded reason.",
-        groups,
+    code_trace = (
+        _escape(_json(manifest.code_trace.model_dump(mode="json")))
+        if manifest.code_trace is not None
+        else "not recorded"
     )
-
-
-def render_report(
-    registry: ClaimRegistry,
-    manifest: RunManifest,
-    observations: Iterable[Observation],
-) -> str:
-    """Render one validated paper-verification run without recomputing results."""
-    claim_observations = _validated_claim_observations(registry, manifest, observations)
-    verdict_counts = Counter(
-        observation.verdict for _, observation in claim_observations
-    )
-    boundary_counts = Counter(
-        observation.actual_evidence_boundary for _, observation in claim_observations
-    )
-
-    summary_rows = "".join(
-        f"| Verdict | {verdict.value} | {verdict_counts[verdict]} |\n"
-        for verdict in _VERDICT_ORDER
-        if verdict_counts[verdict]
-    )
-    summary_rows += "".join(
-        f"| Actual evidence boundary | {boundary.value} | "
-        f"{boundary_counts[boundary]} |\n"
-        for boundary in EvidenceBoundary
-        if boundary_counts[boundary]
-    )
-    if boundary_counts[None]:
-        summary_rows += (
-            f"| Actual evidence boundary | none | {boundary_counts[None]} |\n"
-        )
-
-    code = manifest.code_identity
-    dirty_diff = code.dirty_diff_artifact_id or "—"
-    groups = "\n".join(
-        render_group(claim_observations)
-        for render_group in (
-            _render_detailed_outcomes,
-            _render_reproduced,
-            _render_source_only,
-            _render_missing_inputs,
-            _render_unspecified_methods,
-            _render_external,
-            _render_unattempted,
-        )
+    runtime_trace = (
+        _escape(_json(manifest.runtime_trace.model_dump(mode="json")))
+        if manifest.runtime_trace is not None
+        else "not recorded"
     )
     return (
-        "# Paper verification report\n\n"
-        f"- Paper identity: {_render_code_span(manifest.paper_identity.id)}\n"
-        f"- Selected run ID: {_render_code_span(manifest.run_id)}\n"
-        f"- Manifest SHA256: `{_manifest_sha256(manifest)}`\n\n"
-        "## Pinned run identities\n\n"
-        "| Identity | ID | Digest / state |\n"
+        "## Traceability appendix\n\n"
+        f"- Run format: {manifest.run_format}\n"
+        f"- Run ID: `{_escape(manifest.run_id)}`\n"
+        f"- Started: `{manifest.started_at.isoformat()}`\n"
+        f"- Completed: `{manifest.completed_at.isoformat()}`\n"
+        f"- Code trace: {code_trace}\n"
+        f"- Runtime trace: {runtime_trace}\n\n"
+        "| Kind | Identity | SHA-256 |\n"
         "| --- | --- | --- |\n"
-        f"| Paper | {_escape_table_cell(manifest.paper_identity.id)} | "
-        f"SHA256={manifest.paper_identity.sha256} |\n"
-        f"| Reproduction config | {_escape_table_cell(manifest.config_identity.id)} | "
-        f"SHA256={manifest.config_identity.sha256} |\n"
-        f"| Claim registry | {_escape_table_cell(manifest.claims_identity.id)} | "
-        f"SHA256={manifest.claims_identity.sha256} |\n"
-        f"| Code | {code.commit_sha} | tree={code.tree_state.value}; "
-        f"dirty diff artifact={_escape_table_cell(dirty_diff)} |\n"
-        f"| Observations | "
-        f"{_escape_table_cell(manifest.observations_identity.filename)} | "
-        f"SHA256={manifest.observations_identity.sha256}; "
-        f"count={manifest.observations_identity.observation_count} |\n\n"
-        "## Evidence and method interpretation\n\n"
-        "The required evidence boundary is the static claim target; the actual "
-        "evidence boundary records what this selected run reached. Method provenance "
-        "records whether a method is paper-derived, upstream-informed, or "
-        "artifact-derived; provenance does not by itself establish independence. "
-        "A `source_only_match` confirms only source or author-artifact agreement and "
-        "is not an independent reproduction. Blocked and contradicted verdicts are "
-        "successful scientific outcomes, not process failures. This report renders "
-        "the selected observations as recorded and does not recompute scientific "
-        "results. Full per-claim details remain in the immutable selected-run "
-        f"observations identity: run {_render_code_span(manifest.run_id)}, file "
-        f"{_render_code_span(manifest.observations_identity.filename)}, "
-        f"SHA256 {_render_code_span(manifest.observations_identity.sha256)}, "
-        f"{manifest.observations_identity.byte_count} bytes.\n\n"
-        "## Summary counts\n\n"
-        "| Dimension | Value | Count |\n"
-        "| --- | --- | ---: |\n"
-        f"{summary_rows}\n"
-        f"{groups}"
+        f"{identities}"
     )
 
 
-def render_report_file(
-    registry: ClaimRegistry,
-    manifest: RunManifest,
-    observations: Iterable[Observation],
-    output_path: str | Path,
-) -> None:
-    """Atomically replace one report file after rendering and validation succeed."""
-    report = render_report(registry, manifest, observations)
-    destination = Path(output_path)
-    temporary_path: Path | None = None
-    try:
-        with tempfile.NamedTemporaryFile(
-            mode="wb",
-            prefix=f".{destination.name}.",
-            suffix=".tmp",
-            dir=destination.parent,
-            delete=False,
-        ) as temporary:
-            temporary_path = Path(temporary.name)
-            temporary.write(report.encode())
-            temporary.flush()
-            os.fsync(temporary.fileno())
-        os.replace(temporary_path, destination)
-        temporary_path = None
-    finally:
-        if temporary_path is not None:
-            temporary_path.unlink(missing_ok=True)
+def render_report(bundle: AnalysisBundle) -> str:
+    """Render a finding-comparison report strictly from one format-2 bundle."""
+    attempts_by_claim = _attempts_by_claim(bundle)
+    targets = tuple(
+        sorted(bundle.targets, key=lambda item: (item.family, item.claim_id))
+    )
+    unassessable = tuple(
+        target
+        for target in targets
+        if _is_unassessable(attempts_by_claim.get(target.claim_id, ()))
+    )
+    assessable = tuple(target for target in targets if target not in unassessable)
+    families: defaultdict[str, list[PaperTarget]] = defaultdict(list)
+    for target in assessable:
+        families[target.family].append(target)
+
+    default_counts = Counter(
+        attempt.outcome
+        for attempt in bundle.attempts
+        if attempt.role is AttemptRole.DEFAULT and attempt.outcome in _PRIMARY_OUTCOMES
+    )
+    summary = "".join(
+        f"| {outcome.value} | {default_counts[outcome]} |\n"
+        for outcome in _PRIMARY_OUTCOMES
+    )
+    family_sections = "".join(
+        _render_family(
+            family,
+            tuple(sorted(family_targets, key=lambda item: item.claim_id)),
+            attempts_by_claim,
+        )
+        for family, family_targets in sorted(families.items())
+    )
+    return (
+        "# Paper finding validation report\n\n"
+        f"- Run ID: `{_escape(bundle.manifest.run_id)}`\n"
+        f"- Run format: {bundle.manifest.run_format}\n"
+        "- Scientific source: persisted `targets.json`, `attempts.json`, and "
+        "`plot-series.json` only.\n\n"
+        "## Default primary outcome summary\n\n"
+        "Sensitivity attempts and metadata discrepancies are excluded.\n\n"
+        "| Outcome | Count |\n"
+        "| --- | ---: |\n"
+        f"{summary}\n"
+        f"{family_sections}"
+        f"{_render_unassessable(unassessable, attempts_by_claim)}"
+        f"{_render_metadata_appendix(bundle)}"
+        f"{_render_traceability(bundle)}"
+    )
 
 
-__all__ = ["render_report", "render_report_file"]
+def render_bundle_outputs(bundle: AnalysisBundle) -> RenderedBundleOutputs:
+    """Render report and named SVG bytes before any output replacement begins."""
+    report = render_report(bundle).encode()
+    figures = render_figures(bundle)
+    return RenderedBundleOutputs(report=report, figures=figures)
+
+
+__all__ = ["RenderedBundleOutputs", "render_bundle_outputs", "render_report"]

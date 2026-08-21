@@ -1,269 +1,328 @@
 from __future__ import annotations
 
-import os
+import builtins
+import math
+import re
 import xml.etree.ElementTree as ET
-from datetime import datetime, timedelta, timezone
-from pathlib import Path
-from typing import Any
+from datetime import UTC, datetime
 
 import pytest
 
-import datadec.paper.figures as figures_module
-from datadec.paper.figures import (
-    render_figure_files,
-    render_suite_contradictions_svg,
-    render_verdict_summary_svg,
-)
+from datadec.paper.figures import render_figures, render_outcome_audit_svg
 from datadec.paper.models import (
-    ClaimRegistry,
-    CodeIdentity,
-    CodeTreeState,
+    AnalysisBundle,
+    AnalysisManifest,
+    AttemptResult,
+    AttemptRole,
+    AxisScale,
+    AxisSpec,
+    ClaimKind,
     ContentIdentity,
-    Observation,
-    ObservationFileIdentity,
-    PaperClaim,
-    RunManifest,
-    RuntimeIdentity,
-    Verdict,
+    DimensionValue,
+    MeasureValue,
+    MetadataDiscrepancy,
+    PaperTarget,
+    PlotPoint,
+    PlotSeries,
+    RowSelection,
+    ValidationOutcome,
 )
 
-_STARTED_AT = datetime(2026, 8, 21, 12, 0, tzinfo=timezone.utc)
+_SHA = "a" * 64
+_NOW = datetime(2026, 8, 21, 12, tzinfo=UTC)
+_FIGURE_NAMES = (
+    "compute-vs-decision",
+    "per-task",
+    "scaling-law",
+    "proxy-metrics",
+    "noise-spread",
+)
 
 
-def _identity(identity_id: str, digit: str) -> ContentIdentity:
-    return ContentIdentity(id=identity_id, sha256=digit * 64)
+def _manifest() -> AnalysisManifest:
+    def identity(name: str) -> ContentIdentity:
+        return ContentIdentity(id=name, sha256=_SHA)
 
-
-def _claim(claim_id: str, **updates: Any) -> PaperClaim:
-    value: dict[str, Any] = {
-        "id": claim_id,
-        "source_file": "docs/paper/example.tex",
-        "line_start": 10,
-        "line_end": 11,
-        "text": f"Static text for {claim_id}.",
-        "owner": "datadec_empirical",
-        "expectation_kind": "literal",
-        "expectation": "expected",
-        "required_evidence_boundary": "training_rerun",
-    }
-    value.update(updates)
-    return PaperClaim.model_validate(value)
-
-
-def _observation(claim_id: str, **updates: Any) -> Observation:
-    value: dict[str, Any] = {
-        "claim_id": claim_id,
-        "verdict": "reproduced",
-        "actual_evidence_boundary": "aggregate_evaluation",
-        "observed_value": {"value": 0.75},
-    }
-    value.update(updates)
-    return Observation.model_validate(value)
-
-
-def _manifest(observation_count: int) -> RunManifest:
-    return RunManifest(
-        run_id="selected-run",
-        started_at=_STARTED_AT,
-        completed_at=_STARTED_AT + timedelta(minutes=2),
-        paper_identity=_identity("arxiv:2504.11393v2", "1"),
-        config_identity=_identity("configs/paper_reproduction.toml", "2"),
-        claims_identity=_identity("docs/paper/claims.toml", "3"),
-        code_identity=CodeIdentity(
-            commit_sha="4" * 40,
-            tree_state=CodeTreeState.CLEAN,
-        ),
-        runtime_identity=RuntimeIdentity(
-            python_version="3.12.5",
-            implementation="CPython",
-            platform="test-platform",
-            dependency_lock_sha256="5" * 64,
-        ),
-        observations_identity=ObservationFileIdentity(
-            filename="observations.json",
-            sha256="9" * 64,
-            byte_count=123,
-            observation_count=observation_count,
-        ),
+    return AnalysisManifest(
+        run_id="run-figure-test",
+        started_at=_NOW,
+        completed_at=_NOW,
+        input_identities=(identity("olmes"),),
+        targets_identity=identity("targets.json"),
+        attempts_identity=identity("attempts.json"),
+        plot_series_identity=identity("plot-series.json"),
     )
 
 
-def _suite_contradiction(claim_id: str, diagnostic: str, **updates: Any) -> Observation:
-    values: dict[str, Any] = {
-        "verdict": "contradicted",
-        "actual_evidence_boundary": "paper_or_final_artifact",
-        "observed_value": {"recorded": True},
-        "diagnostics": [
-            diagnostic,
-            "catalog-derived evidence is below the required training-rerun boundary",
-        ],
-    }
-    values.update(updates)
-    return _observation(claim_id, **values)
-
-
-def test_verdict_summary_has_exact_labeled_counts_and_run_identity() -> None:
-    observations = (
-        _observation("DD-0001"),
-        _suite_contradiction(
-            "DD-0269", "suite fact sequence_length: expected '2024', observed '2048'"
-        ),
-        _suite_contradiction(
-            "DD-0276", "training_steps: expected 5,725, observed 5,715"
-        ),
+def _target() -> PaperTarget:
+    return PaperTarget(
+        claim_id="DD-0001",
+        family="single_scale",
+        kind=ClaimKind.EMPIRICAL_PLOT,
+        source_file="docs/paper/example_paper.tex",
+        line_start=10,
+        line_end=11,
+        source_text="Decision accuracy over compute.",
+        value="increasing trend",
     )
 
-    svg = render_verdict_summary_svg(_manifest(3), reversed(observations))
 
-    assert "reproduced: 1" in svg
-    assert "contradicted: 2" in svg
-    for verdict in Verdict:
-        expected_count = (
-            1
-            if verdict is Verdict.REPRODUCED
-            else 2
-            if verdict is Verdict.CONTRADICTED
-            else 0
-        )
-        assert f"{verdict.value}: {expected_count}" in svg
-    assert "Selected run ID: selected-run" in svg
-    assert f"Observations SHA256: {'9' * 64}" in svg
-    assert 'role="img"' in svg
-    ET.fromstring(svg)
-    assert len(svg.encode()) < 8_000
-
-
-def test_suite_contradictions_are_escaped_and_in_deterministic_claim_order() -> None:
-    claims = tuple(_claim(claim_id) for claim_id in ("DD-0289", "DD-0269", "other"))
-    observations = (
-        _suite_contradiction(
-            "DD-0289", "learning_rate: expected <2.1e-03>, observed 2.2e-03 & rising"
-        ),
-        _observation("other"),
-        _suite_contradiction(
-            "DD-0269", "suite fact sequence_length: expected '2024', observed '2048'"
-        ),
+def _selection() -> RowSelection:
+    return RowSelection(
+        logical_table_id="olmes",
+        columns=("compute", "decision_accuracy"),
+        predicates=(),
+        local_parquet_sha256=_SHA,
+        selected_row_count=2,
+        selected_key_sha256=_SHA,
     )
 
-    svg = render_suite_contradictions_svg(
-        ClaimRegistry(claims=claims), _manifest(3), observations
-    )
-    reversed_svg = render_suite_contradictions_svg(
-        ClaimRegistry(claims=tuple(reversed(claims))),
-        _manifest(3),
-        reversed(observations),
-    )
 
-    assert reversed_svg == svg
-    assert svg.index("DD-0269") < svg.index("DD-0289")
-    assert "sequence length: expected 2024; observed 2048" in svg
-    assert (
-        "learning rate: expected &lt;2.1e-03&gt;; observed 2.2e-03 &amp; rising" in svg
-    )
-    assert svg.count("Actual evidence boundary: paper_or_final_artifact") == 2
-    assert "other" not in svg
-    ET.fromstring(svg)
-    assert len(svg.encode()) < 8_000
-
-
-def test_suite_contradictions_render_explicit_empty_state() -> None:
-    registry = ClaimRegistry(claims=(_claim("DD-0269"), _claim("DD-0276")))
-    observations = (_observation("DD-0269"), _observation("DD-0276"))
-
-    svg = render_suite_contradictions_svg(registry, _manifest(2), observations)
-
-    assert "No suite contradictions recorded for the selected run." in svg
-    assert "explicit empty state" in svg
-    assert "Actual evidence boundary:" not in svg
-
-
-def test_figures_only_reflect_recorded_observations(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    registry = ClaimRegistry(claims=(_claim("DD-0269"),))
-    first = _suite_contradiction(
-        "DD-0269", "suite fact sequence_length: expected '2024', observed '2048'"
-    )
-    second = _suite_contradiction(
-        "DD-0269", "suite fact sequence_length: expected '2024', observed '4096'"
+def _attempt(
+    attempt_id: str,
+    *,
+    role: AttemptRole = AttemptRole.DEFAULT,
+    parent: str | None = None,
+    outcome: ValidationOutcome = ValidationOutcome.REPRODUCED,
+    series_ids: tuple[str, ...] = (),
+) -> AttemptResult:
+    return AttemptResult(
+        attempt_id=attempt_id,
+        claim_id="DD-0001",
+        role=role,
+        parent_attempt_id=parent,
+        comparison_rule_id="nonempty-plot",
+        comparison_rule_version=1,
+        transformation_ids=("pairwise-decisions",),
+        row_selections=(_selection(),),
+        target_value="increasing trend",
+        computed_value={"persisted": True},
+        outcome=outcome,
+        plot_series_ids=series_ids,
     )
 
-    def fail_if_config_is_read(*args: object, **kwargs: object) -> None:
-        raise AssertionError("figure rendering must not read external configuration")
 
-    monkeypatch.setattr("datadec.config.load_catalog", fail_if_config_is_read)
-    first_svg = render_suite_contradictions_svg(registry, _manifest(1), (first,))
-    second_svg = render_suite_contradictions_svg(registry, _manifest(1), (second,))
-
-    assert first_svg != second_svg
-    assert "observed 2048" in first_svg
-    assert "observed 4096" in second_svg
-
-
-def test_figures_reject_unresolved_claim_observation_join() -> None:
-    registry = ClaimRegistry(claims=(_claim("DD-0269"), _claim("DD-0276")))
-
-    with pytest.raises(ValueError, match="must match exactly"):
-        render_suite_contradictions_svg(
-            registry,
-            _manifest(1),
+def _point(
+    compute: float,
+    accuracy: float,
+    *,
+    lower: float | None = None,
+    upper: float | None = None,
+) -> PlotPoint:
+    measures = [
+        MeasureValue(name="compute", value=compute),
+        MeasureValue(name="decision_accuracy", value=accuracy),
+    ]
+    if lower is not None and upper is not None:
+        measures.extend(
             (
-                _suite_contradiction(
-                    "DD-0269",
-                    "suite fact sequence_length: expected '2024', observed '2048'",
-                ),
+                MeasureValue(name="decision_accuracy_lower", value=lower),
+                MeasureValue(name="decision_accuracy_upper", value=upper),
+            )
+        )
+    return PlotPoint(
+        dimensions=(DimensionValue(name="model_size", value="150M"),),
+        measures=tuple(measures),
+    )
+
+
+def _noise_point(noise: float, spread: float, accuracy: float, task: str) -> PlotPoint:
+    return PlotPoint(
+        dimensions=(DimensionValue(name="task", value=task),),
+        measures=(
+            MeasureValue(name="noise", value=noise),
+            MeasureValue(name="spread", value=spread),
+            MeasureValue(name="decision_accuracy", value=accuracy),
+        ),
+    )
+
+
+def _series(
+    figure: str,
+    *,
+    series_id: str | None = None,
+    points: tuple[PlotPoint, ...] | None = None,
+    paper_analog: bool = True,
+) -> PlotSeries:
+    if figure == "noise-spread":
+        return PlotSeries(
+            id=series_id or "dd-0001-noise-spread-paper-analog",
+            figure=figure,
+            panel="150M",
+            semantic_kind="noise_spread_scatter",
+            x_axis=AxisSpec(measure="noise", scale=AxisScale.LOG, unit="stddev"),
+            y_axis=AxisSpec(measure="spread", scale=AxisScale.LOG, unit="stddev"),
+            dimensions=("task",),
+            measures=("noise", "spread", "decision_accuracy"),
+            attempt_id="dd-0001-default",
+            points=points
+            if points is not None
+            else (
+                _noise_point(0.001, 0.01, 0.8, "ARC Easy"),
+                _noise_point(0.01, 0.05, 0.6, "HellaSwag"),
+            ),
+            paper_analog=paper_analog,
+        )
+    has_uncertainty = figure == "compute-vs-decision"
+    series_points = (
+        points
+        if points is not None
+        else (
+            _point(
+                0.001,
+                0.65,
+                lower=0.6 if has_uncertainty else None,
+                upper=0.7 if has_uncertainty else None,
+            ),
+            _point(
+                1.0,
+                0.8,
+                lower=0.77 if has_uncertainty else None,
+                upper=0.83 if has_uncertainty else None,
             ),
         )
-
-
-def test_figure_files_validate_both_before_atomic_per_file_replacement(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    verdict_path = tmp_path / "verdict-summary.svg"
-    suite_path = tmp_path / "suite-contradictions.svg"
-    unrelated_path = tmp_path / "keep.txt"
-    verdict_path.write_text("old verdict")
-    suite_path.write_text("old suite")
-    unrelated_path.write_text("keep")
-    registry = ClaimRegistry(claims=(_claim("DD-0269"),))
-    observation = _suite_contradiction(
-        "DD-0269", "suite fact sequence_length: expected '2024', observed '2048'"
+    )
+    measures = ["compute", "decision_accuracy"]
+    if has_uncertainty:
+        measures.extend(("decision_accuracy_lower", "decision_accuracy_upper"))
+    return PlotSeries(
+        id=series_id or f"dd-0001-{figure}-paper-analog",
+        figure=figure,
+        panel="aggregate" if figure != "per-task" else "ARC Easy",
+        semantic_kind=figure.replace("-", "_"),
+        x_axis=AxisSpec(measure="compute", scale=AxisScale.LOG, unit="percent"),
+        y_axis=AxisSpec(
+            measure="decision_accuracy", scale=AxisScale.LINEAR, unit="ratio"
+        ),
+        dimensions=("model_size",),
+        measures=tuple(measures),
+        attempt_id="dd-0001-default",
+        points=series_points,
+        paper_analog=paper_analog,
     )
 
-    with pytest.raises(ValueError, match="no recorded field mismatch"):
-        render_figure_files(
-            registry,
-            _manifest(1),
-            (_suite_contradiction("DD-0269", "unparseable diagnostic"),),
-            tmp_path,
+
+def _bundle(
+    *, series: tuple[PlotSeries, ...], include_sensitivity: bool = True
+) -> AnalysisBundle:
+    default = _attempt("dd-0001-default", series_ids=tuple(item.id for item in series))
+    attempts = [default]
+    if include_sensitivity:
+        attempts.append(
+            _attempt(
+                "dd-0001-sensitivity",
+                role=AttemptRole.SENSITIVITY,
+                parent=default.attempt_id,
+                outcome=ValidationOutcome.NOT_REPRODUCED,
+            )
         )
-    assert verdict_path.read_text() == "old verdict"
-    assert suite_path.read_text() == "old suite"
+    return AnalysisBundle(
+        manifest=_manifest(),
+        targets=(_target(),),
+        metadata_discrepancies=(
+            MetadataDiscrepancy(
+                claim_id="DD-META",
+                paper_locator="paper:20",
+                paper_value=1,
+                metadata_source="metadata",
+                metadata_value=2,
+                note="not an empirical result",
+            ),
+        ),
+        attempts=tuple(attempts),
+        plot_series=series,
+    )
 
-    original_replace = os.replace
-    replacements: list[tuple[Path, Path]] = []
 
-    def inspect_replace(source: str | Path, target: str | Path) -> None:
-        source_path = Path(source)
-        target_path = Path(target)
-        assert source_path.parent == tmp_path
-        assert target_path.read_text().startswith("old ")
-        ET.fromstring(source_path.read_text())
-        replacements.append((source_path, target_path))
-        original_replace(source_path, target_path)
+def _assert_valid_accessible_svg(svg: bytes) -> ET.Element:
+    root = ET.fromstring(svg)
+    assert root.tag == "{http://www.w3.org/2000/svg}svg"
+    assert root.attrib["role"] == "img"
+    assert root.attrib["aria-labelledby"]
+    children = list(root)
+    assert children[0].tag == "{http://www.w3.org/2000/svg}title"
+    assert children[1].tag == "{http://www.w3.org/2000/svg}desc"
+    return root
 
-    monkeypatch.setattr(figures_module.os, "replace", inspect_replace)
-    render_figure_files(registry, _manifest(1), (observation,), tmp_path)
 
-    assert [target.name for _, target in replacements] == [
-        "verdict-summary.svg",
-        "suite-contradictions.svg",
-    ]
-    assert verdict_path.read_text().startswith("<svg")
-    assert suite_path.read_text().startswith("<svg")
-    assert unrelated_path.read_text() == "keep"
-    assert sorted(path.name for path in tmp_path.iterdir()) == [
-        "keep.txt",
-        "suite-contradictions.svg",
-        "verdict-summary.svg",
-    ]
+def test_paper_analog_figures_are_named_deterministic_valid_and_semantic() -> None:
+    series = tuple(_series(name) for name in reversed(_FIGURE_NAMES))
+    bundle = _bundle(series=series)
+
+    rendered = render_figures(bundle)
+    reordered = bundle.model_copy(update={"plot_series": tuple(reversed(series))})
+
+    assert render_figures(reordered) == rendered
+    assert tuple(name for name, _ in rendered) == (
+        "outcome-audit.svg",
+        "compute-vs-decision.svg",
+        "noise-spread.svg",
+        "per-task.svg",
+        "proxy-metrics.svg",
+        "scaling-law.svg",
+    )
+    for _, svg in rendered:
+        _assert_valid_accessible_svg(svg)
+
+    compute_svg = dict(rendered)["compute-vs-decision.svg"].decode()
+    assert "compute (percent; log)" in compute_svg
+    assert "decision_accuracy (ratio; linear)" in compute_svg
+    assert 'data-series="dd-0001-compute-vs-decision-paper-analog"' in compute_svg
+    assert 'class="uncertainty-band"' in compute_svg
+    assert "model_size=150M" in compute_svg
+    assert "decision_accuracy_lower=0.6" in compute_svg
+    assert "Semantic kinds: compute_vs_decision" in compute_svg
+    noise_svg = dict(rendered)["noise-spread.svg"].decode()
+    assert 'data-color-measure="decision_accuracy"' in noise_svg
+    assert "Point color: decision_accuracy (0–1)" in noise_svg
+    assert "ARC Easy" in noise_svg
+    assert '<path class="series-line" data-series="dd-0001-noise' not in noise_svg
+
+
+def test_geometry_is_finite_and_log_axes_require_positive_values() -> None:
+    svg = dict(render_figures(_bundle(series=(_series("noise-spread"),))))[
+        "noise-spread.svg"
+    ].decode()
+
+    for value in re.findall(r'(?:x|y|x1|x2|y1|y2|cx|cy)="([0-9.+-]+)"', svg):
+        assert math.isfinite(float(value))
+
+    zero_point = _noise_point(0.0, 0.01, 0.5, "zero")
+    invalid = _series(
+        "noise-spread",
+        points=(zero_point, _noise_point(1.0, 0.1, 0.8, "positive")),
+    )
+    with pytest.raises(ValueError, match="positive on a log axis"):
+        render_figures(_bundle(series=(invalid,)))
+
+
+def test_outcome_audit_counts_default_primary_results_only() -> None:
+    bundle = _bundle(series=())
+
+    audit = render_outcome_audit_svg(bundle).decode()
+
+    assert "reproduced: 1" in audit
+    assert "not_reproduced: 0" in audit
+    assert "metadata_discrepancy" not in audit
+    assert "sensitivities and metadata discrepancies excluded" in audit
+
+
+def test_empty_nonanalog_series_is_suppressed_and_rendering_reads_no_inputs(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    empty = _series(
+        "internal-audit",
+        series_id="dd-0001-internal",
+        points=(),
+        paper_analog=False,
+    )
+    bundle = _bundle(series=(empty,))
+
+    def fail_read(*args: object, **kwargs: object) -> None:
+        raise AssertionError("figure rendering must not open any input")
+
+    monkeypatch.setattr(builtins, "open", fail_read)
+
+    rendered = render_figures(bundle)
+
+    assert tuple(name for name, _ in rendered) == ("outcome-audit.svg",)
