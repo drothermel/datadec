@@ -305,10 +305,19 @@ def _render_reproduced(
             if observation.actual_evidence_boundary is not None
             else "none"
         )
+        observed = _render_observed(observation)
+        if len(observed.encode()) > 1_000:
+            value = observation.observed_value
+            value_count = len(value) if isinstance(value, (dict, list)) else 1
+            observed = (
+                f"{value_count} recorded values; full values remain in the selected "
+                "run observations; diagnostics="
+                + _canonical_json(list(observation.diagnostics))
+            )
         cells = (
             f"{claim.id}; {claim.source_file}:{claim.line_start}-{claim.line_end}",
             _canonical_json(claim.expectation),
-            _render_observed(observation),
+            observed,
             f"required={claim.required_evidence_boundary.value}; actual={actual_boundary}",
             _render_counts(observation),
             _render_method(observation),

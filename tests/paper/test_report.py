@@ -370,6 +370,24 @@ def test_large_source_only_report_grows_with_ids_not_repeated_details() -> None:
     assert "| source or author-artifact agreement only | 442 |" in large_report
 
 
+def test_large_reproduced_fact_values_remain_in_observations() -> None:
+    claim = _claim("claim-1")
+    observation = _observation(
+        "claim-1",
+        verdict="reproduced",
+        actual_evidence_boundary="aggregate_evaluation",
+        observed_value=[{"fact": index, "value": "x" * 100} for index in range(50)],
+        diagnostics=("every recorded fact satisfies the predicate",),
+    )
+    manifest = _manifest()
+
+    report = render_report(ClaimRegistry(claims=(claim,)), manifest, (observation,))
+
+    assert "50 recorded values; full values remain" in report
+    assert "every recorded fact satisfies the predicate" in report
+    assert '"fact":49' not in report
+
+
 def test_external_groups_fall_back_to_escaped_blocker_reason() -> None:
     claims = (_claim("claim-a"), _claim("claim-b"))
     observations = tuple(
