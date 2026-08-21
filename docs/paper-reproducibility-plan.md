@@ -1,8 +1,15 @@
 # DataDecide paper reproducibility plan
 
-Status: draft for iteration
+Status: implemented and qualified in DataDecide; reusable skill submitted
 
 Created: August 21, 2026
+
+Implementation record: DataDecide PR #43 records the qualified workflow and
+selected run `20260821T1458-remediated`. The extracted `verify-paper-claims`
+skill is submitted separately in dotfiles PR #81. Repository-only skill
+validation and an independent cold-agent fixture test passed. Live harness
+reconciliation is intentionally deferred until that dotfiles PR merges because
+the canonical main checkout contains unrelated user edits.
 
 ## Goal
 
@@ -520,9 +527,13 @@ captured.
 
 | Candidate lesson | Evidence gate | Status |
 | --- | --- | --- |
-| Cover every active prose, equation, table, figure, caption, method, release, and limitation assertion. | Active-source traversal and claim-coverage check complete. | Candidate |
-| Keep static claim definitions separate from immutable run observations and generated verdicts. | At least two runs join cleanly to the same claim specification. | Candidate |
-| Track evidence boundary, method provenance, and verdict as separate dimensions. | Full-data report demonstrates materially different combinations. | Candidate |
-| Require explicit comparison policy and expose unresolved methods instead of supplying plausible defaults. | A real ambiguous or incomplete method reaches a truthful terminal verdict. | Candidate |
-| Verify figure data and semantics before treating pixel equality as scientific evidence. | At least one paper figure is regenerated and checked. | Candidate |
-| Treat external claims as citation traces unless their underlying evidence is explicitly in scope. | Citation trace is complete for every external claim in this paper. | Candidate |
+| Cover every active prose, equation, table, figure, caption, method, release, and limitation assertion. | Independent active-source traversal partitions 455 claims across 192 exact claim/nonclaim regions. | Promoted |
+| Keep static claim definitions separate from immutable run observations and generated verdicts. | The qualified run and generated report join separate hashed layers; registry remediation remained a distinct identity rather than a false same-spec rerun. | Promoted |
+| Track evidence boundary, method provenance, and verdict as separate dimensions. | The qualified report contains reproduced, contradicted, source-only, blocked, external, and not-attempted outcomes across four actual evidence boundaries. | Promoted |
+| Require explicit comparison policy and expose unresolved methods instead of supplying plausible defaults. | 108 real claims terminate as method-blocked, and the exact missing DD-0011 checkpoint remains input-blocked rather than using a nearby checkpoint. | Promoted |
+| Verify figure data and semantics before treating pixel equality as scientific evidence. | The workflow inventoried all paper-figure semantics but lacked inputs to regenerate them; only audit-summary figures were rendered. The reusable blocker rule was cold-tested, but scientific figure regeneration was not demonstrated. | Promoted as a blocking safeguard only |
+| Treat external claims as citation traces unless their underlying evidence is explicitly in scope. | All 39 external claims retain source-bound citation traces and external verdicts. | Promoted |
+| Derive source coverage independently from the claim registry and bind citations to each claim span. | Full review exposed circular coverage and global citation-union checks; remediation added an independent active surface and per-claim validation. | Promoted |
+| Mark reproduced only when a persisted fact directly satisfies an explicit claim predicate. | Full-data replay produced 4,128 complete summaries, but only DD-0045 had a direct fact mapping; related facts did not upgrade the other claims. | Promoted |
+| Render compact outputs from selected persisted observations without scientific recomputation. | Review replay reproduced the report and both summary figures byte-for-byte; detailed DD-0045 facts remain in immutable observations. | Promoted |
+| Apply shared manuscript-wide method statements to every claim they govern. | The cold-agent fixture exposed this ambiguity for a three-seed statement; the skill was revised before submission. | Promoted |
