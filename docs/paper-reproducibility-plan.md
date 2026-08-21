@@ -1,539 +1,347 @@
-# DataDecide paper reproducibility plan
+# DataDecide paper finding validation plan
 
-Status: implemented and qualified in DataDecide; reusable skill submitted
+Status: active hard-cutover redesign
 
-Created: August 21, 2026
-
-Implementation record: DataDecide PR #43 records the qualified workflow and
-selected run `20260821T1458-remediated`. The extracted `verify-paper-claims`
-skill is submitted separately in dotfiles PR #81. Repository-only skill
-validation and an independent cold-agent fixture test passed. Live harness
-reconciliation is intentionally deferred until that dotfiles PR merges because
-the canonical main checkout contains unrelated user edits.
+Revised: August 21, 2026
 
 ## Goal
 
-Build an auditable, repeatable account of every active claim in the DataDecide
-paper and determine the strongest evidence this repository can provide for each
-claim.
-
-After the workflow is implemented and validated here, extract its reusable
-parts into a cross-repository agent skill so future paper-verification efforts
-can follow the demonstrated process without inheriting DataDecide-specific
-assumptions.
-
-The scope includes prose findings, comparisons, exact numerical statements,
-methods and dataset descriptions, equations, tables, figure data, captions,
-release claims, and limitations. The result must distinguish independent
-recomputation from matching an author-produced artifact or implementing a
-method detail learned from the author source. Missing inputs and underspecified
-methods are expected outcomes, not verification failures to hide or work
-around.
-
-## Current repository position
-
-This repository already owns a strong normalized evidence layer:
-
-- pinned source inventories and download hashes;
-- raw and processed aggregate PPL and OLMES results;
-- processed OLMES task, instance, and choice results for all 25 recipes;
-- processed scaling-law evaluations and checkpoint losses;
-- 51 processed author-produced result tables;
-- canonical model, training, token, and compute derivations; and
-- cross-source and derivation verification.
-
-It does not currently own the paper's scientific analysis. In particular,
-there is no current-repository implementation of target ranking, pairwise
-decision accuracy, the paper's scaling-law fits, noise-versus-spread analysis,
-or the paper plots.
-
-The official `allenai/DataDecide` repository contains relevant author code
-under `single_scale/`, `scaling_laws/`, and `viz/`. Its current `main` resolves
-to commit `68abc496587935b7211e9894206e78f15d535832`, dated June 17, 2025. This
-is a candidate methodological reference, not yet proof that the commit exactly
-corresponds to arXiv v2, dated July 13, 2025. It will not be a package,
-submodule, vendored tree, or executable dependency of this repository.
-
-One known paper-versus-repository contradiction already demonstrates the need
-for explicit verdicts: the paper's hyperparameter caption says sequence length
-`2024`, while the current catalog, implementation assertions, aggregate data,
-and detail data say `2048`.
-
-## Decision 1: reimplement the required analysis locally
-
-The verification implementation will be owned by this repository and use its
-existing normalized data contracts and environment. Implement only the
-transformations, aggregations, fits, and plot-data generation required by the
-inventoried paper claims. Do not port the upstream repository as a general
-library or reproduce unused infrastructure.
-
-The paper is the primary method specification. Record the upstream repository
-URL, exact reference commit, license, and relevant file or function paths in
-`configs/paper_reproduction.toml` when the author source helps interpret an
-omitted or ambiguous detail. This freezes the provenance of that interpretation
-without making the author repository an executable dependency.
-
-Each verifier records one of these method-provenance categories:
-
-- `paper_derived`: implemented from the paper and independently checked;
-- `upstream_informed`: repository-owned implementation of a detail that the
-  paper omitted but the pinned author source made explicit;
-- `artifact_derived`: computed from an author-produced downstream table rather
-  than lower-level observations.
-
-The default is `paper_derived`; use `upstream_informed` only when necessary.
-Do not copy or mechanically adapt author source. If a required operation cannot
-be independently reimplemented, record it as blocked and revisit that scope
-explicitly.
-
-Executing the author repository is not part of the planned verification
-workflow. This plan maintains one analysis path, and disagreements remain
-visible rather than being resolved by running the original scripts.
-
-## Decision 2: canonical reproduction configuration
-
-Create `configs/paper_reproduction.toml` as the versioned contract for repeating
-the audit. It should record decisions rather than duplicate data already owned
-by `configs/sources.toml`, `configs/catalog.toml`,
-`configs/scaling_law.toml`, or `configs/published_results.toml`.
-
-The configuration should cover:
-
-### Source identity
-
-- paper arXiv identifier, revision, source URL, and archive checksum;
-- when author source informs a method, its repository URL, exact reference
-  commit, license, and relevant source paths;
-- qualified runtime identity, including Python version and implementation,
-  operating system, architecture, and required native tools or libraries;
-- references to the existing source, catalog, OLMES, scaling-law, and
-  published-result contracts; and
-- expected input table names and schemas.
-
-### Comparison universe
-
-- included and excluded data recipes;
-- included tasks and task aggregation groups;
-- target model size and target checkpoint selection;
-- target seeds and prediction seeds;
-- target and proxy metrics;
-- recipe-pair construction and ordering;
-- tie and abstention behavior;
-- missing-value and incomplete-pair behavior; and
-- any historical seed or recipe aliases.
-
-### Compute and checkpoint policy
-
-- parameter-count field used for compute;
-- token and FLOP definitions;
-- percent-of-target-compute denominator;
-- final-checkpoint definition;
-- intermediate-checkpoint inclusion;
-- early-seed stopping policy; and
-- scaling-law model-size subsets.
-
-### Statistical and fit policy
-
-- aggregation order across instances, tasks, recipes, and seeds;
-- standard-deviation convention and uncertainty display;
-- scaling-law variants;
-- optimizer, initialization, bounds, helper points, and failure policy;
-- treatment of crossovers, ties, and failed fits;
-- qualitative-claim predicates; and
-- absolute and relative numeric tolerances.
-
-### Output policy
-
-- expected claim registry path;
-- per-run observation and manifest locations;
-- generated result and plot locations;
-- compact report output at `docs/paper-reproduction-report.md` for version
-  control;
-- small reproduced figure outputs under `docs/paper/reproduced-figures/` for
-  version control;
-- large or intermediate outputs that remain under ignored `data/`; and
-- run-manifest fields, including code and input identities.
-
-The configuration loader must reject incomplete policies needed by an enabled
-analysis. It must not silently supply a plausible default where the paper and
-available method evidence leave behavior unresolved.
-
-## Decision 3: claim registry and verdict model
-
-Create a machine-readable static claim specification. The likely location is
-`docs/paper/claims.toml`, with per-run observations and a generated human-facing
-report stored separately. The paper source remains unchanged.
-
-Each claim needs:
-
-- a stable claim ID;
-- an active-document locator and exact claim text;
-- claim ownership: DataDecide empirical, method/design, artifact/release,
-  qualitative interpretation, or external citation;
-- expected value, relationship, or qualitative predicate;
-- required evidence boundary;
-- verifier and input references;
-- method-provenance category and upstream reference when applicable;
-- comparison policy reference when known;
-- expected tolerance when the paper defines one;
-- known prerequisite or external-owner references;
-- generated table or figure references; and
-- any unresolved method question that prevents verification.
-
-The static claim specification never owns observed values or verdicts. Each run
-writes an immutable observation set and run manifest under
-`data/paper-reproduction/runs/`. Generated reports join the static claim
-definitions to one explicitly selected run. A rerun creates a new observation
-set rather than updating claim definitions or a previous run.
-
-Evidence boundary and verdict are independent.
-
-### Evidence boundaries
-
-1. paper-source or final-artifact match;
-2. regeneration from author-produced downstream tables;
-3. independent recomputation from aggregate evaluation rows;
-4. independent recomputation from instance and choice rows;
-5. evaluation rerun from released checkpoints and pinned task data;
-6. training rerun; and
-7. corpus construction from source documents and recipe operations.
-
-### Verdicts
-
-- reproduced;
-- contradicted by current repository evidence;
-- internally inconsistent;
-- source-only match;
-- blocked by missing input;
-- blocked by unspecified method;
-- externally owned or citation-dependent;
-- not attempted; and
-- not applicable at the requested evidence boundary.
-
-### External-citation coverage
-
-External literature claims receive citation-trace coverage, not independent
-verification of the cited work. For each external claim:
-
-- retain its exact paper text and location;
-- record every citation key attached to it;
-- verify that each key resolves to a bibliography entry and identify a stable
-  DOI, arXiv record, or publisher page when available; and
-- preserve the mapping from the attributed proposition to the cited work.
-
-Unless the paper also makes the proposition as a DataDecide-owned empirical
-claim, its verdict remains `externally owned or citation-dependent`. This scope
-does not assess whether the cited work's evidence is correct or reproducible.
-
-Every observation and generated verdict records the paper revision,
-current-repository code identity, method-provenance category, upstream reference
-when it informed the method, input identities, denominator, exclusions, and
-comparison policy. Current-repository code identity is either a clean tree at
-the recorded commit or the commit plus a hash of the captured dirty diff. Full
-qualification should use a clean tree. A downstream author table containing the
-paper number may support a source-only match but cannot by itself support
-independent reproduction.
-
-## Architecture and ownership
-
-The intended dependency flow is:
-
-```text
-paper source + paper_reproduction.toml
-                 |
-                 v
-          claim registry
-                 |
-                 v
-     repository-owned datadec verifiers
-                 |
-                 v
-        observations + run manifests
-                 |
-                 v
-       generated report and plots
-```
-
-The pinned upstream reference informs explicit method-provenance records but is
-not on the runtime dependency path.
-
-The eventual reusable skill is durable agent configuration owned by the
-`dotfiles` repository, not this repository. DataDecide retains the concrete
-claim schema, comparison configuration, implementations, tests, and results;
-the skill retains only portable workflow guidance and any genuinely generic,
-validated helpers.
-
-Proposed ownership boundaries:
-
-- `configs/paper_reproduction.toml`: canonical study and comparison contract;
-- `docs/paper/claims.toml`: canonical static claim definitions and expected
-  evidence;
-- `src/datadec/paper/`: independent calculations and claim verification;
-- `scripts/verify_paper_claims.py`: orchestration and report generation;
-- `data/paper-reproduction/runs/`: immutable per-run observations and manifests;
-- `data/paper-reproduction/`: other large inputs and intermediates;
-- `docs/paper-reproduction-report.md`: generated compact versioned status
-  report; and
-- `docs/paper/reproduced-figures/`: small versioned figure outputs.
-
-Exact names may change during implementation, but paper and method provenance,
-configuration, verification, and generated-output responsibilities must remain
-separate.
-
-## Work plan
-
-### Phase 0: freeze source and method provenance
-
-1. Record the exact paper revision, source URL, and archive checksum.
-2. Treat the current upstream commit as an optional methodological reference,
-   not an input that every verifier must use.
-3. Only for a method question the paper and current artifacts cannot resolve,
-   identify the exact upstream commit and source path that clarifies it; do not
-   import or execute the source.
-4. Record discrepancies between the paper and reference source as unresolved
-   method questions rather than silently choosing one.
-5. Qualify the current repository runtime used for verification, including the
-   Python interpreter, operating system, architecture, and required native
-   dependencies.
-
-Exit condition: the paper, current repository, and every upstream-informed
-method interpretation have immutable, reviewable identities and provenance.
-
-### Phase 1: inventory every active claim
-
-1. Traverse the active compiled TeX tree, expanding macros and active inputs.
-2. Exclude comments and dead historical table variants.
-3. Atomize prose, caption, table-cell, equation, release, and limitation
-   assertions.
-4. Describe every plotted series, facet, aggregation, uncertainty band, axis,
-   and caption assertion.
-5. Tag external literature claims separately from DataDecide-owned claims and
-   create the defined citation trace for each one.
-6. Check that every active claim-bearing region maps to one or more claim IDs.
-7. Record the static definitions in `docs/paper/claims.toml` without assigning
-   run verdicts.
-
-Exit condition: there are no unclassified active assertions, tables, or paper
-figures.
-
-### Phase 2: define the comparison contract and evidence map
-
-1. Map each claim to paper definitions, current data contracts, available
-   author artifacts, relevant pinned source references, and the minimum useful
-   evidence boundary.
-2. Resolve comparison universe, aggregation, seeds, checkpoints, ties,
-   abstentions, missing values, uncertainty, and qualitative predicates.
-3. Record settled behavior in `configs/paper_reproduction.toml`.
-4. Record genuinely unresolved behavior explicitly; do not infer it in code.
-5. Add comparison-policy and verifier references to the static claim
-   definitions.
-6. Validate the contract against every active claim, existing table schemas,
-   and canonical model configuration.
-
-Exit condition: every enabled analysis has a complete, reviewable method
-contract or an explicit unresolved blocker, and every claim has an evidence
-map. Phases 1 and 2 may iterate until both completeness checks converge.
-
-### Phase 3: implement repository-owned verification
-
-Implement repository-owned calculations for:
-
-- model-grid, seed, checkpoint, token, parameter, and compute claims;
-- task metrics, macro averages, and target rankings;
-- recipe-pair construction and decision accuracy;
-- single-scale compute-versus-decision curves;
-- proxy-metric comparisons;
-- run-to-run noise and between-recipe spread;
-- scaling-law variants and prediction-error tables; and
-- paper figure data and qualitative comparison predicates.
-
-Each verifier emits expected and observed values, tolerance, denominator,
-exclusions, input identities, method provenance, and verdict. Small explicit
-fixtures establish behavior; full-data runs establish paper evidence. Tests
-must exercise the mathematical or data contract directly rather than treating
-agreement with an upstream output as sufficient proof.
-
-Exit condition: every claim that is answerable from current normalized data has
-an independent verdict.
-
-### Phase 4: evaluate deeper evidence gaps
-
-For claims not answerable from current normalized data, separately assess:
-
-- availability and completeness of released models and checkpoints;
-- evaluation reruns using released checkpoints and pinned task datasets;
-- recipe availability and declared composition;
-- document membership, mixing proportions, filters, and classifier artifacts;
-- exact training data order and checkpoint provenance; and
-- feasibility of training reruns.
-
-The published tokenized recipe collection is approximately 19.3 TB, so a full
-download is not a prerequisite for earlier phases. Begin with metadata,
-manifests, mapping code, and representative checks. Expand only when the
-evidence requirement justifies the storage and compute cost.
-
-Exit condition: every remaining claim names the exact missing artifact,
-underspecified rule, external owner, or deferred cost boundary.
-
-### Phase 5: synthesize and review
-
-1. Generate the compact human-readable report by joining the static claim
-   specification to one explicitly selected immutable run.
-2. Summarize reproduced, contradicted, inconsistent, source-only, blocked, and
-   external claims separately.
-3. Distinguish current local availability from repository-supported download
-   capability and remote availability.
-4. Perform one full adversarial review of behavior, contracts, evidence
-   boundaries, failure handling, and the main scientific conclusions.
-5. Remediate in-scope correctness defects once, then regenerate the report.
-6. Version the compact report and small reproduced figure outputs; retain large
-   observations, intermediates, and plot data under ignored `data/`.
-
-Exit condition: every headline conclusion links to atomic claims, executable
-evidence, and explicit provenance.
-
-### Phase 6: extract and validate the reusable skill
-
-Begin this phase only after the compact report and adversarial review establish
-that the workflow has operated end to end. Use the completed implementation,
-tests, report, review findings, and skill-extraction ledger as source material.
-
-1. Review the ledger and retain only lessons supported by an executed workflow,
-   test, observed failure, or review finding. Do not turn untested preferences
-   or DataDecide-specific values into general rules.
-2. Separate portable workflow from repository policy. The skill may describe
-   contracts, evidence boundaries, coverage checks, provenance, and completion
-   criteria, but it must discover repository-specific paths, schemas, commands,
-   and output locations from the target project.
-3. Create an authored skill named `verify-paper-claims` under
-   `dotfiles/agents/skills/verify-paper-claims/`. Give it an automatically
-   discoverable description for claim-level paper reproduction and exclude
-   ordinary paper summaries, literature reviews, and formatting work. Candidate
-   description: "Inventory and independently verify a research paper's claims
-   against repository data and code. Use for claim-level reproducibility audits;
-   do not use for ordinary summaries, literature reviews, or paper formatting."
-4. Keep `SKILL.md` focused on the shared workflow, non-obvious invariants, and
-   checkable completion criteria. Add focused `references/` only for substantial
-   reusable contracts such as claim schemas, evidence/verdict semantics, or
-   figure and citation handling.
-5. Include a skill-local script only when the implementation has demonstrated
-   that the operation is deterministic, portable, repeated across the workflow,
-   and free of DataDecide-specific assumptions. Otherwise direct agents to use
-   or create repository-owned commands.
-6. Add the skill to `dotfiles/agents/skills/sources.json` as an authored skill
-   with exposure `on`. Record the qualifying DataDecide commit or PR in its
-   provenance note, then regenerate the dotfiles-managed exposure metadata.
-7. Validate structure with the skill-creator `quick_validate.py`, run dotfiles'
-   focused exposure checks and `mise run check`, apply the managed skill links,
-   and confirm the live skill resolves to the dotfiles-owned source.
-8. Run an independent cold-agent forward test in an isolated workspace against
-   a held-out small paper/repository fixture. Confirm that it inventories all
-   claim-bearing regions, separates static claims from run observations,
-   distinguishes evidence boundary from verdict, exposes missing inputs, and
-   avoids author-code dependence. Also test a plain paper-summary request to
-   confirm the skill's invocation boundary is not overbroad.
-9. Revise only for failures observed in validation, rerun the structural and
-   behavioral checks, and publish the skill through a separate dotfiles PR.
-
-Exit condition: a fresh agent can apply the skill to a new repository without
-DataDecide knowledge, preserves the verified evidence boundaries, and produces
-an auditable claim-level workflow rather than a prose-only checklist.
-
-## Figure and qualitative-claim policy
-
-Paper plots are verified primarily through their data and semantics, not exact
-pixels. For each figure, verify:
-
-- source observations;
-- filtering and aggregation;
-- series and facet membership;
-- uncertainty computation;
-- axis variables and transforms;
-- labels and legend meaning; and
-- every factual caption statement.
-
-Pixel or PDF equality may be recorded as author-artifact evidence but is not
-required for independent reproduction because rendering libraries and fonts can
-change without changing the scientific result.
-
-Qualitative phrases such as "roughly log-linear," "as good as," "most small
-scales," "frequently," or "markedly less reliable" require a predicate in the
-comparison configuration. If the paper and available method evidence do not
-define one, the report must label the independent verdict as operationalized by
-this repository or blocked by an unspecified criterion.
+Use the postprocessed DataDecide data published as `drotherm/dd_parsed` to make
+our best independent attempt at recomputing every empirical number,
+comparison, trend, and plot reported in the DataDecide paper.
+
+The paper supplies the target claim and method description. `dd_parsed`
+supplies the analysis evidence. For every assessable finding, report the
+paper's value or relationship beside our computed result, the exact rows and
+operational choices used, and whether the result agrees.
+
+This is analytical validation of reported findings. It is not an attempt to
+recreate the historical training environment, prove release completeness, or
+retrain the models.
+
+## Hard scope boundaries
+
+### Training is permanently out of scope
+
+Do not pretrain, continue training, fine-tune, reconstruct training corpora, or
+plan a future training rerun. A claim that appears to require training must
+first be reconsidered: the likely task is to analyze existing results or to
+classify a training-design statement as descriptive metadata. If it genuinely
+cannot be assessed without training, record `not_assessable_from_dd_parsed`.
+Training is not a missing input to acquire.
+
+### Checkpoints are optional read-only evidence
+
+Released model checkpoints may be downloaded only to resolve a specific,
+valuable uncertainty through metadata inspection, inference, or evaluation.
+Checkpoint use must never include parameter updates. Evaluation reruns are a
+targeted fallback after confirming that the required result cannot be derived
+from `dd_parsed`; they are not a prerequisite for the main workflow.
+
+### Exact historical provenance is not a gate
+
+Do not require an exact author-repository commit, historical training manifest,
+paper-final checkpoint number, clean Git tree, or pinned `dd_parsed` revision
+before computing a result. Record available identities for traceability, but
+never convert their absence into a scientific blocker.
+
+The current author repository and this repository's current catalog are not
+assumed to match the configurations used for the paper. Differences may be
+useful metadata notes, but they do not contradict an empirical finding unless
+the provided analysis data itself directly falsifies that finding.
+
+### Author-produced result tables are targets, not evidence
+
+Files under `published-results/` may help extract a reported target or diagnose
+a mismatch. They must not be used as the computational input for claiming that
+the same result was independently reproduced. Independent computations use the
+lower-level aggregate, scaling-law, task, instance, or choice tables.
+
+## Canonical analysis inputs
+
+The Hugging Face publication contract at `configs/publishing.toml` defines the
+`dd_parsed` layout. Local development uses the corresponding processed files
+under `data/processed/`; authenticated remote loading must expose the same
+logical tables.
+
+- `ppl.parquet`: checkpoint-level perplexity and model-loss evidence.
+- `olmes.parquet`: aggregate checkpoint/task evaluation metrics.
+- `scaling-law/evaluations.parquet`: normalized scaling-law evaluations.
+- `scaling-law/checkpoint-losses.parquet`: normalized checkpoint losses.
+- `olmes-details/<recipe>/tasks.parquet`: task-level evaluation details.
+- `olmes-details/<recipe>/instances.parquet`: instance-level observations.
+- `olmes-details/<recipe>/choices.parquet`: answer-choice likelihood evidence.
+- `published-results/**`: paper targets and debugging references only.
+
+The local processed mirror is sufficient for the first implementation waves.
+Remote access and checkpoint downloads are not initial blockers.
+
+## Claim taxonomy
+
+Retain stable paper locators and atomic claim IDs, but classify claims by what
+this exercise can meaningfully validate.
+
+### Primary validation targets
+
+- `empirical_numeric`: an exact or approximate reported number.
+- `empirical_comparison`: an ordering, difference, equivalence, crossover, or
+  directional relationship.
+- `empirical_trend`: a relationship over scale, compute, task, metric, or
+  checkpoint.
+- `empirical_plot`: the data and semantic content of a paper figure or panel.
+
+### Supporting claims
+
+- `method_definition`: a formula, aggregation, selection, or plotting rule
+  needed to compute primary targets.
+- `descriptive_metadata`: model, sequence-length, suite-design, recipe, release,
+  or training-description statements. Compare with `dd_parsed` metadata when
+  useful, but keep discrepancies separate from empirical finding outcomes.
+- `external_background`: literature attribution or contextual framing. Preserve
+  the citation trace; do not independently audit the cited work.
+- `normative_or_future`: recommendations, impact statements, limitations, or
+  future-work proposals. Do not force these into empirical verdicts.
+
+The main report centers primary validation targets. Supporting claims appear
+only where they affect interpretation or document a useful discrepancy.
+
+## Attempt contract
+
+Each empirical claim may have one or more named attempts. An attempt records:
+
+- stable claim ID and paper locator;
+- verbatim or normalized paper target;
+- `dd_parsed` table and columns used;
+- row-selection rules, including recipes, tasks, metrics, seeds, sizes, and
+  checkpoints;
+- transformation and aggregation order;
+- our computed value, relationship, or machine-readable plot series;
+- comparison rule appropriate to the paper's precision or wording;
+- outcome;
+- sensitivity results for consequential ambiguous choices; and
+- concise diagnostics and limitations.
+
+The default attempt is the best paper-faithful interpretation that can be
+computed from `dd_parsed`. Additional attempts test reasonable alternatives;
+they do not overwrite or hide the default.
+
+## Outcomes
+
+- `reproduced`: our result matches an exact target at the precision reported or
+  satisfies the reported comparison.
+- `approximately_reproduced`: our result supports an explicitly approximate
+  number, trend, or visual relationship.
+- `directionally_consistent`: the reported direction or ordering holds, but the
+  magnitude or stronger wording does not fully match.
+- `not_reproduced`: available `dd_parsed` evidence directly disagrees with the
+  empirical target under the best attempt and reasonable sensitivities.
+- `not_assessable_from_dd_parsed`: the required observation is absent or cannot
+  be derived without prohibited training or a materially different experiment.
+- `metadata_discrepancy`: paper description and available metadata differ; this
+  is not an empirical finding failure.
+- `descriptive_only`: no empirical comparison is appropriate.
+- `external_or_background`: retained for traceability but outside validation.
+
+Do not use missing exact provenance, an absent historical checkpoint number,
+or current repository drift as a `not_reproduced` result.
+
+## Default operational choices
+
+### Checkpoints
+
+When the paper says `final` but its exact table step is absent, use the latest
+complete checkpoint available in `dd_parsed` for the required model, recipe,
+seed, task, and metric. Record the actual step. Compare adjacent checkpoints
+when a different reasonable choice could change the conclusion.
+
+Never silently replace one model size, task, metric, recipe, or seed group with
+another.
+
+### Reported precision
+
+For exact tabulated numbers, compare after applying the paper's displayed
+precision and also report the unrounded difference. For words such as
+`approximately`, `roughly`, or `comparable`, define a transparent best-attempt
+predicate and include sensitivity to other reasonable thresholds. Ambiguity
+calls for an operationalized attempt, not an automatic blocker.
+
+### Seeds and uncertainty
+
+Follow the paper's stated seed grouping when those rows exist. If only a subset
+is available, compute the available-data result and disclose the difference.
+Report denominators, exclusions, ties, missing groups, and the standard
+deviation convention. Default sample-standard-deviation choices remain
+repository operationalizations when the paper is silent.
+
+### Tasks and metrics
+
+Follow the paper's OLMES task grouping: average MMLU subjects into one task,
+then macro-average MMLU with the nine non-MMLU tasks. Use the task-specific
+primary metric and the paper's proxy-metric definitions. Instance and choice
+tables are preferred when a claim depends on option likelihoods, item
+selection, normalization, or tie behavior.
+
+### Comparisons and ties
+
+Use all unordered recipe pairs in the stated comparison universe. Target ties
+are outside a two-class winner comparison. Record predicted ties explicitly;
+the default paper-faithful attempt counts them as incorrect, with an exclusion
+sensitivity when material.
+
+## Implementation phases
+
+### Phase 0: hard-cut the contracts
+
+1. Replace provenance-first evidence-boundary and blocker semantics with the
+   claim taxonomy, attempt contract, and outcomes above.
+2. Remove training-rerun, corpus-reconstruction, release-manifest, clean-tree,
+   and exact-checkpoint qualification requirements from the analysis path.
+3. Preserve paper locators, active-source coverage, data schema validation, and
+   deterministic calculations where they remain useful.
+4. Delete superseded report, figure, CLI, and test paths in the same cutover;
+   do not retain competing scientific interpretations.
+
+Exit condition: a default attempt can report a valid empirical result from the
+current local `dd_parsed` mirror without historical provenance gates.
+
+### Phase 1: triage and map the inventory
+
+1. Reclassify all claims into the taxonomy above.
+2. Identify the empirical findings and paper plot semantics that are primary
+   validation targets.
+3. Map each primary target to the lowest-level sufficient `dd_parsed` tables.
+4. Identify method dependencies, expected values, comparison rules, and
+   sensitivities.
+5. Mark descriptive, external, normative, and training-only statements without
+   turning them into future data-acquisition work.
+
+Exit condition: every primary target has an executable attempt specification or
+a concrete reason it is not assessable from `dd_parsed`.
+
+### Phase 2: reproduce headline single-scale findings
+
+1. Build mean 1B target rankings over the stated target seeds.
+2. Build single-scale recipe rankings for every available prediction size,
+   checkpoint, seed, task, and metric.
+3. Compute pairwise decision accuracy, denominators, ties, exclusions, seed
+   means, and uncertainty.
+4. Validate the abstract claim that a 150M single-scale ranking gets
+   approximately 80% of 1B pairwise decisions correct using the latest
+   available 150M checkpoint.
+5. Recreate aggregate and per-task compute-versus-decision-accuracy paper plots.
+
+The current local data already yields `0.803333...` for the 150M primary-metric
+best attempt at step 37,500 over three prediction seeds. The first cutover test
+must classify this as approximately reproduced rather than blocked by the
+paper table's absent step 38,157.
+
+Exit condition: headline single-scale numbers, comparisons, and plot series are
+computed and compared with the paper.
+
+### Phase 3: reproduce metric, task, and noise findings
+
+1. Compare primary accuracy with all continuous proxy metrics.
+2. Recompute task-specific predictability and compute relationships.
+3. Recompute seed-attempt uncertainty, within-recipe noise, across-recipe
+   spread, crossover, and ranking-stability analyses.
+4. Validate claims about easy, hard, insensitive, or predictable tasks using
+   explicit operational predicates and sensitivities.
+5. Recreate the corresponding paper panels and caption comparisons.
+
+Exit condition: every single-scale, task, metric, and noise finding has a
+best-attempt outcome.
+
+### Phase 4: reproduce multi-scale and scaling-law findings
+
+1. Implement the paper's eight fit variants from normalized evaluations and
+   checkpoint losses.
+2. Recompute helper-point and early-checkpoint-filtering variants.
+3. Recompute relative and absolute 1B prediction error.
+4. Compare multi-scale and single-scale decision accuracy over compute.
+5. Recreate scaling-law figures and qualitative comparisons with transparent
+   fit settings and sensitivity analyses.
+
+Use a reasonable repository-owned optimizer configuration when the paper is
+silent. Inspect pinned author source only when it materially clarifies a method;
+record that influence, but do not import or execute author analysis code.
+
+Exit condition: every scaling-law number, comparison, and plot has a computed
+attempt or is genuinely not assessable from `dd_parsed`.
+
+### Phase 5: targeted checkpoint evaluation, only if earned
+
+For a high-value empirical claim still not assessable, determine whether a
+released checkpoint plus a bounded evaluation can supply the missing result.
+Record the exact claim, expected new evidence, models, tasks, storage, and
+compute before downloading. Skip the evaluation when it merely improves
+historical provenance or would duplicate available `dd_parsed` evidence.
+
+Exit condition: checkpoint use is limited to specific unresolved findings and
+contains no training.
+
+### Phase 6: report and review
+
+1. Generate a compact report organized by empirical finding family.
+2. Show paper target, our result, difference, outcome, method, and sensitivity
+   side by side.
+3. Generate small paper-analog plots plus a summary of outcomes.
+4. Keep metadata discrepancies in a separate appendix.
+5. Perform one full adversarial review focused on analytical correctness,
+   selection bias, accidental use of author results, overstatement, and plot
+   semantics.
+6. Remediate confirmed correctness defects once and regenerate outputs.
+
+Exit condition: a reader can tell which paper findings replicate from
+`dd_parsed`, which are only directionally consistent, which do not replicate,
+and which cannot be assessed without leaving scope.
+
+### Phase 7: correct the reusable skill
+
+Update `verify-paper-claims` in its existing dotfiles PR only after this revised
+workflow operates end to end. The skill must prioritize analytical replication
+from available evidence, make best attempts under transparent
+operationalizations, and treat training as an explicit optional scope boundary
+that is prohibited for this DataDecide effort.
+
+Run a new independent cold-agent test against a held-out analytical fixture.
+Do not preserve provenance-first blocker behavior from the superseded workflow.
+
+## Deliverables
+
+- this canonical plan;
+- a reclassified static claim inventory;
+- versioned attempt and comparison contracts;
+- repository-owned `dd_parsed` analyses;
+- machine-readable plot series;
+- small paper-analog figure outputs;
+- a compact finding-comparison report;
+- tests that pin calculations and outcome semantics;
+- one reviewed DataDecide PR with a single final analysis path; and
+- a corrected, cold-tested dotfiles skill PR.
 
 ## Validation requirements
 
-The finished system must prove:
+The completed system must prove that:
 
-- the paper identity is exact, and any upstream-informed method records its
-  reference identity, license, and relevant source path without creating an
-  upstream runtime dependency;
-- the comparison configuration is schema-valid and complete for enabled
-  analyses;
-- every active paper assertion has a claim ID;
-- every external literature claim has a complete citation trace and remains
-  explicitly citation-dependent;
-- the claim specification contains no mutable run verdicts;
-- every verifier is owned and executed by this repository;
-- no verifier imports or executes author analysis functions;
-- method provenance distinguishes paper-derived, upstream-informed,
-  and artifact-derived behavior;
-- no verifier contains copied or mechanically adapted author source;
-- input hashes or immutable revisions are present in every full-data run;
-- current-repository code identity is a clean commit or includes a captured
-  dirty-diff hash, with clean commits required for final qualification;
-- denominators, exclusions, ties, abstentions, and failed fits are visible;
-- generated observations are deterministic under stable inputs;
-- figures are backed by machine-readable numerical series; and
-- contradictions are not collapsed into missing-data blockers.
+- no code path trains or updates model parameters;
+- primary results are computed from lower-level `dd_parsed` tables rather than
+  copied from `published-results`;
+- reported row selections and aggregations are deterministic and inspectable;
+- latest-available checkpoint selection records the actual checkpoint and has
+  sensitivity coverage where material;
+- seeds, denominators, exclusions, missing groups, and ties remain visible;
+- paper targets and our results are stored separately;
+- approximate and qualitative outcomes use explicit predicates;
+- metadata discrepancies do not masquerade as empirical contradictions;
+- paper-analog plots are backed by machine-readable series; and
+- generated reports do not recompute scientific results.
 
-## Delivery shape
+## Delivery strategy
 
-Use the fewest coherent PRs that preserve real review boundaries. The likely
-shape is:
+Revise DataDecide PR #43 in place rather than adding a competing validation
+stack. Publish coherent checkpoints regularly while the hard cutover proceeds.
+Do not merge the current provenance-first report as the final result.
 
-1. source and method provenance, comparison contract, and complete claim
-   inventory;
-2. repository-owned current-data verifiers and generated report;
-3. optional external-data, evaluation-rerun, or corpus-reconstruction work only
-   where the gap audit justifies it.
-
-The first PR should not claim scientific reproduction. It establishes the
-versioned contracts and complete audit surface on which later verdicts depend.
-After the DataDecide workflow is qualified, deliver `verify-paper-claims` in a
-separate dotfiles PR because durable agent configuration has a different
-repository owner and validation path.
-
-## Settled scope decisions
-
-1. Defer identifying the exact upstream reference commit unless a method must
-   be `upstream_informed`. Omit the reference entirely if every method is
-   `paper_derived`.
-2. Give external literature claims citation-trace coverage only. A full audit
-   of cited papers is outside this effort.
-3. Version the compact reproduction report and small reproduced figure outputs.
-   Keep large observations, plot data, and intermediate artifacts under
-   ignored `data/`.
-4. Create the reusable skill only after the workflow completes end to end, and
-   expose it automatically from its canonical dotfiles owner.
-
-## Skill-extraction ledger
-
-Update this ledger at each phase exit. Promote a candidate into the final skill
-only after the named evidence gate has been exercised; record new candidates
-when implementation or review reveals a reusable decision that is not already
-captured.
-
-| Candidate lesson | Evidence gate | Status |
-| --- | --- | --- |
-| Cover every active prose, equation, table, figure, caption, method, release, and limitation assertion. | Independent active-source traversal partitions 455 claims across 192 exact claim/nonclaim regions. | Promoted |
-| Keep static claim definitions separate from immutable run observations and generated verdicts. | The qualified run and generated report join separate hashed layers; registry remediation remained a distinct identity rather than a false same-spec rerun. | Promoted |
-| Track evidence boundary, method provenance, and verdict as separate dimensions. | The qualified report contains reproduced, contradicted, source-only, blocked, external, and not-attempted outcomes across four actual evidence boundaries. | Promoted |
-| Require explicit comparison policy and expose unresolved methods instead of supplying plausible defaults. | 108 real claims terminate as method-blocked, and the exact missing DD-0011 checkpoint remains input-blocked rather than using a nearby checkpoint. | Promoted |
-| Verify figure data and semantics before treating pixel equality as scientific evidence. | The workflow inventoried all paper-figure semantics but lacked inputs to regenerate them; only audit-summary figures were rendered. The reusable blocker rule was cold-tested, but scientific figure regeneration was not demonstrated. | Promoted as a blocking safeguard only |
-| Treat external claims as citation traces unless their underlying evidence is explicitly in scope. | All 39 external claims retain source-bound citation traces and external verdicts. | Promoted |
-| Derive source coverage independently from the claim registry and bind citations to each claim span. | Full review exposed circular coverage and global citation-union checks; remediation added an independent active surface and per-claim validation. | Promoted |
-| Mark reproduced only when a persisted fact directly satisfies an explicit claim predicate. | Full-data replay produced 4,128 complete summaries, but only DD-0045 had a direct fact mapping; related facts did not upgrade the other claims. | Promoted |
-| Render compact outputs from selected persisted observations without scientific recomputation. | Review replay reproduced the report and both summary figures byte-for-byte; detailed DD-0045 facts remain in immutable observations. | Promoted |
-| Apply shared manuscript-wide method statements to every claim they govern. | The cold-agent fixture exposed this ambiguity for a three-seed statement; the skill was revised before submission. | Promoted |
+Revise dotfiles PR #81 only after the corrected DataDecide workflow is reviewed.
+The two repositories remain separate PRs because the skill has a distinct
+owner and validation path.
