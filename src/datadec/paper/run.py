@@ -1,117 +1,119 @@
 from __future__ import annotations
 
 import hashlib
+import importlib
 import platform
-import subprocess
-import tomllib
+import re
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
-from typing import TypeVar
 
-from pydantic import BaseModel
+import orjson
+import pyarrow.parquet as pq
 
-from datadec.config import (
-    DataDecideCatalog,
-    OLMESContract,
-    PublishedResultsManifest,
-    ScalingLawContract,
-    SourceManifest,
-)
-from datadec.paper.contracts import load_claim_registry
-from datadec.paper.figures import (
-    render_suite_contradictions_svg,
-    render_verdict_summary_svg,
-)
+from datadec.paper.contracts import load_claim_registry, load_validation_contract
 from datadec.paper.models import (
-    BlockerKind,
-    ClaimOwnership,
+    PRIMARY_CLAIM_KINDS,
+    AnalysisBundle,
+    AnalysisId,
+    AttemptResult,
+    AttemptRole,
+    ClaimKind,
     ClaimRegistry,
-    CodeIdentity,
-    CodeTreeState,
     ContentIdentity,
-    EvidenceBoundary,
-    Observation,
-    ObservationBlocker,
-    ObservationCount,
+    MetadataDiscrepancy,
     PaperClaim,
-    PaperReproductionContract,
-    RunBundle,
-    RuntimeIdentity,
-    Verdict,
+    PaperTarget,
+    PaperValidationContract,
+    PlotSeries,
+    RowSelection,
+    RuntimeTrace,
+    ValidationOutcome,
 )
-from datadec.paper.policies import resolve_olmes_policy
-from datadec.paper.registry import (
-    resolve_method_provenance,
-    validate_static_references,
-)
-from datadec.paper.output_transaction import replace_output_set
-from datadec.paper.report import render_report
-from datadec.paper.runs import (
-    create_run_bundle,
-    load_run_bundle,
-    validate_run_qualification,
-)
+from datadec.paper.registry import validate_cross_contracts
+from datadec.paper.runs import create_analysis_bundle, load_analysis_bundle
 from datadec.paper.source import (
     CitationReport,
     CoverageReport,
     DependencyReport,
-    raw_line_slice_sha256,
     scan_tex_dependencies,
     validate_citations,
     validate_source_coverage,
 )
-from datadec.paper.verifiers.olmes import (
-    FactRow,
-    FactStatus,
-    NormalizedOlmesPolicy,
-    NormalizedOlmesVerification,
-    verify_normalized_olmes_parquet,
-)
-from datadec.paper.verifiers.suite import (
-    CheckStatus,
-    SuiteFact,
-    SuiteRowVerification,
-    SuiteVerification,
-    parse_suite_table,
-    verify_suite,
-)
 
-_REPRODUCTION_CONFIG_PATH = "configs/paper_reproduction.toml"
+_VALIDATION_CONFIG_PATH = "configs/paper_validation.toml"
+_CLAIMS_PATH = "docs/paper/claims.toml"
 _DEPENDENCY_LOCK_PATH = "uv.lock"
-_SUITE_TABLE_PATH = "docs/paper/tables/suite_stats.tex"
-_EXPECTED_CITATION_KEY_COUNT = 43
-_NORMALIZED_OLMES_INPUT_ID = "normalized-olmes-input"
-_ARTIFACT_RELEASE_MANIFEST_ID = "artifact-release-manifest"
-_EVALUATION_RERUN_RESULTS_ID = "evaluation-rerun-results"
-_TRAINING_RUN_MANIFEST_ID = "training-run-manifest"
-_CORPUS_CONSTRUCTION_MANIFEST_ID = "corpus-construction-manifest"
-_ABSTRACT_SINGLE_SCALE_CLAIM_ID = "DD-0011"
-_PREDICTION_SEED_COUNT_CLAIM_ID = "DD-0045"
-_PREDICTION_SEED_COUNT_EXPECTATION = "prediction_attempt_count_per_point = 3"
-_PREDICTION_SEED_COUNT = 3
-_PREDICTION_SEED_FACT = "single_scale_mean_decision_accuracy"
-_PREDICTION_SEED_MISSING_STAGES = frozenset(
-    {"task_aggregation", "target_mean", "single_scale_seed"}
-)
-_PREDICTION_SEED_STATIC_REFERENCES = (
-    "olmes_aggregate",
-    "olmes_aggregate_verification",
-    "olmes_v1",
-)
-_ModelT = TypeVar("_ModelT", bound=BaseModel)
+_PATH_PARAMETER = re.compile(r"\{[A-Za-z_][A-Za-z0-9_]*\}")
+_EMPTY_SHA256 = hashlib.sha256(b"").hexdigest()
+_ADAPTER_IMPORTS: Mapping[AnalysisId, tuple[str, str]] = {
+    AnalysisId.SINGLE_SCALE: (
+        "datadec.paper.verifiers.single_scale",
+        "run_single_scale_attempts",
+    ),
+    AnalysisId.PER_TASK: (
+        "datadec.paper.verifiers.single_scale",
+        "run_per_task_attempts",
+    ),
+    AnalysisId.PROXY_METRICS: (
+        "datadec.paper.verifiers.proxy_metrics",
+        "run_proxy_metrics_attempts",
+    ),
+    AnalysisId.NOISE_SPREAD: (
+        "datadec.paper.verifiers.proxy_metrics",
+        "run_noise_spread_attempts",
+    ),
+    AnalysisId.SCALING_LAW: (
+        "datadec.paper.verifiers.scaling",
+        "run_scaling_law_attempts",
+    ),
+}
+
+AnalysisAdapter = Callable[
+    ...,
+    tuple[tuple[AttemptResult, ...], tuple[PlotSeries, ...]],
+]
+MetadataComparator = Callable[
+    [str | Path, ClaimRegistry], tuple[MetadataDiscrepancy, ...]
+]
 
 
 @dataclass(frozen=True, slots=True)
-class RepositoryValidation:
+class ValidationInput:
+    table_id: str
+    paths: tuple[Path, ...]
+    identity: ContentIdentity
+
+
+@dataclass(frozen=True, slots=True)
+class SupportingDisposition:
+    claim_id: str
+    kind: ClaimKind
+    outcome: ValidationOutcome
+
+
+@dataclass(frozen=True, slots=True)
+class ValidationSurface:
     repository_root: Path
-    contract: PaperReproductionContract
+    data_root: Path
     registry: ClaimRegistry
+    contract: PaperValidationContract
     coverage: CoverageReport
     dependencies: DependencyReport
     citations: CitationReport
-    olmes_policy: NormalizedOlmesPolicy
-    suite: SuiteVerification
+    inputs: tuple[ValidationInput, ...]
+    supporting_dispositions: tuple[SupportingDisposition, ...]
+
+    @property
+    def input_identities(self) -> Mapping[str, ContentIdentity]:
+        return {item.table_id: item.identity for item in self.inputs}
+
+
+@dataclass(frozen=True, slots=True)
+class RenderedOutputs:
+    report: Path
+    figures: tuple[Path, ...]
 
 
 def _repository_file(root: Path, relative_path: str) -> Path:
@@ -130,53 +132,115 @@ def _repository_file(root: Path, relative_path: str) -> Path:
     return candidate
 
 
-def _load_toml_model(root: Path, relative_path: str, model: type[_ModelT]) -> _ModelT:
-    with _repository_file(root, relative_path).open("rb") as file:
-        return model.model_validate(tomllib.load(file))
-
-
-def _paper_entrypoint(contract: PaperReproductionContract) -> str:
+def _paper_entrypoint(contract: PaperValidationContract) -> str:
     return (
         PurePosixPath(contract.paper.source_root) / contract.paper.entrypoint
     ).as_posix()
 
 
-def validate_repository(root: str | Path) -> RepositoryValidation:
-    """Validate the complete repository-owned first-run paper surface."""
-    repository_root = Path(root).resolve(strict=True)
-    contract = _load_toml_model(
-        repository_root,
-        _REPRODUCTION_CONFIG_PATH,
-        PaperReproductionContract,
-    )
-    registry = load_claim_registry(
-        _repository_file(repository_root, contract.contracts.claims_contract)
-    )
-    validate_static_references(registry, contract)
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as file:
+        for block in iter(lambda: file.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
 
-    catalog = _load_toml_model(
-        repository_root, contract.contracts.catalog, DataDecideCatalog
+
+def _resolve_data_root(repository_root: Path, data_dir: str | Path) -> Path:
+    candidate = Path(data_dir)
+    if not candidate.is_absolute():
+        candidate = repository_root / candidate
+    return candidate.resolve(strict=True)
+
+
+def _input_paths(data_root: Path, configured_path: str) -> tuple[Path, ...]:
+    path = PurePosixPath(configured_path)
+    if path.is_absolute() or path.as_posix() != configured_path or ".." in path.parts:
+        raise ValueError(
+            "validation input paths must be normalized data-relative POSIX paths"
+        )
+    pattern = _PATH_PARAMETER.sub("*", configured_path)
+    paths = tuple(sorted(data_root.glob(pattern)))
+    if not paths:
+        raise FileNotFoundError(
+            f"validation input did not match any files: {configured_path}"
+        )
+    for candidate in paths:
+        resolved = candidate.resolve(strict=True)
+        try:
+            resolved.relative_to(data_root)
+        except ValueError as error:
+            raise ValueError(
+                f"validation input escapes data directory: {configured_path}"
+            ) from error
+        if candidate.is_symlink() or not resolved.is_file():
+            raise ValueError("validation inputs must be non-symlink regular files")
+    return paths
+
+
+def _input_identity(
+    table_id: str, paths: tuple[Path, ...], data_root: Path
+) -> ContentIdentity:
+    file_values = tuple(
+        {
+            "path": path.resolve(strict=True).relative_to(data_root).as_posix(),
+            "sha256": _sha256_file(path),
+        }
+        for path in paths
     )
-    sources = _load_toml_model(
-        repository_root, contract.contracts.sources, SourceManifest
+    if len(file_values) == 1:
+        digest = file_values[0]["sha256"]
+    else:
+        digest = hashlib.sha256(
+            orjson.dumps(file_values, option=orjson.OPT_SORT_KEYS)
+        ).hexdigest()
+    return ContentIdentity(id=table_id, sha256=digest)
+
+
+def _validate_input_schema(
+    table_id: str, paths: tuple[Path, ...], required_columns: tuple[str, ...]
+) -> None:
+    expected = set(required_columns)
+    for path in paths:
+        actual = set(pq.read_schema(path).names)
+        missing = tuple(sorted(expected - actual))
+        if missing:
+            raise ValueError(
+                f"validation input {table_id} is missing columns {missing} in {path}"
+            )
+
+
+def _supporting_dispositions(
+    registry: ClaimRegistry,
+) -> tuple[SupportingDisposition, ...]:
+    dispositions: list[SupportingDisposition] = []
+    for claim in registry.claims:
+        if claim.kind in PRIMARY_CLAIM_KINDS:
+            continue
+        if claim.supporting_outcome is None:  # guarded by PaperClaim validation
+            raise AssertionError(f"supporting claim {claim.id} has no disposition")
+        dispositions.append(
+            SupportingDisposition(
+                claim_id=claim.id,
+                kind=claim.kind,
+                outcome=claim.supporting_outcome,
+            )
+        )
+    return tuple(sorted(dispositions, key=lambda value: value.claim_id))
+
+
+def validate_repository(
+    root: str | Path,
+    data_dir: str | Path,
+) -> ValidationSurface:
+    """Validate the static finding contracts, manuscript, and dd_parsed inputs."""
+    repository_root = Path(root).resolve(strict=True)
+    data_root = _resolve_data_root(repository_root, data_dir)
+    contract = load_validation_contract(
+        _repository_file(repository_root, _VALIDATION_CONFIG_PATH)
     )
-    published_results = _load_toml_model(
-        repository_root,
-        contract.contracts.published_results,
-        PublishedResultsManifest,
-    )
-    olmes = _load_toml_model(
-        repository_root, contract.contracts.olmes, OLMESContract
-    ).validate_references(catalog=catalog, source_manifest=sources)
-    _load_toml_model(
-        repository_root,
-        contract.contracts.scaling_law,
-        ScalingLawContract,
-    ).validate_references(
-        catalog=catalog,
-        olmes_contract=olmes,
-        published_results_manifest=published_results,
-    )
+    registry = load_claim_registry(_repository_file(repository_root, _CLAIMS_PATH))
+    validate_cross_contracts(registry, contract)
 
     entrypoint = _paper_entrypoint(contract)
     coverage = validate_source_coverage(repository_root, registry, entrypoint)
@@ -197,11 +261,6 @@ def validate_repository(root: str | Path) -> RepositoryValidation:
             f"{disconnected_source_files!r}"
         )
     citations = validate_citations(repository_root, entrypoint)
-    if len(citations.citation_keys) != _EXPECTED_CITATION_KEY_COUNT:
-        raise ValueError(
-            "active paper citation-key count drifted: expected "
-            f"{_EXPECTED_CITATION_KEY_COUNT}, found {len(citations.citation_keys)}"
-        )
     claim_citation_keys = {
         key for claim in registry.claims for key in claim.citation_keys
     }
@@ -213,581 +272,316 @@ def validate_repository(root: str | Path) -> RepositoryValidation:
             f"missing={missing!r}, unexpected={unexpected!r}"
         )
 
-    olmes_policy = resolve_olmes_policy(
-        contract,
-        catalog=catalog,
-        olmes_contract=olmes,
-    )
-    suite = verify_suite(
-        parse_suite_table(_repository_file(repository_root, _SUITE_TABLE_PATH)),
-        catalog,
-    )
-    return RepositoryValidation(
+    inputs: list[ValidationInput] = []
+    for spec in contract.inputs:
+        paths = _input_paths(data_root, spec.path)
+        _validate_input_schema(spec.id, paths, spec.columns)
+        inputs.append(
+            ValidationInput(
+                table_id=spec.id,
+                paths=paths,
+                identity=_input_identity(spec.id, paths, data_root),
+            )
+        )
+    return ValidationSurface(
         repository_root=repository_root,
-        contract=contract,
+        data_root=data_root,
         registry=registry,
+        contract=contract,
         coverage=coverage,
         dependencies=dependencies,
         citations=citations,
-        olmes_policy=olmes_policy,
-        suite=suite,
+        inputs=tuple(sorted(inputs, key=lambda value: value.table_id)),
+        supporting_dispositions=_supporting_dispositions(registry),
     )
 
 
-def _external_observation(claim: PaperClaim) -> Observation:
-    citation_keys = tuple(sorted(claim.citation_keys))
-    return Observation(
+def _paper_targets(registry: ClaimRegistry) -> tuple[PaperTarget, ...]:
+    return tuple(
+        PaperTarget(
+            claim_id=claim.id,
+            family=claim.family,
+            kind=claim.kind,
+            source_file=claim.source_file,
+            line_start=claim.line_start,
+            line_end=claim.line_end,
+            source_text=claim.text,
+            value=claim.paper_target,
+        )
+        for claim in sorted(registry.claims, key=lambda value: value.id)
+        if claim.kind in PRIMARY_CLAIM_KINDS
+    )
+
+
+def _non_assessable_result(claim: PaperClaim) -> AttemptResult:
+    if (
+        claim.supporting_outcome is not ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED
+        or claim.non_assessable_reason is None
+    ):
+        raise ValueError(f"claim {claim.id} is not declared non-assessable")
+    return AttemptResult(
+        attempt_id=f"{claim.id.lower()}-not-assessable",
         claim_id=claim.id,
-        verdict=Verdict.EXTERNAL_OR_CITATION_DEPENDENT,
-        observed_value=list(citation_keys),
-        diagnostics=(f"citation keys: {', '.join(citation_keys)}",),
-        blocker=ObservationBlocker(
-            kind=BlockerKind.EXTERNAL_OR_CITATION_DEPENDENT,
-            reason="the claim is attributed to external literature and was traced only to its active citation keys",
-        ),
-    )
-
-
-def _missing_observation(
-    claim: PaperClaim,
-    missing_input_ids: tuple[str, ...],
-    reason: str,
-    *,
-    input_ids: tuple[str, ...] = (),
-) -> Observation:
-    return Observation(
-        claim_id=claim.id,
-        verdict=Verdict.BLOCKED_MISSING_INPUT,
-        input_ids=tuple(sorted(input_ids)),
-        blocker=ObservationBlocker(
-            kind=BlockerKind.MISSING_INPUT,
-            reason=reason,
-            missing_input_ids=tuple(sorted(missing_input_ids)),
-        ),
-    )
-
-
-def _unspecified_observation(
-    claim: PaperClaim,
-    unresolved_method_id: str,
-    reason: str,
-    *,
-    input_ids: tuple[str, ...] = (),
-) -> Observation:
-    return Observation(
-        claim_id=claim.id,
-        verdict=Verdict.BLOCKED_UNSPECIFIED_METHOD,
-        input_ids=tuple(sorted(input_ids)),
-        blocker=ObservationBlocker(
-            kind=BlockerKind.UNSPECIFIED_METHOD,
-            reason=reason,
-            unresolved_method_id=unresolved_method_id,
-        ),
-    )
-
-
-def _not_attempted_observation(claim: PaperClaim) -> Observation:
-    return Observation(
-        claim_id=claim.id,
-        verdict=Verdict.NOT_ATTEMPTED,
-        blocker=ObservationBlocker(
-            kind=BlockerKind.NOT_ATTEMPTED,
-            reason="no claim-specific mapping to the available normalized evaluation facts is implemented",
-        ),
-    )
-
-
-def _with_static_references(
-    observation: Observation,
-    claim: PaperClaim,
-    contract: PaperReproductionContract,
-) -> Observation:
-    return Observation.model_validate(
-        {
-            **observation.model_dump(),
-            "verifier_id": claim.verifier_id,
-            "method_id": claim.method_id,
-            "method_provenance": resolve_method_provenance(
-                contract,
-                claim.method_id,
+        role=AttemptRole.DEFAULT,
+        comparison_rule_id="not-assessable-from-dd-parsed-v1",
+        comparison_rule_version=1,
+        transformation_ids=("confirm-dd-parsed-surface-absence-v1",),
+        row_selections=(
+            RowSelection(
+                logical_table_id="unavailable_math_code_evaluations",
+                columns=("task",),
+                predicates=(),
+                local_parquet_sha256=_EMPTY_SHA256,
+                selected_row_count=0,
+                selected_key_sha256=_EMPTY_SHA256,
             ),
-            "policy_id": claim.policy_id,
-        }
-    )
-
-
-def _source_observation(root: Path, claim: PaperClaim) -> Observation:
-    digest = raw_line_slice_sha256(
-        root,
-        claim.source_file,
-        claim.line_start,
-        claim.line_end,
-    )
-    return Observation(
-        claim_id=claim.id,
-        actual_evidence_boundary=claim.required_evidence_boundary,
-        verdict=Verdict.SOURCE_ONLY_MATCH,
-        diagnostics=(
-            f"source locator: {claim.source_file}:{claim.line_start}-{claim.line_end}",
-            f"source line-slice SHA256: {digest}",
-            "source presence is not an independent reproduction",
         ),
+        target_value=claim.paper_target,
+        computed_value=None,
+        missing_groups=("math/code evaluation results",),
+        outcome=ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED,
+        diagnostics=(claim.non_assessable_reason,),
+        limitations=("The required observation is absent from dd_parsed.",),
     )
 
 
-def _suite_fact_observation(claim: PaperClaim, fact: SuiteFact) -> Observation:
-    if fact.status is CheckStatus.UNSUPPORTED:
-        return _missing_observation(
-            claim,
-            (_TRAINING_RUN_MANIFEST_ID,),
-            fact.reason or "the suite verifier lacks completed training-run evidence",
-        )
-    verdict = (
-        Verdict.SOURCE_ONLY_MATCH
-        if fact.status is CheckStatus.MATCH
-        else Verdict.CONTRADICTED
-    )
-    return Observation(
-        claim_id=claim.id,
-        actual_evidence_boundary=fact.available_evidence_boundary,
-        verdict=verdict,
-        observed_value=fact.observed,
-        diagnostics=(
-            f"suite fact {fact.id}: expected {fact.expected!r}, observed {fact.observed!r}",
-            "catalog-derived evidence is below the required training-rerun boundary",
-        ),
-    )
+def _load_analysis_adapters() -> Mapping[AnalysisId, AnalysisAdapter]:
+    adapters: dict[AnalysisId, AnalysisAdapter] = {}
+    for analysis_id, (module_name, function_name) in _ADAPTER_IMPORTS.items():
+        module = importlib.import_module(module_name)
+        adapter = getattr(module, function_name)
+        if not callable(adapter):
+            raise TypeError(f"analysis adapter is not callable: {function_name}")
+        adapters[analysis_id] = adapter
+    return adapters
 
 
-def _suite_row_observation(claim: PaperClaim, row: SuiteRowVerification) -> Observation:
-    mismatches = tuple(
-        f"{match.field.value}: expected {match.expected_display}, observed {match.observed_display}"
-        for match in row.field_matches
-        if not match.matches
-    )
-    observed = {
-        match.field.value: match.observed_display for match in row.field_matches
-    }
-    return Observation(
-        claim_id=claim.id,
-        actual_evidence_boundary=row.available_evidence_boundary,
-        verdict=(Verdict.SOURCE_ONLY_MATCH if row.matches else Verdict.CONTRADICTED),
-        observed_value=observed,
-        diagnostics=(
-            *(mismatches or ("all displayed suite fields match",)),
-            "catalog-derived evidence is below the required training-rerun boundary",
-        ),
-    )
+def _load_metadata_comparator() -> MetadataComparator:
+    module = importlib.import_module("datadec.paper.verifiers.metadata")
+    comparator = getattr(module, "compare_descriptive_metadata")
+    if not callable(comparator):
+        raise TypeError("metadata comparator is not callable")
+    return comparator
 
 
-def _abstract_single_scale_observation(
-    claim: PaperClaim,
-    policy: NormalizedOlmesPolicy,
-    verification: NormalizedOlmesVerification | None,
-    olmes_input_id: str | None,
-) -> Observation:
-    model_size = policy.noise_size
-    step = policy.final_step_by_size[model_size]
-    metric = policy.target_metric_column
-    summary_id = f"olmes-summary:params={model_size}:step={step}:metric={metric}"
-    input_ids = (olmes_input_id,) if olmes_input_id is not None else ()
-    summary = None
-    if verification is not None:
-        summary = next(
-            (
-                value
-                for value in verification.checkpoint_summaries
-                if value.model_size == model_size
-                and value.step == step
-                and value.metric == metric
-            ),
-            None,
-        )
-    if summary is None:
-        return _missing_observation(
-            claim,
-            (summary_id,),
-            "the exact paper-final 150M primary-metric decision summary is absent",
-            input_ids=input_ids,
-        )
-    return _unspecified_observation(
-        claim,
-        claim.unresolved_method_id or "approximate_numeric_tolerance",
-        "the exact summary is present, but the reproduction contract specifies no numeric tolerance for approximately 0.80",
-        input_ids=input_ids,
-    )
-
-
-def _missing_olmes_fact_id(fact: FactRow) -> str:
-    dimensions = ":".join(f"{name}={value}" for name, value in fact.dimensions)
-    return f"olmes-fact:{fact.fact}:{dimensions}"
-
-
-def _serialized_olmes_fact(fact: FactRow) -> dict[str, object]:
-    return {
-        "fact": fact.fact,
-        "dimensions": dict(fact.dimensions),
-        "value": fact.value,
-        "denominator": fact.denominator,
-        "exclusions": fact.exclusions,
-        "target_ties": fact.target_ties,
-        "predicted_ties": fact.predicted_ties,
-        "seed_count": fact.seed_count,
-    }
-
-
-def _prediction_seed_count_observation(
-    claim: PaperClaim,
-    verification: NormalizedOlmesVerification | None,
-    olmes_input_id: str | None,
-) -> Observation:
-    static_references = (claim.verifier_id, claim.method_id, claim.policy_id)
-    if static_references != _PREDICTION_SEED_STATIC_REFERENCES:
-        raise ValueError(
-            f"OLMES fact mapping for {claim.id} no longer matches its static references"
-        )
-    if claim.expectation != _PREDICTION_SEED_COUNT_EXPECTATION:
-        raise ValueError(
-            f"OLMES fact mapping for {claim.id} no longer matches its expectation"
-        )
-    if verification is None or olmes_input_id is None:
-        return _missing_observation(
-            claim,
-            (_NORMALIZED_OLMES_INPUT_ID,),
-            "the mapped OLMES fact requires an identified normalized aggregate input",
-        )
-
-    input_ids = (olmes_input_id,)
-    missing_facts = tuple(
-        fact
-        for fact in verification.facts
-        if fact.status is FactStatus.MISSING
-        and dict(fact.dimensions).get("stage") in _PREDICTION_SEED_MISSING_STAGES
-    )
-    if missing_facts:
-        return _missing_observation(
-            claim,
-            tuple(sorted({_missing_olmes_fact_id(fact) for fact in missing_facts})),
-            "incomplete normalized OLMES facts cannot establish the seed count for every checkpoint summary",
-            input_ids=input_ids,
-        )
-
-    facts = tuple(
-        fact
-        for fact in verification.facts
-        if fact.status is FactStatus.COMPLETE and fact.fact == _PREDICTION_SEED_FACT
-    )
-    if not facts:
-        return _missing_observation(
-            claim,
-            (f"olmes-fact:{_PREDICTION_SEED_FACT}",),
-            "no complete checkpoint-summary facts are available",
-            input_ids=input_ids,
-        )
-
-    boundaries = {fact.input_evidence_boundary for fact in facts}
-    if boundaries != {EvidenceBoundary.AGGREGATE_EVALUATION}:
-        raise ValueError(
-            "mapped OLMES checkpoint summaries have an unexpected evidence boundary"
-        )
-    seed_counts = {fact.seed_count for fact in facts}
-    reproduced = seed_counts == {_PREDICTION_SEED_COUNT}
-    return Observation(
-        claim_id=claim.id,
-        actual_evidence_boundary=EvidenceBoundary.AGGREGATE_EVALUATION,
-        verdict=Verdict.REPRODUCED if reproduced else Verdict.CONTRADICTED,
-        observed_value=[_serialized_olmes_fact(fact) for fact in facts],
-        diagnostics=(
-            f"mapped fact: {_PREDICTION_SEED_FACT}",
-            "predicate: every complete checkpoint summary has seed_count = 3",
-        ),
-        denominator=len(facts),
-        counts=tuple(
-            sorted(
-                (
-                    ObservationCount(
-                        name="exclusions", value=sum(fact.exclusions for fact in facts)
-                    ),
-                    ObservationCount(
-                        name="predicted_ties",
-                        value=sum(fact.predicted_ties for fact in facts),
-                    ),
-                    ObservationCount(name="seed_count", value=max(seed_counts)),
-                    ObservationCount(
-                        name="target_ties",
-                        value=sum(fact.target_ties for fact in facts),
-                    ),
-                ),
-                key=lambda count: count.name,
-            )
-        ),
-        input_ids=input_ids,
-    )
-
-
-def build_observations(
-    validation: RepositoryValidation,
+def _validate_adapter_results(
     *,
-    olmes_verification: NormalizedOlmesVerification | None = None,
-    olmes_input_id: str | None = None,
-) -> tuple[Observation, ...]:
-    """Build one truthful terminal observation for every active claim."""
-    suite_facts = {
-        fact.claim_id: fact
-        for fact in validation.suite.facts
-        if fact.claim_id is not None
+    analysis_id: AnalysisId,
+    registry: ClaimRegistry,
+    contract: PaperValidationContract,
+    results: tuple[AttemptResult, ...],
+    plot_series: tuple[PlotSeries, ...],
+) -> None:
+    claims = {claim.id: claim for claim in registry.claims}
+    specs = tuple(spec for spec in contract.attempts if spec.analysis_id is analysis_id)
+    specs_by_id = {spec.id: spec for spec in specs}
+    sensitivity_parents = {
+        sensitivity_id: spec
+        for spec in specs
+        for sensitivity_id in spec.sensitivity_ids
     }
-    suite_rows = {row.claim_id: row for row in validation.suite.rows}
-    observations: list[Observation] = []
-    for claim in validation.registry.claims:
-        if claim.owner is ClaimOwnership.EXTERNAL_CITATION:
-            observation = _external_observation(claim)
-        elif claim.id == _ABSTRACT_SINGLE_SCALE_CLAIM_ID:
-            observation = _abstract_single_scale_observation(
-                claim,
-                validation.olmes_policy,
-                olmes_verification,
-                olmes_input_id,
-            )
-        elif claim.id == _PREDICTION_SEED_COUNT_CLAIM_ID:
-            observation = _prediction_seed_count_observation(
-                claim,
-                olmes_verification,
-                olmes_input_id,
-            )
-        elif claim.id in suite_facts:
-            observation = _suite_fact_observation(claim, suite_facts[claim.id])
-        elif claim.id in suite_rows:
-            observation = _suite_row_observation(claim, suite_rows[claim.id])
-        elif claim.unresolved_method_id is not None:
-            observation = _unspecified_observation(
-                claim,
-                claim.unresolved_method_id,
-                "the claim registry records an unresolved claim-specific method",
-            )
-        elif claim.owner is ClaimOwnership.ARTIFACT_RELEASE:
-            observation = _missing_observation(
-                claim,
-                (_ARTIFACT_RELEASE_MANIFEST_ID,),
-                "no pinned artifact-release manifest is available in this run",
-            )
-        elif claim.required_evidence_boundary in {
-            EvidenceBoundary.PAPER_OR_FINAL_ARTIFACT,
-            EvidenceBoundary.AUTHOR_DOWNSTREAM_TABLE,
-        }:
-            observation = _source_observation(validation.repository_root, claim)
-        elif claim.required_evidence_boundary is EvidenceBoundary.EVALUATION_RERUN:
-            observation = _missing_observation(
-                claim,
-                (_EVALUATION_RERUN_RESULTS_ID,),
-                "no evaluation-rerun results are available in this run",
-            )
-        elif claim.required_evidence_boundary is EvidenceBoundary.TRAINING_RERUN:
-            observation = _missing_observation(
-                claim,
-                (_TRAINING_RUN_MANIFEST_ID,),
-                "no completed training-run manifest is available in this run",
-            )
-        elif claim.required_evidence_boundary is EvidenceBoundary.CORPUS_CONSTRUCTION:
-            observation = _missing_observation(
-                claim,
-                (_CORPUS_CONSTRUCTION_MANIFEST_ID,),
-                "no corpus-construction manifest is available in this run",
-            )
-        elif claim.required_evidence_boundary in {
-            EvidenceBoundary.AGGREGATE_EVALUATION,
-            EvidenceBoundary.INSTANCE_AND_CHOICE,
-        }:
-            observation = _not_attempted_observation(claim)
-        else:  # pragma: no cover - the closed enum is exhausted above
-            raise AssertionError(
-                f"unclassified evidence boundary for claim {claim.id}: "
-                f"{claim.required_evidence_boundary}"
-            )
-        observations.append(
-            _with_static_references(
-                observation,
-                claim,
-                validation.contract,
-            )
+    supplied_ids = tuple(result.attempt_id for result in results)
+    if len(supplied_ids) != len(set(supplied_ids)):
+        raise ValueError(f"{analysis_id.value} adapter returned duplicate attempts")
+    supplied_defaults = {
+        result.attempt_id for result in results if result.role is AttemptRole.DEFAULT
+    }
+    expected_defaults = set(specs_by_id)
+    if supplied_defaults != expected_defaults:
+        raise ValueError(
+            f"{analysis_id.value} adapter did not complete its configured attempts: "
+            f"missing={sorted(expected_defaults - supplied_defaults)}, "
+            f"unexpected={sorted(supplied_defaults - expected_defaults)}"
+        )
+    allowed_ids = expected_defaults | set(sensitivity_parents)
+    unexpected_results = sorted(set(supplied_ids) - allowed_ids)
+    if unexpected_results:
+        raise ValueError(
+            f"{analysis_id.value} adapter returned undeclared results: "
+            f"{unexpected_results}"
         )
 
-    ordered = tuple(sorted(observations, key=lambda value: value.claim_id))
-    if len(ordered) != len(validation.registry.claims):
-        raise AssertionError("observation construction did not preserve claim count")
-    return ordered
+    rules = {rule.id: rule for rule in contract.comparison_rules}
+    for result in results:
+        spec = specs_by_id.get(result.attempt_id)
+        if spec is None:
+            spec = sensitivity_parents[result.attempt_id]
+            if result.role is not AttemptRole.SENSITIVITY:
+                raise ValueError(
+                    "declared sensitivities require sensitivity-role results"
+                )
+            if result.parent_attempt_id != spec.id:
+                raise ValueError("sensitivity result has the wrong parent attempt")
+        elif result.role is not AttemptRole.DEFAULT:
+            raise ValueError("configured default attempts require default-role results")
+        rule = rules[spec.comparison_rule_id]
+        if (
+            result.claim_id != spec.claim_id
+            or result.comparison_rule_id != rule.id
+            or result.comparison_rule_version != rule.version
+            or result.transformation_ids != spec.transformation_ids
+            or result.target_value != claims[result.claim_id].paper_target
+        ):
+            raise ValueError(
+                f"adapter result {result.attempt_id} differs from its static contract"
+            )
+        declared_inputs = {item.table_id for item in spec.inputs}
+        if any(
+            selection.logical_table_id not in declared_inputs
+            for selection in result.row_selections
+        ):
+            raise ValueError(
+                f"adapter result {result.attempt_id} uses an undeclared input"
+            )
+
+    supplied_series_ids = tuple(series.id for series in plot_series)
+    if len(supplied_series_ids) != len(set(supplied_series_ids)):
+        raise ValueError(f"{analysis_id.value} adapter returned duplicate plot series")
+    expected_series = {
+        series_id: spec for spec in specs for series_id in spec.plot_series_ids
+    }
+    if set(supplied_series_ids) != set(expected_series):
+        raise ValueError(
+            f"{analysis_id.value} adapter plot series differ from config: "
+            f"missing={sorted(set(expected_series) - set(supplied_series_ids))}, "
+            f"unexpected={sorted(set(supplied_series_ids) - set(expected_series))}"
+        )
+    for series in plot_series:
+        if series.attempt_id != expected_series[series.id].id:
+            raise ValueError(
+                f"plot series {series.id} is attached to the wrong attempt"
+            )
 
 
-def _sha256_file(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as file:
-        for block in iter(lambda: file.read(1024 * 1024), b""):
-            digest.update(block)
-    return digest.hexdigest()
-
-
-def _file_identity(root: Path, relative_path: str) -> ContentIdentity:
-    path = _repository_file(root, relative_path)
-    return ContentIdentity(id=relative_path, sha256=_sha256_file(path))
-
-
-def _git_output(root: Path, *arguments: str) -> str:
-    completed = subprocess.run(
-        ("git", *arguments),
-        cwd=root,
-        check=True,
-        capture_output=True,
-        text=True,
+def _runtime_trace(repository_root: Path) -> RuntimeTrace:
+    lock_path = repository_root / _DEPENDENCY_LOCK_PATH
+    return RuntimeTrace(
+        python_version=platform.python_version(),
+        implementation=platform.python_implementation(),
+        platform=platform.platform(),
+        dependency_lock_sha256=(
+            _sha256_file(lock_path) if lock_path.is_file() else None
+        ),
     )
-    return completed.stdout.strip()
 
 
-def _clean_code_identity(root: Path) -> CodeIdentity:
-    top_level = Path(_git_output(root, "rev-parse", "--show-toplevel")).resolve()
-    if top_level != root:
-        raise ValueError(f"repository root is not the Git top level: {root}")
-    dirty = _git_output(root, "status", "--porcelain=v1", "--untracked-files=all")
-    if dirty:
-        raise ValueError("paper verification runs require a clean Git tree")
-    return CodeIdentity(
-        commit_sha=_git_output(root, "rev-parse", "HEAD"),
-        tree_state=CodeTreeState.CLEAN,
-    )
-
-
-def run_repository(
+def run_validation(
     root: str | Path,
     run_id: str,
-    olmes_path: str | Path | None = None,
-) -> RunBundle:
-    """Run available repository verifiers and create one immutable bundle."""
-    repository_root = Path(root).resolve(strict=True)
-    code_identity = _clean_code_identity(repository_root)
+    data_dir: str | Path,
+    *,
+    adapter_registry: Mapping[AnalysisId, AnalysisAdapter] | None = None,
+    metadata_comparator: MetadataComparator | None = None,
+) -> AnalysisBundle:
+    """Run every configured analysis and persist one complete format-2 bundle."""
     started_at = datetime.now(timezone.utc)
-    validation = validate_repository(repository_root)
-
-    input_identities = [
-        _file_identity(repository_root, _paper_entrypoint(validation.contract)),
-        _file_identity(repository_root, _DEPENDENCY_LOCK_PATH),
-    ]
-    olmes_verification: NormalizedOlmesVerification | None = None
-    olmes_input_id: str | None = None
-    if olmes_path is not None:
-        normalized_path = Path(olmes_path)
-        if not normalized_path.is_absolute():
-            normalized_path = repository_root / normalized_path
-        normalized_path = normalized_path.resolve(strict=True)
-        before_digest = _sha256_file(normalized_path)
-        olmes_verification = verify_normalized_olmes_parquet(
-            normalized_path,
-            validation.olmes_policy,
-        )
-        after_digest = _sha256_file(normalized_path)
-        if after_digest != before_digest:
-            raise ValueError(
-                "normalized OLMES input changed while it was being verified"
-            )
-        olmes_input_id = _NORMALIZED_OLMES_INPUT_ID
-        input_identities.append(
-            ContentIdentity(id=olmes_input_id, sha256=before_digest)
-        )
-
-    observations = build_observations(
-        validation,
-        olmes_verification=olmes_verification,
-        olmes_input_id=olmes_input_id,
+    surface = validate_repository(root, data_dir)
+    adapters = (
+        _load_analysis_adapters() if adapter_registry is None else adapter_registry
     )
-    if _clean_code_identity(repository_root) != code_identity:
-        raise ValueError("Git commit or clean-tree identity changed during the run")
+    if set(adapters) != set(AnalysisId):
+        raise ValueError(
+            "analysis adapter registry must contain exactly the closed analysis IDs"
+        )
+    compare_metadata = (
+        _load_metadata_comparator()
+        if metadata_comparator is None
+        else metadata_comparator
+    )
+    metadata_discrepancies = tuple(
+        compare_metadata(surface.repository_root, surface.registry)
+    )
+
+    identities = surface.input_identities
+    attempts: list[AttemptResult] = []
+    plot_series: list[PlotSeries] = []
+    for analysis_id in AnalysisId:
+        analysis_attempts, analysis_series = adapters[analysis_id](
+            repository_root=surface.repository_root,
+            data_root=surface.data_root,
+            registry=surface.registry,
+            contract=surface.contract,
+            input_identities=identities,
+        )
+        analysis_attempts = tuple(analysis_attempts)
+        analysis_series = tuple(analysis_series)
+        _validate_adapter_results(
+            analysis_id=analysis_id,
+            registry=surface.registry,
+            contract=surface.contract,
+            results=analysis_attempts,
+            plot_series=analysis_series,
+        )
+        attempts.extend(analysis_attempts)
+        plot_series.extend(analysis_series)
+
+    attempts.extend(
+        _non_assessable_result(claim)
+        for claim in surface.registry.claims
+        if claim.supporting_outcome is ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED
+    )
+    current_identities = {
+        item.table_id: _input_identity(item.table_id, item.paths, surface.data_root)
+        for item in surface.inputs
+    }
+    if current_identities != dict(identities):
+        raise ValueError("validation inputs changed while analyses were running")
+
     completed_at = datetime.now(timezone.utc)
-    lock_identity = _file_identity(repository_root, _DEPENDENCY_LOCK_PATH)
-    return create_run_bundle(
-        repository_root / validation.contract.outputs.runs_root,
+    return create_analysis_bundle(
+        surface.repository_root / surface.contract.outputs.runs_root,
         run_id=run_id,
         started_at=started_at,
         completed_at=completed_at,
-        paper_identity=ContentIdentity(
-            id=f"arxiv:{validation.contract.paper.arxiv_id}",
-            sha256=validation.contract.paper.archive_sha256,
-        ),
-        config_identity=_file_identity(repository_root, _REPRODUCTION_CONFIG_PATH),
-        claims_identity=_file_identity(
-            repository_root,
-            validation.contract.contracts.claims_contract,
-        ),
-        code_identity=code_identity,
-        runtime_identity=RuntimeIdentity(
-            python_version=platform.python_version(),
-            implementation=platform.python_implementation(),
-            platform=platform.platform(),
-            dependency_lock_sha256=lock_identity.sha256,
-        ),
-        active_claim_ids=(claim.id for claim in validation.registry.claims),
-        observations=observations,
-        input_identities=input_identities,
-        observations_filename=validation.contract.outputs.observations_filename,
-        manifest_filename=validation.contract.outputs.run_manifest_filename,
+        runtime_trace=_runtime_trace(surface.repository_root),
+        input_identities=identities.values(),
+        targets=_paper_targets(surface.registry),
+        metadata_discrepancies=metadata_discrepancies,
+        attempts=attempts,
+        plot_series=plot_series,
     )
 
 
-def render_repository(root: str | Path, run_id: str) -> Path:
-    """Validate, render, and replace one selected run's configured output set."""
-    validation = validate_repository(root)
-    bundle = load_run_bundle(
-        validation.repository_root / validation.contract.outputs.runs_root,
+def render_validation(root: str | Path, run_id: str) -> RenderedOutputs:
+    """Render one completed bundle without reopening scientific inputs."""
+    repository_root = Path(root).resolve(strict=True)
+    contract = load_validation_contract(
+        _repository_file(repository_root, _VALIDATION_CONFIG_PATH)
+    )
+    bundle = load_analysis_bundle(
+        repository_root / contract.outputs.runs_root,
         run_id,
-        active_claim_ids=(claim.id for claim in validation.registry.claims),
-        manifest_filename=validation.contract.outputs.run_manifest_filename,
     )
-    validate_run_qualification(bundle.manifest)
-
-    expected_paper = ContentIdentity(
-        id=f"arxiv:{validation.contract.paper.arxiv_id}",
-        sha256=validation.contract.paper.archive_sha256,
+    report_module = importlib.import_module("datadec.paper.report")
+    transaction_module = importlib.import_module("datadec.paper.output_transaction")
+    renderer = getattr(report_module, "render_bundle_outputs")
+    rendered = renderer(bundle)
+    report_path = repository_root / contract.outputs.report
+    figures_root = repository_root / contract.outputs.figures_root
+    figure_paths = tuple(
+        figures_root / filename for filename, _content in rendered.figures
     )
-    expected_config = _file_identity(
-        validation.repository_root, _REPRODUCTION_CONFIG_PATH
-    )
-    expected_claims = _file_identity(
-        validation.repository_root,
-        validation.contract.contracts.claims_contract,
-    )
-    for description, expected, actual in (
-        ("paper", expected_paper, bundle.manifest.paper_identity),
-        ("config", expected_config, bundle.manifest.config_identity),
-        ("claims", expected_claims, bundle.manifest.claims_identity),
-    ):
-        if actual != expected:
-            raise ValueError(
-                f"run {description} identity does not match the current repository"
-            )
-
-    output_path = validation.repository_root / validation.contract.outputs.report
-    figures_root = (
-        validation.repository_root / validation.contract.outputs.reproduced_figures_root
-    )
-    observations = tuple(bundle.observations)
-    report = render_report(validation.registry, bundle.manifest, observations)
-    verdict_figure = render_verdict_summary_svg(bundle.manifest, observations)
-    contradictions_figure = render_suite_contradictions_svg(
-        validation.registry,
-        bundle.manifest,
-        observations,
-    )
-    replace_output_set(
+    replace_outputs = getattr(transaction_module, "replace_output_set")
+    replace_outputs(
         (
-            (output_path, report),
-            (figures_root / "verdict-summary.svg", verdict_figure),
-            (figures_root / "suite-contradictions.svg", contradictions_figure),
+            (report_path, rendered.report),
+            *(
+                (figures_root / filename, content)
+                for filename, content in rendered.figures
+            ),
         )
     )
-    return output_path
+    return RenderedOutputs(report=report_path, figures=figure_paths)
 
 
 __all__ = [
-    "RepositoryValidation",
-    "build_observations",
-    "render_repository",
-    "run_repository",
+    "AnalysisAdapter",
+    "MetadataComparator",
+    "RenderedOutputs",
+    "SupportingDisposition",
+    "ValidationInput",
+    "ValidationSurface",
+    "render_validation",
+    "run_validation",
     "validate_repository",
 ]

@@ -9,34 +9,54 @@ import shutil
 import stat
 import sys
 import tempfile
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from datetime import datetime
 from pathlib import Path
+from typing import TypeVar
 
 import orjson
+from pydantic import TypeAdapter
 
 from datadec.paper.models import (
-    CodeIdentity,
-    CodeTreeState,
+    AnalysisBundle,
+    AnalysisManifest,
+    AttemptResult,
+    AttemptRole,
+    CodeTrace,
     ContentIdentity,
-    Observation,
-    ObservationFileIdentity,
-    RunBundle,
-    RunManifest,
-    RuntimeIdentity,
+    MetadataDiscrepancy,
+    PaperTarget,
+    PlotSeries,
+    RuntimeTrace,
+    ValidationOutcome,
 )
 
-_OBSERVATIONS_FILENAME = "observations.json"
 _MANIFEST_FILENAME = "manifest.json"
+_TARGETS_FILENAME = "targets.json"
+_ATTEMPTS_FILENAME = "attempts.json"
+_PLOT_SERIES_FILENAME = "plot-series.json"
+_BUNDLE_FILENAMES = frozenset(
+    {
+        _MANIFEST_FILENAME,
+        _TARGETS_FILENAME,
+        _ATTEMPTS_FILENAME,
+        _PLOT_SERIES_FILENAME,
+    }
+)
 _RUN_ID_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
 _CANONICAL_JSON_OPTIONS = orjson.OPT_APPEND_NEWLINE | orjson.OPT_SORT_KEYS
+_TARGETS_ADAPTER = TypeAdapter(tuple[PaperTarget, ...])
+_DISCREPANCIES_ADAPTER = TypeAdapter(tuple[MetadataDiscrepancy, ...])
+_ATTEMPTS_ADAPTER = TypeAdapter(tuple[AttemptResult, ...])
+_PLOT_SERIES_ADAPTER = TypeAdapter(tuple[PlotSeries, ...])
+_ValueT = TypeVar("_ValueT")
 
 
 def _canonical_json_bytes(value: object) -> bytes:
     try:
         return orjson.dumps(value, option=_CANONICAL_JSON_OPTIONS)
     except orjson.JSONEncodeError as error:
-        raise ValueError("run bundles require finite JSON values") from error
+        raise ValueError("analysis bundles require finite JSON values") from error
 
 
 def _sha256(value: bytes) -> str:
@@ -46,11 +66,6 @@ def _sha256(value: bytes) -> str:
 def _validate_run_id(run_id: str) -> None:
     if _RUN_ID_PATTERN.fullmatch(run_id) is None:
         raise ValueError("run ID must be a safe single path component")
-
-
-def _validate_filename(filename: str, description: str) -> None:
-    if filename in {"", ".", ".."} or Path(filename).name != filename:
-        raise ValueError(f"{description} filename must be a safe bare filename")
 
 
 def _write_new_file(path: Path, contents: bytes) -> None:
@@ -69,8 +84,7 @@ def _fsync_directory(path: Path) -> None:
 
 
 def _rename_no_replace(source: Path, destination: Path) -> None:
-    # POSIX rename replaces an existing empty directory. These platform calls add
-    # the exclusion flag while retaining a single atomic namespace operation.
+    """Atomically install a staged directory without replacing a winner."""
     library = ctypes.CDLL(None, use_errno=True)
     source_bytes = os.fsencode(source)
     destination_bytes = os.fsencode(destination)
@@ -123,122 +137,158 @@ def _remove_staging_directory(staging: Path, runs_root: Path, run_id: str) -> No
     shutil.rmtree(staging)
 
 
-def _ordered_observations(
-    observations: Iterable[Observation], active_claim_ids: Iterable[str]
-) -> tuple[Observation, ...]:
-    active_ids = tuple(active_claim_ids)
-    if len(active_ids) != len(set(active_ids)):
-        raise ValueError("active claim IDs must be unique")
-    active_id_set = set(active_ids)
-
-    supplied = tuple(observations)
-    supplied_ids = tuple(observation.claim_id for observation in supplied)
-    duplicate_ids = sorted(
-        claim_id for claim_id in set(supplied_ids) if supplied_ids.count(claim_id) > 1
-    )
-    if duplicate_ids:
-        raise ValueError(
-            "duplicate observations for claim IDs: " + ", ".join(duplicate_ids)
-        )
-
-    supplied_id_set = set(supplied_ids)
-    unknown_ids = sorted(supplied_id_set - active_id_set)
-    if unknown_ids:
-        raise ValueError(
-            "observations reference unknown claims: " + ", ".join(unknown_ids)
-        )
-    missing_ids = sorted(active_id_set - supplied_id_set)
-    if missing_ids:
-        raise ValueError(
-            "observations are missing active claims: " + ", ".join(missing_ids)
-        )
-    return tuple(sorted(supplied, key=lambda observation: observation.claim_id))
+def _ordered_unique(
+    values: Iterable[_ValueT],
+    *,
+    key: Callable[[_ValueT], str],
+    description: str,
+) -> tuple[_ValueT, ...]:
+    supplied = tuple(values)
+    identities = tuple(key(value) for value in supplied)
+    if len(identities) != len(set(identities)):
+        raise ValueError(f"{description} must be unique")
+    return tuple(sorted(supplied, key=key))
 
 
-def _validate_cross_references(
-    manifest: RunManifest, observations: tuple[Observation, ...]
-) -> None:
-    input_ids = {identity.id for identity in manifest.input_identities}
-    artifact_ids = {identity.id for identity in manifest.artifact_identities}
-    for observation in observations:
-        unknown_input_ids = set(observation.input_ids) - input_ids
-        if unknown_input_ids:
-            unknown = ", ".join(sorted(unknown_input_ids))
+def _targets_payload(
+    targets: tuple[PaperTarget, ...],
+    metadata_discrepancies: tuple[MetadataDiscrepancy, ...],
+) -> dict[str, object]:
+    return {
+        "metadata_discrepancies": [
+            value.model_dump(mode="json") for value in metadata_discrepancies
+        ],
+        "targets": [value.model_dump(mode="json") for value in targets],
+    }
+
+
+def _attempts_payload(attempts: tuple[AttemptResult, ...]) -> dict[str, object]:
+    return {"attempts": [value.model_dump(mode="json") for value in attempts]}
+
+
+def _plot_series_payload(plot_series: tuple[PlotSeries, ...]) -> dict[str, object]:
+    return {
+        "plot_series": [value.model_dump(mode="json") for value in plot_series],
+    }
+
+
+def _validate_bundle(bundle: AnalysisBundle) -> None:
+    targets = {target.claim_id: target for target in bundle.targets}
+    inputs = {
+        identity.id: identity.sha256 for identity in bundle.manifest.input_identities
+    }
+    defaults: dict[str, AttemptResult] = {}
+    attempts = {attempt.attempt_id: attempt for attempt in bundle.attempts}
+    for attempt in bundle.attempts:
+        target = targets[attempt.claim_id]
+        if attempt.target_value != target.value:
             raise ValueError(
-                f"observation {observation.claim_id} references unknown inputs: {unknown}"
+                f"attempt {attempt.attempt_id} target differs from its paper target"
             )
-        unknown_artifact_ids = set(observation.artifact_ids) - artifact_ids
-        if unknown_artifact_ids:
-            unknown = ", ".join(sorted(unknown_artifact_ids))
-            raise ValueError(
-                f"observation {observation.claim_id} references unknown artifacts: {unknown}"
-            )
-        if observation.blocker is not None:
-            present_missing_ids = set(observation.blocker.missing_input_ids) & input_ids
-            if present_missing_ids:
-                present = ", ".join(sorted(present_missing_ids))
+        if attempt.role is AttemptRole.DEFAULT:
+            if attempt.claim_id in defaults:
                 raise ValueError(
-                    f"observation {observation.claim_id} marks present inputs as missing: "
-                    f"{present}"
+                    f"multiple default results exist for claim {attempt.claim_id}"
+                )
+            defaults[attempt.claim_id] = attempt
+        elif attempt.parent_attempt_id not in attempts:
+            raise ValueError(
+                f"attempt {attempt.attempt_id} references an unknown parent attempt"
+            )
+
+        if attempt.outcome is ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED:
+            if not attempt.missing_groups or any(
+                row.selected_row_count != 0 for row in attempt.row_selections
+            ):
+                raise ValueError(
+                    "not-assessable results require missing groups and zero selected rows"
+                )
+            continue
+        for selection in attempt.row_selections:
+            expected_sha256 = inputs.get(selection.logical_table_id)
+            if expected_sha256 is None:
+                raise ValueError(
+                    f"attempt {attempt.attempt_id} references unknown input "
+                    f"{selection.logical_table_id}"
+                )
+            if selection.local_parquet_sha256 != expected_sha256:
+                raise ValueError(
+                    f"attempt {attempt.attempt_id} input SHA256 differs from manifest"
                 )
 
+    missing_defaults = sorted(set(targets) - defaults.keys())
+    unexpected_defaults = sorted(defaults.keys() - set(targets))
+    if missing_defaults or unexpected_defaults:
+        raise ValueError(
+            "bundle requires exactly one default result per paper target: "
+            f"missing={missing_defaults}, unexpected={unexpected_defaults}"
+        )
 
-def create_run_bundle(
+
+def create_analysis_bundle(
     runs_root: str | Path,
     *,
     run_id: str,
     started_at: datetime,
     completed_at: datetime,
-    paper_identity: ContentIdentity,
-    config_identity: ContentIdentity,
-    claims_identity: ContentIdentity,
-    code_identity: CodeIdentity,
-    runtime_identity: RuntimeIdentity,
-    active_claim_ids: Iterable[str],
-    observations: Iterable[Observation],
-    input_identities: Iterable[ContentIdentity] = (),
-    artifact_identities: Iterable[ContentIdentity] = (),
-    observations_filename: str = _OBSERVATIONS_FILENAME,
-    manifest_filename: str = _MANIFEST_FILENAME,
-) -> RunBundle:
-    """Create one immutable, complete run bundle and return its validated value."""
+    input_identities: Iterable[ContentIdentity],
+    targets: Iterable[PaperTarget],
+    attempts: Iterable[AttemptResult],
+    plot_series: Iterable[PlotSeries],
+    metadata_discrepancies: Iterable[MetadataDiscrepancy] = (),
+    code_trace: CodeTrace | None = None,
+    runtime_trace: RuntimeTrace | None = None,
+) -> AnalysisBundle:
+    """Persist one immutable format-2 analysis bundle."""
     _validate_run_id(run_id)
-    _validate_filename(observations_filename, "observations")
-    _validate_filename(manifest_filename, "manifest")
-    if observations_filename == manifest_filename:
-        raise ValueError("observations and manifest filenames must differ")
+    ordered_inputs = _ordered_unique(
+        input_identities, key=lambda value: value.id, description="input identities"
+    )
+    ordered_targets = _ordered_unique(
+        targets, key=lambda value: value.claim_id, description="paper targets"
+    )
+    ordered_discrepancies = _ordered_unique(
+        metadata_discrepancies,
+        key=lambda value: value.claim_id,
+        description="metadata discrepancies",
+    )
+    ordered_attempts = _ordered_unique(
+        attempts, key=lambda value: value.attempt_id, description="attempt results"
+    )
+    ordered_plot_series = _ordered_unique(
+        plot_series, key=lambda value: value.id, description="plot series"
+    )
 
-    ordered_observations = _ordered_observations(observations, active_claim_ids)
-    ordered_inputs = tuple(sorted(input_identities, key=lambda identity: identity.id))
-    ordered_artifacts = tuple(
-        sorted(artifact_identities, key=lambda identity: identity.id)
+    targets_bytes = _canonical_json_bytes(
+        _targets_payload(ordered_targets, ordered_discrepancies)
     )
-    observations_payload = {
-        "observations": [
-            observation.model_dump(mode="json") for observation in ordered_observations
-        ]
-    }
-    observations_bytes = _canonical_json_bytes(observations_payload)
-    observations_identity = ObservationFileIdentity(
-        filename=observations_filename,
-        sha256=_sha256(observations_bytes),
-        byte_count=len(observations_bytes),
-        observation_count=len(ordered_observations),
-    )
-    manifest = RunManifest(
+    attempts_bytes = _canonical_json_bytes(_attempts_payload(ordered_attempts))
+    plot_series_bytes = _canonical_json_bytes(_plot_series_payload(ordered_plot_series))
+    manifest = AnalysisManifest(
         run_id=run_id,
         started_at=started_at,
         completed_at=completed_at,
-        paper_identity=paper_identity,
-        config_identity=config_identity,
-        claims_identity=claims_identity,
-        code_identity=code_identity,
-        runtime_identity=runtime_identity,
+        code_trace=code_trace,
+        runtime_trace=runtime_trace,
         input_identities=ordered_inputs,
-        artifact_identities=ordered_artifacts,
-        observations_identity=observations_identity,
+        targets_identity=ContentIdentity(
+            id=_TARGETS_FILENAME, sha256=_sha256(targets_bytes)
+        ),
+        attempts_identity=ContentIdentity(
+            id=_ATTEMPTS_FILENAME, sha256=_sha256(attempts_bytes)
+        ),
+        plot_series_identity=ContentIdentity(
+            id=_PLOT_SERIES_FILENAME, sha256=_sha256(plot_series_bytes)
+        ),
     )
-    _validate_cross_references(manifest, ordered_observations)
+    bundle = AnalysisBundle(
+        manifest=manifest,
+        targets=ordered_targets,
+        metadata_discrepancies=ordered_discrepancies,
+        attempts=ordered_attempts,
+        plot_series=ordered_plot_series,
+    )
+    _validate_bundle(bundle)
     manifest_bytes = _canonical_json_bytes(manifest.model_dump(mode="json"))
 
     root = Path(runs_root)
@@ -252,16 +302,17 @@ def create_run_bundle(
         staging_directory = Path(
             tempfile.mkdtemp(prefix=f".{run_id}.staging-", dir=root)
         )
-        _write_new_file(staging_directory / observations_filename, observations_bytes)
-        written_observations = (staging_directory / observations_filename).read_bytes()
-        if _sha256(written_observations) != observations_identity.sha256:
-            raise OSError("written observations failed SHA256 verification")
-        _write_new_file(staging_directory / manifest_filename, manifest_bytes)
-        written_manifest = (staging_directory / manifest_filename).read_bytes()
-        if _sha256(written_manifest) != _sha256(manifest_bytes):
-            raise OSError("written manifest failed SHA256 verification")
+        for filename, contents in (
+            (_TARGETS_FILENAME, targets_bytes),
+            (_ATTEMPTS_FILENAME, attempts_bytes),
+            (_PLOT_SERIES_FILENAME, plot_series_bytes),
+            (_MANIFEST_FILENAME, manifest_bytes),
+        ):
+            path = staging_directory / filename
+            _write_new_file(path, contents)
+            if _sha256(path.read_bytes()) != _sha256(contents):
+                raise OSError(f"written {filename} failed SHA256 verification")
         _fsync_directory(staging_directory)
-
         _rename_no_replace(staging_directory, final_directory)
         staging_directory = None
         _fsync_directory(root)
@@ -269,73 +320,122 @@ def create_run_bundle(
         if staging_directory is not None and staging_directory.exists():
             _remove_staging_directory(staging_directory, root, run_id)
         raise
+    return bundle
 
-    return RunBundle(manifest=manifest, observations=ordered_observations)
+
+def _read_regular_file(run_directory: Path, filename: str) -> bytes:
+    path = run_directory / filename
+    mode = path.lstat().st_mode
+    if stat.S_ISLNK(mode) or not stat.S_ISREG(mode):
+        raise ValueError(f"run file must be a non-symlink regular file: {filename}")
+    return path.read_bytes()
 
 
-def load_run_bundle(
-    runs_root: str | Path,
-    run_id: str,
+def _load_payload(
+    contents: bytes,
     *,
-    active_claim_ids: Iterable[str] | None = None,
-    manifest_filename: str = _MANIFEST_FILENAME,
-) -> RunBundle:
-    """Load a complete run and validate its canonical files and references."""
+    expected_keys: set[str],
+    description: str,
+) -> dict[str, object]:
+    raw = orjson.loads(contents)
+    if not isinstance(raw, dict) or set(raw) != expected_keys:
+        raise ValueError(
+            f"{description} file must contain exactly {sorted(expected_keys)}"
+        )
+    return raw
+
+
+def load_analysis_bundle(runs_root: str | Path, run_id: str) -> AnalysisBundle:
+    """Load a format-2 bundle and verify canonical bytes, identities, and links."""
     _validate_run_id(run_id)
-    _validate_filename(manifest_filename, "manifest")
     run_directory = Path(runs_root).resolve(strict=True) / run_id
     mode = run_directory.lstat().st_mode
     if stat.S_ISLNK(mode) or not stat.S_ISDIR(mode):
         raise ValueError("run path must be a non-symlink directory")
+    entries = {path.name for path in run_directory.iterdir()}
+    if entries != _BUNDLE_FILENAMES:
+        raise ValueError("run directory must contain exactly the four format-2 files")
 
-    manifest_bytes = (run_directory / manifest_filename).read_bytes()
-    manifest = RunManifest.model_validate(orjson.loads(manifest_bytes))
+    manifest_bytes = _read_regular_file(run_directory, _MANIFEST_FILENAME)
+    manifest = AnalysisManifest.model_validate_json(manifest_bytes)
     if manifest.run_id != run_id:
         raise ValueError("manifest run ID does not match its directory")
     if manifest_bytes != _canonical_json_bytes(manifest.model_dump(mode="json")):
         raise ValueError("manifest is not canonical JSON")
 
-    observations_path = run_directory / manifest.observations_identity.filename
-    observations_bytes = observations_path.read_bytes()
-    if len(observations_bytes) != manifest.observations_identity.byte_count:
-        raise ValueError("observations byte count does not match manifest")
-    if _sha256(observations_bytes) != manifest.observations_identity.sha256:
-        raise ValueError("observations SHA256 does not match manifest")
-    raw_observations = orjson.loads(observations_bytes)
-    if not isinstance(raw_observations, dict) or set(raw_observations) != {
-        "observations"
-    }:
-        raise ValueError(
-            "observations file must contain only the pinned observations key"
-        )
-    raw_values = raw_observations["observations"]
-    if not isinstance(raw_values, list):
-        raise ValueError("observations value must be a JSON array")
-    observations = tuple(Observation.model_validate(value) for value in raw_values)
-    if tuple(sorted(observations, key=lambda value: value.claim_id)) != observations:
-        raise ValueError("observations must use deterministic claim-ID ordering")
-    if len(observations) != manifest.observations_identity.observation_count:
-        raise ValueError("observation count does not match manifest")
-    if observations_bytes != _canonical_json_bytes(
-        {"observations": [value.model_dump(mode="json") for value in observations]}
+    targets_bytes = _read_regular_file(run_directory, _TARGETS_FILENAME)
+    attempts_bytes = _read_regular_file(run_directory, _ATTEMPTS_FILENAME)
+    plot_series_bytes = _read_regular_file(run_directory, _PLOT_SERIES_FILENAME)
+    for description, contents, identity in (
+        ("targets", targets_bytes, manifest.targets_identity),
+        ("attempts", attempts_bytes, manifest.attempts_identity),
+        ("plot series", plot_series_bytes, manifest.plot_series_identity),
     ):
-        raise ValueError("observations file is not canonical JSON")
-    if active_claim_ids is not None:
-        observations = _ordered_observations(observations, active_claim_ids)
-    _validate_cross_references(manifest, observations)
-    return RunBundle(manifest=manifest, observations=observations)
+        if _sha256(contents) != identity.sha256:
+            raise ValueError(f"{description} SHA256 does not match manifest")
+
+    raw_targets = _load_payload(
+        targets_bytes,
+        expected_keys={"metadata_discrepancies", "targets"},
+        description="targets",
+    )
+    raw_attempts = _load_payload(
+        attempts_bytes, expected_keys={"attempts"}, description="attempts"
+    )
+    raw_plot_series = _load_payload(
+        plot_series_bytes,
+        expected_keys={"plot_series"},
+        description="plot series",
+    )
+    targets = _TARGETS_ADAPTER.validate_json(orjson.dumps(raw_targets["targets"]))
+    metadata_discrepancies = _DISCREPANCIES_ADAPTER.validate_json(
+        orjson.dumps(raw_targets["metadata_discrepancies"])
+    )
+    attempts = _ATTEMPTS_ADAPTER.validate_json(orjson.dumps(raw_attempts["attempts"]))
+    plot_series = _PLOT_SERIES_ADAPTER.validate_json(
+        orjson.dumps(raw_plot_series["plot_series"])
+    )
+    for description, contents, expected in (
+        (
+            "targets",
+            targets_bytes,
+            _canonical_json_bytes(_targets_payload(targets, metadata_discrepancies)),
+        ),
+        (
+            "attempts",
+            attempts_bytes,
+            _canonical_json_bytes(_attempts_payload(attempts)),
+        ),
+        (
+            "plot series",
+            plot_series_bytes,
+            _canonical_json_bytes(_plot_series_payload(plot_series)),
+        ),
+    ):
+        if contents != expected:
+            raise ValueError(f"{description} file is not canonical JSON")
+
+    if tuple(sorted(targets, key=lambda value: value.claim_id)) != targets:
+        raise ValueError("paper targets must use deterministic claim-ID ordering")
+    if (
+        tuple(sorted(metadata_discrepancies, key=lambda value: value.claim_id))
+        != metadata_discrepancies
+    ):
+        raise ValueError("metadata discrepancies must use claim-ID ordering")
+    if tuple(sorted(attempts, key=lambda value: value.attempt_id)) != attempts:
+        raise ValueError("attempt results must use deterministic attempt-ID ordering")
+    if tuple(sorted(plot_series, key=lambda value: value.id)) != plot_series:
+        raise ValueError("plot series must use deterministic series-ID ordering")
+
+    bundle = AnalysisBundle(
+        manifest=manifest,
+        targets=targets,
+        metadata_discrepancies=metadata_discrepancies,
+        attempts=attempts,
+        plot_series=plot_series,
+    )
+    _validate_bundle(bundle)
+    return bundle
 
 
-def validate_run_qualification(manifest: RunManifest) -> None:
-    """Require the clean-code terminal state used for qualified results."""
-    if not manifest.complete:
-        raise ValueError("only terminal complete runs can qualify")
-    if manifest.code_identity.tree_state is not CodeTreeState.CLEAN:
-        raise ValueError("qualified runs require a clean code tree")
-
-
-__all__ = [
-    "create_run_bundle",
-    "load_run_bundle",
-    "validate_run_qualification",
-]
+__all__ = ["create_analysis_bundle", "load_analysis_bundle"]
