@@ -312,6 +312,11 @@ def test_render_repository_validates_current_identities_and_uses_atomic_renderer
         rendered["args"] = args
 
     monkeypatch.setattr(run_module, "render_report_file", capture_render)
+    monkeypatch.setattr(
+        run_module,
+        "render_figure_files",
+        lambda *args: rendered.setdefault("figure_args", args),
+    )
 
     output = render_repository(_REPOSITORY_ROOT, "selected-run")
 
@@ -321,4 +326,10 @@ def test_render_repository_validates_current_identities_and_uses_atomic_renderer
         manifest,
         (),
         output,
+    )
+    assert rendered["figure_args"] == (
+        validation.registry,
+        manifest,
+        (),
+        _REPOSITORY_ROOT / "docs/paper/reproduced-figures",
     )

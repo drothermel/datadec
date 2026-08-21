@@ -19,6 +19,7 @@ from datadec.config import (
     SourceManifest,
 )
 from datadec.paper.contracts import load_claim_registry
+from datadec.paper.figures import render_figure_files
 from datadec.paper.models import (
     BlockerKind,
     ClaimOwnership,
@@ -636,6 +637,13 @@ def render_repository(root: str | Path, run_id: str) -> Path:
         bundle.manifest,
         bundle.observations,
         output_path,
+    )
+    render_figure_files(
+        validation.registry,
+        bundle.manifest,
+        bundle.observations,
+        validation.repository_root
+        / validation.contract.outputs.reproduced_figures_root,
     )
     return output_path
 

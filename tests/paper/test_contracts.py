@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from copy import deepcopy
 from pathlib import Path
+import subprocess
+import sys
 from typing import Any
 
 import pytest
@@ -22,6 +24,17 @@ from datadec.paper import (
 )
 
 _SHA256 = "a" * 64
+
+
+def test_config_imports_in_a_clean_interpreter() -> None:
+    result = subprocess.run(
+        [sys.executable, "-c", "import datadec.config"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0, result.stderr
 
 
 def _claim(**updates: Any) -> dict[str, Any]:
