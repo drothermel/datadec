@@ -249,3 +249,22 @@ program looks like from the inside."
   "Small benchmarks produce unstable estimates, making multiple seed runs essential"
   (Hochlehnert et al., COLM 2025) — the replicate-heavy design here is the response. Full
   list in `docs/topics/pretraining-to-posttraining.md`.
+
+### 2026-08-18 — design inputs for the post-training / RL options (from the Research Trajectory page)
+
+- **Within-reach tasks (TINY-opt-2).** "The 'no movement' is a property of the model–task
+  pair, not the model… design verifiable tasks whose difficulty sits just above the base
+  models' zero-shot ability. Then recipe effects on post-training become measurable at
+  sweepable scale." Open question it creates: "do recipe effects on within-reach tasks
+  predict recipe effects on out-of-reach tasks at larger scale?" — "only needs a couple of
+  larger validation runs, not a factorial sweep."
+- **Proxy metric as the contribution.** "A continuous, low-variance predictor of
+  'RL-ability' measured on the base model (NLL on gold reasoning traces, pass@k at large k,
+  entropy at decision points, even plasticity-style statistics like curvature or feature
+  rank)… Validating a proxy needs far fewer runs than detecting an intervention effect."
+- **Power analysis for post-training experiments.** "How many seeds does a claimed RLVR
+  delta actually require at 150M vs 1B, and how much of the published small-scale
+  literature clears that bar?" — mostly reanalysis of public results plus modest runs.
+- **Asymmetric design.** Full sweep with seeds only where cheap; expensive budget on "two or
+  three confirmation runs testing a *ranking* the cheap tier predicted." Full discussion in
+  `docs/topics/posttraining-experiment-design.md`.

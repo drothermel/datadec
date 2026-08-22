@@ -292,3 +292,24 @@ Routed to: reference topic
 [potential-projs/tiny-scale-measurement.md](potential-projs/tiny-scale-measurement.md);
 the potential-projs README program-level notes.
 
+### Toggle 3 — Alternatives to Our Post-Training Experiment Design
+
+> I was skeptical of returning to the post-training project because:
+> - Iteration is so slow.
+> - You really do need more seeds to see real differences.
+> - Everything is so model specific that you'd need a fairly large sweep just to debug a
+>   small scale issue.
+> - Limiting yourself to existing "clean" pretraining sweeps makes it near impossible to
+>   test for model family effects.
+> - The data decide models are all tiny and have the "no movement during SFT" issue we
+>   started with.
+> At the same time, I don't want to fully abandon the whole direction.
+
+Routed to: staging topic
+[topics/posttraining-experiment-design.md](topics/posttraining-experiment-design.md); papers
+to [topics/pretraining-to-posttraining.md](topics/pretraining-to-posttraining.md); §4 notes in
+[potential-projs/tiny-scale-measurement.md](potential-projs/tiny-scale-measurement.md),
+[potential-projs/token-movement.md](potential-projs/token-movement.md),
+[potential-projs/annealed-readouts.md](potential-projs/annealed-readouts.md); the tension and
+asymmetric design to the potential-projs README program-level notes.
+

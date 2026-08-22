@@ -323,3 +323,15 @@ decisions. Only notes about this project are kept here.
   2025), with counterpoints (*The Invisible Leash*, arXiv 2507.14843; arXiv 2506.14245).
   These are the post-training token regimes the wall bucket would be compared against.
   Full list in `docs/topics/pretraining-to-posttraining.md`.
+
+### 2026-08-18 — "did the model move in distribution space?" (from the Research Trajectory page)
+
+- On the earlier "SFT did nothing" result: "'SFT did nothing' almost certainly means benchmark
+  accuracy didn't move — but did the model move in distribution space? NLL on held-out
+  reasoning traces, KL from the base model, calibration, sample diversity, pass@k at very
+  large k are all continuous and much lower-variance than accuracy. Two possibilities, both
+  publishable: either the models genuinely don't move even in likelihood space… or they *do*
+  move and pretraining recipes differ in *how much*." The Stage 1 instruments (per-token
+  KL, item flips) are the same measurements applied between pretraining checkpoints; the
+  post-training version is the earlier project's data reread through them. Full discussion
+  in `docs/topics/posttraining-experiment-design.md`.

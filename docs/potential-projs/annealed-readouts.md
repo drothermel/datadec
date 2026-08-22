@@ -261,3 +261,14 @@ decisions. Only notes about this project are kept here.
   Shapes Post-Training Beyond SFT* (arXiv 2607.25063) — "models that look similar after SFT
   diverge under identical post-training depending on late-pretraining data interventions."
   Full list in `docs/topics/pretraining-to-posttraining.md`.
+
+### 2026-08-18 — a late-window cross-family design adjacent to ANN-opt-3 (from the Research Trajectory page)
+
+- "Take OLMo, Pythia, SmolLM, Llama, and Qwen checkpoints and apply controlled *late-window*
+  continued pretraining — same intervention, same tokens, different lineages. The Final
+  Window paper's claim (*Similar Models Learn Differently*) is that this window
+  disproportionately shapes post-training behavior, which if true means most of the
+  family-effect question is testable at annealing cost rather than pretraining cost. If the
+  claim is false at your scales, that's also a finding." The decay-branch runner is the same
+  instrument with the schedule (rather than data) as the late-window intervention. Full
+  discussion in `docs/topics/posttraining-experiment-design.md`.

@@ -96,3 +96,13 @@ result was, in hindsight, an early observation of a real phenomenon."
 loss is an insufficient statistic for downstream success, and the open question is what
 *else* about the training trajectory (data order, late-window exposure, the 'state of the
 learner' in plasticity terms) predicts post-training outcomes."
+
+---
+
+## 2026-08-18 — additional references from the experiment-design discussion
+
+- *Provable Benefits of RLVR over SFT for Reasoning Models: Learning to Backtrack
+  Efficiently* — graph-pathfinding-style synthetic testbed where "a seed costs minutes";
+  causal rather than correlational.
+- TinyZero — "RL visibly works at 0.5–3B on countdown and simple arithmetic."
+- The design alternatives themselves are in `posttraining-experiment-design.md`.

@@ -231,3 +231,19 @@ Full text for each: `recipe-featurization.md` §4 (first),
   observable' move" that the measurement projects extend. Reference topic:
   [../topics/pretraining-to-posttraining.md](../topics/pretraining-to-posttraining.md).
 
+### 2026-08-18 — the seeds × families × iteration tension, and the asymmetric design (from the Research Trajectory page)
+
+- "The noise floor of your measurements scales with the number of seeds you can afford,
+  while the generality of any finding scales with the number of model families you test —
+  and both multiply against slow iteration… a clean single-family result might just be
+  another family artifact, so even a successful sweep has uncertain external validity."
+- "The measurement-and-proxy angle is both the least blocked and, right now, probably the
+  most needed." Validating a proxy "needs far fewer runs than detecting an intervention
+  effect, because you're fitting a correlation across existing variation rather than
+  powering a comparison."
+- Asymmetric design: "Full sweep with seeds only where it's cheap (small models, continuous
+  metrics, easy tasks). Then spend the expensive budget on two or three confirmation runs
+  testing a *ranking* the cheap tier predicted — a much lower-powered, therefore
+  affordable, test than estimating effect sizes." Staging topic:
+  [../topics/posttraining-experiment-design.md](../topics/posttraining-experiment-design.md).
+
