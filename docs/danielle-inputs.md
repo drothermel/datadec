@@ -458,3 +458,29 @@ reference topics
 and [topics/data-featurization-literature.md](topics/data-featurization-literature.md);
 [topics/landscape-literature.md](topics/landscape-literature.md).
 
+### Toggle 10 — Mapping Dataset Tokens into Deterministic vs Uncertain (river-valley test)
+
+> When considering the Wen et al interpolation signal "river test" they describe tokens as
+> having different effects, "highly deterministic tokens (facts, knowledge) contribute the
+> river direction, while uncertain, ambiguous tokens create the steep hillsides." Have there
+> been investigations into mapping data tokens into the two effect buckets and/or looking at
+> how that mapping changes over training?
+
+Danielle-flagged project seed (the `→` note on the toggle title):
+
+> → "Validate river-valley theory implications on token loss behavior: Each annealing branch
+>   tells you, token by token, how much loss drops under decay = an empirical 'hillside-ness'
+>   score at that point in training (decay-responsive = wall, decay-inert = already at the
+>   river). Branch repeatedly along the stable phase and you get the trajectory of the
+>   mapping: which tokens migrate from decay-responsive to decay-inert, at what rate. And
+>   also whether different pretraining corpora produce different migration dynamics for the
+>   *same* held-out tokens. Cross that with the epistemic/aleatoric decomposition (aleatoric
+>   estimated from an ensemble) and validate: 1. decay-responsiveness should track
+>   epistemic-but-not-aleatoric uncertainty. 2. datasets should differ in their
+>   epistemic-drainage schedules rather than their aleatoric floors."
+
+Routed to: [potential-projs/token-movement.md](potential-projs/token-movement.md) §4 (origin
+of Stage 2, with the seed); new reference topic
+[topics/token-level-literature.md](topics/token-level-literature.md);
+[topics/landscape-literature.md](topics/landscape-literature.md).
+

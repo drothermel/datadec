@@ -91,3 +91,14 @@ scores / task vectors / plasticity statistics are comparable iff models pass tes
 dataset's 'determinism profile' (cheap to estimate with any reference model) is a candidate
 feature predicting not just performance but *landscape geometry*, i.e., annealing behavior."
 This is the link between this topic and `data-featurization-literature.md` / REC-4.
+
+---
+
+## 2026-08-18 — Wen et al.'s own validation of the token mechanism
+
+"They built a toy bigram language (cities with name distributions of varying determinism),
+showed it reproduces the river-valley loss geometry, and demonstrated that the stable
+learning-rate phase learns the deterministic tokens whereas the decay phase learns better
+the stochastic tokens. On real data they validated the mapping correlationally: a
+significant Spearman correlation (~0.39) between token-level uncertainty and local sharpness
+of the landscape." See `token-level-literature.md`.

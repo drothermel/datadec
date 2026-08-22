@@ -335,3 +335,38 @@ decisions. Only notes about this project are kept here.
   KL, item flips) are the same measurements applied between pretraining checkpoints; the
   post-training version is the earlier project's data reread through them. Full discussion
   in `docs/topics/posttraining-experiment-design.md`.
+
+### 2026-08-18 — origin of Stage 2 (from the Research Trajectory page)
+
+**Danielle-flagged project seed** (the `→` note on the Notion toggle): "Validate river-valley
+theory implications on token loss behavior: Each annealing branch tells you, token by token,
+how much loss drops under decay = an empirical 'hillside-ness' score at that point in
+training (decay-responsive = wall, decay-inert = already at the river). Branch repeatedly
+along the stable phase and you get the trajectory of the mapping: which tokens migrate from
+decay-responsive to decay-inert, at what rate. And also whether different pretraining
+corpora produce different migration dynamics for the *same* held-out tokens. Cross that
+with the epistemic/aleatoric decomposition (aleatoric estimated from an ensemble) and
+validate: 1. decay-responsiveness should track epistemic-but-not-aleatoric uncertainty. 2.
+datasets should differ in their epistemic-drainage schedules rather than their aleatoric
+floors." (This is TOK-3, TOK-4, and TOK-2 verbatim.)
+
+Question posed: have there been investigations mapping data tokens into Wen et al.'s two
+effect buckets, or watching that mapping change over training?
+
+- "The mapping has been made statically, and there are fragments of the dynamics, but the
+  full 'watch the bucket assignment evolve over training' study doesn't exist." Wen et al.
+  validated the mapping correlationally (Spearman ~0.39 between token uncertainty and local
+  sharpness) and showed in a toy bigram language that the stable phase learns deterministic
+  tokens and decay learns stochastic ones — the origin of TOK-opt-5's toy replication.
+- "'Deterministic vs. uncertain' is really two different things, and only one of them can
+  change over training": aleatoric = the true hillside (fixed data property); epistemic =
+  distance not yet traveled along the river; "the 'mapping changing over training' is
+  largely the epistemic component collapsing at token-dependent rates."
+- Rho-1's loss-trajectory categories are "literally a token-bucket-over-time taxonomy… with
+  no landscape interpretation attached" — the origin of TOK-opt-2.
+- The RLVR bridge (origin of TOK-opt-4): "the tokens that form the valley walls in
+  pretraining look like the same tokens where RL does its work."
+- What the design delivers at once: "the missing token-level validation of the river-valley
+  mechanism, a dataset-featurization result (the 'determinism profile'… now measured
+  causally), and a candidate explanation for *when* annealed vs. unannealed evals disagree."
+  Paper list in `docs/topics/token-level-literature.md`.
