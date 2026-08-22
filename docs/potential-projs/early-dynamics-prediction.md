@@ -168,7 +168,7 @@ consensus. This is
 the CNN-sweep precursor of EDP — the same question (early-window
 curve-shape features → final performance) asked on Danielle's own `dr_exp`/`deconCNN`
 CIFAR-10 runs before the July 2025 DataDecide draft. The "early findings" quoted above
-trace to a June 2025 analysis now recorded in `../topics/staging/cnn-deconstruction-ladder.md`
+trace to a June 2025 analysis now recorded in `../past-projects/loss-slope-prediction.md`
 ("Second attempt, with per-epoch data"): on ~34 runs of 25 epochs, the 4-epoch validation-loss
 slope correlated with final accuracy at |r| = 0.71, falling to 0.36 for the full-curve slope,
 and curve R² correlated at r ≈ −0.4. The sign resolves from the

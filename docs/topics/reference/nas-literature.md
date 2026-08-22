@@ -7,7 +7,7 @@ Why it matters here: not NAS as a method, but the **performance-estimation** hal
 training-free / zero-cost proxies and learning-curve extrapolation — which is the closest
 established prior-art line for "predict a configuration's final performance from cheap
 early signals" (`../../potential-projs/early-dynamics-prediction.md`, the CNN loss-slope
-study in `../staging/cnn-deconstruction-ladder.md`, and the eNTK readouts in
+study in `../../past-projects/cnn-deconstruction-ladder.md`, and the eNTK readouts in
 `ntk-literature.md`). Any EDP related-work section has to position against this
 literature.
 

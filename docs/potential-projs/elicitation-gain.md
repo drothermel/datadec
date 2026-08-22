@@ -1,23 +1,142 @@
-# Tiny-model specialization via the outer layer — "the 10M pandas specialist"
+# Elicitation gain across scale — wrapper-only extractable competence as a measurement instrument
 
-**Kind:** staging. Candidate exits: a standalone project doc (a small, verifiable
-specialization study outside DataDecide's pillars), absorption into
-`../../potential-projs/text-latent-code-autoencoder.md` (the harness-optimization machinery
-is the same) or `../../potential-projs/tiny-scale-measurement.md` (the within-reach-tasks
-question), or a cross-listed optional direction on both. Gate: Danielle picks an experiment
-shape (wrapper-only / wrapper + soft prompt / wrapper + LoRA) and an evaluation; a prior-art
-pass on prompt-tuning-at-small-scale and tiny specialist models (below) before any paper
-framing.
+> **Draft scaffolding (2026-08-22).** Promoted from the staging topic
+> `tiny-model-specialization`. §1–§3 are synthesized from the source conversation and not yet
+> reviewed by Danielle; §4 is the dated discussion record (her statements verbatim). Treat
+> §1–§3 as provisional until this note is removed.
 
-Source: an external conversation (undated, ~2026; intake 2026-08-22) that followed the TLC
-draft PDF (not on file here; it is the draft behind `text-latent-code-autoencoder.md`, with
-its harness $H_\theta$, verifiable success objective $J(\theta)$, and "waterfall" feasibility
-metrics code-only → compiles → runs → passes tests). Danielle's statement carries the
-content; the response is a reasonable but unsourced taxonomy. A literature review was
-requested as the next step in that conversation.
+**Program pillars served:** how (elicitation under fixed effort as a calibrated instrument;
+the outer optimizer declared part of the microscope), apex (post-training movement detected
+through extractability rather than zero-shot score). Also the DataDecide-scale sibling of
+the non-pillar `TLC` harness work. (Program: `README.md` → Program.)
+
+**One-line pitch.** Fix a strong outer model as an *optimizer of the interface* (prompts,
+DSL, staging, verifiers — never the answer channel) with a fixed budget, and measure how
+much verifiable task success can be extracted from frozen base models as a function of
+model size (DataDecide 4M → 1B) and training state (end of pretraining vs. after
+post-training). The readout is elicitation gain ΔS = S_opt − S_0, not raw score. Two
+questions: where is the size cliff for extractable competence, and does post-training
+that looks like "no movement" under direct prompting change extractability.
+
+IDs: ELI-1–ELI-3 (core), ELI-opt-1–ELI-opt-4.
+
+**Paper goal.** Workshop paper from ELI-1 + ELI-2 on one task family (size-to-extractability
+curves with controls); main-conference with ELI-3 (pre/post extractability on the earlier
+project's SFT checkpoints or new ones) and two or three task families.
+
+Compute tiers: **API** for the outer model; **T1** forward passes with existing DataDecide
+checkpoints for the executor. No training in the core.
+
 ---
 
-## Undated — Danielle's hypothesis (verbatim, from speech)
+## 1. What the project involves
+
+### Core experiment (ELI-1–ELI-3)
+
+**Setup shared by all three.** *Executor:* a frozen DataDecide checkpoint (final, or
+post-trained variant). *Outer model:* one fixed, cheap, deterministic-decoding LLM that may
+(i) propose edits to the wrapper and (ii) critique executor outputs against verifier
+feedback, but may never emit the final answer. *Wrapper* θ: prompt template, formatting
+constraints / a restricted DSL for the input, staged prompting (plan → code → verify →
+repair), retrieval from a fixed small corpus, sampling settings. *Verifier:* automatic, with
+a feasibility waterfall (format-only → parses/compiles → runs → passes hidden tests) and a
+semantic success bit. *Budget per problem:* max outer calls (e.g. 5), max outer tokens,
+max executor samples, fixed decoding — identical for every executor. *Metrics per executor:*
+S_0 (one generic wrapper, no optimization), S_opt (best under budget), ΔS = S_opt − S_0,
+iterations-to-threshold, stability across seeds / wrapper initializations, and
+success-vs-iterations AUC; cost (outer tokens, executor tokens, wall-clock) on every plot.
+
+- **ELI-1 — Capability existence test.** Before any optimizer loop: take the narrowest task
+  slice (e.g. one-line pandas `groupby`/`agg` with fixed column names; or JSON-schema field
+  extraction) and an *oracle* interface (hand-written DSL → prompt, best-known template),
+  and measure S under that oracle for every DataDecide size with seed replicates. Output:
+  the smallest size at which any outer layer yields non-trivial success. If nothing moves at
+  the smallest sizes even under an oracle, the cliff is above them and ELI-2 starts there.
+- **ELI-2 — Size-to-extractability curve.** Run the fixed outer optimizer at fixed budget on
+  2–3 task families (pandas unit-test suite; structured extraction; tiny algorithmic coding)
+  for every size in the sweep. Plot S_0, S_opt, ΔS vs. size; classify each task family as
+  smooth degradation vs. cliff; locate cliffs by bisection over sizes with binomial error
+  bars (SE = 0.5/√n at the cliff). Controls run at every size: *outer-model-only* under the
+  same token budget; *sham wrapper* (equal length/complexity, semantically wrong or random
+  DSL mapping); *swapped executor* (the wrapper optimized for size s applied to size s′ or to
+  the same size from another recipe); an *answer-leak audit* (token overlap between outer
+  critiques and final answers).
+- **ELI-3 — Extractability before vs. after post-training.** At fixed sizes, repeat ELI-2 on
+  pre- and post-trained checkpoints (the earlier project's Tulu/Tulu-3 SFT runs if the
+  checkpoints exist; otherwise new light SFT). Hypothesis under test: SFT that leaves S_0
+  flat changes ΔS, stability, or iterations-to-threshold. This is the "post-training didn't
+  help *without elicitation effort*" reframing of the no-movement result.
+
+### Optional directions
+
+- **ELI-opt-1 — Wrapper transfer as a similarity readout.** Optimize on size s (or recipe
+  r), evaluate on s′ (r′) without re-optimization; the transfer matrix is a cheap
+  model-similarity measure comparable to the cross-recipe geometry statistics elsewhere in
+  the program.
+- **ELI-opt-2 — The DSL axis.** Vary the interface language from natural language to a
+  machine-oriented shorthand (the TLC COMP-NL vs. COMP-SHORT axis) and measure ΔS as a
+  function of interface form at each size.
+- **ELI-opt-3 — The specialist framing.** The original "10M pandas specialist": at the
+  smallest size above the cliff, how narrow must the task distribution be for a
+  large-model-fit interface to make the tiny executor useful as a tool; report the
+  generality funnel (out-of-domain inputs get mangled) rather than forgetting.
+- **ELI-opt-4 — PEFT tier comparison.** Add soft-prompt and LoRA/last-layer arms to the
+  same budget accounting to place wrapper-only on the spectrum; out of scope for the core
+  by decision (wrapper-only).
+
+## 2. Doability and impact
+
+### Overall doability: **high** — inference only; cost is outer-model tokens
+
+Everything runs on existing DataDecide checkpoints (T1) plus API calls for the outer
+model. The budget is dominated by outer tokens: per-problem budget × problems × 14 sizes ×
+training states × seeds × task families. Fixing one cheap outer model and reporting cost
+per curve keeps it bounded; the ELI-1 existence test prunes sizes before the loop runs. The
+harness is TLC's optimizer loop with the decoder swapped for a small frozen model; the
+verifier suite is the waterfall already specified there.
+
+Known headwinds: prompt tuning and in-context methods are weak at small scale (Lester et al.
+2021; the ICL-elicitability literature), so the honest claim is about an *external,
+large-model-fit* interface, not about the tiny model's own promptability. The "outer model
+did the work" objection is handled by construction (answer channel rule + controls), not by
+argument.
+
+### Per-direction impact
+
+| Direction | Impact | Why |
+|---|---|---|
+| ELI-1 existence test | Medium | Cheap, decisive; tells the program whether 4–20M models have anything to elicit on narrow tasks — directly informs TINY's within-reach question |
+| ELI-2 cliff curves | High | A new, interpretable curve family ("extractable capability vs. size at fixed effort") with defensible controls; workshop-ready alone |
+| ELI-3 pre/post extractability | High | Turns the earlier null result into a measurable claim; the instrument MIC and ICL want |
+| ELI-opt-1 transfer | Medium | Cheap byproduct; cross-recipe similarity from the interface side |
+| ELI-opt-2 DSL axis | Medium | Ties to TLC's bottleneck question |
+| ELI-opt-3 specialist | Low–medium | Fun framing; scientifically subsumed by ELI-2 |
+| ELI-opt-4 PEFT arms | Medium | Needed for a main-conference version; deliberately excluded from the core |
+
+## 3. Infrastructure build sequence
+
+1. **Verifier suite** (shared with TLC and the clean-code ICL topic; restated here, keep in
+   sync): hidden-test pandas problems (graded by test pass; waterfall gates logged), a
+   JSON-schema extraction set (valid + exact match), a tiny algorithmic set; seeds and
+   per-problem records.
+2. **Executor harness:** load any DataDecide checkpoint (HF), fixed decoding, batched
+   sampling, token accounting.
+3. **Wrapper + outer loop:** TLC's LLM-as-optimizer loop (actions = prompt diffs, DSL
+   changes, added verifier stages, sampling changes; reward = mean success) with the
+   answer-channel rule enforced and the budget meter; sham-wrapper generator; leak audit.
+4. **ELI-1 runs** (oracle interface, all sizes, seeds) → choose the size range.
+5. **ELI-2 runs** with controls; cliff bisection; plots with cost.
+6. **ELI-3** once pre/post checkpoint pairs are located or produced.
+
+## 4. External assessments and origin notes
+
+Dated notes from the source conversation (undated, ~2026; intake 2026-08-22), moved from
+`topics/staging/tiny-model-specialization.md` — recorded for consolidation, not decisions.
+The TLC draft PDF the conversation was conducted against is not on file; its internals as
+surfaced are recorded in `text-latent-code-autoencoder.md` §4. Related-work claims in the
+responses are unverified.
+
+### Undated — Danielle's hypothesis (verbatim, from speech)
 
 > So recently I've been thinking about the ideas that are in the PDF that I just provided,
 > um, and I'm probably gonna submit a very small portion um to a workshop in the near
@@ -51,11 +170,11 @@ form lets instructions steer the tiny model — without post-training its weight
 weight-fitting; (C) how much specialization destroys general ability; and whether the
 experiments would draw research interest. Context facts: DataDecide's smallest models
 (~10M) did not perform reasonably even on the simplified multiple-choice benchmarks built
-to give them a chance (see `../../open-questions-answered.md` and
-`../../potential-projs/tiny-scale-measurement.md`); a small portion of the TLC draft is
+to give them a chance (see `../open-questions-answered.md` and
+`tiny-scale-measurement.md`); a small portion of the TLC draft is
 headed for a workshop.
 
-## Undated — Response (condensed)
+### Undated — Response (condensed)
 
 **Framing.** The PDF already treats the optimized object as *interfaces and bottlenecks*
 (prompts, latent formats, decomposition, verifiers, budgets) rather than weights; this
@@ -107,7 +226,7 @@ without fine-tuning" / "with < 1% parameter updates," emphasizing the budgeted i
 and automatic verification. Asked her to choose among wrapper-only / wrapper + soft prompt
 / wrapper + LoRA, and the evaluation.
 
-## Undated — Wrapper-only, and the two questions it turns into (Danielle, verbatim from speech)
+### Undated — Wrapper-only, and the two questions it turns into (Danielle, verbatim from speech)
 
 > I'm definitely most interested in the wrapper only. And I guess it feels like there are
 > two different types of questions that I have here. One type of question is purely like
@@ -145,7 +264,7 @@ instrument for model differences on challenging tasks. Her own caveat: the outer
 be "pushing the buttons" of the small one, so "the small model has the ability" can never
 be formally claimed.
 
-### Response (condensed)
+#### Response (condensed)
 
 **Object of measurement:** *elicitation capacity under a constrained interface* — given a
 fixed outer optimizer and fixed budgets, how much verifiable behavior can be extracted from
@@ -189,18 +308,18 @@ Offered next: a 1–2-page workshop skeleton (contributions, experimental matrix
 figures) and a literature review anchored on elicitation, prompt/program optimization,
 wrapper pipelines with verifiers, and capability-vs-extractability.
 
-### Intake notes on this turn
+#### Intake notes on this turn
 
 - This turn moves the topic from "tiny pandas specialist" to **elicitation as a measurement
   instrument across scale and across pre/post-training** — which is the program's own
-  framing: `../../potential-projs/icl-elicitability.md` (elicitation vs. weight update as
-  access routes to the same capability) and `../../potential-projs/movement-microscope.md`
+  framing: `icl-elicitability.md` (elicitation vs. weight update as
+  access routes to the same capability) and `movement-microscope.md`
   ("lower the task instead of raising the model"; the instrument / detection-limit
   framing; the guaranteed-effect calibration). The response's "microscope" answer to the
   fairness worry is the same answer MIC already gives. At post-processing this should be
   cross-listed as an optional direction on both, whatever the staging decision.
 - The cliff curve (Q1) is the same object as TLC's cliff structure
-  (`../../potential-projs/text-latent-code-autoencoder.md`: bisection for critical ratios,
+  (`text-latent-code-autoencoder.md`: bisection for critical ratios,
   binomial variance, SE = 0.5/√n) — the x-axis is model size instead of latent budget, and
   the same bisection-over-sizes / seed-variance machinery applies. Reuse it rather than
   re-deriving.
@@ -222,7 +341,7 @@ wrapper pipelines with verifiers, and capability-vs-extractability.
   outer model to one cheap, deterministic-decoding model and report cost per curve, per the
   project-approach principle "cost on every plot."
 
-## Undated — Closing summary of the conversation (response; condensed to what is not above)
+### Undated — Closing summary of the conversation (response; condensed to what is not above)
 
 Danielle asked for "a summary of the topics that we discussed that would make it easy for
 me to know what type of design decisions we kind of agreed on, what the related works are
@@ -261,7 +380,7 @@ object.
 
 **Related-work map** (as given; identifiers where present, unverified): DataDecide (the
 controlled data × scale suite); FollowIR (arXiv 2403.15246) — still the mismatched guess
-from the post-training thread, see `../reference/pretraining-to-posttraining.md`; Tülu 3
+from the post-training thread, see `../topics/reference/pretraining-to-posttraining.md`; Tülu 3
 (Ai2 open post-training stack — the baseline family for "generic post-training may not
 move targeted metrics"); **AlphaCodium** (arXiv 2401.08500) — multi-stage, test-based
 "flow engineering" that raises pass@k with no weight change, the concrete exemplar of
@@ -274,7 +393,7 @@ AlphaCodium should also be cited in TLC's prior-art gate. The "agreed" list is t
 response's reading; the only explicit decision Danielle made in the conversation is
 wrapper-only.
 
-## Intake notes (first turn)
+### Intake notes (first turn)
 
 - The response is sensible and matches the TLC machinery, but it is unsourced, and it
   skips the one empirical result that bears most directly on (H): **prompt tuning and soft
@@ -282,7 +401,7 @@ wrapper-only.
   Power of Scale for Parameter-Efficient Prompt Tuning") found prompt tuning only matches
   full fine-tuning above ~10B parameters and lags badly at small sizes; the same scale
   dependence is reported for in-context learning generally (see
-  `../../potential-projs/icl-elicitability.md`). So the "learned wrapper without touching
+  `icl-elicitability.md`). So the "learned wrapper without touching
   weights" tier has a known headwind exactly in the regime (H) targets. That is not fatal
   — the *external rewriter* variant is different from soft prompts, since the rewriter's
   capacity lives in the big model — but it means the honest version of (H) is "an
@@ -312,3 +431,4 @@ wrapper-only.
   (iii) (C) for the wrapper-only case is answered by construction; for the PEFT case it is
   a small instance of MIC's movement-decomposition question.
 - The "how much data" rules of thumb should not be quoted; they are unsourced folklore.
+

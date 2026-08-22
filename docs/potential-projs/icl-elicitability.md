@@ -68,6 +68,10 @@ continued-training branches or fine-tunes; **T3** = new pretraining runs.
   modern probes (cross-listed from the frozen-body audit topic, gap G6).
 - **ICL-opt-6: Learned task vectors** instead of extracted ones for the geometry statistic;
   tasks chosen within the rank limitation.
+- *Coordination note (2026-08-22):* `elicitation-gain.md` (`ELI`) is the optimizer-driven
+  counterpart of the tuned elicitation ceiling: a fixed outer model edits the interface under
+  budget; its ΔS across DataDecide sizes is the same null this doc wants, obtained by search
+  rather than by hand-tuned prompts.
 - **ICL-opt-7: Repetition as step size — the (unique examples × repetitions) factorial.**
   Treat the number of *unique* demonstrations as the data axis and how often each is
   repeated in the prompt as the step-size axis; at matched total context, compare splits

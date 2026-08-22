@@ -7,7 +7,7 @@ Why it matters here: the empirical NTK (eNTK) — its Gram matrix, spectrum, and
 moves during training — is a candidate *landscape / dynamics readout* for the projects that
 track optimization state alongside accuracy: `../../potential-projs/landscape-geometry.md`,
 `../../potential-projs/trajectory-statistics.md`, and the CNN ablation ladder in
-`../staging/cnn-deconstruction-ladder.md` ("track key metrics about the optimization
+`../../past-projects/cnn-deconstruction-ladder.md` ("track key metrics about the optimization
 landscape as I go"). It was also Danielle's first "learn with agents" sprint (2025
 seven-track record in `project-approach-principles.md`).
 

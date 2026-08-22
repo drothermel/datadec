@@ -178,7 +178,7 @@ claim: (1) "linearity" as a feature is not a gap in any interesting sense — it
 particular curve-family choice inside the extrapolation literature (a linear-in-log-x fit
 is the log-law member of Domhan's family), so the honest framing is "we use a deliberately
 crude fit family and ask how early its slope carries signal," not "nobody has looked at
-linearity"; (2) the pilot result in `../staging/cnn-deconstruction-ladder.md` already shows
+linearity"; (2) the pilot result in `../../past-projects/loss-slope-prediction.md` already shows
 early *slope* predicts and high R² indexes slowness, which is a point against linearity
 per se being the useful feature. The real differentiators for EDP remain the axis varied
 (data recipe, across scales) and the target (downstream benchmark scores, ranking/decision

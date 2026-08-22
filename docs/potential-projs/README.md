@@ -42,6 +42,7 @@ Each document has the same three parts:
 | [Text-latent code autoencoder](text-latent-code-autoencoder.md) (`TLC`) | Frozen-LLM encoder/decoder with a text latent and prompts as the only learned object: can lossy functional compression + lossless coding beat lossless compression of code; then what representations can be induced, how portable and controllable they are, and whether function and style factor | none (API inference only) | API | Workshop from the compression result; main-conference against LLM arithmetic coding; thesis-scale representation program |
 | [MAQA brute-force baseline](maqa-brute-force-baseline.md) (`MAQA`) | How far does the simplest clean entity-centric brute-force design get on exhaustive multi-answer QA over raw Wikipedia, and which stage (answer universe, linking, retrieval pool, evidence budget, reader, evaluator) caps each question? | none (CPU/API; optional light GPU) | CPU/API | Workshop from the ceiling ladder + audit; paper 2 from the clean baseline; failure-point papers after |
 | [Wikipedia QA sharding](wiki-qa-sharding.md) (`SHARD`) | Can workload-aware hypergraph partitioning of all of Wikipedia plus a global router cut shards-touched per QA query without hurting recall, measured end-to-end? | none | CPU | Systems/IR paper; flagged as a post-PhD or engineering-break project |
+| [Elicitation gain across scale](elicitation-gain.md) (`ELI`) | With a fixed outer optimizer of the interface (never the answer channel) and a fixed budget, how much verifiable success can be extracted from frozen DataDecide models as a function of size and pre/post-training — where is the cliff, and does post-training change extractability where zero-shot is flat? | none (API + forward passes) | API / T1 | Workshop from the size curves with controls; main-conference with pre/post extractability |
 | [Early-dynamics prediction](early-dynamics-prediction.md) (`EDP`) | Can the final (or annealed) perplexity, downstream correct-prob, and recipe ranking be predicted from the first 10% of training, generalising across model scale and recipe family, and does it beat scaling-law extrapolation? | none | T0 | Workshop from the scale-axis slice; main-conference with recipe families, any-step, and GP arms |
 
 Compute tiers: **T0** = analysis of published tables only; **T1** = forward passes with
@@ -59,7 +60,8 @@ Resolved gate checks and open questions (with the code used to answer them) are 
 [../open-questions-answered.md](../open-questions-answered.md). The recipe-featurization
 literature review (plan and process) lives in [../litreview/](../litreview/). Danielle's organizing
 hypothesis, in her words with agreed refinements, is [../research-hypothesis.md](../research-hypothesis.md). Ideas that do not yet
-belong to a project are staged in [../topics/](../topics/). Ranked lists of directions
+belong to a project are staged in [../topics/](../topics/). Earlier projects that were
+started but not finished are recorded in [../past-projects/](../past-projects/README.md). Ranked lists of directions
 under different objectives are in [../portfolio-rankings.md](../portfolio-rankings.md). Danielle's own prompts from the source
 conversations are logged verbatim in [../danielle-inputs.md](../danielle-inputs.md).
 

@@ -52,6 +52,9 @@ continued-training branches; **T3** = new pretraining runs.
   error bars.
 - **TINY-opt-3: Multi-component systems.** Factorial designs over system configurations with
   confidence intervals.
+- *Coordination note (2026-08-22):* `elicitation-gain.md` (`ELI`) runs the within-reach
+  question as an existence test under an oracle interface at every DataDecide size (ELI-1);
+  reuse its result before designing TINY-opt-1.
 - **TINY-opt-4: Design decisions tuned for larger models.** Which optimizer/schedule/
   architecture defaults are wrong at 10–50M (speedrun-style evidence), measured against the
   noise floor.

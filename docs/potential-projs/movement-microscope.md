@@ -60,6 +60,10 @@ continued-training branches or fine-tunes; **T3** = new pretraining runs.
 - **MIC-opt-3: Post-training power analysis.** How many seeds does a claimed RLVR/SFT delta
   require at 150M vs. 1B, and how much of the small-scale literature clears the bar —
   reanalysis of public results plus modest runs.
+- *Coordination note (2026-08-22):* `elicitation-gain.md` (`ELI`) measures pre/post
+  extractability (ΔS, stability, iterations-to-threshold) with a fixed outer optimizer —
+  the elicitation-controlled readout MIC-opt-2 wants, on the same SFT checkpoints if they
+  exist.
 - **MIC-opt-4: MoE variant.** Routing flips as the categorical movement channel.
 
 ---

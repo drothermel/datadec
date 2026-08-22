@@ -2204,7 +2204,7 @@ Her prompt (verbatim):
 > the first that I should run experiments on. Ask questions first if you need any
 > additional information from me to refine the outcome to exactly what I'm looking for
 
-Routed to: new staging topic [topics/cnn-deconstruction-ladder.md](topics/staging/cnn-deconstruction-ladder.md)
+Routed to: new staging topic [past-projects/cnn-deconstruction-ladder.md](past-projects/cnn-deconstruction-ladder.md) (then a staging topic; moved to past-projects 2026-08-22)
 (both framing statements quoted; the timeline and the top-5 file condensed into one table;
 intake notes: response answered at architecture level rather than building-block level,
 ignored "ask questions first," mixes top-1/top-5 figures, and its Adam-as-standard claim is
@@ -2248,7 +2248,7 @@ Her prompts (verbatim, in order):
 
 > are cifar-10 images black and white?
 
-Routed to: [topics/cnn-deconstruction-ladder.md](topics/staging/cnn-deconstruction-ladder.md)
+Routed to: [past-projects/cnn-deconstruction-ladder.md](past-projects/cnn-deconstruction-ladder.md) (then a staging topic; moved to past-projects 2026-08-22)
 as a recipe fact table with a verification column (ResNet augmentation answer incomplete —
 missing scale aug and PCA color; GoogLeNet augmentation shaky; BCE answer dated), plus an
 intake note that the ladder must fix a modern recipe and vary one block per rung rather
@@ -2299,7 +2299,7 @@ answer found a literature basis for *linearity* — the shape priors on record a
 >
 > Please analyze this data
 
-Routed to: [topics/cnn-deconstruction-ladder.md](topics/staging/cnn-deconstruction-ladder.md)
+Routed to: [past-projects/cnn-deconstruction-ladder.md](past-projects/cnn-deconstruction-ladder.md) (then a staging topic; moved to past-projects 2026-08-22)
 as a dated section reconstructing the 15-config dataset from the response and recording why
 the response's reading is wrong (negative train−val gap is the stated augmented-train
 artifact, not leakage; "every removal improves" is the short-budget confound, not a flawed
@@ -2338,7 +2338,7 @@ adopted; the intake notes that grade responses should be read as part of that co
 (Prompt identical to the 2025-06-12 follow-up above; the attachment was
 `regression_analysis_from_first_25_epochs.csv` — a pre-computed per-run regression table.)
 
-Routed to: [topics/cnn-deconstruction-ladder.md](topics/staging/cnn-deconstruction-ladder.md)
+Routed to: [past-projects/cnn-deconstruction-ladder.md](past-projects/cnn-deconstruction-ladder.md) (then a staging topic; moved to past-projects 2026-08-22)
 (results table: 4-epoch slope |r| = 0.71 → full-curve 0.36; R² r ≈ −0.4; intake notes that
 the slope sign is almost certainly misread by the agent, that the window result is the real
 finding, that R² indexes slowness here, and that seeds were treated as independent); EDP
@@ -2388,7 +2388,7 @@ related-work pointer block added to the EDP doc; cross-linked from `nas-literatu
 Her prompt was not pasted; the response titles itself "CIFAR-10 Baseline Accuracy Report for
 Popular CNN Architectures" (ResNet, WRN, VGG, DenseNet, ConvNeXt).
 
-Routed to: [topics/cnn-deconstruction-ladder.md](topics/staging/cnn-deconstruction-ladder.md)
+Routed to: [past-projects/cnn-deconstruction-ladder.md](past-projects/cnn-deconstruction-ladder.md) (then a staging topic; moved to past-projects 2026-08-22)
 (reported numbers condensed; intake note replacing them with canonical original-paper
 figures from memory — to be checked — flagging the ResNet-18/50 "82.9 / 76.0%" numbers as
 wrong-stem or short-budget artifacts and the near-duplicate "9–14% drop" as a misquote;
@@ -2459,7 +2459,7 @@ sections.
 
 > Is RMSProp implemented in pytorch
 
-Routed to: [topics/cnn-deconstruction-ladder.md](topics/staging/cnn-deconstruction-ladder.md)
+Routed to: [past-projects/cnn-deconstruction-ladder.md](past-projects/cnn-deconstruction-ladder.md) (then a staging topic; moved to past-projects 2026-08-22)
 (arm-set design recorded; intake note that the "frequently used" list misstates practice
 and the AMSGrad recommendation gives almost no dynamical contrast to AdamW — Lion / SAM /
 RMSProp are the contrasting arms; per-arm LR sweeps required; PyTorch answers correct).
@@ -2502,7 +2502,7 @@ asking the contact); origin pointer added to
 
 Her prompt (verbatim, from speech) is quoted in full in the new staging topic.
 
-Routed to: new staging topic [topics/tiny-model-specialization.md](topics/staging/tiny-model-specialization.md)
+Routed to: new staging topic [potential-projs/elicitation-gain.md](potential-projs/elicitation-gain.md) (then a staging topic; promoted 2026-08-22)
 (hypothesis restated; response condensed into its A/B/C structure; intake notes: the response
 skips the prompt-tuning-is-weak-at-small-scale result that bears directly on the hypothesis,
 the honest form is "external large-model-fit interface makes a tiny model useful on a narrow
@@ -2538,10 +2538,24 @@ overlaps with the retrieval-storage tooling topic.
 > it, so that I can pull out the pieces that are most relevant to what I'm working on
 > today?"
 
-Routed to: [topics/tiny-model-specialization.md](topics/staging/tiny-model-specialization.md)
+Routed to: [potential-projs/elicitation-gain.md](potential-projs/elicitation-gain.md) (then a staging topic; promoted 2026-08-22)
 (the response's "agreed decisions" list recorded as the conversation's settled set, with
 the note that wrapper-only is the only explicit decision she made; TLC-draft internals and
 the related-work map condensed; AlphaCodium flagged) and a dated note in
 [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
 §4 (draft internals; AlphaCodium for the prior-art gate; the wrapper-only sibling as a
 candidate optional direction).
+
+### Post-intake decisions — 2026-08-22 (third pass)
+
+> (1) promote (2) I did run a few versions of this, I think we need a new section that
+> includes previous projects that were started but not finished. this and the loss slope
+> prediction work go into that section.
+
+Applied: `tiny-model-specialization` → [potential-projs/elicitation-gain.md](potential-projs/elicitation-gain.md)
+(`ELI`), cross-listed on TLC, TINY, MIC, ICL; new [past-projects/](past-projects/README.md)
+section with [cnn-deconstruction-ladder.md](past-projects/cnn-deconstruction-ladder.md) and
+[loss-slope-prediction.md](past-projects/loss-slope-prediction.md) (split out of the ladder
+staging topic; the SFT no-movement project noted as a candidate third record). Items 3
+(EDP related-work gate) and 4 (open-questions entry for the AI2 dataset) were not decided
+and were not applied.

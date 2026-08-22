@@ -24,7 +24,7 @@ exactly that pattern. This file keeps the tool-choice reasoning so it is not re-
 > involve making significant numbers of iterative changes and running a substantial number
 > of runs (multiple seeds per configuration + simple hpm sweeps).
 
-This is the design statement behind the `deconCNN` / `dr_exp` "Engineering Journey" track (now staged as `../staging/cnn-deconstruction-ladder.md`)
+This is the design statement behind the `deconCNN` / `dr_exp` "Engineering Journey" track (past-project record: `../../past-projects/cnn-deconstruction-ladder.md`)
 and the CIFAR-10 loss-slope study (both in the 2025 seven-track record in
 `project-approach-principles.md`; the slope study is EDP's lineage, see
 `../../potential-projs/early-dynamics-prediction.md` §4). The shape — an ablation ladder
