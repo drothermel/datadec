@@ -2434,3 +2434,14 @@ Routed to: same line in the staging section (two new IDs: arXiv 2209.01848, 2502
 Routed to: same line in the staging section; the rerun returned a larger set ignoring the
 year filter — flagged "ResNet strikes back" (2110.00476), "Revisiting ResNets" (2103.07579),
 and "Bag of Tricks" (1812.01187) as the recipe-ablation papers the ladder should cite.
+
+> (budgeted query without the ResNet-18 title filter; raw links only)
+
+Routed to: the same source-list bullet in the staging section.
+
+**Correction (2026-08-22):** an earlier edit had dropped the `## Intake notes` header of
+`cnn-deconstruction-ladder.md`, so the sections for the 2025-06-12 analysis, the linearity
+spec, the per-epoch slope/R² results, the cluster follow-up, the CIFAR-10 baselines, and the
+source lists were silently not written by the commits that logged them. All were
+reconstructed and written in this commit; the inputs-log entries above now point at real
+sections.
