@@ -149,3 +149,13 @@ decisions. Only notes about this project are kept here.
   factorial component × injection-time experiment where each cell costs ~10% of a training
   run, not a full run." (Full discussion in `docs/topics/functional-featurization.md`.)
 
+### 2026-08-21 — on an MoE sibling of this suite
+
+- A working MoE pretraining repo exists at the relevant scale range (from the
+  Slicing-and-Dicing paper) with validated configs and "a principled default architecture…:
+  fix expert size by active params, use dropless routing, ignore the second-order knobs." A
+  follow-up that "varies data at fixed architecture and reads out routing/expert
+  specialization" would be the MoE counterpart of this suite, with its main risk ("standing up
+  MoE training infra") already removed. (Full discussion in
+  `docs/topics/moe-recipe-suite.md`.)
+

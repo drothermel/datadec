@@ -85,3 +85,17 @@ project-specific parts to [potential-projs/trajectory-statistics.md](potential-p
 [potential-projs/token-movement.md](potential-projs/token-movement.md) §4, and
 [potential-projs/recipe-featurization.md](potential-projs/recipe-featurization.md) §4.
 
+### Slicing-and-Dicing repo as apparatus for MoE experiments
+
+> can you look at the slicing and dicing paper, regarding moes? im third author and we did
+> that on our current compute and with a range of model sizes and a working repo. so im
+> wondering if using that repo to run some additional exps in that range would be useful.
+> for context its trending towards either weak accept or weak reject at neurips currently
+> which id consider a win. but its lacking interesting analysis, im more interested in the
+> analysis than the full empirical grid sweep for future projects.
+
+Response routed to: [topics/moe-recipe-suite.md](topics/moe-recipe-suite.md) (only section 2
+of the response was captured; it references an earlier "reweighting" of directions that is
+also not captured); project-specific part to
+[potential-projs/wsd-suite.md](potential-projs/wsd-suite.md) §4.
+
