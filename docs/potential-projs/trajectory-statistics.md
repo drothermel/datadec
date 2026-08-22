@@ -197,6 +197,22 @@ Routing follow-up sequence (after the steps above):
 Dated, attributed notes from external review conversations, recorded for consolidation — not
 decisions. Only notes about this project are kept here.
 
+### 2026-08-22 — the spread-to-noise correlation is TRJ in embryo; "meaningful crossing" = drift-attributable
+
+From Danielle's reproduction of the DataDecide paper (summary in
+`../topics/reference/datadecide-data-pipeline.md`): across 160 task/metric observations
+the Spearman association between predictability and the spread-to-noise ratio was 0.798
+(stable ~0.80 across adjacent checkpoints). The response's reading: this is the
+movement-SNR thesis as a single correlation; the drift/diffusion decomposition is the
+version that explains *why* — which variance components are mean-reverting and how the
+ratio evolves within runs rather than across the surface. Good for TRJ-1/TRJ-6 (the
+phenomenon is confirmed strong); framing pressure: the paper must deliver more than the
+correlation the original authors already report. Second use: the reproduction's 15,523
+crossings (all 300 pairs) vs. Danielle's bump plots showing a stable jittery ordering —
+the noise-aware recount should define a meaningful crossing as one attributable to drift,
+not diffusion, which makes TRJ's decomposition the tool for the IRT / data-card crossover
+finding (see `irt-reanalysis.md` §4).
+
 ### 2026-08-22 — small-scale density and a retrain substrate
 
 From a conversation on the data layer (record in

@@ -2612,6 +2612,46 @@ Routed to: [topics/reference/datadecide-data-pipeline.md](topics/reference/datad
 [potential-projs/tiny-scale-measurement.md](potential-projs/tiny-scale-measurement.md) §4
 (annealed-readout SNR hypothesis at small scale).
 
+### 2026-08-22 — Paper-reproduction summary; BoolQ; four objections (same conversation, two turns)
+
+> ok, then, I was having an agent try to reproduce the different claims from the datadecide
+> paper with my postprocessed data to be sure that we can, and the summary of the parts we
+> reproduced succesfully is interesting and reminded me of something: boolq is basically
+> always sitting at random noise and has VERY high variance. and it makes me wonder whether
+> its really so hard or whether something about the task formatting, etc is adversarial
+> especially to small models. is that a question that fits somewhere in our 4 project
+> design? and do any of these other verifications prompt additional thoughts?
+
+(with the pasted reproduction summary of `docs/paper-validation-report.md`), then:
+
+> questions:
+>
+> * so when I made a bump plot of the ordering across the model sizes, recipes, etc (tried
+>   a few different things) as far as I could tell the ordering is super super super
+>   consistent however you slice it. there might be crossovers but they're basically two
+>   lines that are the same and are just jittery. so I'm a bit skeptical about the crossover
+>   conclusion, but I might not have covered all the cases I thought I did (this was quite a
+>   while ago)
+> * would the "Broken as measurement" result also come from the task just being universally
+>   too hard for this scale of models? because thats what reviewers have all concluded so
+>   its unclear that IRT would distinguish this?
+> * I'm a bit skeptical about "<= 1% compute" metrics because most of the model sizes don't
+>   provide anywhere near that level of granularity if we're normalizing within size, and if
+>   we're normalizing by 1B compute full training then that seems strange. thoughts?
+> * also, there are definitely some dataset abnormalities, like 750M only has 1 seed that
+>   trains fully I think, etc.
+
+Routed to: [topics/reference/datadecide-data-pipeline.md](topics/reference/datadecide-data-pipeline.md)
+(fifth entry: reproduced numbers as reported, both prompts verbatim, routing map);
+[potential-projs/irt-reanalysis.md](potential-projs/irt-reanalysis.md) §4 (BoolQ
+autopsy + variance-structure argument + format intervention; noise-aware crossings;
+frontier design brief); [potential-projs/trajectory-statistics.md](potential-projs/trajectory-statistics.md)
+§4 (spread-to-noise 0.798 as TRJ in embryo; drift-attributable crossings);
+[potential-projs/recipe-featurization.md](potential-projs/recipe-featurization.md) §4
+(validation report + coverage/abnormality ledger in the data card);
+[potential-projs/README.md](potential-projs/README.md) program notes ("DataDecide with
+error bars", candidate only).
+
 ### Post-intake decisions — 2026-08-22 (third pass)
 
 > (1) promote (2) I did run a few versions of this, I think we need a new section that

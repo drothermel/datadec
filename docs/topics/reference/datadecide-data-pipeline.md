@@ -305,3 +305,84 @@ releasable object.
   impact table, not a quote.
 - Danielle's statement is the decision-relevant content: the WSD arm is conditional on
   doing DataDecide-dense at all, which is itself unstarted.
+
+---
+
+## 2026-08-22 — Paper-reproduction summary and four objections (same conversation, two turns)
+
+**Danielle (verbatim, turn 1):**
+
+> ok, then, I was having an agent try to reproduce the different claims from the datadecide
+> paper with my postprocessed data to be sure that we can, and the summary of the parts we
+> reproduced succesfully is interesting and reminded me of something: boolq is basically
+> always sitting at random noise and has VERY high variance. and it makes me wonder whether
+> its really so hard or whether something about the task formatting, etc is adversarial
+> especially to small models. is that a question that fits somewhere in our 4 project
+> design? and do any of these other verifications prompt additional thoughts?
+
+She pasted the agent's summary of `docs/paper-validation-report.md` (on `main`; not on the
+planning branch). Surviving numbers, as reported there (not re-checked here):
+
+- Headline: 723/900 = 0.8033 pairwise 150M→1B decisions (300 pairs × 3 predictor seeds;
+  seed accuracies ~0.78/0.84/0.79; checkpoints step 37,500 for 150M, 69,369 for 1B);
+  preceding 150M checkpoints 0.7978 and 0.8000. Decision accuracy vs. compute: Spearman
+  0.967, ~0.082 accuracy per compute decade.
+- Task difficulty at the 0.80 threshold: required-compute ratio across tasks ~276,544×;
+  BoolQ never reaches 0.80; ARC Easy reaches 0.921 within 1% of target compute and stays
+  ≥0.80 over ~383,672×; HellaSwag needs ~17,089× ARC Easy's compute, 29× ARC Challenge's,
+  318× MMLU's; highlighted tasks average 0.789 reliability vs. 0.630 for the rest; max
+  between-task reliability range at fixed compute 0.557; HellaSwag and WinoGrande show
+  plateau-then-rise.
+- Proxies: at ~0.009% of target compute the best continuous proxy gives 0.874 (MMLU),
+  0.908 (ARC), 0.848 (HellaSwag); at ≤1% the best proxy beats accuracy by 0.156 on
+  average; per-character normalization best on 9/10 tasks; normalized/penalized
+  likelihood beats raw likelihood in 816/830 (98.3%) near-target comparisons; raw
+  likelihood curves show many local declines.
+- Noise/spread: Spearman 0.798 between predictability and spread-to-noise across 160
+  task/metric observations (0.797–0.807 at adjacent checkpoints); all 300 pairs cross at
+  least once, 15,523 crossings; seed SD ~0.02 for some recipes on 7/10 tasks, max 0.111
+  (BoolQ).
+- Counting note from the report: 27 + 3 claim records, not 30 independent findings.
+
+**Danielle (verbatim, turn 2):**
+
+> questions:
+>
+> * so when I made a bump plot of the ordering across the model sizes, recipes, etc (tried
+>   a few different things) as far as I could tell the ordering is super super super
+>   consistent however you slice it. there might be crossovers but they're basically two
+>   lines that are the same and are just jittery. so I'm a bit skeptical about the crossover
+>   conclusion, but I might not have covered all the cases I thought I did (this was quite a
+>   while ago)
+> * would the "Broken as measurement" result also come from the task just being universally
+>   too hard for this scale of models? because thats what reviewers have all concluded so
+>   its unclear that IRT would distinguish this?
+> * I'm a bit skeptical about "<= 1% compute" metrics because most of the model sizes don't
+>   provide anywhere near that level of granularity if we're normalizing within size, and if
+>   we're normalizing by 1B compute full training then that seems strange. thoughts?
+> * also, there are definitely some dataset abnormalities, like 750M only has 1 seed that
+>   trains fully I think, etc.
+
+**Where the responses went (condensed; full content in the project docs):** BoolQ
+autopsy, the variance-structure argument separating "too hard" from "prior-tracking," the
+format intervention, the noise-aware crossing definition, and the frontier design brief →
+`../../potential-projs/irt-reanalysis.md` §4. Spread-to-noise as TRJ in embryo and
+drift-attributable crossings → `trajectory-statistics.md` §4. Validation report and
+coverage/abnormality ledger as data-card components, the growing provenance list →
+`recipe-featurization.md` §4. "DataDecide with error bars" → potential-projs README
+program notes. The response's first-turn "upgrade" of the annealing question ("does
+annealing move the crossover points") was withdrawn in the second turn once Danielle's
+bump-plot evidence came in; only the noise-aware version is recorded.
+
+**Intake notes.**
+
+- The "~3,200 items" BoolQ size, the "~60%+ yes" label imbalance, the binomial SD
+  0.008–0.01, and the "OLMES standardized formats because of small-model format
+  sensitivity" claim are unverified response statements.
+- The response's P1/P2/P3/A1/A6/B5/B6 labels remain from the plan not on file; mapped
+  here to IRT / REC / annealing / TRJ by content.
+- "750M only has 1 seed that trains fully" is Danielle's hedged recollection, unverified;
+  the known related fact is the 750M aggregate-table truncation at step 26,250 with a
+  complete instance table (`../../open-questions-answered.md`).
+- Danielle's bump-plot observation is her own prior evidence, "quite a while ago," and
+  she flags she may not have covered every slice.

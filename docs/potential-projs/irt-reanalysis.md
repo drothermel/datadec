@@ -119,6 +119,88 @@ other and can be picked by impact.
 Dated, attributed notes from external review conversations, recorded for consolidation — not
 decisions. Only notes about this project are kept here.
 
+### 2026-08-22 — BoolQ as the diagnostic case study; noise-aware crossings; the frontier's design brief
+
+Prompted by Danielle's claim-by-claim reproduction of the DataDecide paper on the
+processed tables (`docs/paper-validation-report.md` on `main`; the summary she pasted is
+recorded in `../topics/reference/datadecide-data-pipeline.md`). Her question, verbatim:
+
+> boolq is basically always sitting at random noise and has VERY high variance. and it
+> makes me wonder whether its really so hard or whether something about the task
+> formatting, etc is adversarial especially to small models. is that a question that fits
+> somewhere in our 4 project design?
+
+And her follow-up:
+
+> would the "Broken as measurement" result also come from the task just being universally
+> too hard for this scale of models? because thats what reviewers have all concluded so
+> its unclear that IRT would distinguish this?
+
+**BoolQ autopsy (fits IRT-3/IRT-7 and the diagnostics module).** Two hypotheses leave
+different fingerprints. Genuinely hard: high item difficulty, normal discrimination, θ
+must climb far before accuracy moves, margins drift smoothly sub-threshold. Broken as
+measurement: discrimination near zero *and* large local-independence violations — within
+a checkpoint, responses correlate across items beyond what θ explains. The correct
+answer to the follow-up: item parameters alone do **not** separate the two (a
+universally-too-hard task also gives near-zero discrimination); the **aggregate variance
+structure** does. Independent guessing at chance over ~3,200 items gives a seed SD of
+roughly 0.008–0.01; the observed SD up to 0.111 is >10× that floor and is only producible
+if responses are strongly correlated within a checkpoint — the model answers whole
+swaths the same way, and which way it leans swings across seeds and steps. BoolQ is
+two-choice with an imbalanced (yes-heavy, ~60%+, unverified) label distribution, so
+"chance" is ambiguous between 50% and the majority-class rate, and prior-tracking
+(response style / acquiescence bias) predicts exactly the observed phenomenology; "too
+hard" predicts a flat, quiet 50%. Discriminating tests: (a) residual inter-item
+correlation / local-dependence structure; (b) regress per-checkpoint accuracy on the
+model's predicted-yes fraction — if accuracy variance is explained by answer-base-rate
+variance, the task measures the yes-prior; (c) whether margins are structured by label
+rather than content. Residual caveat: "too hard" and "prior-tracks *because* too hard"
+can both be true; a **format intervention** (cloze vs. MCQ presentation, label-balanced
+subsets, flipped label order, on a checkpoint subset; forward passes only) separates
+"irrecoverable at this scale" from "recoverable under better elicitation." Constructive
+corollary either way: does the margin metric on BoolQ retain signal that accuracy
+destroys, or should BoolQ be dropped from small-scale suites? Both are citable
+recommendations; the generalization is "a principled diagnostic for when a benchmark
+measures response style rather than ability." The format study is the first concrete
+instance of the elicitation thesis (apparent capability floors that are measurement
+floors; see `elicitation-gain.md`).
+
+**Crossings.** The reproduction counted 15,523 crossovers with all 300 recipe pairs
+crossing at least once. Danielle: her bump plots showed the ordering "super super super
+consistent however you slice it … basically two lines that are the same and are just
+jittery." The response agreed her bump plot is the better evidence: a crossing statistic
+with no persistence or magnitude threshold is near-guaranteed under stable ordering +
+noise, and ~50 crossings per pair is the signature of jitter, not regime change.
+Noise-aware definition to adopt: a *meaningful* crossing exceeds the per-task seed-noise
+floor and persists for k consecutive checkpoints (in drift/diffusion terms, attributable
+to drift, not diffusion — see `trajectory-statistics.md`); recount, then ask what
+annealing does to the survivors. Expected outcome: the count collapses to dozens in
+genuinely close pairs; "the paper's crossover claim is technically true but mostly
+measurement noise" is a data-card / IRT finding. Crossover density vs. compute is a
+companion statistic to the decision-reliability frontier.
+
+**Frontier design brief (from Danielle's ≤1%-compute skepticism).** Her point:
+
+> I'm a bit skeptical about "<= 1% compute" metrics because most of the model sizes don't
+> provide anywhere near that level of granularity if we're normalizing within size, and if
+> we're normalizing by 1B compute full training then that seems strange.
+
+Response: normalizing by target (1B-final) compute is defensible for the decision framing
+(a fully-trained 4M model is ~0.01% of a 1B run), but the low-compute region is populated
+by very few (size, step) cells, so "at 0.009% of compute" means "at the one or two cells
+near 0.009%"; iso-compute points conflate a fully-trained tiny model with an early-stopped
+larger one; and "the *best* continuous proxy achieved 0.874" is a post-hoc max over a
+metric family with winner's-curse inflation. The qualitative conclusion (continuous ≫
+accuracy at low compute; the 816/830 pairwise result) survives; the extreme-low-compute
+numbers are fragile. Brief for the frontier sub: report iso-compute bands with cell
+composition explicit; separate the size-ladder axis from the within-run axis rather than
+collapsing to one compute scalar; evaluate metric selection out-of-cell. The reproduced
+proxy numbers are the incumbent baselines the frontier must beat ("how much further does
+θ push past the best continuous proxy"); per-character normalization winning 9/10 tasks is
+a design input for the continuous-response variant (operate on per-character-normalized
+margins, or ablate the normalization family). Noise floors must be per-task-per-recipe
+objects, not global scalars (0.02 typical, 0.111 max, BoolQ-driven).
+
 ### 2026-08-21 — two "top-N by workshop-paper likelihood × speed" lists
 
 - **Ranked #2 in a top-3 list.** "Also pure T0, and IRT-1 (dimensionality) is the rare

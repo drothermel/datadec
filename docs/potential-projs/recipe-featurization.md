@@ -346,6 +346,29 @@ deterministic tokens)? Has it been done?
   deterministic, so you'd want the profile computed before and after dedup to separate
   'structured domain' from 'duplicated corpus.'"
 
+### 2026-08-22 — the validation report and a coverage/abnormality ledger as data-card components
+
+Danielle had an agent reproduce the DataDecide paper's claims from the processed tables
+(`docs/paper-validation-report.md` on `main`: 27 reproduced + 3 approximately reproduced
+claim records, with the distinctions claim-record vs. independent discovery, strict vs.
+approximate thresholds, and "0.02 seed SD occurs for some recipes" vs. "global maximum").
+Two additions to the data-card scope from the response: (1) the claim-by-claim
+validation report is a first-class component — which published claims reproduce from
+the cleaned tables, with operationalizations pinned — and it de-risks every downstream
+analysis (they run on tables that reproduced the headline 0.8033 150M→1B result). The
+report should distinguish "claim reproduces" from "claim's operationalization is
+informative" (the crossover count is the example). (2) Danielle's "there are definitely
+some dataset abnormalities, like 750M only has 1 seed that trains fully I think"
+(unverified; the 750M aggregate-table truncation is already in
+`../open-questions-answered.md`) → an automated **coverage and abnormality ledger**
+(recipe × size × seed × step cells present, early-terminated, known-issue), with every
+downstream analysis declaring exclusion rules against it, and published numbers whose
+support runs through thin cells flagged. Provenance list now: labels≠token shares,
+nominal-vs-exact compute, unrecoverable LR, possibly-absent training loss, incomplete
+seed replication. Candidate program framing sentence from the response: the original
+paper's statistics are computed without a noise model and the portfolio recomputes them
+with one — "DataDecide with error bars."
+
 ### 2026-08-22 — own-mixture held-out CE as a reconstructed training-loss analog
 
 Follow-on from the same conversation: for each recipe, hold out a sample of its own

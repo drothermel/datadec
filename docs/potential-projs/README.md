@@ -77,6 +77,20 @@ attributions) are unverified: the responding agents did not run literature searc
 reliable knowledge of the current landscape. Treat them as leads to check, not facts. The ideas
 stand on their own. This applies equally to every §4 section.
 
+### 2026-08-22 — "DataDecide with error bars" as a unifying sentence
+
+From a conversation on Danielle's reproduction of the DataDecide paper (record in
+`../topics/reference/datadecide-data-pipeline.md`; project notes in `irt-reanalysis.md`,
+`trajectory-statistics.md`, `recipe-featurization.md` §4). Four of her objections —
+crossings that are jitter, a chance floor that ignores response dependence, compute
+frontiers resting on one or two cells, pooling across incomplete seed coverage — are
+instances of one move: the original paper's statistics have no noise model, and the
+DataDecide-facing projects recompute them with one (persistent crossings vs. jitter,
+dependence-aware chance floors, support-aware compute frontiers, coverage-aware pooling).
+Candidate framing sentence for that slice of the program: *DataDecide with error bars*.
+Recorded as a candidate, not adopted; it covers the measurement projects, not the
+non-DataDecide ones.
+
 ### 2026-08-21 — general thoughts on the portfolio
 
 - **One thesis.** One framing: "Almost everything here tests either 'pretraining data shapes
