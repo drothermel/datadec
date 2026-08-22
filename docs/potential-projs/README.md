@@ -34,7 +34,8 @@ Source inventories: [../refs/lr-schedule-wsd-synthesis.md](../refs/lr-schedule-w
 
 Resolved gate checks and open questions (with the code used to answer them) are logged in
 [../open-questions-answered.md](../open-questions-answered.md). The recipe-featurization
-literature review (plan and process) lives in [../litreview/](../litreview/).
+literature review (plan and process) lives in [../litreview/](../litreview/). Ideas that do not yet
+belong to a project are staged in [../topics/](../topics/).
 
 ## Program-level notes
 
