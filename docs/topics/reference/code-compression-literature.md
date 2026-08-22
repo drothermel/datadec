@@ -93,3 +93,30 @@ re-flagged.
   through a *text* latent is represented in this bundle by nothing closer than
   HumanEvalExplain (`humanevalexplain-results.md`). Rate–distortion (Girish) supplies the axis
   vocabulary; library learning (Leroy) is the contrast case for "compressing functions."
+
+## 2026-08-22 — Lossless-baseline suite for per-sample Python (three-turn conversation; tools, not papers)
+
+Danielle's prompts (core): test standard lossless compressors on HumanEval ground-truth
+samples one by one; only per-sample regimes matter for her compression-vs-correctness plot;
+then "focus on all methods, even quite slow ones … consider how well methods perform on
+python not just on general text … consider stacking multiple methods or preprocessing to
+really try to push the limit." Project-facing consequences are in
+`../../potential-projs/text-latent-code-autoencoder.md` §4 (2026-08-22, baseline suite).
+Tool inventory as given (unverified):
+
+| Family | Methods | Notes |
+|---|---|---|
+| Baselines | raw bytes; zlib/DEFLATE 1/6/9; **Zopfli** raw deflate | Zopfli = slow best-DEFLATE point |
+| Practical | **zstd** 3/9/19/22; **Brotli** q9/q11; raw **LZMA2** / xz 9e | raw streams, not containers |
+| Dictionary | zstd trained dictionary (COVER/fastCover via `python-zstandard`; sweep 256 B–128 KB); zlib `deflateSetDictionary`; Brotli shared dictionary (RFC 9841) | the centerpiece for short code; train on a separate corpus in the same representation |
+| BWT | bzip2; **libbsc** | different family, unlikely to win |
+| Text modeling | **PPMd** (7-Zip; `pyppmd` Variant H, order 2–64) | strong on short text/code |
+| Context mixing | **paq8px**, ZPAQ, **cmix** (≥32 GB RAM) | slow ceilings |
+| Neural | **NNCP** (Transformer-based) | research ceiling; code-LM + arithmetic coding is the custom version (Delétang et al. 2309.10668 for the principle) |
+| Python-aware transforms | `python-minifier`; `tokenize` token codecs (single- and multi-stream); alpha-renaming of locals; `ast.parse` → compact preorder AST stream; grammar-based arithmetic coder over AST symbols; CPython bytecode (version-pinned; `marshal` not stable) ; nearest-reference byte/token/AST diff | stacks of transform → one compressor; never compressor → compressor |
+
+Rules the conversation set: per-sample only (no solid/tar/concatenation); x-axis =
+compressed bytes, with raw, compressed, and relative-to-ground-truth lengths reported;
+prior fairness (shared, not trained on the target; charge per-family priors; selector
+cost in any oracle-vs-realistic pair); source-lossless vs. test-preserving labels;
+representation byte lengths as controls.

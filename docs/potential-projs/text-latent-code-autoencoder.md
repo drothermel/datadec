@@ -346,6 +346,58 @@ Dated notes from the external conversation this doc was promoted from, recorded 
 consolidation — not decisions. Related-work claims in quoted text are unverified unless a
 citation is given; Danielle's prompts are logged verbatim in `../danielle-inputs.md`.
 
+### 2026-08-22 — the lossless-baseline suite for the compression-vs-correctness plot (three turns)
+
+Danielle's framing, verbatim in part: she wants to test "standard lossless compression
+algorithms on fairly short code samples, like the HumanEval ground truth examples, one by
+one," see what works best, then move to longer samples; she cares only about per-sample
+regimes because she is "explicitly trying to plot 'compression versus correctness' on a
+per sample level (where correctness is the result of doing other transforms before
+running unit tests)"; and she wants every method including slow ones, Python-specific
+performance, and transform stacks that "really try to push the limit." Tool record in
+`../topics/reference/code-compression-literature.md` (2026-08-22 baseline-suite entry).
+What the conversation fixes for TLC-1's baseline accounting:
+
+- **Two regimes only**: standalone per-sample, and per-sample with a *fixed external
+  prior* (dictionary, codebook, trained model, reference corpus, LM). Solid archives,
+  tar+compressor, and concatenation are a corpus question and are out.
+- **Scoring rule**: the x-axis is **compressed bytes of the tested candidate**, not a
+  ratio — a transform that shortens code can have a worse ratio and a better description
+  length. Report raw length, compressed length, and compressed length relative to the
+  original ground-truth bytes; wrappers (`.xz`, `.gz`, `.7z`, ZPAQ) dominate tiny samples,
+  so use raw streams / memory-to-memory APIs.
+- **Fairness for priors**: the prior is shared by encoder and decoder and not trained on
+  the evaluated sample or its variants; don't charge a fixed public prior, do charge or
+  amortize any prior trained per benchmark / task family / transform family / model; an
+  oracle min over methods is a legitimate envelope only beside a realistic score that adds
+  the method/dictionary selector (≥1 byte matters at HumanEval size). This is the same
+  rule the project already applies to the shared decoder prompt.
+- **Source-lossless vs. semantics-preserving** labels: `tokenize.untokenize` round-trips
+  tokens, not spacing; `ast.unparse` round-trips the AST, not the source. Anything that
+  strips comments, renames locals, or unparses is a *test-preserving transform* and is
+  scored as such — exactly the status of this project's representations.
+- **Transform stacks, not compressor stacks**: compressing already-entropy-coded output
+  adds overhead; what helps is minify / tokenize / alpha-rename / canonical AST /
+  reference-diff *before* one compressor. Expected standalone winners for short Python:
+  PPMd high order, paq8px / cmix / NNCP as slow ceilings; Brotli q11 / raw LZMA2 / zstd-22
+  as practical points. Expected fixed-prior winners: Python-token codec + zstd dictionary
+  (sweep 256 B–128 KB; small dictionaries may win), compact AST codec + trained model,
+  nearest-reference token/AST diff. Grammar-based arithmetic coding over AST symbols and
+  code-LM arithmetic coding are the custom ceilings — the latter is the "LLM-as-compressor"
+  baseline §1 already names.
+- **Controls**: the byte lengths of each *representation* before compression (raw,
+  minified, AST-unparsed, token codec, AST codec), so a win is attributable to the
+  compressor or to the representation.
+
+Consequence for the plan: the "zstd and friends" baseline in §1 becomes a layered suite
+(Layer 0 controls; Layer 1 standalone compressors; Layer 2 dictionaries trained on
+separate Python *in the same representation*; Layers 3–4 token and AST codecs; Layer 5
+bytecode as a CPython-pinned side experiment; Layer 6 reference-diff and LM arithmetic
+coding). The headline claim must be stated against the strongest fixed-prior baseline
+with the selector cost paid, not against zstd-22 on raw source. The `python-minifier`
+and `pyppmd` packages are the named Python entry points. All tool claims are the
+respondent's and unverified.
+
 ### 2026-08-22 — code-compression related work
 
 From Danielle's SciSpace deep review of code compression, run with this paper as the

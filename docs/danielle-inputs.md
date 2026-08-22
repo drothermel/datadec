@@ -3383,3 +3383,31 @@ an int64 overflow from an integer FLOP product before the Arrow cast, which the 
 `model_utils.py` integer arithmetic would produce; fix by casting to float, not by
 splitting columns. Unverified against the traceback. No project-doc change beyond a
 data-card convention line.
+
+### Undated (intake 2026-08-22) — lossless compression baselines on HumanEval samples (three turns)
+
+> I want to test out standard lossless compression algorithms on fairly short code samples,
+> like the HumanEval ground truth examples, one by one.
+> I want to see what approach works best and then I'll try this on datasets with much
+> longer samples.
+> If I want to see the full range of fairly strong to really strong options on the code
+> what algorithms or combinations of algorithms should I consider? I'm up for implementing
+> the sequencing of algs in basically any language if there is a language that provides a
+> particularly nice impl of something useful.
+
+> so, I only care about (1) and (2) because I'm explicitly trying to plot "compression
+> versus correctness" on a per sample level (where correctness is the result of doing other
+> transforms before running unit tests). based on that statement, how would yo uupdate your
+> recs?
+
+> great, now, please focus on all methods, even quite slow ones, we don't have to worry
+> about scaling, and consider how well methods perform on python not just on general text.
+> and consider stacking multiple methods or preprocessing to really try to push the limit
+> in my specific setting.
+> then, give me an overview of my options!
+
+Routed: TLC §4 note (two regimes; compressed-bytes x-axis; prior fairness and selector
+cost; source-lossless vs. test-preserving; transform stacks; the six-layer suite replacing
+"zstd and friends"; headline stated against the strongest fixed-prior baseline); tool
+inventory in [topics/reference/code-compression-literature.md](topics/reference/code-compression-literature.md).
+No new citations beyond Delétang 2309.10668 (already on file).
