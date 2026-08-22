@@ -2330,3 +2330,16 @@ Recorded as a standing reading note at the top of this log and in
 `topics/reference/project-approach-principles.md`: the archived conversations are
 Danielle's thinking-out-loud plus an informal comparison of agents, not decisions she
 adopted; the intake notes that grade responses should be read as part of that comparison.
+
+### 2026-08-22 — Second attempt with per-epoch data (2025-06)
+
+> ok, I tried again with the same inro as last time. then:
+
+(Prompt identical to the 2025-06-12 follow-up above; the attachment was
+`regression_analysis_from_first_25_epochs.csv` — a pre-computed per-run regression table.)
+
+Routed to: [topics/cnn-deconstruction-ladder.md](topics/staging/cnn-deconstruction-ladder.md)
+(results table: 4-epoch slope |r| = 0.71 → full-curve 0.36; R² r ≈ −0.4; intake notes that
+the slope sign is almost certainly misread by the agent, that the window result is the real
+finding, that R² indexes slowness here, and that seeds were treated as independent); EDP
+lineage note updated to point at it. The expiring S3 links were not stored.

@@ -167,9 +167,14 @@ inherit an untested premise and must be framed as a hypothesis under test, not a
 consensus. This is
 the CNN-sweep precursor of EDP — the same question (early-window
 curve-shape features → final performance) asked on Danielle's own `dr_exp`/`deconCNN`
-CIFAR-10 runs before the July 2025 DataDecide draft. The "early findings" quoted above are
-the response's paraphrase of notes that no longer exist and are unverified; treat them as
-a pointer that a CIFAR-scale pilot of the slope/R² features was run, not as a result.
+CIFAR-10 runs before the July 2025 DataDecide draft. The "early findings" quoted above
+trace to a June 2025 analysis now recorded in `../topics/staging/cnn-deconstruction-ladder.md`
+("Second attempt, with per-epoch data"): on ~34 runs of 25 epochs, the 4-epoch validation-loss
+slope correlated with final accuracy at |r| = 0.71, falling to 0.36 for the full-curve slope,
+and curve R² correlated at r ≈ −0.4. The slope's sign convention was never resolved (the
+agent read a faster early decline as predicting *worse* accuracy, which is likely a sign
+misread), and the statistics treat seeds as independent; treat it as a CIFAR-scale pilot
+showing the *early window carries the most signal*, not as a directional result.
 The "RMSE strongest single predictor" line is also ambiguous (RMSE of what fit?) and
 matches the later residual-vs-RMSE confusion flagged in the 2025-07 review thread.
 
