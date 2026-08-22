@@ -31,7 +31,6 @@ factored out. Idea IDs (`A1`, `B3`, …) match the synthesis.
 |-----|---------|---------|--------------|
 | [irt-reanalysis.md](irt-reanalysis.md) | Track B — Psychometric reanalysis of DataDecide | T0 | Strongest standalone bet |
 | [trajectory-movement.md](trajectory-movement.md) | Track A — Drift/diffusion in eval trajectories | T0 | Strong; gated on checkpoint spacing |
-| [token-item-movement.md](token-item-movement.md) | Track E — Token/item-level movement | T0 / T1 | Best single figure; needs inference harness |
 
 Track C (dataset featurization) is [recipe-featurization.md](recipe-featurization.md),
 listed in the table above; its idea map is [../dataset-analysis-idea-map.md](../dataset-analysis-idea-map.md).
@@ -41,11 +40,15 @@ Track D (annealing-confound correction) is merged into Project A,
 merging route is A1, its ranking-stability analysis is A6, and its durable-movement
 operator is A-opt-7.
 
+Track E (token/item-level movement) is merged into Project D,
+[d-token-level-decomposition.md](d-token-level-decomposition.md), as its Stage 1
+(observational) half; Project D's original core is Stage 2 (causal).
+
 Track F (FLAME-MoE routing dynamics) is no longer standalone: its routing-flip
 core (survey, ingest, F1, F3, commitment timing, routing-vs-eval, scale ladder)
 is a follow-up inside [trajectory-movement.md](trajectory-movement.md), and F2
-(flips by token entropy) is an optional direction in
-[token-item-movement.md](token-item-movement.md). Each restates its own
+(flips by token entropy) is a Stage 1 optional direction in
+[d-token-level-decomposition.md](d-token-level-decomposition.md). Each restates its own
 prerequisites.
 
 Compute tiers: **T0** = analysis of published tables only; **T1** = forward
