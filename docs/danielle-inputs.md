@@ -1075,3 +1075,44 @@ a plain sequencing point.
 Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-code-autoencoder.md)
 ("Compression project: implementation state and initial experiment design"). Lab decisions
 (HumanEval only; compression goal) kept as project facts; adviser commentary omitted.
+
+### Text-latent code autoencoder — sequencing the first measurements — conversation 2026-07-11, intake 2026-08-22
+
+> Yeah. I completely agree with all of your points. Um, I think that my main thing is about,
+> uh, sequencing. So I think that past that one is gonna be our metric mainly because I
+> think that cost wise is the only one that makes sense. Um, and also, like, practically, I
+> think, is the only one that really makes sense at this point because language models are
+> so good that, like, at this point, what are we doing if we're not talking about past that
+> one? Um, for, like, simple coding tasks, anyways. But I think then the question is
+> sequencing in terms of you say that we wanna do, like, twenty samples for, um, all the
+> budgetaries, but the question is kind of what should the budgetary even be? So, like,
+> I've switched from using a fixed character budget to using a compression ratio against
+> the length of the input code sample. And for the input code sample, I strip out the the
+> doc string, um, because I see the doc string is basically the prompt for the original
+> HumidieVel task. So I just pass in the code without the doc string or any comments. Um,
+> and so then the target is a compression ratio compared to that, but then expressed as a
+> number of tokens, but calculated per sample, basically. Um, and for my preliminary
+> evaluation, like there's some kind of… there are open questions about how much extraction
+> effort one puts in to try to normalize the LM output responses because we don't really
+> care if the response format is not exactly correct because the goal is to, like, maximize
+> compression. And so you could consider extraction to be part of the, um, decompression
+> algorithm, for example. Um, but, like, basically, all… like, I'm using the cheapest models
+> that exist on open router, and they're all at the, like, ninety five percent pass rate
+> point. Say the worst one is maybe at, like, eighty percent pass rate, and that goes down
+> to pretty low thresholds where basically, like, below a certain threshold is where you
+> ask it to provide a description shorter than something, then a lot of the models will
+> just say, I I don't know where. I can't do that. That's too small. Um, and so it's, uh,
+> like, very, uh, step function jump between, like, feasible and zero percent. And feasible
+> generally is, like, a very high pass rate. And so I'm trying to decide basically, like,
+> how to choose the sequence of doing the, like, intensive sampling. Um, so taking a lot of
+> samples to get the statistic measurement versus the budget sweep course and then probably
+> fine grained. Um, and then also, as you say, ultimately, I will wanna use different
+> optimizers. I'm really just trying to get a first thing off the ground, but I have to
+> implement them right. And so, like, each additional optimizer is an additional period of
+> time where I'm implementing instead of collecting results. And so I think it makes sense
+> to start with something that's easy to implement and run the analysis on it first, um, so
+> that I have something to base my intuition on. And I think that that's really… these are
+> the questions I'm trying to answer.
+
+Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-code-autoencoder.md)
+("Sequencing the first measurements; the cliff structure").

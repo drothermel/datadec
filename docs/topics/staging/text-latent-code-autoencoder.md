@@ -371,6 +371,69 @@ the compression claim.
 the convincing baseline is LLM + arithmetic coding, and bit accounting must decide how to
 count the shared decoder prompt.
 
+## 2026-07-11 — Sequencing the first measurements; the cliff structure
+
+**Danielle's decisions and observations.** pass@1 is the metric — cost-wise the only one that
+makes sense, and "language models are so good that, at this point, what are we doing if
+we're not talking about pass@1, for simple coding tasks anyways." Budget is now a
+**compression ratio against the input code** rather than a fixed character count: the input
+is the HumanEval solution with the docstring and comments stripped (the docstring "is
+basically the prompt for the original HumanEval task"); the target ratio is expressed as a
+token count computed per sample. Open question on how much **extraction effort** to spend
+normalizing LM output — "you could consider extraction to be part of the decompression
+algorithm." Empirically, with the cheapest OpenRouter models: ~95% pass rate (worst ~80%)
+down to a threshold below which models "will just say, I can't do that, that's too small" —
+"a very step-function jump between feasible and zero percent," with feasible meaning very
+high pass rate. Sequencing questions: intensive sampling for the statistics vs. a coarse
+then fine budget sweep; and optimizer order — each additional optimizer is implementation
+time instead of results, so start with something easy to implement, analyze it, and build
+intuition.
+
+**Response (near-verbatim).**
+
+*The cliff dissolves the sequencing dilemma.* "With pass/fail outcomes, variance isn't a
+separate thing to measure — it's fully determined by the pass probability: σ² = p(1−p),
+maximal at p = 0.5, near zero at the extremes. Your step function means almost every
+(problem, ratio) point sits at an extreme, so global intensive sampling would spend most of
+its budget confirming 0s and 100s. So the order is: coarse ratio sweep at tiny n (2–3) just
+to bracket each problem's cliff, then concentrate samples only inside the brackets." Closed
+form for n: "worst-case SE is 0.5/√n, so n = 25 buys ±10 points per estimate, n = 100 buys ±5
+— needed only near cliffs."
+
+*Measure cliffs, not curves.* "The informative per-problem statistic is the critical ratio —
+the threshold where reconstruction starts failing — found by bisection at log cost rather
+than a dense grid. The distribution of critical ratios across problems is your landscape
+map: it tells you where tiers should sit and which problems carry training signal."
+
+*Tier placement.* "One mid tier where baseline passes ~30–60% (maximum headroom and
+sensitivity), one aggressive tier below most cliffs where baseline is ~0%. The zero tier
+isn't wasted, because your zeros are refusals — compliance failures, not capability failures
+— and compliance is the first thing prompt optimization fixes." Corollary: "the cliff is
+prompt-dependent, so the baseline prompt's cliff will move the moment optimization starts —
+map it coarsely for the paper, but do fine mapping under a reasonable prompt."
+
+*Split the zero now.* "Log each sample as {refused, extraction/format failure, doesn't run,
+tests fail, pass} rather than binary. Nearly free, it tells you how much of the cliff is
+refusal versus genuine information insufficiency, and that taxonomy is precisely what the
+diagnosis-driven optimizer arm will consume later."
+
+*Extraction-as-decompression is principled under two conditions.* "Deterministic and frozen:
+string munging is part of the codec spec; anything model-based becomes decoder capability
+leaking into the harness and muddies attribution. Expect some early optimizer 'gains' to be
+format-compliance wins — legitimate, but the taxonomy makes them visible as such."
+
+*Simplest-first is right, and it's not throwaway.* "Blind propose–evaluate–select is a
+required arm of the eventual optimizer comparison — the null that diagnosis-driven methods
+must beat — so building it first is collecting results, not deferring them ... its second job
+is generating the failure transcripts that define what a smarter optimizer needs to see."
+Flag: "token ratio is the right knob now, but the claim is ultimately in bits, so log
+zstd-compressed sizes of representation and original alongside — token orderings don't
+always survive the conversion" (code compresses well; dense natural language may not).
+
+*Composition.* "Aggressive tier × 10–15 bracket-mapped problems × simple optimizer at low n is
+exactly the miniature pilot from before — your first real optimization run and the pipeline
+shakedown in one."
+
 ## Open questions
 
 - Bottleneck: now framed as *optional* and itself an experimental variable — does
@@ -396,6 +459,9 @@ count the shared decoder prompt.
   subset + frozen held-out + power calculation; miniature-loop pilot instead of a toy
   optimizer test; optimizer arms (COPRO / OPRO-trajectory / diagnosis-driven); the scalar the
   optimizer sees (per-tier vs. scalarization); pass@1 vs. pass@k; baseline = LLM arithmetic
-  coding with honest bit accounting.
+  coding with honest bit accounting. Decided: pass@1; ratio-vs-stripped-input budget.
+- Cliff-based measurement plan: bisection for per-problem critical ratios; tiers at ~30–60%
+  and ~0% (refusal) baseline; five-way outcome taxonomy; frozen deterministic extraction;
+  blind propose–evaluate–select first; log zstd bytes alongside tokens.
 
 **Waiting on:** the remaining points of the point-by-point discussion; a promotion decision.
