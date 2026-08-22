@@ -42,6 +42,12 @@ directory only holds live, unresolved material.
 | [icl-as-posttraining.md](icl-as-posttraining.md) | Whether ICL curves on existing checkpoints (plus the code-autoencoder reconstruction probe) become a proxy-metric project, or fold into TINY / the post-training design topic |
 | [warmstarting-decomposition.md](warmstarting-decomposition.md) | Whether the Ash & Adams reproduction + factorial becomes a project, now framed as one cell of a unified early-window intervention grid shared with the critical-period reproduction — "Chapter 1" and the retrospective's experimental spine |
 | [critical-period-timing-study.md](critical-period-timing-study.md) | Whether the sibling-seeds-with-timed-deficits study (Fisher trace + barriers + ICL curves measured together) becomes a project or folds into GEO-opt-5 / warm-starting / ICL |
+| [reset-recovery-dynamics.md](reset-recovery-dynamics.md) | Promotion decision (gaps G1/G2/G10): embedding-reset recovery curve vs. scale/stage/seed; input-vs-output asymmetry; init-in-the-limit |
+| [interface-reset-basin-test.md](interface-reset-basin-test.md) | Promotion decision (gap G3): reset an interface, measure the barrier to the pre-reset solution — or add as GEO-opt-6 |
+| [reset-and-plasticity.md](reset-and-plasticity.md) | Promotion decision (gaps G4/G9): does an interface reset restore plasticity; which layers need resetting; plasticity-injection diagnostic |
+| [frozen-body-transfer-audit.md](frozen-body-transfer-audit.md) | A forward-citation sweep of arXiv 2107.12460, then a promotion decision (gaps G5/G6): LR-tuning re-audit with the reservoir null; elicitation-ceiling measurement of what a frozen interface can reach |
+| [reset-response-stage-probe.md](reset-response-stage-probe.md) | Whether checkpoint tomography is promoted and adds this as its fifth probe (gap G7) |
+| [reset-effects-many-seed-lm.md](reset-effects-many-seed-lm.md) | Whether the Zaidi-style many-seed / tuned-regularization replication stands alone or becomes a requirement in the other reset topics (gap G8) |
 | [nonstationarity-accounting.md](nonstationarity-accounting.md) | Whether "non-stationarity accounting" becomes the thesis-level framing (see candidate program framings in the potential-projs README); its case study has moved to the MoE movement project |
 
 Absorbed on 2026-08-21 into project docs: `moe-analysis-program` and

@@ -91,3 +91,12 @@ landscape measurement suite for pretraining checkpoints, with data recipes as th
 variable' is open — and it's a better flagship framing than any single project in the
 original documents, because it's an instrument paper whose validation experiments are
 themselves the results."
+
+---
+
+## 2026-08-22 — candidate fifth probe
+
+A reset branch (reset an interface or block, continue briefly, measure recovery cost and the
+barrier to the pre-reset model) has the same shape as the four probes above and shares the
+runner. Staged in [reset-response-stage-probe.md](reset-response-stage-probe.md).
+

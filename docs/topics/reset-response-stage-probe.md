@@ -4,8 +4,10 @@
 battery (`checkpoint-tomography.md`), or an arm of the critical-period timing study. Gap
 **G7**.
 
-Source: the 2026-08-22 reinit/transfer literature pass (`reinit-and-transfer-literature.md`; full report at `~/drotherm/data/.claude/datadec/2026-08-22/0031-reinit-transfer-litpass.md`). Gap statements are quoted from that report; "closest work" citations were retrieved by the subagent (arXiv IDs), but verdicts rest on abstracts and no forward-citation sweep was run.
-
+Source: the 2026-08-22 reinit/transfer literature pass (`reinit-and-transfer-literature.md`;
+full report at `~/drotherm/data/.claude/datadec/2026-08-22/0031-reinit-transfer-litpass.md`).
+Gap statements are quoted from that report; "closest work" citations were retrieved by the
+subagent (arXiv IDs), but verdicts rest on abstracts and no forward-citation sweep was run.
 ---
 
 ## 2026-08-22 — the gap

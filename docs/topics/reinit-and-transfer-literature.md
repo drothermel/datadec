@@ -12,9 +12,11 @@ and quoted close to verbatim; related-work claims are unverified unless a citati
 > basin-preserving-vs-determining reading; (2) a gap list; (3) if a gap is real, a staging
 > topic or project doc. **Step (1) and (2) done 2026-08-22** — see the literature-pass section at the end of this doc
 > and the full report at
-> `~/drotherm/data/.claude/datadec/2026-08-22/0031-reinit-transfer-litpass.md`. Step (3)
-> — deciding whether a gap (G3 is the best-shaped) becomes a staging topic or project — is
-> Danielle's call.
+> `~/drotherm/data/.claude/datadec/2026-08-22/0031-reinit-transfer-litpass.md`. Step (3): the
+> gaps were split into six staging topics on 2026-08-22 (`reset-recovery-dynamics`,
+> `interface-reset-basin-test`, `reset-and-plasticity`, `frozen-body-transfer-audit`,
+> `reset-response-stage-probe`, `reset-effects-many-seed-lm`); promotion decisions are
+> deferred to the end-of-intake review.
 
 Why it matters here: resets are "ways to jump to different spots in the loss landscape"
 (Danielle); the embedding-reset result is an early Danielle hypothesis that became standard

@@ -654,3 +654,17 @@ summarized in [topics/reinit-and-transfer-literature.md](topics/reinit-and-trans
 G3 ("is an interface reset basin-preserving?") or another gap becomes a staging topic /
 project.
 
+### Staging topics from the reinit literature pass (2026-08-22)
+
+> thats very cool from the lit pass! can we pull out as many separable staging topics from
+> the gaps as possible and then we'll revisit at the end?
+
+Six staging topics created from the ten gaps:
+[topics/reset-recovery-dynamics.md](topics/reset-recovery-dynamics.md) (G1, G2, G10),
+[topics/interface-reset-basin-test.md](topics/interface-reset-basin-test.md) (G3),
+[topics/reset-and-plasticity.md](topics/reset-and-plasticity.md) (G4, G9),
+[topics/frozen-body-transfer-audit.md](topics/frozen-body-transfer-audit.md) (G5, G6),
+[topics/reset-response-stage-probe.md](topics/reset-response-stage-probe.md) (G7),
+[topics/reset-effects-many-seed-lm.md](topics/reset-effects-many-seed-lm.md) (G8).
+Promotion decisions deferred to the end-of-intake review.
+
