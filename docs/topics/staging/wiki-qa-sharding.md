@@ -339,13 +339,32 @@ rerank, fetch scattered rows. Canonical corpus as one Lance dataset read by both
 Lance extension; small Parquet tables for the link graph and evaluations. Don't use DuckDB
 VSS as the sole Wikipedia-scale vector index.
 
+## 2026-08-16 — Entity-based candidate fetch: the stack to build now
+
+Context and the general analysis (sparse-retrieval reframing, CSR/mmap, LMDB/RocksDB,
+head-entity strategies) are in `../reference/retrieval-storage-tooling.md`. Danielle's
+earlier project fetched candidates from question entities over an entity-ID graph and hit
+join blow-ups on frequent entities.
+
+**Stack proposed for this project (near-verbatim).** Canonical pages and passages: Lance or
+Parquet. Corpus construction, entity statistics, evaluation: DuckDB. Entity-to-page
+retrieval: Qdrant sparse vector named `entities` (edge-quality weights, IDF modifier, cold
+tier). Text retrieval: a separate Qdrant BM25 sparse vector. Dense retrieval: Qdrant dense
+vector. Entity-to-entity graph: static memory-mapped CSR with a per-entity expansion budget.
+Optional exact set operations: Roaring bitmaps for the highest-degree entities.
+Cross-encoder or reader after fusion of entity-sparse + BM25 + dense. Fewest components:
+Qdrant (entity sparse + BM25 + dense) + one mmap CSR file for neighbor expansion + Parquet
+source data.
+
 ## Open questions
 
 - What the surrounding MAQA system needs (latency target, shard count, update
   cadence, whether first-stage retrieval is routable) — determines whether placement matters
   at all.
 - Verify the gap claim and the tool/paper citations above.
-- Whether this is a project in itself or infrastructure for another one.
+- Whether this is a project in itself or infrastructure for another one (the entity-based
+  candidate fetch revives Danielle's earlier MAQA retrieval approach; decide whether the
+  entity graph is a retrieval signal here or its own project).
 - Data plan (revised): derive nodes/edges from Structured Wikipedia Parquet (snapshot-aligned
   corpus + graph with link context); SQL `pagelinks` only as a completeness check; pinned
   dated snapshot. Verify the dataset's link schema and whether it is sharded such that a

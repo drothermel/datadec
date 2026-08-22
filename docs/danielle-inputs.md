@@ -1340,3 +1340,27 @@ Routed to: new reference topic
 [topics/retrieval-storage-tooling.md](topics/reference/retrieval-storage-tooling.md) (the
 general comparison, per Danielle's emphasis); project application in
 [topics/wiki-qa-sharding.md](topics/staging/wiki-qa-sharding.md).
+
+### Entity-ID graph candidate fetch and HDF5 — conversation 2026-08-16
+
+> Interesting. So, one of the things that I'm trying to figure out is I previously had a
+> research project where the goal was to, for every Wikipedia page, extract entity IDs, and
+> then create a graph out of the entity IDs instead of out of the links. And then do
+> candidate fetch from questions based on the question entities. And so this is a wildly
+> heuristic approach. And unsurprisingly, I ran into issues with the candidate fetch itself
+> in that, you know, an entity might show up tons and tons and tons of times. And so
+> actually doing the joins and stuff with the database was rough. And so I ended up
+> implementing my own set of indices and just storing the data in those indices using
+> different types of IDs for different types of objects. And ultimately my conclusion was
+> what would be best is to store everything in an HDF5 Py object so that I could read
+> directly from disk. And if I implemented those reads in like a batched way, smartly, then
+> that would make everything easier, like feasible in terms of time to do these queries.
+> And I guess what I'm wondering is whether there is a better way to get around the types
+> of problems that I was hitting where everything just doesn't fit into memory. Something
+> has to be read, streamed from disk. But I can't assume that the sharding approach will
+> work. And so then is implementing my own HDF5 Py data structure really the best
+> alternative, or do solutions exist for this that I just didn't, I wasn't aware of?
+
+Routed to: [topics/retrieval-storage-tooling.md](topics/reference/retrieval-storage-tooling.md)
+(general analysis) and [topics/wiki-qa-sharding.md](topics/staging/wiki-qa-sharding.md)
+(the proposed stack).
