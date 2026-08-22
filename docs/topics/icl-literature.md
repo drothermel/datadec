@@ -18,7 +18,8 @@ in context even at similar training loss.
   distribution skew, within-class variation) — often with little difference in ordinary
   training loss."
 - Raventós et al., *Pretraining task diversity and the emergence of non-Bayesian in-context
-  learning for regression*. "Did the analogous thing for linear-regression ICL, finding a
+  learning for regression*. *(Citation gap on the Notion page: the author is not linked
+  to a page mention, unlike the other citations; verify and link.)* "Did the analogous thing for linear-regression ICL, finding a
   task-diversity threshold."
 - "That literature is your hypothesis, already demonstrated in miniature — but it's framed
   as 'when does ICL emerge,' not as 'ICL-ability as a measurable functional of pretraining
