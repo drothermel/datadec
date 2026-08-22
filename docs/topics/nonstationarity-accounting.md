@@ -94,3 +94,17 @@ optimizer's response to the schedule shapes the curve — a dynamics question th
 people would recognize." Regime contrast: "plasticity work assumes an explicitly
 non-stationary data stream (task sequences, RL bootstrapping); scaling-law work assumes a
 single stationary distribution where the only 'non-stationarity' is the LR schedule."
+
+---
+
+## 2026-08-18 — the warm-starting gap as a stabilizer story (from the Research Trajectory page)
+
+If effective-learning-rate re-warming alone explains the Ash & Adams gap, then "'why don't
+we hit this now' has a boring-but-important answer: modern recipes re-warm the LR whenever
+data arrives (continued pretraining does this by construction), plus normalization layers
+changed effective-LR dynamics, plus single-epoch LLM training barely lets you memorize noise
+in the first place." In accounting terms: LR re-warming, normalization, and single-pass
+training are stabilizers whose effect on a once-famous gap has never been decomposed. DASH's
+claim that non-stationarity-motivated plasticity fixes are ineffective in the *stationary*
+incremental setting is a reminder that the exogenous/endogenous split matters for which
+fixes apply.

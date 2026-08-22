@@ -349,3 +349,22 @@ the two-tier design); new reference topic [topics/icl-literature.md](topics/icl-
 [potential-projs/irt-reanalysis.md](potential-projs/irt-reanalysis.md) §4 and the
 potential-projs README program-level notes.
 
+### Toggle 6 — Ash & Adams: Warmstarting and Shrink+Perturb
+
+> I want to start the retrospective with the question that started it all: The Warmstarting
+> + Shrink & Perturb paper by Ash and Adams that looked at the effect of training from
+> scratch versus pretraining and then finetuning on the same task. They found that training
+> from scratch is better than warmstarting. But, of course, was a long time ago and we've
+> almost certainly fixed all of those problems now.
+> Then, my question: Why didn't it work then? Why don't we hit these problems now?
+> - I'm pretty confident that the plasticity research has provided the answers already.
+> - However, I haven't really seen a clear reproduction of the original data with a
+>   breakdown demonstrating the specific causes.
+
+Routed to: staging topic
+[topics/warmstarting-decomposition.md](topics/warmstarting-decomposition.md); papers and
+hypotheses to [topics/plasticity.md](topics/plasticity.md); stabilizer reading to
+[topics/nonstationarity-accounting.md](topics/nonstationarity-accounting.md); bridge
+experiment cross-note in [topics/icl-as-posttraining.md](topics/icl-as-posttraining.md);
+retrospective chapter plan to the potential-projs README program-level notes.
+

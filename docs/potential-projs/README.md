@@ -264,3 +264,14 @@ Full text for each: `recipe-featurization.md` §4 (first),
   confirmation test at the expensive tier "needs far less compute than an exploration
   sweep." Staging topic: [../topics/icl-as-posttraining.md](../topics/icl-as-posttraining.md).
 
+### 2026-08-18 — a retrospective narrative: the thesis question, eight years early (from the Research Trajectory page)
+
+- Ash & Adams (NeurIPS 2020): warm-started models "led to worse generalization than random
+  re-initialization, even though training losses were similar… That 'similar training loss,
+  different downstream outcome' clause is literally your thesis question, eight years early
+  — which is what makes it the perfect opening chapter."
+- Chapter plan: "**Chapter 1:** Why did the field's oldest 'pretraining hurt downstream
+  performance at matched loss' result happen, and which modern practice fixed it? **Future
+  chapter:** Matched-loss ICL experiments as the same question at the next scale." Staging
+  topic: [../topics/warmstarting-decomposition.md](../topics/warmstarting-decomposition.md).
+

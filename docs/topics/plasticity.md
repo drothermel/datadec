@@ -61,3 +61,29 @@ multi-power law.
 "*Fine-Tuned In-Context Learners for Efficient Adaptation* is by Bornschein, Clare Lyle,
 Razvan Pascanu et al. — the plasticity crowd literally moved into 'ICL vs fine-tuning as
 adaptation' territory." See `icl-as-posttraining.md`.
+
+---
+
+## 2026-08-18 — warm-starting, and whether plasticity mechanisms explain the stationary case
+
+**Papers**
+- Ash & Adams, *On Warm-Starting Neural Network Training* (NeurIPS 2020). Stationary
+  incremental setting; warm-started models generalize worse than re-initialized ones at
+  similar training loss; shrink-and-perturb as the fix; diagnosis was a gradient-norm
+  imbalance between old and new samples — "a symptom, not a mechanism."
+- *DASH: Warm-Starting Neural Network Training in Stationary Settings without Loss of
+  Plasticity* (NeurIPS 2024). Theory for the stationary case: "the model has *memorized
+  noise* from the small early dataset, and shrinking should be direction-aware… Notably they
+  argue non-stationarity-motivated plasticity fixes are ineffective in the stationary
+  setting — i.e., the Dohare/Lyle mechanisms may *not* be the explanation here."
+- *What Can Grokking Teach Us About Learning Under Non-Stationarity* (2025). "Re-warming the
+  effective learning rate closes the generalization gap, and a higher relative number of
+  dead units does not predict a large warm-starting gap."
+
+**Thoughts**
+- Three live hypotheses for the warm-starting gap — noise memorization, effective learning
+  rate, classic plasticity mechanisms — plus mundane candidates (optimizer state reset,
+  weight decay, warmup, AdamW). "Nobody has run the factorial that adjudicates them on the
+  original benchmark." Design in `warmstarting-decomposition.md`.
+- The diagnostic panel to log at matched training loss: curvature, feature rank, dead
+  units, weight norm, gradient-norm ratio.

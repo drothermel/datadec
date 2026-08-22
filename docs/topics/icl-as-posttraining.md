@@ -111,3 +111,12 @@ predicts adaptation at larger scale.' That reframing is your gap."
   tokens at different loss are different controls, and you'll want both, since 'recipe A
   reaches this loss faster' and 'recipe A has better ICL at this loss' are separable
   claims."
+
+---
+
+## 2026-08-18 — bridge from the warm-starting retrospective
+
+The warm-starting decomposition's final experiment — "a tiny transformer in the same chunked
+protocol" — asks whether "warm-starting damage[s] *elicitability* too, or only accuracy,"
+which "is unasked in all of this literature." Matched-loss ICL is proposed as the next
+chapter of the same question. See [warmstarting-decomposition.md](warmstarting-decomposition.md).
