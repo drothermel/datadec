@@ -484,3 +484,17 @@ of Stage 2, with the seed); new reference topic
 [topics/token-level-literature.md](topics/token-level-literature.md);
 [topics/landscape-literature.md](topics/landscape-literature.md).
 
+### Toggle 11 — 2026-08-18 17:39 (raw Q&A behind toggle 10)
+
+> you said "Their proposed measurement is interpolation-based: … the valley geometry is
+> data-property-dependent, i.e., plausibly recipe-dependent." have there been investigations
+> into mapping data tokeks into the two effect buckets and looking at how that mapping
+> changes over training?
+
+This is the unedited question-and-answer that toggle 10 ("Mapping Dataset Tokens into
+Deterministic vs Uncertain") was reorganized from; the response is the same content
+(Wen et al.'s static mapping and toy validation; epistemic/aleatoric decomposition; Rho-1
+taxonomy; RLVR token regimes; the causal per-token branch measurement). Already routed via
+toggle 10 — nothing additional. From here on, toggles are raw timestamped Q&A; Danielle's
+reorganization stopped at toggle 10.
+
