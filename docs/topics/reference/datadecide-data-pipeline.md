@@ -504,3 +504,43 @@ which aggregates can be rebuilt from `instances.parquet`, and bpb is the one tha
 consistent with it needing byte counts the details do not carry. No metric-definition
 document exists in the repo; this conversation is not a substitute for one (see
 `../../potential-projs/datadecide-data-card.md` §4, metric-definition provenance).
+
+## Undated (intake 2026-08-22) — units for training compute, and storing it (four turns)
+
+**Danielle's questions.** (1) What units do people actually use for LLM training compute,
+since "trillion FLOP" is never said? (2) For a DB, store pfs-days or the two pieces of
+scientific notation separately — what are they called and what is practice? (3) "storing
+it directly has led to pyarrow conversion issues due to values being too large hence my
+concern." (4) Smallest DuckDB types for (significand, exponent) when precision is a loose
+approximation anyway.
+
+**Response (condensed).** Units: petaFLOP/s-day (OpenAI's "AI and Compute" unit;
+≈ 8.64 × 10¹⁹ FLOP; GPT-3 ≈ 3,640 pfs-days ≈ 3.14 × 10²³ FLOP) and plain scientific
+notation in FLOP (Epoch AI's convention; 10²⁵ is the EU AI Act threshold); SI prefixes
+(tera/peta/exa/zetta) are rates (FLOP/s), used for hardware, not for training totals.
+Components: *significand* (the precise term; "mantissa" colloquially) and *exponent*.
+Storage: a single float column, or (significand, exponent) columns, or a hybrid with a
+pfs-days convenience column; decimal128 or string as exact alternatives. DuckDB minimal
+types: `REAL` (4 bytes) for the significand, `TINYINT` (1 byte; −128..127) for the
+exponent — 5 bytes total; `SMALLINT` if more exponent range is wanted.
+
+**Correction (Claude-added; the response's diagnosis is wrong).** The response attributes
+the PyArrow failure to float64 "overflow" at ~10²⁵ and cites the 2⁵³ ≈ 9 × 10¹⁵
+exact-integer limit. Float64's range is ~1.8 × 10³⁰⁸; 10²⁵ is nowhere near it, and the
+2⁵³ figure bounds *exactly representable integers*, not magnitude. A loosely approximate
+FLOP count stored as `DOUBLE` is fine at any scale this repo will see (DataDecide's
+largest run: 1B params × ~100B tokens × 6 ≈ 6 × 10²⁰ FLOP). The conversion error Danielle
+hit is far more likely **int64 overflow** — a compute value produced as a Python `int`
+(e.g. `6 * params * tokens` with integer operands) exceeds int64's 9.22 × 10¹⁸ and Arrow
+refuses to cast it. Evidence in the repo: `configs/olmes.toml` types the aggregate
+`compute` column as `float64`, and `model_utils.py` multiplies integer
+`flops_per_token_per_parameter` by integer parameter and token counts — so an integer
+product is exactly what the pipeline generates before the cast. The fix is to compute or
+cast as float (or keep the `float64` logical type and cast at the boundary), not to split
+into significand/exponent columns. The split is defensible only for range queries by
+magnitude, which `log10(compute)` gives just as well. Unverified against the actual
+traceback; Danielle's to confirm.
+
+**Data-card relevance.** Whatever the storage, the card (DCARD-4) should state the compute
+convention: FLOP via 6·N·D with which N (nominal vs. exact parameter count — the existing
+DCARD-1(b) divergence), and whether any table reports pfs-days.

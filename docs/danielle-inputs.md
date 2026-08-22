@@ -3357,3 +3357,29 @@ is a guess — uncond as a difference, `correct_choice` binary vs. index, per-ch
 bpb conventions; repo facts from `metrics.py` and `configs/olmes.toml`); DCARD §4 —
 **DCARD-1(e) metric definitions pinned to the evaluation code**; TINY §4 — exp-related
 proxies counted once, `uncond_correct_prob` as a candidate once defined; two ledger rows.
+
+### Undated (intake 2026-08-22) — compute units and storing them (four turns)
+
+> when discussing compute used to train LLMs you get really huge numbers, even looking at
+> the values in trillions of flops is a huge number, and I've never heard someone say
+> "trillion flop". What units do people actually use to discuss these values?
+
+> If I want to store these values in a DB, then one thing I could do is just record
+> pfs-days, but alternatively I could store the two pieces of scientific notation
+> separately, what are they called, and how do people handle this in practice?
+
+> yeah, storing it directly has led to pyarrow conversion issues due to values being too
+> large hence my concern
+
+> If I want the smallest type options that cna store (significand, exponent) in duckdb when
+> the precision isn't really important (its a very loose approximation anyways) what are
+> the best types for each part?
+
+Routed: [topics/reference/datadecide-data-pipeline.md](topics/reference/datadecide-data-pipeline.md)
+(units: pfs-days and FLOP in scientific notation; significand/exponent; DuckDB
+`REAL`+`TINYINT`). Correction recorded there: the response's "float64 overflow at 10²⁵"
+diagnosis is wrong (float64 reaches 10³⁰⁸; 2⁵³ bounds exact integers) — the likely cause is
+an int64 overflow from an integer FLOP product before the Arrow cast, which the repo's
+`model_utils.py` integer arithmetic would produce; fix by casting to float, not by
+splitting columns. Unverified against the traceback. No project-doc change beyond a
+data-card convention line.
