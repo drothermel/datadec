@@ -2706,6 +2706,24 @@ Routed to: [topics/reference/code-feature-extraction-tooling.md](topics/referenc
 seed list; intake note that the report broke the brief's form rules and omitted three of
 four deliverables; links to TLC, the clean-code staging topic, and ELI's verifiers).
 
+### 2026-08-22 — SciSpace summary: three prompt-compression / prompt-optimization papers
+
+> Summarize the key arguments in these 3 papers: Learning to Compress Prompt in Natural
+> Language Formats, Automated Prompt Engineering for Cost-Effective Code Generation Using
+> Evolutionary Algorithm, Discrete Prompt Compression with Reinforcement Learning
+
+(Danielle's note: the search "came with an answer but a bunch of really useful background
+docs and search archives", moved to
+`~/drotherm/data/convo-artifacts/2026/scispace-prompt-compression-method-papers-agent-artifacts-zip_180fe9cc-24fb-4ab2-8dc5-61a6611f64ce_1787422486/`.)
+
+Routed to: [topics/reference/prompt-compression-and-optimization-literature.md](topics/reference/prompt-compression-and-optimization-literature.md)
+(new reference topic: the three papers condensed, artifact pointer, agent editorializing
+dropped) and dated notes in
+[potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+§4 (prior-art gate additions; Nano-Capsulator as the nearest objective) and
+[potential-projs/elicitation-gain.md](potential-projs/elicitation-gain.md) §4 (EPiC /
+ATSP as the nearest budgeted outer optimizer; positioning sentence).
+
 ### Post-intake decisions — 2026-08-22 (data-layer conversation)
 
 > 1. I think data-card/ validation work should be its own project doc, so b as you say.

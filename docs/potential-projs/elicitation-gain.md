@@ -141,6 +141,22 @@ The TLC draft PDF the conversation was conducted against is not on file; its int
 surfaced are recorded in `text-latent-code-autoencoder.md` §4. Related-work claims in the
 responses are unverified.
 
+### 2026-08-22 — EPiC as the nearest published outer-optimizer with budget accounting
+
+From a SciSpace paper summary (record in
+`../topics/reference/prompt-compression-and-optimization-literature.md`). **EPiC** (Saluja
+et al. 2024, arXiv 2408.11198) evolves code-generation prompts against test pass rate
+with fitness-weighted selection and either an LLM mutator or a cheaper synonym mutator
+(the cheap one wins on cost), and reports cost via **ATSP** — additional tokens per solved
+problem relative to a baseline. Two uses here: (1) ATSP is the closest published analog
+of ELI's fixed-budget elicitation accounting — adopt it or contrast explicitly against
+ΔS-at-budget and iterations-to-threshold; (2) EPiC optimizes the prompt for a strong
+model, whereas ELI fixes a strong *outer* model and optimizes the interface for a weak
+frozen executor — the positioning sentence for the prior-art gate. PCRL and
+Nano-Capsulator (same record) are prompt *compression* with transfer across models;
+relevant to ELI only as evidence that discrete, gradient-free interface optimization
+against black-box executors works. Gate still parked.
+
 ### Undated — Danielle's hypothesis (verbatim, from speech)
 
 > So recently I've been thinking about the ideas that are in the PDF that I just provided,

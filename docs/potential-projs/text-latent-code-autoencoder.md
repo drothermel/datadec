@@ -344,6 +344,21 @@ Dated notes from the external conversation this doc was promoted from, recorded 
 consolidation — not decisions. Related-work claims in quoted text are unverified unless a
 citation is given; Danielle's prompts are logged verbatim in `../danielle-inputs.md`.
 
+### 2026-08-22 — prior-art additions for the gate: PCRL, Nano-Capsulator, EPiC
+
+From a SciSpace paper summary (record and on-disk PDFs/search archives in
+`../topics/reference/prompt-compression-and-optimization-literature.md`). Three papers to
+add beside LLMLingua and gist tokens: **PCRL** (Jung & Kim 2024; RL-trained extractive
+token deletion, black-box compatible, ~25% compression), **Nano-Capsulator** (Zhou et al.
+2024, arXiv 2402.18700; a generator rewrites long prompts into natural-language capsules
+under a semantic-preservation loss × downstream-utility reward with a hard length cutoff —
+structurally the closest objective to TLC's, differing in target: TLC reconstructs the
+source, Capsule preserves downstream utility), and **EPiC** (Saluja et al. 2024, arXiv
+2408.11198; evolutionary prompt search for code generation with the ATSP
+tokens-per-solved-problem metric — the published analog of this project's optimizer-cost
+accounting). The SciSpace search CSVs on disk are a seeded candidate list for the full
+prior-art pass (still parked).
+
 ### Origin notes — moved from `topics/staging/text-latent-code-autoencoder.md`
 
 ### 2026-07-11 — the idea as played back
