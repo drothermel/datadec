@@ -3554,3 +3554,33 @@ calibrate-after-selection added to
 [topics/reference/project-approach-principles.md](topics/reference/project-approach-principles.md)
 as a standing principle; **IRT-11** (which item representation explains difficulty) added to
 [potential-projs/irt-reanalysis.md](potential-projs/irt-reanalysis.md) with an impact row.
+
+### Qualitative comparison tooling for pre-computed token probabilities (three turns)
+
+> I'm a machine learning researcher who works on LLMs and I currently have a collection of
+> models trained in different data recipes that have been evaluated in some standard QA
+> tasks. I'm looking for good tools to speed up the process of (1) learning anything I can
+> from the checkpoint itself (2) learning what I can about the data recipe used for
+> training and (3) visualizing the question and predictions, individually and
+> comparatively, looking at the actual output probabilities which I have per token/char,
+> etc.
+>
+> Do accessible ecosystems of tools for these visualization purposes exist for a Python
+> use case?
+
+> Ok! Most of those tools seem to specialize in evaluation and visualization using the
+> model itself along with the data. What if in general I only have the probabilities for
+> a few tokens for each model-example pair and I want a way to visualize the examples and
+> model responses in a way that focuses on being able to qualitatively compare models and
+> learn from individual examples between models.  This might be more in the visualization
+> space than the ML space.
+
+> What if I'm committed to doing the analysis in a marimo notebook? Then what tooling is
+> available?
+
+Routed to [topics/reference/experiment-tooling.md](topics/reference/experiment-tooling.md)
+(new entry; decision of record marimo + Altair) with a consumer pointer in
+[topics/reference/datadecide-data-pipeline.md](topics/reference/datadecide-data-pipeline.md)
+under the OLMES metric entry. No project ID — infrastructure for DCARD/IRT/TINY per-item
+work.
+

@@ -505,6 +505,11 @@ consistent with it needing byte counts the details do not carry. No metric-defin
 document exists in the repo; this conversation is not a substitute for one (see
 `../../potential-projs/datadecide-data-card.md` §4, metric-definition provenance).
 
+Consumer pointer (2026-08-22): the per-item probability columns above are the input
+table for the qualitative per-example comparison workbench (marimo + Altair) recorded in
+`experiment-tooling.md`; the workbench depends on DCARD-1(e) pinning the column
+definitions first.
+
 ## Undated (intake 2026-08-22) — units for training compute, and storing it (four turns)
 
 **Danielle's questions.** (1) What units do people actually use for LLM training compute,
