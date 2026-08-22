@@ -398,6 +398,22 @@ with the selector cost paid, not against zstd-22 on raw source. The `python-mini
 and `pyppmd` packages are the named Python entry points. All tool claims are the
 respondent's and unverified.
 
+*Implementation turn (same conversation).* The harness shape that came back, kept because
+it is the right shape for TLC-1's bit accounting: separate `code_to_test` (what the unit
+tests run) from `payload` (the bytes whose description length is scored) — identical for
+raw source, different for token/AST/bytecode/reference-diff methods; one result row per
+(sample, representation, compressor) with raw payload bytes, compressed bytes, selector
+bytes, score bytes, correctness, seconds, and a free-text `side_info` naming every
+uncounted prior; dictionaries trained **per representation** on a disjoint split; external
+slow tools through stdout/file wrappers with a fixed input filename so archive metadata
+does not vary by sample; reference-delta with an explicit oracle label when the nearest
+reference is chosen by search. Implementation order: raw source → canonical/minified
+source → per-representation zstd dictionaries → token codec → compact AST → slow external
+tools → reference delta → oracle min with selector cost. The agent-written, never-run
+skeleton is archived at
+`~/drotherm/data/convo-artifacts/2026/2026-08-22-lossless-baseline-harness/` (with
+`INDEX.md`); API details there are unverified.
+
 ### 2026-08-22 — code-compression related work
 
 From Danielle's SciSpace deep review of code compression, run with this paper as the

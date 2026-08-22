@@ -3411,3 +3411,11 @@ cost; source-lossless vs. test-preserving; transform stacks; the six-layer suite
 "zstd and friends"; headline stated against the strongest fixed-prior baseline); tool
 inventory in [topics/reference/code-compression-literature.md](topics/reference/code-compression-literature.md).
 No new citations beyond Delétang 2309.10668 (already on file).
+
+> amazing! so now, practically, how can I implement these different compression approaches?
+
+(Fourth turn of the lossless-baseline conversation, passed separately.) Routed: TLC §4
+addendum (harness shape: `code_to_test` vs. `payload`, result-row schema, per-representation
+dictionaries, fixed filenames for external tools, oracle labels, implementation order);
+pointer in the code-compression reference; the agent-written skeleton archived with an
+`INDEX.md` at `~/drotherm/data/convo-artifacts/2026/2026-08-22-lossless-baseline-harness/`.

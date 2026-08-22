@@ -120,3 +120,13 @@ compressed bytes, with raw, compressed, and relative-to-ground-truth lengths rep
 prior fairness (shared, not trained on the target; charge per-family priors; selector
 cost in any oracle-vs-realistic pair); source-lossless vs. test-preserving labels;
 representation byte lengths as controls.
+
+*Implementation turn.* A Python harness skeleton (dataclasses for representation variants,
+compressors, and result rows; raw DEFLATE / raw LZMA2 / zstd ± dictionary / Brotli / PPMd;
+`ast.unparse`, token-canonical, compact-AST, and `python-minifier` variants;
+per-representation dictionary training; external-tool wrappers; `bsdiff4` reference delta)
+is archived, never run, at
+`~/drotherm/data/convo-artifacts/2026/2026-08-22-lossless-baseline-harness/` — see its
+`INDEX.md` for caveats. Named packages: `zstandard`, `brotli` (vs. `brotlipy` for custom
+dictionaries — both import as `brotli`), `pyppmd`, `python-minifier`, `bsdiff4`, `xdelta3`;
+Python 3.14's stdlib `compression.zstd` noted.
