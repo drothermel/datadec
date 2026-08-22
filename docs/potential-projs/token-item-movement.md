@@ -43,7 +43,7 @@ entropy. No training.
   movement lives and whether that changes over the schedule.
 - **Durable vs. transient movement.** KL(t, t+k) as a function of k:
   transient movement cancels, durable movement accumulates. (The causal
-  version via checkpoint merging belongs to the schedule-confound project.)
+  version via checkpoint merging belongs to Project A, `a-annealed-readouts.md`, A-opt-7.)
 - **Principled low-noise eval construction.** If E4 holds, weight benchmark
   items by the determinism of their answer tokens and test whether the
   resulting aggregate has lower seed-to-seed variance than subtask filtering.

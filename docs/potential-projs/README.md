@@ -31,11 +31,15 @@ factored out. Idea IDs (`A1`, `B3`, …) match the synthesis.
 |-----|---------|---------|--------------|
 | [irt-reanalysis.md](irt-reanalysis.md) | Track B — Psychometric reanalysis of DataDecide | T0 | Strongest standalone bet |
 | [trajectory-movement.md](trajectory-movement.md) | Track A — Drift/diffusion in eval trajectories | T0 | Strong; gated on checkpoint spacing |
-| [schedule-confound.md](schedule-confound.md) | Track D — Annealing-confound correction | T0 / T1+ | Good section; standalone only if merging works |
 | [token-item-movement.md](token-item-movement.md) | Track E — Token/item-level movement | T0 / T1 | Best single figure; needs inference harness |
 
 Track C (dataset featurization) is [recipe-featurization.md](recipe-featurization.md),
 listed in the table above; its idea map is [../dataset-analysis-idea-map.md](../dataset-analysis-idea-map.md).
+
+Track D (annealing-confound correction) is merged into Project A,
+[a-annealed-readouts.md](a-annealed-readouts.md): its MPL correction is A5/A2, its
+merging route is A1, its ranking-stability analysis is A6, and its durable-movement
+operator is A-opt-7.
 
 Track F (FLAME-MoE routing dynamics) is no longer standalone: its routing-flip
 core (survey, ingest, F1, F3, commitment timing, routing-vs-eval, scale ladder)
