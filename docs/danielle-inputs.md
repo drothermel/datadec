@@ -2261,3 +2261,12 @@ Routed to: new [topics/ntk-literature.md](topics/reference/ntk-literature.md) (l
 in the header; overview condensed; intake note on what the tutorial omits for measurement
 use and candidate eNTK readouts for GEO and the CNN ladder); cross-linked from
 `project-approach-principles.md` and `cnn-deconstruction-ladder.md`.
+
+### 2026-08-22 — "More linear loss curves = better training?" (two answers; first received)
+
+> ok, then two answers to the same question: "Is there a belief in machine learning research
+> that "more linear loss curves indicate better training"? If so, what is it based on?"
+
+Routed to: [topics/loss-curve-forecasting.md](topics/reference/loss-curve-forecasting.md)
+(answer 1 condensed; intake note that it argues about smoothness, not linearity, and so
+answers a different question; slot left for answer 2).

@@ -53,3 +53,41 @@ training loss along a single run, which is a boundary condition on the whole pre
 thread — the multi-power law and loss-to-accuracy links assume away non-monotonicity that
 demonstrably occurs in certain regimes, and knowing *which* regimes is part of your 'when
 are proxy metrics valid' question." See `grokking-and-hidden-progress.md`.
+
+## Undated (~2025) — "Do more linear loss curves indicate better training?" — answer 1 of 2 (condensed)
+
+Danielle's question (the motivating question of the CIFAR-10 loss-slope study, EDP's
+lineage — `../../potential-projs/early-dynamics-prediction.md` §4):
+
+> Is there a belief in machine learning research that "more linear loss curves indicate
+> better training"? If so, what is it based on?
+
+**Answer 1 (Perplexity-style, blog/StackExchange-sourced).** Asserts "a widely held belief
+… that smoother, more linear loss curves generally indicate better training quality and
+stability," then argues entirely about **smoothness**, not linearity:
+
+- Smooth, gradually decreasing curves are preferred to jagged/oscillating ones; a "good fit"
+  is train and validation loss decreasing to a stable point with a small gap.
+- Gradient *flow* is monotone, so oscillation in practice signals discrete step sizes
+  overshooting → a preference for configurations that descend smoothly.
+- Smooth curves are read as: stable dynamics, well-tuned hyperparameters, clean data,
+  effective optimization. Jagged curves as: LR too high, small batches (gradient variance),
+  data problems (outliers, NaNs, bad shuffling), model instability.
+- One paper-shaped citation: an ECCV 2022 paper on enforcing smoothness in *learned
+  optimizers* (ecva.net 136830533; unverified), offered as evidence that "smooth
+  optimization behavior is … functionally superior."
+- Practical guidelines: lower LR, larger batch, EMA smoothing for visualization, early
+  stopping on smooth convergence.
+- Nuances: cyclic LR schedules produce intentional oscillation; some oscillation "might
+  indicate healthy exploration"; validation curves are noisier than training curves.
+
+Intake note: the answer never engages with *linearity*. "Linear loss curve" (loss
+decreasing at constant rate in epochs, or in log-steps) is a shape claim; "smooth" is a
+noise claim — and typical healthy curves are smooth *and* strongly non-linear (fast early
+drop, then power-law/plateau). So the response answers a different question than the one
+asked, and its "well-established belief" is the smoothness folklore, sourced to tutorials
+and forum threads. The actual literature relevant to the linearity question is the
+loss-curve *shape* literature above (power laws, the multi-power law, the broken-power-law
+scaling-law fits) and the "linear-in-log-steps means nothing special" reading that follows
+from them; see answer 2 below when it is added, and the EDP intake notes for why the
+slope/R² features from the CIFAR study were ambiguous.
