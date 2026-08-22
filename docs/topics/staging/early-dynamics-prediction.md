@@ -400,6 +400,44 @@ Also, one query per recipe ranks *sizes* against each other, which is trivially 
 is better); the decision the project cares about is ranking *recipes* at a fixed size, so
 the query should be per size (or per size × seed), with recipes as items.
 
+## 2025-07 — Responses 16–18: SHAP, rolling slopes, three feature clarifications
+
+**SHAP per fold, mean |SHAP| across folds.** TreeExplainer gives exact Shapley attributions
+for tree ensembles cheaply; compute once per CV fold on that fold's validation/test rows;
+per-feature importance = mean |SHAP| over rows, then mean (and std, as error bars) over
+folds — absolute value removes sign cancellation, fold-averaging is a stability check.
+Deliverables: top-k bar plot colour-coded dynamic vs. static; cross-fold std; a sentence
+like "power-law exponent at ~30k tokens and log(size) explain most of the variance." Uses:
+debugging (leaning on an artefact such as a recipe-ID one-hot), feature selection,
+quantitative rather than eyeballed argument. (`feature_perturbation="interventional"`,
+`check_additivity=False` in the sketch.)
+
+**Rolling slopes.** Linear OLS only — one slope per 5-point window over the 16 log-spaced
+points (12 windows per metric): on a short stretch the curve is near-linear so the slope ≈
+local derivative; closed-form, tree-friendly, no intercept (redundant with the raw points).
+Axis choice: log perplexity vs. log tokens; logit(correct_prob) vs. log tokens. Theil–Sen
+if robustness is wanted. Revisit 2nd-order coefficients only if SHAP shows slopes <1%
+importance *and* there are visible non-linear bumps within windows.
+
+**Three clarifications (Danielle's questions: is "% of schedule" cumulative LR? can the
+noise-scale estimate be built from sparse eval curves? is effective context length
+relevant with a uniform 2,024-token sequence length?).** (1) `%_warmup_done` and
+`%_decay_done` are fractions of the schedule completed at the checkpoint (not integrated
+LR): `clip(tokens/warm_tokens, 0, 1)` and `clip((tokens − warm)/(total − warm), 0, 1)`,
+stored per sampled point. (2) Noise scale: with only sparse evaluation checkpoints, use the
+variance of first differences across the 16 points (`mean(diff(log_loss)²)`) as a crude
+"jitter" proxy, or table it — note it as an approximation to be replaced by Fisher-trace
+estimates if full logs appear. (The response's "ρ ≈ −0.4 on ResNet-CIFAR pilots" claim is
+unverified.) (3) Effective context length = tokens_seen/steps is constant (= seq_len) when
+every run uses the same sequence length and batch is counted in sequences — **drop** it;
+only relevant with variable or curriculum sequence lengths.
+
+*Intake note.* With DataDecide's uniform schedule per size, `%_decay_done` at a given
+*fraction of training* is the same for all recipes within a size; it varies across sizes
+only through the token budgets, so it is nearly collinear with `size_log` plus the
+sampling-grid position. Expect it to add little unless the early window is defined in
+absolute tokens (S₀ = min(2B, 10%)), in which case it does carry size information.
+
 ## Open questions
 
 - Is this still live (July 2025 draft; DataDecide scaling-law baselines have since been

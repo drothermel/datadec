@@ -1753,3 +1753,24 @@ setting vs. dataset size.
 Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
 ("Responses 12–15"), with intake notes on two code defects and on the query definition
 (rank recipes within a size, not sizes within a recipe).
+
+### Early-dynamics draft review, responses 16–18 (SHAP, rolling slopes, feature clarifications) — 2025-07 (intake 2026-08-22)
+
+> Excellent! Next can you explain: "Use SHAP (TreeExplainer) once per CV fold; aggregate
+> mean" - What is this? How? Why?
+
+> Next, "Rolling-slope features (slope of a 5-point window slid across the early curve)" -
+> Are you suggesting doing all the fits for this rolling window or just linear?
+
+> Ok! And then my last 3 questions:
+> "Also store "relative progress wrt LR schedule": % of warm-up completed, % of cosine decay
+> completed." - this is wrt cumulative learning rate?
+> "Noise scale estimate (Var(grad loss) ▭ ≈ E[(lossₜ − lossₜ₋₁)²])." - I only have access to
+> the evaluation metrics from the different listed evaluations. Is there a way to reproduce
+> this goal with these curves or should I table this suggestion?
+> "Add "effective context length" = min(seq_len, tokens_seen/steps) for each checkpoint." -
+> Batch size is number of sequences per batch and the sequence length is a uniform 2024 per
+> model. Is this recommendation still relevant?
+
+Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
+("Responses 16–18"), with an intake note on `%_decay_done` collinearity.
