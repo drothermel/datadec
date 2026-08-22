@@ -4,6 +4,7 @@ import hashlib
 import json
 import math
 from collections.abc import Iterable, Mapping
+from dataclasses import dataclass
 from pathlib import Path
 
 import pandas as pd
@@ -105,6 +106,14 @@ _MODEL_SIZE_ORDER = (
     "1B",
 )
 _LOGICAL_TASKS = (*DEFAULT_TASK_GROUPING.non_mmlu_tasks, "mmlu")
+
+
+@dataclass(frozen=True, slots=True)
+class _ComputeEquivalencePoint:
+    model_size: str
+    step: int
+    compute: float
+    decision_accuracy: float
 
 
 def _parameter(rule: ComparisonRule, name: ComparisonParameterName) -> float:
@@ -260,6 +269,214 @@ def _sample_sd(values: Iterable[float]) -> float:
     )
 
 
+def _log_compute_bucket_index(
+    compute: float,
+    *,
+    target_model_compute: float,
+    bin_width: float,
+) -> int:
+    if not math.isfinite(compute) or compute <= 0:
+        raise ValueError("compute bucket assignment requires positive finite compute")
+    if not math.isfinite(target_model_compute) or target_model_compute <= 0:
+        raise ValueError("target model compute must be positive and finite")
+    if not math.isfinite(bin_width) or bin_width <= 0:
+        raise ValueError("compute log10 bin width must be positive and finite")
+    normalized_compute = compute / target_model_compute
+    if normalized_compute == 0 or not math.isfinite(normalized_compute):
+        raise ValueError("normalized compute must be positive and finite")
+    return math.floor(math.log10(normalized_compute) / bin_width)
+
+
+def _compute_equivalence_points(
+    series: PlotSeries,
+) -> tuple[_ComputeEquivalencePoint, ...]:
+    points: list[_ComputeEquivalencePoint] = []
+    for point in series.points:
+        dimensions = _dimensions(point)
+        measures = _measures(point)
+        missing = tuple(
+            name
+            for name, values in (
+                ("model_size", dimensions),
+                ("step", dimensions),
+                ("compute", measures),
+                ("decision_accuracy", measures),
+            )
+            if name not in values
+        )
+        if missing:
+            raise ValueError(
+                f"compute-equivalence point is missing fields: {missing!r}"
+            )
+        model_size = dimensions["model_size"]
+        step = dimensions["step"]
+        if not isinstance(model_size, str) or not model_size:
+            raise ValueError("compute-equivalence model size must be a nonempty string")
+        if isinstance(step, bool) or not isinstance(step, int) or step < 0:
+            raise ValueError("compute-equivalence step must be a non-negative integer")
+        points.append(
+            _ComputeEquivalencePoint(
+                model_size=model_size,
+                step=step,
+                compute=measures["compute"],
+                decision_accuracy=measures["decision_accuracy"],
+            )
+        )
+    return tuple(points)
+
+
+def _compute_equivalence(
+    points: Iterable[_ComputeEquivalencePoint],
+    *,
+    target_model_compute: float,
+    bin_width: float,
+    minimum_difference: float,
+    preexcluded_zero_compute_count: int = 0,
+) -> tuple[dict[str, object], tuple[NamedCount, ...]]:
+    if not math.isfinite(minimum_difference):
+        raise ValueError("minimum accuracy difference must be finite")
+    if preexcluded_zero_compute_count < 0:
+        raise ValueError("preexcluded zero-compute count must be non-negative")
+    values = tuple(points)
+    seen: set[tuple[str, int]] = set()
+    positive: list[_ComputeEquivalencePoint] = []
+    zero_compute_count = preexcluded_zero_compute_count
+    for point in values:
+        key = (point.model_size, point.step)
+        if key in seen:
+            raise ValueError(f"duplicate compute-equivalence checkpoint point: {key!r}")
+        seen.add(key)
+        if not point.model_size:
+            raise ValueError("compute-equivalence model size must not be empty")
+        if (
+            isinstance(point.step, bool)
+            or not isinstance(point.step, int)
+            or point.step < 0
+        ):
+            raise ValueError("compute-equivalence step must be a non-negative integer")
+        if not math.isfinite(point.compute):
+            raise ValueError("compute-equivalence compute must be finite")
+        if point.compute < 0:
+            raise ValueError("compute-equivalence compute must be non-negative")
+        if not math.isfinite(point.decision_accuracy):
+            raise ValueError("compute-equivalence decision accuracy must be finite")
+        if not 0 <= point.decision_accuracy <= 1:
+            raise ValueError("compute-equivalence decision accuracy must be in [0, 1]")
+        if point.compute == 0:
+            zero_compute_count += 1
+        else:
+            positive.append(point)
+
+    final_by_size: dict[str, _ComputeEquivalencePoint] = {}
+    for point in positive:
+        current = final_by_size.get(point.model_size)
+        if current is None or point.step > current.step:
+            final_by_size[point.model_size] = point
+    intermediate_by_bucket: dict[tuple[int, str], list[_ComputeEquivalencePoint]] = {}
+    for point in positive:
+        if point == final_by_size[point.model_size]:
+            continue
+        bucket = _log_compute_bucket_index(
+            point.compute,
+            target_model_compute=target_model_compute,
+            bin_width=bin_width,
+        )
+        intermediate_by_bucket.setdefault((bucket, point.model_size), []).append(point)
+
+    model_order = {size: index for index, size in enumerate(_MODEL_SIZE_ORDER)}
+
+    def model_key(model_size: str) -> tuple[int, str]:
+        return model_order.get(model_size, len(model_order)), model_size
+
+    matches: list[dict[str, object]] = []
+    same_size_pair_count = 0
+    ordered_finals = tuple(
+        sorted(final_by_size.items(), key=lambda item: model_key(item[0]))
+    )
+    for (bucket, intermediate_size), contributing in sorted(
+        intermediate_by_bucket.items(),
+        key=lambda item: (item[0][0], model_key(item[0][1])),
+    ):
+        ordered_contributing = tuple(sorted(contributing, key=lambda point: point.step))
+        intermediate_accuracy = _mean(
+            point.decision_accuracy for point in ordered_contributing
+        )
+        intermediate_computes = tuple(point.compute for point in ordered_contributing)
+        for final_size, final in ordered_finals:
+            final_bucket = _log_compute_bucket_index(
+                final.compute,
+                target_model_compute=target_model_compute,
+                bin_width=bin_width,
+            )
+            if final_bucket != bucket:
+                continue
+            if final_size == intermediate_size:
+                same_size_pair_count += 1
+                continue
+            all_compute = (*intermediate_computes, final.compute)
+            compute_minimum = min(all_compute)
+            compute_maximum = max(all_compute)
+            difference = intermediate_accuracy - final.decision_accuracy
+            matches.append(
+                {
+                    "bin_index": bucket,
+                    "bin_lower_edge": 10.0 ** (bucket * bin_width),
+                    "bin_upper_edge": 10.0 ** ((bucket + 1) * bin_width),
+                    "intermediate_model_size": intermediate_size,
+                    "intermediate_steps": [
+                        point.step for point in ordered_contributing
+                    ],
+                    "intermediate_checkpoint_count": len(ordered_contributing),
+                    "final_model_size": final_size,
+                    "final_step": final.step,
+                    "intermediate_compute_minimum": min(intermediate_computes),
+                    "intermediate_compute_maximum": max(intermediate_computes),
+                    "final_compute": final.compute,
+                    "compute_minimum": compute_minimum,
+                    "compute_maximum": compute_maximum,
+                    "compute_ratio": compute_maximum / compute_minimum,
+                    "intermediate_accuracy": intermediate_accuracy,
+                    "final_accuracy": final.decision_accuracy,
+                    "accuracy_difference": difference,
+                }
+            )
+
+    differences = tuple(float(match["accuracy_difference"]) for match in matches)
+    ordered_differences = tuple(sorted(differences))
+    middle = len(ordered_differences) // 2
+    median_difference = (
+        None
+        if not ordered_differences
+        else ordered_differences[middle]
+        if len(ordered_differences) % 2
+        else _mean(ordered_differences[middle - 1 : middle + 1])
+    )
+    passing_group_count = sum(
+        difference >= minimum_difference for difference in differences
+    )
+    matched_bin_count = len({int(match["bin_index"]) for match in matches})
+    satisfied = bool(matches) and passing_group_count == len(matches)
+    computed_value: dict[str, object] = {
+        "compute_log10_bin_width": bin_width,
+        "target_model_compute": target_model_compute,
+        "matched_groups": matches,
+        "matched_bin_count": matched_bin_count,
+        "matched_group_count": len(matches),
+        "passing_group_count": passing_group_count,
+        "minimum_accuracy_difference": min(differences) if differences else None,
+        "mean_accuracy_difference": _mean(differences) if differences else None,
+        "median_accuracy_difference": median_difference,
+        "minimum_allowed_difference": minimum_difference,
+        "zero_compute_checkpoint_count": zero_compute_count,
+        "same_size_pair_count": same_size_pair_count,
+        "satisfied": satisfied,
+    }
+    return computed_value, (
+        NamedCount(name="zero_compute_checkpoints", value=zero_compute_count),
+        NamedCount(name="same_size_pairs", value=same_size_pair_count),
+    )
+
+
 def _attempt(
     contract: PaperValidationContract,
     attempt_id: str,
@@ -352,6 +569,12 @@ def _load_observations(
     frame = pd.read_parquet(path, columns=list(required_columns))
     if _sha256_file(path) != digest:
         raise RuntimeError("olmes_aggregate changed while it was being read")
+    missing_accuracy_count = int(frame[_PRIMARY_METRIC].isna().sum())
+    if missing_accuracy_count:
+        raise ValueError(
+            "olmes_aggregate contains missing primary-metric accuracy: "
+            f"count={missing_accuracy_count}"
+        )
     observations = observations_from_olmes_frame(
         frame,
         metric_columns=(_PRIMARY_METRIC,),
@@ -1344,79 +1567,69 @@ def _single_scale_qualitative_attempts(
         equivalent_rule,
         ComparisonParameterName.EQUIVALENCE_DIFFERENCE_MINIMUM,
     )
-    by_size: dict[str, list[PlotPoint]] = {}
-    for point in aggregate_points:
-        by_size.setdefault(str(_dimensions(point)["model_size"]), []).append(point)
-    final_points = {
-        size: max(points, key=lambda point: int(_dimensions(point)["step"]))
-        for size, points in by_size.items()
-    }
-    matches: list[dict[str, object]] = []
-    for size, points in sorted(by_size.items()):
-        final_step = int(_dimensions(final_points[size])["step"])
-        for point in points:
-            if int(_dimensions(point)["step"]) == final_step:
-                continue
-            compute = _measures(point)["compute"]
-            for final_size, final in sorted(final_points.items()):
-                if final_size == size or _measures(final)["compute"] != compute:
-                    continue
-                difference = (
-                    _measures(point)["decision_accuracy"]
-                    - _measures(final)["decision_accuracy"]
-                )
-                matches.append(
-                    {
-                        "intermediate_model_size": size,
-                        "intermediate_step": int(_dimensions(point)["step"]),
-                        "final_model_size": final_size,
-                        "final_step": int(_dimensions(final)["step"]),
-                        "compute": compute,
-                        "accuracy_difference": difference,
-                    }
-                )
-    minimum_observed = (
-        min(float(match["accuracy_difference"]) for match in matches)
-        if matches
-        else None
+    bin_width = _parameter(
+        equivalent_rule,
+        ComparisonParameterName.COMPUTE_LOG10_BIN_WIDTH,
     )
-    equivalent = minimum_observed is not None and minimum_observed >= minimum_difference
+    points = _compute_equivalence_points(aggregate_series)
+    target_points = tuple(
+        point
+        for point in points
+        if point.model_size == _TARGET_SIZE and point.compute > 0
+    )
+    if not target_points:
+        raise ValueError("DD-0165 requires a positive target-model checkpoint")
+    target_model_compute = max(target_points, key=lambda point: point.step).compute
+    aggregate_zero_compute_count = next(
+        (
+            count.value
+            for count in aggregate_result.exclusions
+            if count.name == "non_positive_compute_checkpoints"
+        ),
+        0,
+    )
+    computed_value, exclusions = _compute_equivalence(
+        points,
+        target_model_compute=target_model_compute,
+        bin_width=bin_width,
+        minimum_difference=minimum_difference,
+        preexcluded_zero_compute_count=aggregate_zero_compute_count,
+    )
+    matched_group_count = int(computed_value["matched_group_count"])
+    matched_bin_count = int(computed_value["matched_bin_count"])
+    passing_group_count = int(computed_value["passing_group_count"])
+    minimum_observed = computed_value["minimum_accuracy_difference"]
     if minimum_observed is None:
         outcome = ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED
-        missing_groups = ("checkpoint_pair=exact_compute_intermediate_to_final",)
+        missing_groups = ("compute_bucket=cross_size_intermediate_to_final",)
         diagnostics = (
-            "No exact-compute intermediate/final checkpoint pairs exist in the "
-            "selected dd_parsed surface.",
+            f"No cross-size intermediate/final matches exist in fixed log10 "
+            f"compute buckets of width {bin_width:.12g}.",
         )
     else:
         outcome = (
             ValidationOutcome.REPRODUCED
-            if equivalent
+            if bool(computed_value["satisfied"])
             else ValidationOutcome.NOT_REPRODUCED
         )
         missing_groups = ()
         diagnostics = (
-            f"Found {len(matches)} exact-compute intermediate/final matches; "
-            f"minimum accuracy difference={minimum_observed:.12g}.",
+            f"Fixed log10 compute buckets of width {bin_width:.12g} matched "
+            f"{matched_group_count} groups across {matched_bin_count} bins; "
+            f"{passing_group_count} groups met the minimum difference and the "
+            f"minimum accuracy difference was {float(minimum_observed):.12g}.",
         )
-    results.append(
-        _qualitative_result(
-            registry=registry,
-            contract=contract,
-            attempt_id=equivalent_attempt.id,
-            evidence=aggregate_result,
-            computed_value={
-                "matched_pairs": matches,
-                "matched_pair_count": len(matches),
-                "minimum_accuracy_difference": minimum_observed,
-                "minimum_allowed_difference": minimum_difference,
-                "satisfied": equivalent,
-            },
-            outcome=outcome,
-            diagnostics=diagnostics,
-            missing_groups=missing_groups,
-        )
+    result = _qualitative_result(
+        registry=registry,
+        contract=contract,
+        attempt_id=equivalent_attempt.id,
+        evidence=aggregate_result,
+        computed_value=computed_value,
+        outcome=outcome,
+        diagnostics=diagnostics,
+        missing_groups=missing_groups,
     )
+    results.append(result.model_copy(update={"exclusions": exclusions}))
     return tuple(results), tuple(series)
 
 
