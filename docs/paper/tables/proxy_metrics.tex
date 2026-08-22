@@ -1,0 +1,19 @@
+\begin{tabular}{ll}
+\toprule
+\textbf{Metric Name} & \textbf{Equation} \\ 
+\midrule
+\correctProb{} & \(\frac{1}{N} \sum_{i=1}^{N} P(c^{(i)}_{\text{correct}} \mid \text{context}_i)\) \\ 
+\midrule
+\margin{} & \(\frac{1}{N} \sum_{i=1}^{N} \big(P(c_{\text{correct}}^{(i)} \mid \text{context}_i) - \max_{c' \neq c_{\text{correct}}^{(i)} \in C^{(i)}} P(c' \mid \text{context}_i)\big)\) \\ 
+\midrule
+\normCorrectProb{} & \(\frac{1}{N} \sum_{i=1}^{N} \frac{P(c^{(i)}_{\text{correct}} \mid \text{context}_i)}{\sum_{c \in C^{(i)}} P(c \mid \text{context}_i)}\) \\ 
+\midrule
+\totalProb{} & \(\frac{1}{N} \sum_{i=1}^{N} \sum_{c \in C^{(i)}} P(c \mid \text{context}_i)\) \\ 
+\midrule
+\accRaw{} & \(\frac{1}{N} \sum_{i=1}^{N} \mathbb{I}\big(\arg\max_{c \in C^{(i)}} P(c \mid \text{context}_i) = c_{\text{correct}}^{(i)}\big)\) \\
+\midrule
+\textsf{\textasteriskcentered\_per\_token} & \(\nicefrac{\log(P(c \mid \text{context}))}{\text{tokens}(c)}\) \\ 
+\midrule
+\textsf{\textasteriskcentered\_per\_char} & \(\nicefrac{\log(P(c \mid \text{context}))}{\text{chars}(c)}\)
+\end{tabular}
+

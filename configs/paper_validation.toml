@@ -1,0 +1,1834 @@
+[paper]
+arxiv_id = "2504.11393v2"
+source_url = "https://arxiv.org/e-print/2504.11393v2"
+archive_sha256 = "20dc7aa3f920fe465ddf2e12d6f72fff6e8bb3567f53e34f5555a6da138542d1"
+source_root = "docs/paper"
+entrypoint = "example_paper.tex"
+
+[[inputs]]
+id = "olmes_aggregate"
+path = "processed/olmes.parquet"
+remote_path = "olmes.parquet"
+columns = ["data", "params", "seed", "step", "task", "tokens", "compute", "exact_parameter_count", "primary_metric", "logits_per_byte_corr", "acc_raw", "acc_per_token", "acc_per_char", "correct_prob", "correct_prob_per_token", "correct_prob_per_char", "margin", "margin_per_token", "margin_per_char", "total_prob", "total_prob_per_token", "total_prob_per_char", "norm_correct_prob", "norm_correct_prob_per_token", "norm_correct_prob_per_char"]
+evidence_level = "lower_level_rows"
+
+[[inputs]]
+id = "scaling_evaluations"
+path = "processed/scaling-law/evaluations.parquet"
+remote_path = "scaling-law/evaluations.parquet"
+columns = ["recipe", "params", "seed", "step", "task", "tokens", "compute", "exact_parameter_count", "primary_metric", "logits_per_byte_corr"]
+evidence_level = "lower_level_rows"
+
+[[inputs]]
+id = "cheap_decisions"
+path = "processed/published-results/cheap_decisions_stacked_rc_pred_all.parquet"
+remote_path = "published-results/cheap_decisions_stacked_rc_pred_all.parquet"
+columns = ["task", "mix", "metric", "setup", "step_1_y", "step_2_y", "stacked_y", "step_1_pred", "step_2_pred", "stacked_pred", "abs_error_step_1", "abs_error_step_2", "abs_error_stacked", "rel_error_stacked"]
+evidence_level = "author_derived_aggregate"
+
+[[inputs]]
+id = "new_eval_decision_accuracy"
+path = "processed/published-results/new_eval_intermediates/davidh_new_evals_decision_accuracy.parquet"
+remote_path = "published-results/new_eval_intermediates/davidh_new_evals_decision_accuracy.parquet"
+columns = ["size", "task", "target_ranking", "logits_per_byte_corr", "logits_per_char_corr", "primary_score"]
+evidence_level = "author_derived_aggregate"
+
+[[inputs]]
+id = "new_eval_means"
+path = "processed/published-results/new_eval_intermediates/davidh_new_evals_means_df.parquet"
+remote_path = "published-results/new_eval_intermediates/davidh_new_evals_means_df.parquet"
+columns = ["size", "task", "primary_score", "logits_per_byte_corr", "logits_per_char_corr"]
+evidence_level = "author_derived_aggregate"
+
+[[comparison_rules]]
+id = "predicate-true-v1"
+version = 1
+predicate = "boolean_true"
+
+[[comparison_rules]]
+id = "directional-v1"
+version = 1
+predicate = "directional"
+
+[[comparison_rules]]
+id = "nonempty-paper-plot-v1"
+version = 1
+predicate = "nonempty_plot"
+
+[[comparison_rules]]
+id = "approximately-one-point-v1"
+version = 1
+predicate = "absolute_tolerance"
+absolute_tolerance = 0.01
+threshold_grid = [0.005, 0.01, 0.02]
+
+[[comparison_rules]]
+id = "rounded-one-decimal-v1"
+version = 1
+predicate = "rounded"
+displayed_decimal_places = 1
+
+[[comparison_rules]]
+id = "dd-0013-at-or-below-frontier-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "frontier_difference_maximum", default = 0.0, sensitivity_grid = [0.0] }]
+
+[[comparison_rules]]
+id = "dd-0054-at-or-below-frontier-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "frontier_difference_maximum", default = 0.0, sensitivity_grid = [0.0] }]
+
+[[comparison_rules]]
+id = "dd-0119-best-vs-baseline-advantage-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "marked_gap_minimum", default = 0.05, sensitivity_grid = [0.02, 0.05] }]
+
+[[comparison_rules]]
+id = "dd-0180-at-or-below-frontier-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "frontier_difference_maximum", default = 0.0, sensitivity_grid = [0.0] }]
+
+[[comparison_rules]]
+id = "dd-0181-at-or-below-frontier-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "frontier_difference_maximum", default = 0.0, sensitivity_grid = [0.0] }]
+
+[[comparison_rules]]
+id = "dd-0189-top-three-variants-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "task_count", default = 3.0, sensitivity_grid = [3.0] }]
+
+[[comparison_rules]]
+id = "dd-0192-strong-single-scale-baseline-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "accuracy_threshold", default = 0.8, sensitivity_grid = [0.8] }]
+
+[[comparison_rules]]
+id = "dd-0311-small-decision-accuracy-spread-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "overlap_range_maximum", default = 0.01, sensitivity_grid = [0.005, 0.01] }]
+
+[[comparison_rules]]
+id = "dd-0312-error-accuracy-rank-match-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "task_count", default = 3.0, sensitivity_grid = [3.0] }]
+
+[[comparison_rules]]
+id = "dd-0330-small-decision-accuracy-spread-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "overlap_range_maximum", default = 0.01, sensitivity_grid = [0.005, 0.01] }]
+
+[[comparison_rules]]
+id = "dd-0368-at-or-below-frontier-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "frontier_difference_maximum", default = 0.0, sensitivity_grid = [0.0] }]
+
+[[comparison_rules]]
+id = "dd-0369-majority-near-chance-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [
+  { name = "fraction_threshold", default = 0.5, sensitivity_grid = [0.5] },
+  { name = "chance_baseline", default = 0.5, sensitivity_grid = [0.5] },
+  { name = "trivial_tolerance", default = 0.05, sensitivity_grid = [0.05] },
+  { name = "predicted_tie_credit", default = 0.0, sensitivity_grid = [0.0, 0.5] },
+]
+
+[[comparison_rules]]
+id = "dd-0010-strong-baseline-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "strong_baseline_threshold", default = 0.75, sensitivity_grid = [0.75] }]
+
+[[comparison_rules]]
+id = "dd-0164-positive-compute-trend-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [
+  { name = "ols_slope_minimum", default = 0.0, sensitivity_grid = [0.0] },
+  { name = "spearman_minimum", default = 0.0, sensitivity_grid = [0.0] },
+]
+
+[[comparison_rules]]
+id = "dd-0165-compute-equivalent-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [
+  { name = "equivalence_difference_minimum", default = -0.0033333333333333335, sensitivity_grid = [-0.0033333333333333335] },
+  { name = "compute_log10_bin_width", default = 0.1, sensitivity_grid = [0.05, 0.1, 0.2] },
+]
+
+[[comparison_rules]]
+id = "dd-0017-continuous-proxy-predictable-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [
+  { name = "accuracy_threshold", default = 0.8, sensitivity_grid = [0.75, 0.8, 0.85] },
+  { name = "maximum_scale_percent", default = 0.01, sensitivity_grid = [0.01] },
+]
+
+[[comparison_rules]]
+id = "dd-0018-continuous-proxy-predictable-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [
+  { name = "accuracy_threshold", default = 0.8, sensitivity_grid = [0.75, 0.8, 0.85] },
+  { name = "maximum_scale_percent", default = 0.01, sensitivity_grid = [0.01] },
+]
+
+[[comparison_rules]]
+id = "dd-0213-positive-code-proxy-gain-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "marked_gap_minimum", default = 0.0, sensitivity_grid = [0.0] }]
+
+[[comparison_rules]]
+id = "dd-0221-code-proxy-shift-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [
+  { name = "strong_baseline_threshold", default = 0.75, sensitivity_grid = [0.75] },
+  { name = "chance_baseline", default = 0.5, sensitivity_grid = [0.5] },
+  { name = "trivial_tolerance", default = 0.05, sensitivity_grid = [0.05] },
+]
+
+[[comparison_rules]]
+id = "dd-0222-math-near-random-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [
+  { name = "chance_baseline", default = 0.5, sensitivity_grid = [0.5] },
+  { name = "trivial_tolerance", default = 0.05, sensitivity_grid = [0.05] },
+]
+
+[[comparison_rules]]
+id = "dd-0224-code-approximately-eighty-v1"
+version = 1
+predicate = "absolute_tolerance"
+absolute_tolerance = 0.05
+threshold_grid = [0.025, 0.05, 0.1]
+
+[[comparison_rules]]
+id = "dd-0225-code-continuous-proxy-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "strong_baseline_threshold", default = 0.75, sensitivity_grid = [0.75] }]
+
+[[comparison_rules]]
+id = "dd-0226-code-gain-exceeds-math-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "marked_gap_minimum", default = 0.0, sensitivity_grid = [0.0] }]
+
+[[comparison_rules]]
+id = "dd-0227-math-same-metric-predictable-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "accuracy_threshold", default = 0.8, sensitivity_grid = [0.75, 0.8, 0.85] }]
+
+[[comparison_rules]]
+id = "dd-0413-code-continuous-bars-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [
+  { name = "nontrivial_accuracy_threshold", default = 0.6, sensitivity_grid = [0.6] },
+  { name = "strong_baseline_threshold", default = 0.75, sensitivity_grid = [0.75] },
+]
+
+[[comparison_rules]]
+id = "dd-0414-math-continuous-bars-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [
+  { name = "chance_baseline", default = 0.5, sensitivity_grid = [0.5] },
+  { name = "trivial_tolerance", default = 0.05, sensitivity_grid = [0.05, 0.1] },
+]
+
+[[comparison_rules]]
+id = "dd-0356-annotation-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "accuracy_threshold", default = 0.8, sensitivity_grid = [0.75, 0.8, 0.85] }]
+
+[[comparison_rules]]
+id = "dd-0051-task-compute-dependence-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [
+  { name = "accuracy_threshold", default = 0.8, sensitivity_grid = [0.75, 0.8, 0.85] },
+  { name = "compute_ratio_threshold", default = 10.0, sensitivity_grid = [10.0] },
+]
+
+[[comparison_rules]]
+id = "dd-0052-matched-accuracy-cheaper-v1"
+version = 1
+predicate = "directional"
+parameters = [{ name = "accuracy_threshold", default = 0.8, sensitivity_grid = [0.75, 0.8, 0.85] }]
+
+[[comparison_rules]]
+id = "dd-0053-low-reliability-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "low_reliability_maximum", default = 0.8, sensitivity_grid = [0.8] }]
+
+[[comparison_rules]]
+id = "dd-0142-nontrivial-except-boolq-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "nontrivial_accuracy_threshold", default = 0.55, sensitivity_grid = [0.55] }]
+
+[[comparison_rules]]
+id = "dd-0149-small-scale-predictable-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [
+  { name = "accuracy_threshold", default = 0.8, sensitivity_grid = [0.75, 0.8, 0.85] },
+  { name = "maximum_scale_percent", default = 1.0, sensitivity_grid = [0.1, 1.0, 10.0] },
+]
+
+[[comparison_rules]]
+id = "dd-0150-substantially-more-compute-v1"
+version = 1
+predicate = "directional"
+parameters = [
+  { name = "accuracy_threshold", default = 0.8, sensitivity_grid = [0.75, 0.8, 0.85] },
+  { name = "compute_ratio_threshold", default = 10.0, sensitivity_grid = [3.0, 10.0, 30.0] },
+]
+
+[[comparison_rules]]
+id = "dd-0166-task-threshold-ratio-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [
+  { name = "accuracy_threshold", default = 0.8, sensitivity_grid = [0.75, 0.8, 0.85] },
+  { name = "compute_ratio_threshold", default = 10.0, sensitivity_grid = [10.0] },
+]
+
+[[comparison_rules]]
+id = "dd-0167-much-less-compute-v1"
+version = 1
+predicate = "directional"
+parameters = [
+  { name = "accuracy_threshold", default = 0.8, sensitivity_grid = [0.75, 0.8, 0.85] },
+  { name = "compute_ratio_threshold", default = 10.0, sensitivity_grid = [3.0, 10.0, 30.0] },
+]
+
+[[comparison_rules]]
+id = "dd-0168-markedly-less-reliable-v1"
+version = 1
+predicate = "directional"
+parameters = [{ name = "marked_gap_minimum", default = 0.05, sensitivity_grid = [0.05] }]
+
+[[comparison_rules]]
+id = "dd-0174-fixed-compute-task-range-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "fixed_compute_range_minimum", default = 0.2, sensitivity_grid = [0.2] }]
+
+[[comparison_rules]]
+id = "dd-0175-five-orders-predictable-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [
+  { name = "accuracy_threshold", default = 0.8, sensitivity_grid = [0.75, 0.8, 0.85] },
+  { name = "compute_ratio_threshold", default = 100000.0, sensitivity_grid = [100000.0] },
+]
+
+[[comparison_rules]]
+id = "dd-0176-boolq-intermediate-only-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [
+  { name = "chance_baseline", default = 0.5, sensitivity_grid = [0.5] },
+  { name = "trivial_tolerance", default = 0.05, sensitivity_grid = [0.05] },
+  { name = "nontrivial_accuracy_threshold", default = 0.55, sensitivity_grid = [0.55] },
+]
+
+[[comparison_rules]]
+id = "plateau-then-rise-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [
+  { name = "plateau_sse_improvement_minimum", default = 0.2, sensitivity_grid = [0.1, 0.2, 0.3] },
+  { name = "early_slope_absolute_maximum", default = 0.02, sensitivity_grid = [0.02] },
+  { name = "late_slope_minimum", default = 0.0, sensitivity_grid = [0.0] },
+]
+
+[[comparison_rules]]
+id = "small-scale-proxy-equivalent-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [
+  { name = "equivalence_difference_minimum", default = -0.0033333333333333335, sensitivity_grid = [-0.0033333333333333335] },
+  { name = "maximum_scale_percent", default = 1.0, sensitivity_grid = [0.1, 1.0, 10.0] },
+]
+
+[[comparison_rules]]
+id = "proxy-noise-spread-majority-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "fraction_threshold", default = 0.5, sensitivity_grid = [0.5, 0.6666666666666666, 0.8] }]
+
+[[comparison_rules]]
+id = "curve-similarity-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "spearman_minimum", default = 0.9, sensitivity_grid = [0.9] }]
+
+[[comparison_rules]]
+id = "strict-majority-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "fraction_threshold", default = 0.5, sensitivity_grid = [0.5, 0.6666666666666666, 0.8] }]
+
+[[comparison_rules]]
+id = "small-scale-strict-majority-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [
+  { name = "fraction_threshold", default = 0.5, sensitivity_grid = [0.5, 0.6666666666666666, 0.8] },
+  { name = "maximum_scale_percent", default = 1.0, sensitivity_grid = [0.1, 1.0, 10.0] },
+]
+
+[[comparison_rules]]
+id = "two-trend-clusters-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [
+  { name = "cluster_count", default = 2.0, sensitivity_grid = [2.0] },
+  { name = "silhouette_minimum", default = 0.25, sensitivity_grid = [0.15, 0.25, 0.35] },
+]
+
+[[comparison_rules]]
+id = "overlap-and-rise-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [
+  { name = "overlap_range_maximum", default = 0.05, sensitivity_grid = [0.05] },
+  { name = "ols_slope_minimum", default = 0.0, sensitivity_grid = [0.0] },
+]
+
+[[comparison_rules]]
+id = "flat-then-converge-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [
+  { name = "early_slope_absolute_maximum", default = 0.02, sensitivity_grid = [0.02] },
+  { name = "convergence_tolerance", default = 0.05, sensitivity_grid = [0.05] },
+]
+
+[[comparison_rules]]
+id = "last-decade-overtake-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "fraction_threshold", default = 0.5, sensitivity_grid = [0.5, 0.6666666666666666, 0.8] }]
+
+[[comparison_rules]]
+id = "adjacent-decline-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "decline_threshold", default = 0.0033333333333333335, sensitivity_grid = [0.0033333333333333335] }]
+
+[[comparison_rules]]
+id = "noise-spread-positive-association-v1"
+version = 1
+predicate = "directional"
+parameters = [{ name = "spearman_minimum", default = 0.0, sensitivity_grid = [0.0] }]
+
+[[comparison_rules]]
+id = "one-billion-sd-most-tasks-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [
+  { name = "standard_deviation_target", default = 0.02, sensitivity_grid = [0.02] },
+  { name = "standard_deviation_tolerance", default = 0.01, sensitivity_grid = [0.01] },
+  { name = "task_count", default = 10.0, sensitivity_grid = [10.0] },
+  { name = "task_count_minimum_exclusive", default = 5.0, sensitivity_grid = [5.0] },
+]
+
+[[comparison_rules]]
+id = "frequent-crossovers-v1"
+version = 1
+predicate = "boolean_true"
+parameters = [{ name = "fraction_threshold", default = 0.5, sensitivity_grid = [0.3333333333333333, 0.5, 0.6666666666666666] }]
+
+[checkpoint_policy]
+final_rule = "latest_common_complete"
+completeness_dimensions = ["recipe", "seed", "task", "metric"]
+one_step_across_universe = true
+
+[sensitivity_policy]
+preceding_common_complete_steps = 2
+include_paper_step_when_present = true
+fixed_before_computation = true
+
+[[analysis_policies]]
+id = "single_scale"
+transformation_ids = ["mmlu-subject-macro-v1", "olmes-task-macro-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+
+[[analysis_policies]]
+id = "per_task"
+transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+
+[[analysis_policies]]
+id = "proxy_metrics"
+transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+
+[[analysis_policies]]
+id = "noise_spread"
+transformation_ids = ["task-score-v1", "sample-seed-sd-v1", "recipe-spread-v1"]
+
+[[analysis_policies]]
+id = "scaling_law"
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+
+[[analysis_policies]]
+id = "math_code"
+transformation_ids = ["math-code-complete-cube-v1", "math-code-claim-comparison-v1", "math-code-paper-series-v1"]
+
+[outputs]
+runs_root = "data/paper-validation/runs"
+report = "docs/paper-validation-report.md"
+figures_root = "docs/paper/validation-figures"
+
+[[attempts]]
+id = "dd-0010-default"
+claim_id = "DD-0010"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "single_scale"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["olmes-macro"]
+metric_ids = ["primary_metric"]
+model_sizes = ["150M", "1B"]
+checkpoints = ["final-common-complete"]
+sensitivity_ids = ["dd-0010-preceding-common-complete-1", "dd-0010-preceding-common-complete-2", "dd-0010-paper-step"]
+transformation_ids = ["mmlu-subject-macro-v1", "olmes-task-macro-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "dd-0010-strong-baseline-v1"
+
+[[attempts]]
+id = "dd-0011-default"
+claim_id = "DD-0011"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "single_scale"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["olmes-macro"]
+metric_ids = ["primary_metric"]
+model_sizes = ["150M", "1B"]
+checkpoints = ["final-common-complete"]
+sensitivity_ids = ["dd-0011-preceding-common-complete-1", "dd-0011-preceding-common-complete-2", "dd-0011-paper-step", "dd-0011-comparison-absolute-tolerance-grid-1", "dd-0011-comparison-absolute-tolerance-grid-3"]
+transformation_ids = ["mmlu-subject-macro-v1", "olmes-task-macro-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "approximately-one-point-v1"
+
+[[attempts]]
+id = "dd-0164-default"
+claim_id = "DD-0164"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "single_scale"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["olmes-macro"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["mmlu-subject-macro-v1", "olmes-task-macro-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "dd-0164-positive-compute-trend-v1"
+
+[[attempts]]
+id = "dd-0165-default"
+claim_id = "DD-0165"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "single_scale"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["olmes-macro"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+sensitivity_ids = ["dd-0165-comparison-compute-log10-bin-width-grid-1", "dd-0165-comparison-compute-log10-bin-width-grid-3"]
+transformation_ids = ["mmlu-subject-macro-v1", "olmes-task-macro-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "dd-0165-compute-equivalent-v1"
+
+[[attempts]]
+id = "dd-0169-default"
+claim_id = "DD-0169"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "single_scale"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["olmes-macro"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["mmlu-subject-macro-v1", "olmes-task-macro-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "nonempty-paper-plot-v1"
+plot_series_ids = ["dd-0169-paper-analog"]
+
+[[attempts]]
+id = "dd-0356-default"
+claim_id = "DD-0356"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "single_scale"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["olmes-macro"]
+metric_ids = ["primary_metric"]
+model_sizes = ["150M", "1B"]
+checkpoints = ["final-common-complete"]
+sensitivity_ids = ["dd-0356-preceding-common-complete-1", "dd-0356-preceding-common-complete-2", "dd-0356-paper-step", "dd-0356-comparison-accuracy-threshold-grid-1", "dd-0356-comparison-accuracy-threshold-grid-3"]
+transformation_ids = ["mmlu-subject-macro-v1", "olmes-task-macro-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "dd-0356-annotation-v1"
+plot_series_ids = ["dd-0356-paper-analog"]
+
+[[attempts]]
+id = "dd-0051-default"
+claim_id = "DD-0051"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "per_task"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+sensitivity_ids = ["dd-0051-comparison-accuracy-threshold-grid-1", "dd-0051-comparison-accuracy-threshold-grid-3"]
+transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "dd-0051-task-compute-dependence-v1"
+
+[[attempts]]
+id = "dd-0052-default"
+claim_id = "DD-0052"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "per_task"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+sensitivity_ids = ["dd-0052-comparison-accuracy-threshold-grid-1", "dd-0052-comparison-accuracy-threshold-grid-3"]
+transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "dd-0052-matched-accuracy-cheaper-v1"
+
+[[attempts]]
+id = "dd-0053-default"
+claim_id = "DD-0053"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "per_task"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "dd-0053-low-reliability-v1"
+
+[[attempts]]
+id = "dd-0142-default"
+claim_id = "DD-0142"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "per_task"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["all-five"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["paper-model-sizes"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "dd-0142-nontrivial-except-boolq-v1"
+
+[[attempts]]
+id = "dd-0148-default"
+claim_id = "DD-0148"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "per_task"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "nonempty-paper-plot-v1"
+plot_series_ids = ["dd-0148-paper-analog"]
+
+[[attempts]]
+id = "dd-0149-default"
+claim_id = "DD-0149"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "per_task"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["arc_easy"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+sensitivity_ids = ["dd-0149-comparison-accuracy-threshold-grid-1", "dd-0149-comparison-accuracy-threshold-grid-3", "dd-0149-comparison-maximum-scale-percent-grid-1", "dd-0149-comparison-maximum-scale-percent-grid-3"]
+transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "dd-0149-small-scale-predictable-v1"
+plot_series_ids = ["dd-0149-paper-analog"]
+
+[[attempts]]
+id = "dd-0150-default"
+claim_id = "DD-0150"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "per_task"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["hellaswag", "arc_easy"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+sensitivity_ids = ["dd-0150-comparison-accuracy-threshold-grid-1", "dd-0150-comparison-accuracy-threshold-grid-3", "dd-0150-comparison-compute-ratio-threshold-grid-1", "dd-0150-comparison-compute-ratio-threshold-grid-3"]
+transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "dd-0150-substantially-more-compute-v1"
+plot_series_ids = ["dd-0150-paper-analog"]
+
+[[attempts]]
+id = "dd-0166-default"
+claim_id = "DD-0166"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "per_task"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+sensitivity_ids = ["dd-0166-comparison-accuracy-threshold-grid-1", "dd-0166-comparison-accuracy-threshold-grid-3"]
+transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "dd-0166-task-threshold-ratio-v1"
+
+[[attempts]]
+id = "dd-0167-default"
+claim_id = "DD-0167"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "per_task"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["arc_challenge", "arc_easy", "mmlu", "hellaswag"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+sensitivity_ids = ["dd-0167-comparison-accuracy-threshold-grid-1", "dd-0167-comparison-accuracy-threshold-grid-3", "dd-0167-comparison-compute-ratio-threshold-grid-1", "dd-0167-comparison-compute-ratio-threshold-grid-3"]
+transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "dd-0167-much-less-compute-v1"
+
+[[attempts]]
+id = "dd-0168-default"
+claim_id = "DD-0168"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "per_task"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "dd-0168-markedly-less-reliable-v1"
+
+[[attempts]]
+id = "dd-0174-default"
+claim_id = "DD-0174"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "per_task"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "dd-0174-fixed-compute-task-range-v1"
+plot_series_ids = ["dd-0174-paper-analog"]
+
+[[attempts]]
+id = "dd-0175-default"
+claim_id = "DD-0175"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "per_task"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["arc_easy"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+sensitivity_ids = ["dd-0175-comparison-accuracy-threshold-grid-1", "dd-0175-comparison-accuracy-threshold-grid-3"]
+transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "dd-0175-five-orders-predictable-v1"
+plot_series_ids = ["dd-0175-paper-analog"]
+
+[[attempts]]
+id = "dd-0176-default"
+claim_id = "DD-0176"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "per_task"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["boolq"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "dd-0176-boolq-intermediate-only-v1"
+plot_series_ids = ["dd-0176-paper-analog"]
+
+[[attempts]]
+id = "dd-0177-default"
+claim_id = "DD-0177"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "per_task"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["hellaswag"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+sensitivity_ids = ["dd-0177-comparison-plateau-sse-improvement-minimum-grid-1", "dd-0177-comparison-plateau-sse-improvement-minimum-grid-3"]
+transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "plateau-then-rise-v1"
+plot_series_ids = ["dd-0177-paper-analog"]
+
+[[attempts]]
+id = "dd-0178-default"
+claim_id = "DD-0178"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "per_task"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["socialiqa"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+sensitivity_ids = ["dd-0178-comparison-plateau-sse-improvement-minimum-grid-1", "dd-0178-comparison-plateau-sse-improvement-minimum-grid-3"]
+transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "plateau-then-rise-v1"
+plot_series_ids = ["dd-0178-paper-analog"]
+
+[[attempts]]
+id = "dd-0179-default"
+claim_id = "DD-0179"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "per_task"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["winogrande"]
+metric_ids = ["primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+sensitivity_ids = ["dd-0179-comparison-plateau-sse-improvement-minimum-grid-1", "dd-0179-comparison-plateau-sse-improvement-minimum-grid-3"]
+transformation_ids = ["task-score-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "plateau-then-rise-v1"
+plot_series_ids = ["dd-0179-paper-analog"]
+
+[[attempts]]
+id = "dd-0013-default"
+claim_id = "DD-0013"
+default = true
+evidence_level = "author_derived_aggregate"
+analysis_id = "scaling_law"
+inputs = [
+  { table_id = "cheap_decisions", columns = ["task", "mix", "metric", "setup", "step_1_y", "step_2_y", "stacked_y", "step_1_pred", "step_2_pred", "stacked_pred", "abs_error_step_1", "abs_error_step_2", "abs_error_stacked", "rel_error_stacked"] },
+  { table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] },
+]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "dd-0013-at-or-below-frontier-v1"
+
+[[attempts]]
+id = "dd-0054-default"
+claim_id = "DD-0054"
+default = true
+evidence_level = "author_derived_aggregate"
+analysis_id = "scaling_law"
+inputs = [
+  { table_id = "cheap_decisions", columns = ["task", "mix", "metric", "setup", "step_1_y", "step_2_y", "stacked_y", "step_1_pred", "step_2_pred", "stacked_pred", "abs_error_step_1", "abs_error_step_2", "abs_error_stacked", "rel_error_stacked"] },
+  { table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] },
+]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "dd-0054-at-or-below-frontier-v1"
+
+[[attempts]]
+id = "dd-0119-default"
+claim_id = "DD-0119"
+default = true
+evidence_level = "author_derived_aggregate"
+analysis_id = "scaling_law"
+inputs = [{ table_id = "cheap_decisions", columns = ["task", "mix", "metric", "setup", "step_1_y", "step_2_y", "stacked_y", "step_1_pred", "step_2_pred", "stacked_pred", "abs_error_step_1", "abs_error_step_2", "abs_error_stacked", "rel_error_stacked"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+sensitivity_ids = ["dd-0119-comparison-marked-gap-minimum-grid-1"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "dd-0119-best-vs-baseline-advantage-v1"
+
+[[attempts]]
+id = "dd-0180-default"
+claim_id = "DD-0180"
+default = true
+evidence_level = "author_derived_aggregate"
+analysis_id = "scaling_law"
+inputs = [
+  { table_id = "cheap_decisions", columns = ["task", "mix", "metric", "setup", "step_1_y", "step_2_y", "stacked_y", "step_1_pred", "step_2_pred", "stacked_pred", "abs_error_step_1", "abs_error_step_2", "abs_error_stacked", "rel_error_stacked"] },
+  { table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] },
+]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "dd-0180-at-or-below-frontier-v1"
+plot_series_ids = ["dd-0180-paper-analog"]
+
+[[attempts]]
+id = "dd-0181-default"
+claim_id = "DD-0181"
+default = true
+evidence_level = "author_derived_aggregate"
+analysis_id = "scaling_law"
+inputs = [
+  { table_id = "cheap_decisions", columns = ["task", "mix", "metric", "setup", "step_1_y", "step_2_y", "stacked_y", "step_1_pred", "step_2_pred", "stacked_pred", "abs_error_step_1", "abs_error_step_2", "abs_error_stacked", "rel_error_stacked"] },
+  { table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] },
+]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "dd-0181-at-or-below-frontier-v1"
+
+[[attempts]]
+id = "dd-0189-default"
+claim_id = "DD-0189"
+default = true
+evidence_level = "author_derived_aggregate"
+analysis_id = "scaling_law"
+inputs = [{ table_id = "cheap_decisions", columns = ["task", "mix", "metric", "setup", "step_1_y", "step_2_y", "stacked_y", "step_1_pred", "step_2_pred", "stacked_pred", "abs_error_step_1", "abs_error_step_2", "abs_error_stacked", "rel_error_stacked"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "dd-0189-top-three-variants-v1"
+
+[[attempts]]
+id = "dd-0192-default"
+claim_id = "DD-0192"
+default = true
+evidence_level = "author_derived_aggregate"
+analysis_id = "scaling_law"
+inputs = [
+  { table_id = "cheap_decisions", columns = ["task", "mix", "metric", "setup", "step_1_y", "step_2_y", "stacked_y", "step_1_pred", "step_2_pred", "stacked_pred", "abs_error_step_1", "abs_error_step_2", "abs_error_stacked", "rel_error_stacked"] },
+  { table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] },
+]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "dd-0192-strong-single-scale-baseline-v1"
+
+[[attempts]]
+id = "dd-0301-default"
+claim_id = "DD-0301"
+default = true
+evidence_level = "author_derived_aggregate"
+analysis_id = "scaling_law"
+inputs = [{ table_id = "cheap_decisions", columns = ["task", "mix", "metric", "setup", "step_1_y", "step_2_y", "stacked_y", "step_1_pred", "step_2_pred", "stacked_pred", "abs_error_step_1", "abs_error_step_2", "abs_error_stacked", "rel_error_stacked"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "rounded-one-decimal-v1"
+
+[[attempts]]
+id = "dd-0302-default"
+claim_id = "DD-0302"
+default = true
+evidence_level = "author_derived_aggregate"
+analysis_id = "scaling_law"
+inputs = [{ table_id = "cheap_decisions", columns = ["task", "mix", "metric", "setup", "step_1_y", "step_2_y", "stacked_y", "step_1_pred", "step_2_pred", "stacked_pred", "abs_error_step_1", "abs_error_step_2", "abs_error_stacked", "rel_error_stacked"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "rounded-one-decimal-v1"
+
+[[attempts]]
+id = "dd-0303-default"
+claim_id = "DD-0303"
+default = true
+evidence_level = "author_derived_aggregate"
+analysis_id = "scaling_law"
+inputs = [{ table_id = "cheap_decisions", columns = ["task", "mix", "metric", "setup", "step_1_y", "step_2_y", "stacked_y", "step_1_pred", "step_2_pred", "stacked_pred", "abs_error_step_1", "abs_error_step_2", "abs_error_stacked", "rel_error_stacked"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "rounded-one-decimal-v1"
+
+[[attempts]]
+id = "dd-0304-default"
+claim_id = "DD-0304"
+default = true
+evidence_level = "author_derived_aggregate"
+analysis_id = "scaling_law"
+inputs = [{ table_id = "cheap_decisions", columns = ["task", "mix", "metric", "setup", "step_1_y", "step_2_y", "stacked_y", "step_1_pred", "step_2_pred", "stacked_pred", "abs_error_step_1", "abs_error_step_2", "abs_error_stacked", "rel_error_stacked"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "rounded-one-decimal-v1"
+
+[[attempts]]
+id = "dd-0305-default"
+claim_id = "DD-0305"
+default = true
+evidence_level = "author_derived_aggregate"
+analysis_id = "scaling_law"
+inputs = [{ table_id = "cheap_decisions", columns = ["task", "mix", "metric", "setup", "step_1_y", "step_2_y", "stacked_y", "step_1_pred", "step_2_pred", "stacked_pred", "abs_error_step_1", "abs_error_step_2", "abs_error_stacked", "rel_error_stacked"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "rounded-one-decimal-v1"
+
+[[attempts]]
+id = "dd-0306-default"
+claim_id = "DD-0306"
+default = true
+evidence_level = "author_derived_aggregate"
+analysis_id = "scaling_law"
+inputs = [{ table_id = "cheap_decisions", columns = ["task", "mix", "metric", "setup", "step_1_y", "step_2_y", "stacked_y", "step_1_pred", "step_2_pred", "stacked_pred", "abs_error_step_1", "abs_error_step_2", "abs_error_stacked", "rel_error_stacked"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "rounded-one-decimal-v1"
+
+[[attempts]]
+id = "dd-0307-default"
+claim_id = "DD-0307"
+default = true
+evidence_level = "author_derived_aggregate"
+analysis_id = "scaling_law"
+inputs = [{ table_id = "cheap_decisions", columns = ["task", "mix", "metric", "setup", "step_1_y", "step_2_y", "stacked_y", "step_1_pred", "step_2_pred", "stacked_pred", "abs_error_step_1", "abs_error_step_2", "abs_error_stacked", "rel_error_stacked"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "rounded-one-decimal-v1"
+
+[[attempts]]
+id = "dd-0308-default"
+claim_id = "DD-0308"
+default = true
+evidence_level = "author_derived_aggregate"
+analysis_id = "scaling_law"
+inputs = [{ table_id = "cheap_decisions", columns = ["task", "mix", "metric", "setup", "step_1_y", "step_2_y", "stacked_y", "step_1_pred", "step_2_pred", "stacked_pred", "abs_error_step_1", "abs_error_step_2", "abs_error_stacked", "rel_error_stacked"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "rounded-one-decimal-v1"
+
+[[attempts]]
+id = "dd-0311-default"
+claim_id = "DD-0311"
+default = true
+evidence_level = "author_derived_aggregate"
+analysis_id = "scaling_law"
+inputs = [{ table_id = "cheap_decisions", columns = ["task", "mix", "metric", "setup", "step_1_y", "step_2_y", "stacked_y", "step_1_pred", "step_2_pred", "stacked_pred", "abs_error_step_1", "abs_error_step_2", "abs_error_stacked", "rel_error_stacked"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+sensitivity_ids = ["dd-0311-comparison-overlap-range-maximum-grid-1"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "dd-0311-small-decision-accuracy-spread-v1"
+
+[[attempts]]
+id = "dd-0312-default"
+claim_id = "DD-0312"
+default = true
+evidence_level = "author_derived_aggregate"
+analysis_id = "scaling_law"
+inputs = [{ table_id = "cheap_decisions", columns = ["task", "mix", "metric", "setup", "step_1_y", "step_2_y", "stacked_y", "step_1_pred", "step_2_pred", "stacked_pred", "abs_error_step_1", "abs_error_step_2", "abs_error_stacked", "rel_error_stacked"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "dd-0312-error-accuracy-rank-match-v1"
+
+[[attempts]]
+id = "dd-0330-default"
+claim_id = "DD-0330"
+default = true
+evidence_level = "author_derived_aggregate"
+analysis_id = "scaling_law"
+inputs = [{ table_id = "cheap_decisions", columns = ["task", "mix", "metric", "setup", "step_1_y", "step_2_y", "stacked_y", "step_1_pred", "step_2_pred", "stacked_pred", "abs_error_step_1", "abs_error_step_2", "abs_error_stacked", "rel_error_stacked"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+sensitivity_ids = ["dd-0330-comparison-overlap-range-maximum-grid-1"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "dd-0330-small-decision-accuracy-spread-v1"
+
+[[attempts]]
+id = "dd-0368-default"
+claim_id = "DD-0368"
+default = true
+evidence_level = "author_derived_aggregate"
+analysis_id = "scaling_law"
+inputs = [
+  { table_id = "cheap_decisions", columns = ["task", "mix", "metric", "setup", "step_1_y", "step_2_y", "stacked_y", "step_1_pred", "step_2_pred", "stacked_pred", "abs_error_step_1", "abs_error_step_2", "abs_error_stacked", "rel_error_stacked"] },
+  { table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] },
+]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "dd-0368-at-or-below-frontier-v1"
+plot_series_ids = ["dd-0368-paper-analog"]
+
+[[attempts]]
+id = "dd-0369-default"
+claim_id = "DD-0369"
+default = true
+evidence_level = "author_derived_aggregate"
+analysis_id = "scaling_law"
+inputs = [{ table_id = "cheap_decisions", columns = ["task", "mix", "metric", "setup", "step_1_y", "step_2_y", "stacked_y", "step_1_pred", "step_2_pred", "stacked_pred", "abs_error_step_1", "abs_error_step_2", "abs_error_stacked", "rel_error_stacked"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["default"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["scaling-fit-sizes", "1B"]
+checkpoints = ["fit-variant-checkpoints"]
+sensitivity_ids = ["dd-0369-comparison-predicted-tie-credit-grid-2"]
+transformation_ids = ["paper-eight-fit-variants-v1", "one-billion-prediction-v1", "prediction-error-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "dd-0369-majority-near-chance-v1"
+plot_series_ids = ["dd-0369-paper-analog"]
+
+[[attempts]]
+id = "dd-0014-default"
+claim_id = "DD-0014"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "proxy_metrics"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["mmlu"]
+metric_ids = ["paper-16-metrics"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "directional-v1"
+
+[[attempts]]
+id = "dd-0015-default"
+claim_id = "DD-0015"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "proxy_metrics"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["arc_challenge", "arc_easy"]
+metric_ids = ["paper-16-metrics"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "directional-v1"
+
+[[attempts]]
+id = "dd-0016-default"
+claim_id = "DD-0016"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "proxy_metrics"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["hellaswag"]
+metric_ids = ["paper-16-metrics"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "directional-v1"
+
+[[attempts]]
+id = "dd-0055-default"
+claim_id = "DD-0055"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "proxy_metrics"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["paper-16-metrics"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+sensitivity_ids = ["dd-0055-comparison-maximum-scale-percent-grid-1", "dd-0055-comparison-maximum-scale-percent-grid-3"]
+transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "small-scale-proxy-equivalent-v1"
+
+[[attempts]]
+id = "dd-0057-default"
+claim_id = "DD-0057"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "proxy_metrics"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["all-five"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["paper-16-metrics"]
+model_sizes = ["150M", "1B"]
+checkpoints = ["final-common-complete"]
+sensitivity_ids = ["dd-0057-preceding-common-complete-1", "dd-0057-preceding-common-complete-2", "dd-0057-paper-step", "dd-0057-comparison-fraction-threshold-grid-2", "dd-0057-comparison-fraction-threshold-grid-3"]
+transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "proxy-noise-spread-majority-v1"
+
+[[attempts]]
+id = "dd-0196-default"
+claim_id = "DD-0196"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "proxy_metrics"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric", "correct_prob_per_char", "total_prob_per_char"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+sensitivity_ids = ["dd-0196-comparison-maximum-scale-percent-grid-1", "dd-0196-comparison-maximum-scale-percent-grid-3"]
+transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "small-scale-proxy-equivalent-v1"
+
+[[attempts]]
+id = "dd-0197-default"
+claim_id = "DD-0197"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "proxy_metrics"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["per-token-proxies", "per-character-proxies"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "curve-similarity-v1"
+
+[[attempts]]
+id = "dd-0198-default"
+claim_id = "DD-0198"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "proxy_metrics"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["paper-16-metrics"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+sensitivity_ids = ["dd-0198-comparison-fraction-threshold-grid-2", "dd-0198-comparison-fraction-threshold-grid-3"]
+transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "strict-majority-v1"
+
+[[attempts]]
+id = "dd-0199-default"
+claim_id = "DD-0199"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "proxy_metrics"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["paper-16-metrics"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+sensitivity_ids = ["dd-0199-comparison-fraction-threshold-grid-2", "dd-0199-comparison-fraction-threshold-grid-3", "dd-0199-comparison-maximum-scale-percent-grid-1", "dd-0199-comparison-maximum-scale-percent-grid-3"]
+transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "small-scale-strict-majority-v1"
+
+[[attempts]]
+id = "dd-0202-default"
+claim_id = "DD-0202"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "proxy_metrics"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["paper-16-metrics"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+sensitivity_ids = ["dd-0202-comparison-silhouette-minimum-grid-1", "dd-0202-comparison-silhouette-minimum-grid-3"]
+transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "two-trend-clusters-v1"
+
+[[attempts]]
+id = "dd-0203-default"
+claim_id = "DD-0203"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "proxy_metrics"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["paper-16-metrics"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "overlap-and-rise-v1"
+
+[[attempts]]
+id = "dd-0204-default"
+claim_id = "DD-0204"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "proxy_metrics"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["paper-16-metrics"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "flat-then-converge-v1"
+
+[[attempts]]
+id = "dd-0205-default"
+claim_id = "DD-0205"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "proxy_metrics"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["paper-16-metrics"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+sensitivity_ids = ["dd-0205-comparison-fraction-threshold-grid-2", "dd-0205-comparison-fraction-threshold-grid-3"]
+transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "last-decade-overtake-v1"
+
+[[attempts]]
+id = "dd-0206-default"
+claim_id = "DD-0206"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "proxy_metrics"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["correct_prob", "total_prob"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "adjacent-decline-v1"
+
+[[attempts]]
+id = "dd-0207-default"
+claim_id = "DD-0207"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "proxy_metrics"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["norm_correct_prob", "margin", "primary_metric"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "curve-similarity-v1"
+
+[[attempts]]
+id = "dd-0208-default"
+claim_id = "DD-0208"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "proxy_metrics"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three", "prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["paper-16-metrics"]
+model_sizes = ["prediction-sizes", "1B"]
+checkpoints = ["all-common-complete"]
+transformation_ids = ["answer-likelihood-proxies-v1", "recipe-ranking-v1", "unordered-pair-accuracy-v1"]
+comparison_rule_id = "nonempty-paper-plot-v1"
+plot_series_ids = ["dd-0208-paper-analog"]
+
+[[attempts]]
+id = "dd-0056-default"
+claim_id = "DD-0056"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "noise_spread"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["all-five"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["paper-16-metrics"]
+model_sizes = ["150M", "1B"]
+checkpoints = ["final-common-complete"]
+sensitivity_ids = ["dd-0056-preceding-common-complete-1", "dd-0056-preceding-common-complete-2", "dd-0056-paper-step"]
+transformation_ids = ["task-score-v1", "sample-seed-sd-v1", "recipe-spread-v1"]
+comparison_rule_id = "noise-spread-positive-association-v1"
+
+[[attempts]]
+id = "dd-0098-default"
+claim_id = "DD-0098"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "noise_spread"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["target-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["1B"]
+checkpoints = ["final-common-complete"]
+sensitivity_ids = ["dd-0098-preceding-common-complete-1", "dd-0098-preceding-common-complete-2", "dd-0098-paper-step"]
+transformation_ids = ["task-score-v1", "sample-seed-sd-v1", "recipe-spread-v1"]
+comparison_rule_id = "one-billion-sd-most-tasks-v1"
+
+[[attempts]]
+id = "dd-0194-default"
+claim_id = "DD-0194"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "noise_spread"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["all-five"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["primary_metric"]
+model_sizes = ["paper-model-sizes"]
+checkpoints = ["all-common-complete"]
+sensitivity_ids = ["dd-0194-comparison-fraction-threshold-grid-1", "dd-0194-comparison-fraction-threshold-grid-3"]
+transformation_ids = ["task-score-v1", "sample-seed-sd-v1", "recipe-spread-v1"]
+comparison_rule_id = "frequent-crossovers-v1"
+
+[[attempts]]
+id = "dd-0209-default"
+claim_id = "DD-0209"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "noise_spread"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["prediction-three"]
+task_ids = ["hellaswag"]
+metric_ids = ["correct_prob"]
+model_sizes = ["150M"]
+checkpoints = ["final-common-complete"]
+sensitivity_ids = ["dd-0209-preceding-common-complete-1", "dd-0209-preceding-common-complete-2", "dd-0209-paper-step"]
+transformation_ids = ["task-score-v1", "sample-seed-sd-v1", "recipe-spread-v1"]
+comparison_rule_id = "nonempty-paper-plot-v1"
+plot_series_ids = ["dd-0209-paper-analog"]
+
+[[attempts]]
+id = "dd-0210-default"
+claim_id = "DD-0210"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "noise_spread"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["prediction-three"]
+task_ids = ["socialiqa"]
+metric_ids = ["correct_prob"]
+model_sizes = ["150M"]
+checkpoints = ["final-common-complete"]
+sensitivity_ids = ["dd-0210-preceding-common-complete-1", "dd-0210-preceding-common-complete-2", "dd-0210-paper-step"]
+transformation_ids = ["task-score-v1", "sample-seed-sd-v1", "recipe-spread-v1"]
+comparison_rule_id = "nonempty-paper-plot-v1"
+plot_series_ids = ["dd-0210-paper-analog"]
+
+[[attempts]]
+id = "dd-0211-default"
+claim_id = "DD-0211"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "noise_spread"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["paper-16-metrics"]
+model_sizes = ["150M"]
+checkpoints = ["final-common-complete"]
+sensitivity_ids = ["dd-0211-preceding-common-complete-1", "dd-0211-preceding-common-complete-2", "dd-0211-paper-step"]
+transformation_ids = ["task-score-v1", "sample-seed-sd-v1", "recipe-spread-v1"]
+comparison_rule_id = "noise-spread-positive-association-v1"
+
+[[attempts]]
+id = "dd-0212-default"
+claim_id = "DD-0212"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "noise_spread"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["correct_prob", "primary_metric"]
+model_sizes = ["150M"]
+checkpoints = ["final-common-complete"]
+sensitivity_ids = ["dd-0212-preceding-common-complete-1", "dd-0212-preceding-common-complete-2", "dd-0212-paper-step", "dd-0212-comparison-fraction-threshold-grid-2", "dd-0212-comparison-fraction-threshold-grid-3"]
+transformation_ids = ["task-score-v1", "sample-seed-sd-v1", "recipe-spread-v1"]
+comparison_rule_id = "proxy-noise-spread-majority-v1"
+
+[[attempts]]
+id = "dd-0218-default"
+claim_id = "DD-0218"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "noise_spread"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["prediction-three"]
+task_ids = ["mmlu"]
+metric_ids = ["paper-16-metrics"]
+model_sizes = ["150M"]
+checkpoints = ["final-common-complete"]
+sensitivity_ids = ["dd-0218-preceding-common-complete-1", "dd-0218-preceding-common-complete-2", "dd-0218-paper-step"]
+transformation_ids = ["task-score-v1", "sample-seed-sd-v1", "recipe-spread-v1"]
+comparison_rule_id = "nonempty-paper-plot-v1"
+plot_series_ids = ["dd-0218-paper-analog"]
+
+[[attempts]]
+id = "dd-0219-default"
+claim_id = "DD-0219"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "noise_spread"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["prediction-three"]
+task_ids = ["arc_easy"]
+metric_ids = ["paper-16-metrics"]
+model_sizes = ["150M"]
+checkpoints = ["final-common-complete"]
+sensitivity_ids = ["dd-0219-preceding-common-complete-1", "dd-0219-preceding-common-complete-2", "dd-0219-paper-step"]
+transformation_ids = ["task-score-v1", "sample-seed-sd-v1", "recipe-spread-v1"]
+comparison_rule_id = "nonempty-paper-plot-v1"
+plot_series_ids = ["dd-0219-paper-analog"]
+
+[[attempts]]
+id = "dd-0220-default"
+claim_id = "DD-0220"
+default = true
+evidence_level = "lower_level_rows"
+analysis_id = "noise_spread"
+inputs = [{ table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "primary_metric"] }]
+recipe_ids = ["paper-25-recipes"]
+seed_ids = ["prediction-three"]
+task_ids = ["paper-olmes-tasks"]
+metric_ids = ["correct_prob", "primary_metric"]
+model_sizes = ["150M"]
+checkpoints = ["final-common-complete"]
+sensitivity_ids = ["dd-0220-preceding-common-complete-1", "dd-0220-preceding-common-complete-2", "dd-0220-paper-step"]
+transformation_ids = ["task-score-v1", "sample-seed-sd-v1", "recipe-spread-v1"]
+comparison_rule_id = "nonempty-paper-plot-v1"
+plot_series_ids = ["dd-0220-paper-analog"]
+
+[[attempts]]
+id = "dd-0017-default"
+claim_id = "DD-0017"
+default = true
+evidence_level = "author_derived_aggregate"
+analysis_id = "math_code"
+inputs = [
+  { table_id = "new_eval_decision_accuracy", columns = ["size", "task", "target_ranking", "logits_per_byte_corr"] },
+  { table_id = "olmes_aggregate", columns = ["data", "params", "step", "compute"] },
+]
+task_ids = ["mbpp"]
+metric_ids = ["logits_per_byte_corr"]
+model_sizes = ["4M"]
+sensitivity_ids = ["dd-0017-comparison-accuracy-threshold-grid-1", "dd-0017-comparison-accuracy-threshold-grid-3"]
+transformation_ids = ["math-code-complete-cube-v1", "math-code-claim-comparison-v1"]
+comparison_rule_id = "dd-0017-continuous-proxy-predictable-v1"
+
+[[attempts]]
+id = "dd-0018-default"
+claim_id = "DD-0018"
+default = true
+evidence_level = "author_derived_aggregate"
+analysis_id = "math_code"
+inputs = [
+  { table_id = "new_eval_decision_accuracy", columns = ["size", "task", "target_ranking", "logits_per_byte_corr"] },
+  { table_id = "olmes_aggregate", columns = ["data", "params", "step", "compute"] },
+]
+task_ids = ["codex_humaneval"]
+metric_ids = ["logits_per_byte_corr"]
+model_sizes = ["4M"]
+sensitivity_ids = ["dd-0018-comparison-accuracy-threshold-grid-1", "dd-0018-comparison-accuracy-threshold-grid-3"]
+transformation_ids = ["math-code-complete-cube-v1", "math-code-claim-comparison-v1"]
+comparison_rule_id = "dd-0018-continuous-proxy-predictable-v1"
+
+[[attempts]]
+id = "dd-0213-default"
+claim_id = "DD-0213"
+default = true
+evidence_level = "author_derived_aggregate"
+analysis_id = "math_code"
+inputs = [
+  { table_id = "new_eval_decision_accuracy", columns = ["size", "task", "target_ranking", "logits_per_byte_corr", "primary_score"] },
+  { table_id = "new_eval_means", columns = ["size", "task", "primary_score"] },
+]
+task_ids = ["mbpp", "codex_humaneval"]
+metric_ids = ["primary_score", "logits_per_byte_corr"]
+model_sizes = ["4M", "60M"]
+transformation_ids = ["math-code-complete-cube-v1", "math-code-claim-comparison-v1"]
+comparison_rule_id = "dd-0213-positive-code-proxy-gain-v1"
+
+[[attempts]]
+id = "dd-0221-default"
+claim_id = "DD-0221"
+default = true
+evidence_level = "author_derived_aggregate"
+analysis_id = "math_code"
+inputs = [{ table_id = "new_eval_decision_accuracy", columns = ["size", "task", "target_ranking", "logits_per_byte_corr", "primary_score"] }]
+task_ids = ["mbpp", "codex_humaneval"]
+metric_ids = ["primary_score", "logits_per_byte_corr"]
+model_sizes = ["4M", "60M"]
+sensitivity_ids = ["dd-0221-size-pointwise"]
+transformation_ids = ["math-code-complete-cube-v1", "math-code-claim-comparison-v1", "math-code-paper-series-v1"]
+comparison_rule_id = "dd-0221-code-proxy-shift-v1"
+plot_series_ids = ["dd-0221-paper-analog"]
+
+[[attempts]]
+id = "dd-0222-default"
+claim_id = "DD-0222"
+default = true
+evidence_level = "author_derived_aggregate"
+analysis_id = "math_code"
+inputs = [{ table_id = "new_eval_decision_accuracy", columns = ["size", "task", "target_ranking", "logits_per_byte_corr", "primary_score"] }]
+task_ids = ["minerva", "gsm8k"]
+metric_ids = ["primary_score", "logits_per_byte_corr"]
+model_sizes = ["4M", "60M"]
+sensitivity_ids = ["dd-0222-size-pointwise"]
+transformation_ids = ["math-code-complete-cube-v1", "math-code-claim-comparison-v1", "math-code-paper-series-v1"]
+comparison_rule_id = "dd-0222-math-near-random-v1"
+plot_series_ids = ["dd-0222-paper-analog"]
+
+[[attempts]]
+id = "dd-0224-default"
+claim_id = "DD-0224"
+default = true
+evidence_level = "author_derived_aggregate"
+analysis_id = "math_code"
+inputs = [{ table_id = "new_eval_decision_accuracy", columns = ["size", "task", "target_ranking", "logits_per_byte_corr", "primary_score"] }]
+task_ids = ["mbpp", "codex_humaneval"]
+metric_ids = ["primary_score", "logits_per_byte_corr"]
+model_sizes = ["4M", "60M"]
+sensitivity_ids = ["dd-0224-comparison-absolute-tolerance-grid-1", "dd-0224-comparison-absolute-tolerance-grid-3"]
+transformation_ids = ["math-code-complete-cube-v1", "math-code-claim-comparison-v1", "math-code-paper-series-v1"]
+comparison_rule_id = "dd-0224-code-approximately-eighty-v1"
+plot_series_ids = ["dd-0224-paper-analog"]
+
+[[attempts]]
+id = "dd-0225-default"
+claim_id = "DD-0225"
+default = true
+evidence_level = "author_derived_aggregate"
+analysis_id = "math_code"
+inputs = [
+  { table_id = "new_eval_decision_accuracy", columns = ["size", "task", "target_ranking", "logits_per_byte_corr", "primary_score"] },
+  { table_id = "new_eval_means", columns = ["size", "task", "primary_score", "logits_per_byte_corr"] },
+]
+task_ids = ["mbpp", "codex_humaneval"]
+metric_ids = ["primary_score", "logits_per_byte_corr"]
+model_sizes = ["4M", "60M"]
+transformation_ids = ["math-code-complete-cube-v1", "math-code-claim-comparison-v1", "math-code-paper-series-v1"]
+comparison_rule_id = "dd-0225-code-continuous-proxy-v1"
+plot_series_ids = ["dd-0225-paper-analog"]
+
+[[attempts]]
+id = "dd-0226-default"
+claim_id = "DD-0226"
+default = true
+evidence_level = "author_derived_aggregate"
+analysis_id = "math_code"
+inputs = [{ table_id = "new_eval_decision_accuracy", columns = ["size", "task", "target_ranking", "logits_per_byte_corr", "primary_score"] }]
+task_ids = ["mbpp", "codex_humaneval", "minerva", "gsm8k"]
+metric_ids = ["primary_score", "logits_per_byte_corr"]
+model_sizes = ["4M", "60M"]
+sensitivity_ids = ["dd-0226-size-pointwise"]
+transformation_ids = ["math-code-complete-cube-v1", "math-code-claim-comparison-v1", "math-code-paper-series-v1"]
+comparison_rule_id = "dd-0226-code-gain-exceeds-math-v1"
+plot_series_ids = ["dd-0226-paper-analog"]
+
+[[attempts]]
+id = "dd-0227-default"
+claim_id = "DD-0227"
+default = true
+evidence_level = "author_derived_aggregate"
+analysis_id = "math_code"
+inputs = [{ table_id = "new_eval_decision_accuracy", columns = ["size", "task", "target_ranking", "logits_per_byte_corr"] }]
+task_ids = ["minerva", "gsm8k"]
+metric_ids = ["logits_per_byte_corr"]
+model_sizes = ["4M", "60M"]
+sensitivity_ids = ["dd-0227-comparison-accuracy-threshold-grid-1", "dd-0227-comparison-accuracy-threshold-grid-3"]
+transformation_ids = ["math-code-complete-cube-v1", "math-code-claim-comparison-v1"]
+comparison_rule_id = "dd-0227-math-same-metric-predictable-v1"
+
+[[attempts]]
+id = "dd-0413-default"
+claim_id = "DD-0413"
+default = true
+evidence_level = "author_derived_aggregate"
+analysis_id = "math_code"
+inputs = [{ table_id = "new_eval_decision_accuracy", columns = ["size", "task", "target_ranking", "logits_per_byte_corr"] }]
+task_ids = ["mbpp", "codex_humaneval"]
+metric_ids = ["logits_per_byte_corr"]
+model_sizes = ["4M", "60M"]
+transformation_ids = ["math-code-complete-cube-v1", "math-code-claim-comparison-v1", "math-code-paper-series-v1"]
+comparison_rule_id = "dd-0413-code-continuous-bars-v1"
+plot_series_ids = ["dd-0413-paper-analog"]
+
+[[attempts]]
+id = "dd-0414-default"
+claim_id = "DD-0414"
+default = true
+evidence_level = "author_derived_aggregate"
+analysis_id = "math_code"
+inputs = [{ table_id = "new_eval_decision_accuracy", columns = ["size", "task", "target_ranking", "logits_per_byte_corr"] }]
+task_ids = ["minerva", "gsm8k"]
+metric_ids = ["logits_per_byte_corr"]
+model_sizes = ["4M", "60M"]
+sensitivity_ids = ["dd-0414-comparison-trivial-tolerance-grid-2"]
+transformation_ids = ["math-code-complete-cube-v1", "math-code-claim-comparison-v1", "math-code-paper-series-v1"]
+comparison_rule_id = "dd-0414-math-continuous-bars-v1"
+plot_series_ids = ["dd-0414-paper-analog"]
