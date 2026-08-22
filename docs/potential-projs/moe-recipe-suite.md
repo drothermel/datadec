@@ -109,6 +109,21 @@ Dated, attributed-by-date notes from external review conversations, recorded for
 consolidation — not decisions. Only notes about this project are kept here. Related-work
 claims in quoted text are unverified.
 
+### 2026-08-22 — regularization is a stated design choice, not a default
+
+From Danielle's SciSpace review of regularization for MoE LMs on repeated data (record
+in `../topics/reference/regularization-literature.md`). If the suite trains 4–6 recipes
+at small scale, multi-epoch exposure is likely, and the literature says MoE models
+overfit repeated data more than dense ones (Xue et al. 2305.13230 — dropout, switched on
+late, is the regularizer that works; Switch/ST-MoE use higher expert dropout and a
+router z-loss; Hernandez et al. 2205.10487 show repeated-data double descent hitting
+induction heads). Consequence for the training-config parity step: the dense
+reproduction and the MoE arm need an explicit, matched regularization recipe (dropout
+schedule, expert dropout, z-loss, epochs) recorded in the spec, and "does the data
+choose the experts" should be read at matched epoch count, since repetition changes
+routing specialization. The review itself lists the general and MoE-specific options;
+its repeated-data section is about deduplication and does not apply.
+
 ### 2026-08-21 — origin: the Slicing-and-Dicing repo as apparatus
 
 **The strategic point: the repo is the apparatus for a multi-recipe MoE mini-suite.** "You

@@ -3044,6 +3044,27 @@ Routed to: [topics/reference/layer-looping-literature.md](topics/reference/layer
 (new reference topic, no project link; broken citation numbering, an ALBERT factual slip,
 and the missing 2025 LLM-scale canon flagged). No bundle, no INDEX.
 
+### 2026-08-22 — SciSpace review: regularization for MoE transformer LMs on repeated data
+
+> Write me a list of regularization methods for machine learning models. Specifically, I
+> want to avoid overfitting Mixture of Experts Transformer Language Models on repeated
+> data. I want you to include both well-supported ideas with extensive literature
+> throughout general machine learning, such as dropout and weight normalization, as well
+> as newer techniques that might be specific to MoE models or transformers. For each
+> method, include citations.
+
+Applied: `INDEX.md` in `~/drotherm/data/convo-artifacts/2026/scispace-regularization-methods-moe-agent-artifacts-zip_6c756278-eb52-4294-a000-1b2d39a29157_1787425549/` (report, the companion open-access URL list with 16 extra
+canonical papers, insight extraction, ~50 search files; missing canon and off-target
+citations listed).
+
+Routed to: [topics/reference/regularization-literature.md](topics/reference/regularization-literature.md)
+(new reference topic; the repeated-data mismatch and the missing token-crisis paper
+flagged), a dated note in
+[potential-projs/moe-recipe-suite.md](potential-projs/moe-recipe-suite.md) §4 (matched
+regularization recipe as a stated design choice; read routing at matched epochs), and a
+design-constraint line in
+[topics/staging/datadecide-dense.md](topics/staging/datadecide-dense.md).
+
 ### Post-intake decisions — 2026-08-22 (data-layer conversation)
 
 > 1. I think data-card/ validation work should be its own project doc, so b as you say.

@@ -52,6 +52,12 @@ cosine twins with matched data order (WSD-opt-3) done small first.
 - **Scope line at scale, not schedule:** 150M+ stable-phase runs or many more recipes is
   the separate WSD resource-paper decision.
 
+- **Regularization recipe (added 2026-08-22):** at the smallest scales the fixed corpus
+  will be seen for multiple epochs; fix the regularization recipe (dropout and its
+  onset, weight decay, any expert dropout / z-loss for MoE arms) in the frozen spec and
+  record epochs per run, citing Xue et al. 2305.13230 and Muennighoff et al. 2305.16264
+  (`../reference/regularization-literature.md`).
+
 ## Hypotheses only this substrate can test
 
 - Annealed readouts improve measurement SNR most at small scales, where wall oscillation
