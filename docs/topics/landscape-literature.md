@@ -123,3 +123,14 @@ basin*, because the body — where the basin identity lives — is untouched… 
 are basin-preserving; early-training deficits are basin-*determining*. Same operation,
 opposite regimes." Distillation into a fresh network (ITER) is the one reset that leaves the
 basin by construction. See `reinit-and-transfer-literature.md`.
+
+---
+
+## 2026-08-18 — basin distinctness as residual non-identifiability
+
+"Permutation alignment, Git Re-Basin, and the 2026 neuron-identifiability framework are all
+attempts to quotient out the *known* symmetry group so that whatever variation remains is
+*real* underdetermination. Your 'metrics are only comparable within a basin' worry becomes:
+metrics are comparable after quotienting by the identified symmetries, and
+basin-distinctness measures the residual non-identifiability." See
+`identifiability-literature.md`.

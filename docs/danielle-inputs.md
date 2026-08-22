@@ -606,3 +606,23 @@ founding cell — the control); [topics/icl-as-posttraining.md](topics/icl-as-po
 ("quantifying the gap your 2021 paper discovered"); the potential-projs README
 program-level notes (through-line, two priors, the arc framing).
 
+### Toggle 16 — 2026-08-18 18:47 (grokking, double descent, causal representation learning / identifiability)
+
+> amazing! ok, i think this i the last highly relevant research body i want to consider in
+> relation to this arc: grokking and double descent. these feel very directly related? ahh,
+> and to some extent a separate body of work is around causal representation learning and
+> identifiability of a system. can you tie each of these research threads into our
+> narrative?
+
+Routed to: new reference topics
+[topics/grokking-and-hidden-progress.md](topics/grokking-and-hidden-progress.md) and
+[topics/identifiability-literature.md](topics/identifiability-literature.md);
+[potential-projs/annealed-readouts.md](potential-projs/annealed-readouts.md) §4 (decay
+branch as anti-grokking instrument);
+[topics/loss-curve-forecasting.md](topics/loss-curve-forecasting.md) (double descent as
+boundary condition); [topics/landscape-literature.md](topics/landscape-literature.md)
+(symmetry quotienting);
+[potential-projs/tiny-scale-measurement.md](potential-projs/tiny-scale-measurement.md) §4
+(the ladder as an identifiability-vs-scale instrument); the potential-projs README
+(fourth matched-loss control; the identification-strategy framing; the final map).
+

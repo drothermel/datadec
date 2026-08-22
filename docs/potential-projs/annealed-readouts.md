@@ -316,3 +316,12 @@ redoing some pretraining with WSD?
 - Prior art (Hägele 2024; MiniCPM; Llama 3 annealing data valuation; Blakeney; WSM; Nemotron
   3) in `docs/topics/schedules-and-annealing-literature.md`: "'annealing branches as the
   correct eval' is validated practice — but no *open, multi-recipe suite* has it."
+
+### 2026-08-18 — the decay branch as an "anti-grokking instrument" (from the Research Trajectory page)
+
+- "Grokking plateaus reinterpreted as travel along the river that loss can't see, which
+  unifies 'hidden progress' with your token-bucket/decay-branch machinery: the decay branch
+  is a probe that *reveals* accumulated-but-hidden river progress, i.e., an operationalized
+  anti-grokking instrument." Matched-loss pairs are "a *necessary but provably insufficient*
+  control" (two checkpoints at equal loss can differ in hidden circuit maturity). See
+  `docs/topics/grokking-and-hidden-progress.md`.

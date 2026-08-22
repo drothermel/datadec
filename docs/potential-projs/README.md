@@ -258,6 +258,11 @@ Full text for each: `recipe-featurization.md` §4 (first),
   reaches this loss faster' and 'recipe A has better ICL at this loss' are separable
   claims." Applies to every matched-loss comparison in the portfolio (TRJ-3, IRT-3, GEO pair
   selection, TOK-4, the sweep reread as data in PART).
+- Fourth control, from the grokking discussion: "two checkpoints matched on both train *and*
+  test loss can sit at radically different points of hidden circuit maturity — pre-grok and
+  mid-grok — and will respond completely differently to further training, fine-tuning, or
+  elicitation." Matched loss is "a *necessary but provably insufficient* control"; the
+  diagnostic panel (ICL curves, Fisher trace, decay-branch response) exists to catch this.
 - Third control, from the loss-basins discussion: matched loss can hide different mixes of
   along-river progress (durable) and distance-from-river (transient), and different basins
   altogether — "the basin question is therefore the question of *when your comparisons are
@@ -337,4 +342,29 @@ Full text for each: `recipe-featurization.md` §4 (first),
   as its oldest tool and the ICL curve as its newest." For the adviser: "the *completion of
   an arc that started with your first publication* — same question, same discipline,
   instruments upgraded."
+
+### 2026-08-18 — grokking, identifiability, and the final map of the retrospective (from the Research Trajectory page)
+
+- Grokking and double descent "slot into the narrative at exactly the two places where it's
+  currently thinnest: grokking/double descent attacks the *observable* side (when do loss
+  curves lie?), and identifiability attacks the *comparability* side (when do two matched
+  models even admit comparison?)."
+- Path-dependence ⇔ non-identifiability: "Every 'permanent damage' result in your grid is an
+  empirical non-identifiability certificate… your entire methodology is interventional
+  (deficits, decay branches, resets, distillation arms)… citing [identifiability theory]
+  turns your experimental-design chapter from 'a collection of clever probes' into 'an
+  identification strategy.'"
+- The sharpest open conjecture: if the Platonic Representation Hypothesis is right,
+  "identifiability improves with scale" and small-scale path-dependence effects have a
+  scale ceiling; the ladder design measures "how fast the underdetermination closes with
+  scale — which might be the most consequential question the whole arc points at."
+- Final map: "Achille/Ash-Adams/Igl establish that trajectories scar; your 2021 paper
+  establishes that some scars are artifacts; grokking establishes that losses hide
+  progress; identifiability provides the formalism for when solutions are underdetermined
+  enough to scar at all; and the experimental program — matched-loss ladders, interventional
+  probes, symmetry-quotiented comparisons, elicitability outcomes — is the machine that
+  sorts real path-dependence from measurement artifact and measures how the balance shifts
+  with scale." Reference topics:
+  [../topics/grokking-and-hidden-progress.md](../topics/grokking-and-hidden-progress.md),
+  [../topics/identifiability-literature.md](../topics/identifiability-literature.md).
 

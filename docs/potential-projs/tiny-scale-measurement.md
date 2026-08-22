@@ -277,3 +277,15 @@ program looks like from the inside."
   movement; and round-trip reconstruction fidelity through a natural-language bottleneck as
   "a capability probe — one that's graded rather than thresholded, unlike pass@1." Full
   discussion in `docs/topics/icl-as-posttraining.md`.
+
+### 2026-08-18 — the scale ladder as an identifiability-vs-scale instrument (from the Research Trajectory page)
+
+- "The Platonic Representation Hypothesis (Huh et al. 2024)… is an empirical claim that
+  *identifiability improves with scale*. If true, path-dependence — and with it critical
+  periods, recipe effects on elicitability, all of it — should *wash out* as models grow,
+  which would mean your small-scale effects have a scale ceiling; if false, the scars
+  persist and pretraining-recipe choices matter at the frontier. Your ladder design (tiny
+  transformers → DataDecide → sparse large confirmations) is, almost accidentally, the
+  right instrument for measuring how fast the underdetermination closes with scale." This
+  sharpens the external-validity rule: the ladder is not just a check, it is a measurement.
+  See `docs/topics/identifiability-literature.md`.

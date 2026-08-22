@@ -43,3 +43,13 @@ emergence-as-measurement claim both depend on.
   which is where the loss-to-accuracy mapping gets fragile."
 - "The multi-power law's decay term is essentially modeling how the optimizer's response to
   the schedule shapes the curve — a dynamics question the plasticity people would recognize."
+
+---
+
+## 2026-08-18 — double descent as a boundary condition (from the grokking discussion)
+
+"Epoch-wise double descent (Nakkiran et al.) means capability isn't even monotone in
+training loss along a single run, which is a boundary condition on the whole prediction-law
+thread — the multi-power law and loss-to-accuracy links assume away non-monotonicity that
+demonstrably occurs in certain regimes, and knowing *which* regimes is part of your 'when
+are proxy metrics valid' question." See `grokking-and-hidden-progress.md`.
