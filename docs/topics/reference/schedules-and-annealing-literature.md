@@ -9,6 +9,40 @@ same machinery is the branch runner for token-level movement and functional feat
 
 ---
 
+## Working list (maintained; last revised 2026-08-22) — nothing below is verified
+
+Keepers, with the role each plays for `ANN` / `WSD` / `FUNC`:
+
+- **Llama 3** "Annealing Data" (8B GSM8K +24 / MATH +6.4; 405B negligible; 30/70 final-40B
+  anneal as data valuation) — the canonical late-HQ-data result and its scale attenuation.
+- **Databricks "Does your data spark joy?"** (7B end-of-training domain upsampling; 10–20%
+  of training is the trade-off point) — the budget heuristic.
+- **OLMo 2** (2501.00656; Dolmino mid-training mix, LR to zero) — the open reproducible
+  template.
+- **TREC** (Bergsma et al. 2509.25380) — place the anneal at the receptivity valley, not
+  automatically at the end; predictable from AdamW's EMA timescale.
+- **Tissue et al. 2408.11029** (annealing-area term in the loss law) and **Hägele et al.
+  2405.18392** (WSD/cooldown scaling laws; (1-sqrt) cooldown; branch reuse) — the
+  LR-side theory and the cost model for decay branches.
+- **MiniCPM 2404.06395** — WSD origin; decay-phase gradient statistics (norm falls,
+  consecutive-update cosine positive) as a candidate ANN instrument.
+- **PDPC 2501.13126**, **AutoScale 2407.20177**, **Data Mixing Laws 2403.16952**,
+  **UtiliMax/MEDU 2501.11747** — what to anneal on and when; scale-dependent composition.
+- **Rewriting cluster** — SwallowCode/Math 2505.02881, ProX 2409.17115, FinerWeb
+  2501.07314, Nemotron-CC 2412.02595 — anneal-grade data by upgrading rather than
+  selecting; staged as `../staging/rewritten-anneal-slice.md`.
+- **FineWeb-Edu 2406.17557**, **Phi-4 2412.08905** — classifier-filtered and synthetic
+  anneal data at scale; details in the second entry.
+
+Known drift and term collisions (do not re-flag): instruction-tuning / continual-learning
+papers (VersaTune, O-LoRA, SSR, KILO, LIFT, MoS); Annealed-RLVR 2509.23629 (RL "heating");
+RLHFuse (simulated annealing for scheduling); "data annealing" 2004.13833 (2020,
+formal→informal BERT); the "web 50→20%, synthetic 5→35%" proportions (illustrative, no
+source); "edu filtering works best during annealing" (respondent inference, untested).
+Open ID check: 2508.01483 (paired with Tissue; may be a mis-ID).
+
+---
+
 ## 2026-08-18 — the annealing confound and its workarounds (from the Research Trajectory page)
 
 **The confound.** "DataDecide's models were trained OLMo-style with cosine schedules, so every

@@ -3171,3 +3171,16 @@ Routed: [topics/reference/schedules-and-annealing-literature.md](topics/referenc
 (third entry; keeps the data-rewriting cluster, 2508.01483 as an ID to check, mixture-level
 cooldown, Branch-and-Merge; drift and collisions listed); 25 IDs added to the citation
 ledger, most tagged drift. No project-doc change.
+
+### Post-intake decisions — 2026-08-22 (LBM check + annealing answers)
+
+> hmm, I think it would be nice to pull it out so I don't forget the potential project
+> option is there, where would you say we should put it with that goal in mind?
+
+> then, yes for 1 and 2
+
+Applied: new [topics/staging/rewritten-anneal-slice.md](topics/staging/rewritten-anneal-slice.md)
+(README row; WSD §4 pointer as a variant of WSD-opt-4); Language Bottleneck Models named in
+TLC §1's positioning paragraph with her read; a maintained working list (keepers by role,
+known drift and term collisions) at the top of
+[topics/reference/schedules-and-annealing-literature.md](topics/reference/schedules-and-annealing-literature.md).

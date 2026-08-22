@@ -142,6 +142,15 @@ it also validates the training stack for any decay branches resumed from release
 Dated, attributed notes from external review conversations, recorded for consolidation — not
 decisions. Only notes about this project are kept here.
 
+### 2026-08-22 — a rewritten-slice variant of WSD-opt-4
+
+A cluster of 2024–25 papers produces anneal-grade data by rewriting ordinary data rather
+than selecting it (SwallowCode/SwallowMath, ProX, FinerWeb, Nemotron-CC rephrasing;
+unverified). As a decay-branch arm — rewritten recipe data vs. upsampled high-quality source
+at matched tokens — it separates per-document quality from mixture shift, which WSD-opt-4 as
+written leaves entangled. Pulled out to `../topics/staging/rewritten-anneal-slice.md` so it
+is not lost; not a change to this doc's plan.
+
 ### 2026-08-22 — a small-scale pilot via "DataDecide-dense"
 
 Danielle, in a conversation on the data layer (record in

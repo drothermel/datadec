@@ -155,9 +155,11 @@ Four nearby clusters, distinguished by what each does with the intermediate.
 Natural-language intermediates in code — explain-then-translate for cross-language
 translation, self-debugging lines where the model reasons in NL before returning to code —
 treat the intermediate as ephemeral scaffolding: generated, consumed once, never measured or
-optimized. NL-bottleneck representations (the bottleneck-for-grading work; effectively the
-concept-bottleneck lineage with free text) treat the representation as the object but
-statically — a few hand-written prompts, no optimization loop. LLM-driven prompt optimization
+optimized. NL-bottleneck representations (Language Bottleneck Models, Berthon & van der Schaar 2025,
+arXiv 2506.16982 — a frozen decoder grading student responses from an NL summary;
+effectively the concept-bottleneck lineage with free text) treat the representation as
+the object but statically — a few hand-written prompts, no optimization loop, and a
+non-verifiable target (Danielle's read, 2026-08-22). LLM-driven prompt optimization
 (DSPy/COPRO, OPRO, ProTeGi, TextGrad) has the loop but aims it at task instructions rather
 than representations. Round-trip correctness work uses the exact code-to-NL-to-code loop
 with tests, but purely as an evaluation metric for models. The LLM-as-compressor literature
