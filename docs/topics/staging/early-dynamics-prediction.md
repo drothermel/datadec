@@ -221,6 +221,42 @@ table runs to 63,599). If the three-seeds-to-completion reading holds, the canon
 construction is unnecessary and the expanding window can use all seeds as rows — with the
 (recipe, size, seed) split rule from the second review.
 
+## 2025-07 — Sixth and seventh responses: inner validation split; family × size stress test
+
+**Inner validation split (Danielle asked how the seed finding changes the earlier
+"hold out unseen seeds" suggestion).** Response (condensed): with one canonical row per
+(recipe, size) there is no seed axis to stratify on, so switch to **recipe-grouped,
+size-stratified** splits: `group_id = recipe-size` (keeps the 1B triple together);
+stratify on size buckets tiny {4, 6, 8} / small {10, 14, 16, 20} / medium {60, 90} / large
+{150, 300} / huge {530, 750, 1000}; `StratifiedGroupShuffleSplit(test_size=0.10,
+random_state=42)`; one 90/10 split suffices for LightGBM early stopping. Nest the *same*
+splitter inside every outer fold (inside the 7-family train set for LOFO; inside the ≤ S
+rows for each expanding window — even ≤ 20M has 25 × 6 = 150 rows). 1B extra seeds: keep as
+three rows sharing a `group_id`, or average. Properties: no leakage between rows sharing
+training dynamics; every validation slice spans the size ladder; one splitter reused
+everywhere. *(Same caveat as above: if three seeds run to completion at every size, group
+on (recipe, size) still, but rows per group become 3 everywhere.)*
+
+**Family × size stress test (Danielle asked for splits that train on some recipe families
++ smaller sizes and test on larger models from held-out recipes).** Response (condensed):
+a single-axis scheme over the eight families 𝔽 with 𝕊small = {4…60}M and 𝕊large =
+{90…1000}M. For each held-out family F*: **train** = family ≠ F* and size ∈ 𝕊small; **val** =
+10% stratified-group split inside train; **test-in-fam** = family = F* and size ∈ 𝕊large;
+**test-out-fam (optional)** = family ≠ F* and size ∈ 𝕊large — the out-of-family column
+separates size-extrapolation error from new-distribution error. Counts per fold
+(canonical-seed dataset): train ≈ 7 × 8 × 25 ≈ 1,400 rows (the response's arithmetic
+double-counts — 7 families already contain all non-held-out recipes, so it is
+(25 − |F*|) × 8 rows ≈ 130–190); test-in-fam 6 × |F*| (× seeds) → 6–54 rows depending on
+family size. Refinements after v0: repeat with 𝕊small ≤ 20M then ≤ 60M to draw a
+"how much size coverage before predictions stabilise" curve; train on three wildly
+different families (Dolma, FineWeb, DCLM) and test on the other five; survival-GBDT
+extension for truncated seeds if that premise holds.
+
+*Intake note.* The row counts quoted in this response overstate the training set by ~7×;
+corrected above. Singleton-family test sets at 6 large sizes × 1 seed = 6 rows are too small
+for stable ranking metrics — report them with CIs or pool singleton families for this
+stress test.
+
 ## Open questions
 
 - Is this still live (July 2025 draft; DataDecide scaling-law baselines have since been

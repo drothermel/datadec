@@ -1673,3 +1673,18 @@ index row updated.
 [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
 ("Fourth and fifth responses"), with an intake note that the seed-truncation premise
 conflicts with the 2026-08-21 coverage check in open-questions-answered.md.
+
+### Early-dynamics draft review, sixth and seventh responses — 2025-07 (intake 2026-08-22)
+
+> Ok great, and then, this seems like it impacts your proposed validation split method. You
+> said ""Add a stratified shuffle split (10 % held out) that (i) balances model-size buckets
+> and (ii) holds out unseen seeds rather than unseen recipes." Based on this new seed info,
+> assuming that I follow your recommendations for the recipe families and expanding model
+> size windows, how would you recommend I handle validation splits?
+
+> Excellent, and finally, propose splits for the proposed test of training across some data
+> recipe families + smaller model sizes and testing them on larger models from held-out
+> recipes?
+
+Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
+("Sixth and seventh responses"), with a row-count correction.
