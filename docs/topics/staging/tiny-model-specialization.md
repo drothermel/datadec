@@ -222,6 +222,58 @@ wrapper pipelines with verifiers, and capability-vs-extractability.
   outer model to one cheap, deterministic-decoding model and report cost per curve, per the
   project-approach principle "cost on every plot."
 
+## Undated — Closing summary of the conversation (response; condensed to what is not above)
+
+Danielle asked for "a summary of the topics that we discussed that would make it easy for
+me to know what type of design decisions we kind of agreed on, what the related works are
+that are linked to it." The response's list of **agreed design decisions** (recorded as
+the conversation's settled set, pending her review here):
+
+1. Wrapper-only: outer model = optimizer / elicitation engine that edits the wrapper and
+   critiques; inner small model = the only component that emits the final answer.
+2. Tasks with an automatic verifier and a waterfall of failure points (code-only →
+   compiles → runs → passes tests) — the TLC draft's feasibility metric and success
+   definition (its Eq. 4–5).
+3. Outer model as microscope: fix optimizer (model + prompt policy) and budgets; report best
+   achievable success per base model under equal elicitation effort.
+4. Report elicitation gain $\Delta S = S_{opt} - S_0$, not raw score; the target plot is
+   $\Delta S$ vs. base size, optionally pre vs. post-training.
+5. Controls: outer-model-only under the same budget; sham wrapper of equal complexity.
+
+Research questions as it left them: Q1 size-to-extractability curves (smooth vs. cliff by
+task type); Q2 wrapper optimization as a microscope for post-training differences
+(stability, sample efficiency, larger $\Delta S$) — "post-training didn't help *without
+elicitation effort*"; Q3 wrapper-only specialization funnels inputs but does not destroy
+generality, weight-tuning can (out of scope).
+
+**Facts about the TLC draft it surfaced** (useful because the PDF is not on file here):
+objective $J(\theta)$ over verifiable success with success = feasibility waterfall ×
+semantic correctness (Eq. 4–5); harness parameters $\theta$ = prompts, templates, latent
+format, stage decomposition, tool use, memory, sampling; LLM-as-optimizer loop whose
+actions are prompt diffs / added verifier stages / sampling changes, reward = mean success
+over batches (Eq. 7); a latent-format axis **COMP-NL vs. COMP-SHORT** (human-readable vs.
+machine-oriented shorthand) probing the natural-language bottleneck; related-work stubs
+naming RL / evolutionary prompt optimization and prompt compression, "language bottleneck
+models," semantic-compression two-step pipelines, and AlphaCodium. Fit proposed: either a
+new section of the TLC paper ("using the optimizer loop to elicit competence across base
+sizes") or a sibling paper with the same formalism and pandas tasks as the reconstructed
+object.
+
+**Related-work map** (as given; identifiers where present, unverified): DataDecide (the
+controlled data × scale suite); FollowIR (arXiv 2403.15246) — still the mismatched guess
+from the post-training thread, see `../reference/pretraining-to-posttraining.md`; Tülu 3
+(Ai2 open post-training stack — the baseline family for "generic post-training may not
+move targeted metrics"); **AlphaCodium** (arXiv 2401.08500) — multi-stage, test-based
+"flow engineering" that raises pass@k with no weight change, the concrete exemplar of
+wrapper-only mattering for code; the prompt/harness-optimization cluster (OPRO / COPRO /
+evolutionary — already in TLC §4); language-bottleneck and semantic-compression work.
+
+Intake note: the summary adds nothing to the design beyond what the two turns above
+record, except the TLC-draft internals and AlphaCodium as the named wrapper-only precedent;
+AlphaCodium should also be cited in TLC's prior-art gate. The "agreed" list is the
+response's reading; the only explicit decision Danielle made in the conversation is
+wrapper-only.
+
 ## Intake notes (first turn)
 
 - The response is sensible and matches the TLC machinery, but it is unsourced, and it

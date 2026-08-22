@@ -925,6 +925,22 @@ the suite — the cross-problem aggregate belongs to binary." Micro-check: "make
 tests are order-independent (no shared mutable state from the original sequential block)."
 With that, "the census design is fully specified."
 
+### 2026-08-22 — Draft internals and a wrapper-only sibling (from a later conversation)
+
+A later conversation (undated, ~2026; recorded in `../topics/staging/tiny-model-specialization.md`)
+was conducted against the TLC draft PDF and surfaced these facts about the draft as written:
+objective $J(\theta)$ over verifiable success, success = feasibility waterfall (code-only →
+compiles → runs → passes tests) × semantic correctness (Eq. 4–5); harness parameters
+$\theta$ = prompts, templates, latent format, stage decomposition, tool use, memory,
+sampling; LLM-as-optimizer actions = prompt diffs / added verifier stages / sampling
+changes, reward = mean batch success (Eq. 7); latent-format axis COMP-NL vs. COMP-SHORT;
+related-work stubs for RL/evolutionary prompt optimization and compression, language
+bottleneck models, semantic compression, AlphaCodium (arXiv 2401.08500 — add to the
+prior-art gate as the wrapper-only code precedent). The conversation proposed a sibling
+use of the same formalism: fix the optimizer loop and budget, swap the decoder for a tiny
+frozen DataDecide model, and measure elicitation gain $\Delta S$ vs. base size and pre/post
+training — candidate TLC optional direction if that staging topic is absorbed here.
+
 ### Open questions (running)
 
 - Bottleneck: now framed as *optional* and itself an experimental variable — does

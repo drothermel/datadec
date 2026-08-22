@@ -2531,3 +2531,17 @@ rebuttal to the objection; response's four method families condensed, unsourced)
 entry in [topics/data-featurization-literature.md](topics/reference/data-featurization-literature.md)
 noting that corpus-scale exact/near-duplicate infrastructure is the prerequisite and
 overlaps with the retrieval-storage tooling topic.
+
+> me: "Okay, this has been an incredibly helpful conversation. Can you please write up a
+> summary of the topics that we discussed that would make it easy for me to know what type
+> of design decisions we kind of agreed on, what the related works are that are linked to
+> it, so that I can pull out the pieces that are most relevant to what I'm working on
+> today?"
+
+Routed to: [topics/tiny-model-specialization.md](topics/staging/tiny-model-specialization.md)
+(the response's "agreed decisions" list recorded as the conversation's settled set, with
+the note that wrapper-only is the only explicit decision she made; TLC-draft internals and
+the related-work map condensed; AlphaCodium flagged) and a dated note in
+[potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+§4 (draft internals; AlphaCodium for the prior-art gate; the wrapper-only sibling as a
+candidate optional direction).
