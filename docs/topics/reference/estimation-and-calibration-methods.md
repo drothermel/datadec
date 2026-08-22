@@ -150,3 +150,48 @@ discreteness, or non-iid samples.
   problem — calibrated intervals on forecasts are the honest version of "predictability".
 - `DCARD`: the estimand-discipline list (version, decoding, post-processing) is the
   provenance ledger's checklist restated for evaluation.
+
+## Undated (intake 2026-08-22) — training-free metrics for "does an item embedding explain IRT difficulty?"
+
+**Danielle's setup (from speech).** Tasks × methods evaluation results → per-task
+difficulty via something like IRT → several ways of embedding the tasks → she wants to
+compare *embedding approaches* by how well they predict difficulty, using correlation-type
+metrics that don't require training a predictor; concretely, if embeddings are clustered,
+how to score cluster labels against difficulty.
+
+**Response (condensed).** Two cases plus two metrics that skip clustering.
+
+*Continuous difficulty, cluster labels.* Variance explained by clusters = correlation ratio
+η² = Σ_c n_c(d̄_c − d̄)² / Σ_i(d_i − d̄)², equivalently cluster R² = 1 − Σ_i(d_i − d̄_{c_i})² /
+Σ_i(d_i − d̄)². A cluster-mean lookup, so descriptive rather than a trained predictor; it
+rises with cluster count, so report adjusted R² / ω² too, and fix the clustering method and
+cluster-count selection across embeddings. Companions: Spearman between difficulty and
+cluster-mean difficulty; within-cluster difficulty variance.
+
+*Binned difficulty (easy/medium/hard).* Treat bins as classes, clusters as predictions:
+NMI or V-measure as headline, ARI as robustness check, purity for intuition.
+
+*Skip the clustering — it throws information away.*
+- **kNN difficulty smoothness**: mean over tasks of the mean |d_i − d_j| over the k nearest
+  embedding neighbours; compare with a shuffled-label baseline and report
+  1 − kNN error / shuffled kNN error. Evaluates the embedding itself rather than embedding
+  + clustering algorithm — the response's preferred primary metric.
+- **Pairwise distance correlation**: Spearman between ‖x_i − x_j‖ and |d_i − d_j| over task
+  pairs (a Mantel-style test).
+
+Suggested table per embedding: cluster R², adjusted R², kNN smoothness, pairwise Spearman,
+NMI if binned. Headline framing: "how much difficulty structure is recoverable from
+embedding geometry without supervised training."
+
+**Intake notes.**
+- The kNN-smoothness and pairwise-distance metrics need a null with the right structure:
+  shuffling labels preserves the embedding geometry but not any task-family block
+  structure; if tasks come from a few benchmarks, a within-benchmark shuffle is the
+  honest baseline (Claude-added).
+- Pairwise Spearman over n² pairs has dependent pairs; use a permutation p-value, not the
+  nominal one (Claude-added).
+- Relevance: `IRT` (item difficulty from the DataDecide response matrix, then which item
+  representation — text embedding, task-format features, token-level statistics —
+  explains it; extends IRT-7's clustering of DIF items); `FUNC` / `REC` (the same
+  training-free stack scores a *recipe* or *chunk* featurization against a target without
+  a learned predictor).

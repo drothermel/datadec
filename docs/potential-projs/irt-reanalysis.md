@@ -139,6 +139,22 @@ other and can be picked by impact.
 Dated, attributed notes from external review conversations, recorded for consolidation — not
 decisions. Only notes about this project are kept here.
 
+### 2026-08-22 — scoring item embeddings against IRT difficulty without a trained predictor
+
+Danielle's framing (from a separate conversation; record in
+`../topics/reference/estimation-and-calibration-methods.md`, second entry): once the
+response matrix gives per-item difficulty, compare several ways of *embedding the items*
+by how much difficulty structure each recovers — with correlation-type metrics, not a
+trained predictor, because the object of interest is the embedding approach. Metric stack
+proposed: cluster R² / η² (with adjusted R², same clustering and cluster-count rule across
+embeddings); NMI / V-measure / ARI if difficulty is binned; and, preferred because they
+skip the clustering step, kNN difficulty smoothness relative to a shuffled-label baseline
+and Spearman between pairwise embedding distance and pairwise difficulty difference. This
+generalizes IRT-7 (cluster DIF items by task/domain) into "which item representation
+explains difficulty and DIF" — a candidate named direction once IRT-1 exists, not added as
+an ID yet. Caveat from intake: the shuffle null should respect benchmark block structure,
+and pairwise correlations need permutation p-values.
+
 ### 2026-08-22 — frontier baseline from the literature: token-level proxies over expert trajectories
 
 From Danielle's SciSpace literature review on small-scale evaluation metrics

@@ -3225,3 +3225,24 @@ bootstrap targets, the conformal + cheap-estimator design, relevance map); TLC �
 (census measurement design, conformalized shrinkage, calibrate-after-selection); ELI §4
 pointer; program-level note in the potential-projs README carrying her flag verbatim;
 three IDs to the ledger.
+
+### Undated (intake 2026-08-22) — embedding quality as a predictor of IRT task difficulty, training-free
+
+> Let's say that I have a data set of tasks, and I have the evaluation results of a bunch of
+> different methods on those tasks, and I have a measure of performance. Like I'm gonna take
+> those evaluation results, and I'm gonna get some measure of difficulty per task, using the
+> different methods to give some type of general predictive difficulty using something like
+> IR2. Then I want to try a few different methods of embedding the tasks such that I can
+> predict the difficulty, where, I guess, I specifically am interested in the right
+> embedding approaches, and so that's why I'm not necessarily trying to just, like, train a
+> predictor, but I guess I'm more curious about, like, correlation type metrics that don't
+> require training. So if I produce a bunch of embeddings that I then use to cluster, then
+> how can I take the cluster labels and the actual difficulty labels and produce a measure
+> of embedding quality in terms of predicting difficulty?
+
+(Spoken; "IR2" = IRT.) Routed: second entry in
+[topics/reference/estimation-and-calibration-methods.md](topics/reference/estimation-and-calibration-methods.md)
+(cluster R²/η², NMI/V-measure/ARI, kNN smoothness vs. shuffled baseline, pairwise distance
+Spearman; two intake caveats on the null); IRT §4 note framing it as a generalization of
+IRT-7 — candidate direction, no ID yet. No ledger rows (only a Columbia IRT web page was
+cited).
