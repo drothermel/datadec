@@ -1774,3 +1774,25 @@ Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-p
 
 Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
 ("Responses 16–18"), with an intake note on `%_decay_done` collinearity.
+
+### Early-dynamics draft review, responses 19–20 (any-step targets; all-metrics → MMLU) — 2025-07 (intake 2026-08-22)
+
+> Awesome! so, I have a great sense of how I'll do the pairwise ranking or regression based
+> ranking for the "in domain" prediction where I use a single metric's early window to
+> predict the final value.
+> Two settings remain:
+> 1. predicting intermediate values not just the final value
+> 2. using many metrics early windows to predict a single other metric's final value (MMLU
+> in this case) as somewhat of an upper bound
+
+> Let me clarify a bit. For (1) I want to use one model to predict the target metric at
+> *any* step so I need to featurize the target and it needs to be an input. For (2) the
+> metrics I'm using are the evaluation values for a sequence of perplexity measurements and
+> downstream task measurements at each checkpoint of the training run. Then, I want to use
+> all those evaluation measures across the early window to predict MMLU at the end.
+> Given these clarifications, please propose a way to accomplish these while staying as
+> close to my existing setup as possible.
+
+Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
+("Responses 19–20"), with intake notes on the feature-masking contradiction, per-τ metric
+computation, and what the real upper bound is.

@@ -438,6 +438,45 @@ only through the token budgets, so it is nearly collinear with `size_log` plus t
 sampling-grid position. Expect it to add little unless the early window is defined in
 absolute tokens (S₀ = min(2B, 10%)), in which case it does carry size information.
 
+## 2025-07 — Responses 19–20: any-step targets; all-metrics → MMLU
+
+**Danielle's two remaining settings.** (1) One model predicting the target metric at *any*
+step — the target step must be featurized as an input. (2) Use all evaluation measures
+(perplexity splits + downstream tasks at each checkpoint) across the early window to predict
+MMLU at the end, "as somewhat of an upper bound." Stay close to the existing setup.
+
+**First response (before the clarification; condensed).** Separate LightGBM per horizon
+{25, 50, 75, 100%} (multi-target LightGBM as an alternative); for MMLU, direct regression on
+all early metrics + static stats with a logit target, a stacked "upper bound" (predict each
+metric's final value, then Ridge → MMLU), multi-task later; permutation test (shuffle MMLU,
+expect R² ≈ 0) as a leakage guard. Quoted "pilot" ballparks (ρ ~0.75/0.85/0.92 at
+25/50/75%; MMLU 0.55–0.70) are unverified and not from this data.
+
+**Second response (after the clarification; condensed).**
+- *Any-step predictor:* reshape long — one row per (run_id, τ_target) with τ_target =
+  tokens_seen/tokens_total as a numeric feature, `y_target` = log/logit of the metric at τ;
+  same LightGBM regressor; group-aware split with **group = run_id** (all τ rows of a run
+  stay together), stratified on a coarse τ bucket; at inference feed the early-window
+  features plus the τ you want. ~25 × 14 × 4 ≈ 1,400 rows per metric.
+- *All-metrics → MMLU:* for every logged evaluation metric, 16 log-spaced points + 12
+  rolling slopes (≈ 28 × #metrics + static features); target = logit(MMLU_final); direct
+  regression first, stacked meta-learner (Ridge over per-metric final-value predictions) as
+  the "upper bound" flavour; reuse the recipe-family and expanding-size outer folds with
+  the group-aware inner split; report MAE/MAPE after inverse-logit, ρ, decision accuracy,
+  ECE. Code glue: a shared feature builder, a `targets` dict with a `predict_any_step`
+  flag, one training loop over targets × folds.
+
+*Intake notes.* (1) The long-format sketch says to **mask features beyond τ_target** ("later
+slots = NaN") — that contradicts the early-window premise: features must stay fixed at the
+early window S₀ regardless of τ_target, otherwise predicting τ = 0.75 uses data up to 75%
+of training. Only τ_target itself should vary across rows. (2) With one row per (run, τ),
+the decision-accuracy and ranking metrics must be computed *within* a τ (and within a
+size), or they mix trivially-ordered horizons. (3) The "stacked upper bound" is not an upper
+bound in any strict sense — it is a second estimator; the actual upper bound for
+"all early metrics → MMLU" is the *oracle* variant that feeds the true final values of the
+other metrics, which is also the cleaner diagnostic (how much of MMLU is explained by final
+perplexity/correct_prob at all).
+
 ## Open questions
 
 - Is this still live (July 2025 draft; DataDecide scaling-law baselines have since been
@@ -447,6 +486,8 @@ absolute tokens (S₀ = min(2B, 10%)), in which case it does carry size informat
   the 2026-08-21 finding of 3 seeds at every size in the aggregate table.
 - Whether the target should be the annealed (`ANN`) readout rather than the raw final
   checkpoint.
+- Any-step setting: confirm the feature window stays fixed at S₀ (see intake note); decide
+  τ grid (K = 3 {33, 66, 100%} per the first review, or {25, 50, 75, 100%}).
 - Promote, absorb into `TINY` as an option, or archive. If promoted, source the static
   recipe features from `REC`'s measured properties.
 
