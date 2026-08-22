@@ -7,6 +7,12 @@ close to verbatim, no decisions.
 
 Unlike project docs, topic docs may reference projects freely — they are staging, not plans.
 
+**Caveat on quoted related-work claims.** Statements in quoted reviewer text about what does or
+does not exist in the literature ("nobody has…", "this is unclaimed", specific paper
+attributions) are unverified: the reviewing agents did not run literature searches and have no
+reliable knowledge of the current landscape. Treat them as leads to check, not facts. The ideas
+stand on their own.
+
 **Routing rule for a new excerpt:** clearly about one existing project → that doc's §4;
 clearly program-level → the potential-projs README; neither → a topic doc here (create on first
 need).
@@ -20,3 +26,4 @@ directory only holds live, unresolved material.
 |---|---|
 | [functional-featurization.md](functional-featurization.md) | A decision on whether it becomes its own project or the second act of token-level movement / annealed readouts; the branch-run logging spec must be frozen before any branch runs either way |
 | [beyond-datadecide-data-measurement.md](beyond-datadecide-data-measurement.md) | Whether the program is reframed as "data measurement → training dynamics" with DataDecide as its first instrument-validation study; which open sub-regions (cross-suite transfer, midtraining data, measured data cards) become projects |
+| [checkpoint-tomography.md](checkpoint-tomography.md) | A prior-art pass (devinterp / WSD follow-up literature) and a decision on whether the four-probe battery becomes the flagship framing that wraps annealed readouts, landscape geometry, token-level movement, and functional featurization |

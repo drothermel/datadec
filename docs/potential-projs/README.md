@@ -44,6 +44,12 @@ Dated, attributed observations from external review conversations about the port
 whole — recorded for consolidation, not decisions. Project-specific notes live in each
 document's §4.
 
+**Caveat on quoted related-work claims.** Statements in quoted reviewer text about what does or
+does not exist in the literature ("nobody has…", "this is unclaimed", specific paper
+attributions) are unverified: the reviewing agents did not run literature searches and have no
+reliable knowledge of the current landscape. Treat them as leads to check, not facts. The ideas
+stand on their own. This applies equally to every §4 section.
+
 ### 2026-08-21 — "general thoughts" from two external reviews
 
 - **One thesis.** *Reviewer 1:* "Almost everything here tests either 'pretraining data shapes

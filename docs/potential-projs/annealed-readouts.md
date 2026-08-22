@@ -195,3 +195,15 @@ decisions. Only notes about this project are kept here.
 - **Competition (reviewer 2).** The Signal-and-Noise / DataDecide authors "are the obvious
   people to do [the T0 reanalysis] themselves"; ship the T0 half fast and consider them as
   collaborators on the branch grid, "where your infrastructure investment is the moat."
+
+### 2026-08-21 — reviewer 2, on short-branch landscape probes
+
+- The decay branch (ANN-3) read as "a wall-height meter": "'branch + decay + measure the loss
+  drop' is established; the drop is your height-above-river statistic. What's not
+  established: doing it on cosine mid-run checkpoints, and treating the per-token profile of
+  the drop as the statistic rather than the scalar." (Unverified claim: Wen et al. validate
+  the river-valley theory by branching a constant-LR run and interpolating; their WSD-S
+  variant resumes from decayed checkpoints.)
+- Proposed as one of four probes in a "checkpoint tomography" battery; see
+  `docs/topics/checkpoint-tomography.md`.
+

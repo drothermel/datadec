@@ -38,3 +38,18 @@ Response routed to: [topics/functional-featurization.md](topics/functional-featu
 [potential-projs/wsd-suite.md](potential-projs/wsd-suite.md) §4 and
 [potential-projs/landscape-geometry.md](potential-projs/landscape-geometry.md) §4.
 
+### Short continuation from a checkpoint as a landscape probe
+
+> perhaps even directly in relation to ideas like river valley or the loss landscape or same
+> vs different basin models, something where we could take an intermediate checkpoint and
+> continue pretraining for like 1/16th of the run length or less and then measure a statistic
+> and point at movement. does that exist?
+
+Response routed to: [topics/checkpoint-tomography.md](topics/checkpoint-tomography.md);
+project-specific parts to [potential-projs/annealed-readouts.md](potential-projs/annealed-readouts.md) §4
+and [potential-projs/landscape-geometry.md](potential-projs/landscape-geometry.md) §4.
+
+Standing note (Danielle, same date): claims about related work in these responses should not
+be taken as true — the agent did no extensive searches and has no innate knowledge of the
+current landscape; the ideas are useful nonetheless.
+

@@ -130,3 +130,17 @@ decisions. Only notes about this project are kept here.
   ones. That last question, component timing → landscape position, is as far as I can tell
   completely unoccupied." (Full discussion in `docs/topics/functional-featurization.md`.)
 
+### 2026-08-21 — reviewer 2, on short-branch landscape probes
+
+- GEO-opt-5 (seed-split timing) is "the free observational cousin" of a twin-branch probe:
+  "spawn two children from the same checkpoint with different SGD noise/data order, train
+  both, measure the interpolation barrier between them… Barrier-between-siblings is a 'have
+  we committed yet' statistic, and the checkpoint time at which it collapses is a commitment
+  clock… the branch version makes it causal and controllable." (Unverified claims: Frankle et
+  al.'s linear-mode-connectivity work trains children to completion; short-child variants
+  exist but are not standardized; not run across data recipes.)
+- Cheap single-checkpoint complements mentioned: a scalable critical-sharpness statistic and
+  perturbation-resilience / basin-emergence measures — "useful as covariates."
+- Proposed as one of four probes in a "checkpoint tomography" battery; see
+  `docs/topics/checkpoint-tomography.md`.
+
