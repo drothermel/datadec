@@ -184,3 +184,16 @@ checkpoints/logs for some runs. Details in
 [../open-questions-answered.md](../open-questions-answered.md). This unblocks the
 sweep-reanalysis step (final-checkpoint analyses only; over-training analyses need the new
 runs).
+
+---
+
+## 2026-08-21 — Tiny-MoE floor study (from the small-scale discussion)
+
+"Where [the sweep's] laws break as active scale shrinks": per-expert data starvation
+(budget/E tokens), a router too small to learn a useful partition, routing shallowness
+worsening as capacity drops. "Does a 5M-active, 500M-total MoE beat a 5M dense model, and does
+its routing learn anything non-trivial" — "the taxonomy-realness question acquires a scale
+axis, and the failure mode of routing at tiny scale is informative about what routing is
+doing at normal scale." Credible because of the sweep's validated small-scale
+hyperparameters. Full text in
+[small-scale-measurement-science.md](small-scale-measurement-science.md).

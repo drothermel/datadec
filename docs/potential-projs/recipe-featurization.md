@@ -176,3 +176,12 @@ decisions. Only notes about this project are kept here.
   confounds every timing/curriculum claim built on these suites… and (c) motivates a concrete
   artifact: a stratified-sampling data loader as the fix." Listed as an open gate in
   `docs/open-questions-answered.md`.
+
+- Refinement: "Two distinct failure modes: the run's time-averaged mixture deviating from
+  nominal (a bias), and within-run compositional drift (non-stationarity — effectively an
+  unintended curriculum)… plot realized composition as a function of training position, per
+  scale. If there's material drift, every small-scale recipe comparison in the suite is
+  partially confounded with data *order*, and the confound shrinks with scale — which would
+  itself be a candidate explanation for why small-scale decisions sometimes mispredict
+  large-scale ones." Interventional follow-up: "retrain 10–50M models with stratified vs.
+  sequential sampling of the same recipe, n=10 seeds, and measure the order effect directly."

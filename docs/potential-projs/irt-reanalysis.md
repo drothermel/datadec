@@ -182,3 +182,20 @@ pitch is rigor and science rather than large-lab adoption?
   ground truth, robustness to the response-model choice (IRT-5). Psychometrics reviewers do
   this by default; ML papers using IRT mostly skip it. Doing it properly is both the rigor
   pitch and the extra 4 months of work that justifies the venue."
+
+### 2026-08-21 — on tiny-scale evaluation as a derived artifact
+
+- "Item difficulty/discrimination parameters tell you directly which items have any
+  discriminating power in the 10–150M ability range (most don't — the effective test length
+  of MMLU-style suites at 10M is close to zero), so 'an eval that works at tiny scale' is a
+  *derived artifact* of the IRT fit: select items whose difficulty brackets the tiny-model θ
+  range, score with likelihood margins, report θ with standard errors instead of accuracy."
+- Candidate paper, "the decision-reliability frontier": "how far down does reliable decision
+  signal survive, as a function of measurement method — decision accuracy vs. compute curves
+  where the treatment is the measurement stack (accuracy vs. margins vs. θ vs. IRT-selected
+  item subsets)." Mostly analysis over existing tables plus modest tiny-model evals. Note: the
+  per-instance tables cover 4M/20M/60M/90M with one seed each (see
+  `docs/open-questions-answered.md`).
+- IRT as curriculum: "'IRT-scheduled RL for small models' — pick tasks whose difficulty puts
+  the model's pass rate in the informative band, advance the ladder as θ moves." (Full
+  discussion in `docs/topics/small-scale-measurement-science.md`.)

@@ -126,4 +126,17 @@ stand on their own. This applies equally to every §4 section.
   scale' is a coherent identity that big labs structurally won't compete with — not because
   they can't, but because n=20-seed experiments on 150M models will never be their
   incentive." Full text in [../topics/small-scale-measurement-science.md](../topics/small-scale-measurement-science.md).
+- Tiny models as the program's *Drosophila*: "Every design… that's compute-gated at
+  DataDecide scale — the (data × schedule) factorial, the ε-perturbation response tensor, the
+  stage × type plasticity map, the reroute-vs-rewrite causal controls — becomes fully powered
+  at 10–50M: twenty seeds instead of three, full factorials instead of corner samples,
+  preregistered analyses with the noise floor known in advance. So the sequencing story is:
+  the T0 measurement papers build the instruments; the tiny-scale program is where the
+  interventional science gets run *properly first*; the DataDecide/MoE-scale versions become
+  confirmation at 2–3 points on a scale ladder rather than underpowered first attempts."
+  External-validity rule: ask dynamics/mechanism questions (scale-portable, checkable on a
+  ladder), not capability-emergence questions.
+- Convergence signal: "every new direction you've raised has turned out to be a new consumer
+  of the same five or six pieces of measurement infrastructure, which is exactly what a
+  coherent research program looks like from the inside."
 

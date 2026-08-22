@@ -162,3 +162,36 @@ the sampling-nonstationarity point to
 open gate in [open-questions-answered.md](open-questions-answered.md); the synthesis to the
 potential-projs README program-level notes.
 
+### Small-scale direction, expanded (10M–150M; elicitation/post-training; dense vs. MoE)
+
+> Finally, this next direction is less broadly interesting across industry, but im interested
+> in how far we can push models at really small scales, like 10M-150M in the DataDecide suite
+> for example. Both around elicitation of performance from the base models and around focused
+> posttraining that is effective at this scale. A big question is how to even measure a
+> training or hpm fitting signal, which I think is an interesting question to explore. And
+> while big labs don't care, there is real value for the academic space, the sciency
+> experiment space like the plasticity research, and for people who want to run local models,
+> etc.
+> Additionally, I think that training such small models is likely substantially impacted by
+> design decisions being tuned for larger models. For example, they're using such a small % of
+> the data recipes that unless they use stratfied sampling throughout training they are likely
+> getting real non-stationarity or not really hitting the percentages that they expect. And I
+> also think there's space for looking at dense vs moe at this scale because you start to see
+> some very effective MoE models at very small (relative to frontier) active scales, so what if
+> you go smaller?
+> Finally, I suspect going down to that scale would let you do really cool things with
+> elicitation, rl, multicomponent systems, exps with confidence intervals, etc because the
+> models run so fast. That is, if you could get clear learning or reward signal and fit them to
+> specific tasks.
+> What do you think about this direction? How does it relate to the others or offer
+> extensions/alternatives?
+
+The expanded form of the previous prompt, from the other conversation. Routed to:
+[topics/small-scale-measurement-science.md](topics/small-scale-measurement-science.md)
+(second entry); project-specific parts to
+[potential-projs/irt-reanalysis.md](potential-projs/irt-reanalysis.md) §4,
+[potential-projs/trajectory-statistics.md](potential-projs/trajectory-statistics.md) §4,
+[potential-projs/recipe-featurization.md](potential-projs/recipe-featurization.md) §4;
+tiny-MoE part to [topics/moe-analysis-program.md](topics/moe-analysis-program.md); the
+Drosophila composition point to the potential-projs README program-level notes.
+

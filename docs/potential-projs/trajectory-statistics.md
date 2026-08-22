@@ -254,3 +254,11 @@ decisions. Only notes about this project are kept here.
   as a commitment clock. Frozen-router branches as the causal control. TRJ-moe-1's
   reverting/persistent flip split "slots directly in here." (Full discussion in
   `docs/topics/moe-analysis-program.md`.)
+
+### 2026-08-21 — on tiny-scale measurement
+
+- "The noise-floor module [TRJ-6] tells you the minimum detectable effect per scale, and the
+  drift/diffusion SNR table [TRJ-1] tells you which metrics carry signal down there" — the
+  instruments for the 10–150M range, where "most benchmark items sit at chance, accuracy is
+  quantized into a few reachable values, and seed variance swamps treatment effects." (Full
+  discussion in `docs/topics/small-scale-measurement-science.md`.)
