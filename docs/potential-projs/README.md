@@ -32,12 +32,12 @@ Compute tiers: **T0** = analysis of published tables only; **T1** = forward pass
 existing checkpoints; **T1+** = checkpoint merging plus re-running evals; **T2** = short decay
 branches from existing checkpoints; **T3** = new pretraining runs.
 
-Source inventories: [../refs/lr-schedule-wsd-synthesis.md](../refs/lr-schedule-wsd-synthesis.md)
-(ANN, WSD, GEO, TOK Stage 2), [../refs/research-trajectory-synthesis.md](../refs/research-trajectory-synthesis.md)
-(TRJ, IRT, TOK Stage 1), and [../dataset-analysis-idea-map.md](../dataset-analysis-idea-map.md)
-(REC); the MoE, tiny-scale, and functional-featurization docs were promoted from
-[../topics/](../topics/) on 2026-08-21, carry their origin notes in their §4, and are marked
-**draft scaffolding** (§1–§3 synthesized, not yet reviewed) until the note in each is removed.
+Source material: the Research Trajectory Notion page is mirrored in
+[../refs/research-trajectory-pre-to-post-training.md](../refs/research-trajectory-pre-to-post-training.md)
+(re-pulled 2026-08-21; see [../refs/README.md](../refs/README.md)). The three earlier synthesis
+documents that the project IDs cite (LR-schedule/WSD synthesis; published-data-analysis
+synthesis; dataset-analysis subset) were removed from `refs/` on 2026-08-21 and remain in git
+history and on the closed PR 45/46 branches.
 
 Resolved gate checks and open questions (with the code used to answer them) are logged in
 [../open-questions-answered.md](../open-questions-answered.md). The recipe-featurization

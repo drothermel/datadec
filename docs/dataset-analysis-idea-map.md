@@ -1,7 +1,8 @@
 # Dataset-analysis idea map
 
 Structured extraction of every experiment, instrument, and measurement proposed in
-[refs/research-trajectory-dataset-analysis-subset.md](refs/research-trajectory-dataset-analysis-subset.md),
+the dataset-analysis subset of the Research Trajectory page (now mirrored whole in
+[refs/research-trajectory-pre-to-post-training.md](refs/research-trajectory-pre-to-post-training.md)),
 organized so we can pick a first project and decide what infrastructure serves several paths at once.
 
 Companion ground truth for the DataDecide recipes themselves (what tokens are actually in each mix,
