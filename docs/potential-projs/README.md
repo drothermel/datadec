@@ -171,4 +171,11 @@ stand on their own. This applies equally to every §4 section.
   obvious-in-retrospect questions, and the Ai2 authors adjacent to all of them), while [the
   sweep- and stack-dependent MoE and branch work] are protected by your stack and sweep."
 - Full lists: [../portfolio-rankings.md](../portfolio-rankings.md).
+- From the "four projects from two workshop subs each" list: "P1, P2, and P3 sit on one
+  foundation: the DataDecide access layer — outcome tables with full (recipe × scale × seed ×
+  step × task) structure, the per-instance coverage check, the trajectory accessor with
+  spacing statistics, and the manifest/composition module. That's roughly two weeks of work
+  that simultaneously *starts* three projects and *runs their gates*." Recommended start: IRT
+  as primary, the data card in the background, and (now done) confirming the MoE sweep
+  checkpoints exist.
 

@@ -217,3 +217,15 @@ pitch is rigor and science rather than large-lab adoption?
   'matched loss = matched everything' is a quotable negative result." Overlap warning with
   the drift/diffusion paper ("a cynical reviewer could ask why they aren't one paper — have
   the answer ready"); a scoop race.
+
+### 2026-08-21 — position in the "four main-conference projects from two workshop subs" list (full list in `docs/portfolio-rankings.md`)
+
+- **P1 — The Psychometrics of Pretraining Evaluation.** Sub A: IRT-1 + IRT-5. Sub B: the
+  decision-reliability frontier. Main paper: "a measurement framework for checkpoint suites —
+  latent structure, optimal response models, recipe-DIF [IRT-3], and the derived instrument
+  for small-scale evaluation." "**Speed: fastest.**… **Scoop risk: medium-high**… speed is
+  the defense. **Expected impact: medium-high. Ceiling: high.**" Recommended as **the primary
+  starting effort**: "its outputs (θ, item parameters, noise-aware measurement) are inputs to
+  [the data/order project's] intervention analysis and [the schedule audit's]
+  flip-significance testing, and shipping it first blunts the scoop exposure where the race
+  is tightest."

@@ -224,3 +224,16 @@ diagnostic — per-expert input drift from routing logs. Full text in
   is logistical rather than scientific. **Expected impact: high**… **Ceiling: high.**").
 - Tiny-MoE floor study: **deliberately cut** from the workshop list ("fair dense-baseline
   tuning at 5M-active is a tarpit and it's outcome-fragile").
+
+---
+
+## 2026-08-21 — Position in the "four main-conference projects" list (full list in `../portfolio-rankings.md`)
+
+**P4 — What MoE Configurations Actually Change: Partitions and Movement.** Sub A: taxonomy
+invariance across the sweep. Sub B: reroute-vs-rewrite over training. Main paper: "a unified
+account of what varies and what's invariant across quality-matched MoEs — the partition, its
+resolution-refinement across granularities, where training movement lives, and the
+frozen-router/thaw causal arm." "**Speed: fourth**… **Scoop risk: low** — the sweep is the
+moat… **Expected impact: high. Ceiling: high**, with an option on very-high if the causal arm
+shows suppressed routing adaptivity costs quality." The recommended day-one action — confirm
+the sweep's checkpoints survive — is done.

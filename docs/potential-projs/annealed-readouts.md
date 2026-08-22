@@ -225,3 +225,14 @@ decisions. Only notes about this project are kept here.
   ground-truth audit still stands)… **Expected impact: high**… **Ceiling: high**, especially
   if a meaningful fraction of published decisions flip." Flagged as a scoop race (public
   data, Ai2 authors adjacent).
+
+### 2026-08-21 — position in the "four main-conference projects from two workshop subs" list (full list in `docs/portfolio-rankings.md`)
+
+- **P3 — Auditing the Schedule: Annealed Readouts for Cosine-Trained Suites.** Sub A: ANN-5
+  + ANN-2 + ANN-6 (the T0 half, with the held-out validation). Sub B: ANN-1 merging
+  validated against a small pilot grid of ANN-3 branches. Main paper: the full project
+  including ANN-opt-1 and "canonical annealed re-release of the suite's decisions."
+  "**Speed: third.**… Outcome-robust at every level. **Scoop risk: highest of the four** —
+  it's the most obvious-in-retrospect question about DataDecide, WSM/merging papers are
+  circling it, and the Ai2 authors could run it internally with better access. Sub A should
+  ship early partly as a flag-plant. **Expected impact: high. Ceiling: high.**"

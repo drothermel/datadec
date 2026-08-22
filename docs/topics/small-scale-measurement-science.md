@@ -198,3 +198,6 @@ program looks like from the inside."
   reviewers may shrug. **Ceiling: medium-high**; if IRT-scheduled reward shaping demonstrably
   unlocks RL at scales where naive reward gives zero gradient, the local-model and academic
   communities adopt it."
+
+- The decision-reliability frontier is sub B of **P1** and the realized-exposure audit is sub
+  B of **P2** in the "four main-conference projects" list (`../portfolio-rankings.md`).

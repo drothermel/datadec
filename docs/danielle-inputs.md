@@ -238,3 +238,17 @@ Responses routed to: [portfolio-rankings.md](portfolio-rankings.md) (all three l
 each project's or topic's own entries copied into its §4 / topic doc; portfolio-shape
 observations into the potential-projs README program-level notes.
 
+### Four main-conference projects from two workshop subs each
+
+> ok, then, can you identify a set of four strongest/most plausible projects, aiming to be
+> feasible and likely to be at least at the weak accept level+ projects for a main conf like
+> NeurIPS, ICLR, ACL, etc, that have a core main paper project built off of two workshop
+> submission sub-contributions (non archival of course). Again rank them by speed to produce,
+> label them with the likelihood to be scooped soon, and with the expected impact and impact
+> ceiling estimates. then recommend a place to start (this can be based on shared infra).
+
+Response routed to: [portfolio-rankings.md](portfolio-rankings.md) (whole); P1/P2/P3 entries
+to the IRT, recipe-featurization, and annealed-readouts §4s; P4 to
+[topics/moe-analysis-program.md](topics/moe-analysis-program.md); the shared-foundation
+starting recommendation to the potential-projs README program-level notes.
+

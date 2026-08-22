@@ -359,3 +359,103 @@ executing the list in order. Third, scoop risk is also inverted: #1–#3 and #5 
 (public data, obvious-in-retrospect questions, and the Ai2 authors adjacent to all of them),
 while #4 and #7–#10 are protected by your stack and sweep — so if anything, the ranking
 understates the urgency of the top and overstates the urgency of the bottom."
+
+---
+
+## 2026-08-21 — Objective: four strongest/most plausible weak-accept-or-better main-conference projects, each built from two non-archival workshop sub-contributions; ranked by speed, labelled by scoop risk, expected impact, impact ceiling; plus a recommended starting point
+
+Prompt (Danielle): "identify a set of four strongest/most plausible projects, aiming to be
+feasible and likely to be at least at the weak accept level+ projects for a main conf like
+NeurIPS, ICLR, ACL, etc, that have a core main paper project built off of two workshop
+submission sub-contributions (non archival of course). Again rank them by speed to produce,
+label them with the likelihood to be scooped soon, and with the expected impact and impact
+ceiling estimates. then recommend a place to start (this can be based on shared infra)."
+
+"Here are the four, each structured as (workshop sub A + workshop sub B → main paper), chosen
+for maximum separation: measurement, data, schedule, architecture."
+
+**P1 — The Psychometrics of Pretraining Evaluation.** "*Sub A:* IRT dimensionality +
+binary-vs-margin response models on DataDecide. *Sub B:* the decision-reliability frontier —
+how far down the scale ladder reliable decision signal survives as a function of measurement
+method (accuracy vs. margins vs. θ vs. IRT-selected items). *Main paper:* a measurement
+framework for checkpoint suites — latent structure, optimal response models, recipe-DIF, and
+the derived instrument for small-scale evaluation, validated on DataDecide end to end. The
+two subs are genuinely independent (one asks 'what's the structure,' one asks 'what can you
+detect with it') and the main paper is their product. **Speed: fastest.** All T0, both subs
+either-way publishable, sub B mostly consumes sub A's outputs so the pipeline is serial but
+short. **Scoop risk: medium-high** — public data, and the Ai2/Signal-and-Noise group is one
+good idea away from it; speed is the defense. **Expected impact: medium-high. Ceiling:
+high** (a one-dimensionality result reframes small-scale data selection; the instrument gets
+adopted)."
+
+**P2 — What's Actually in the Data: Composition, Order, and Small-Scale Validity.** "*Sub
+A:* the data card — realized composition, the label≠token-share correction, per-source
+dose-response attribution. *Sub B:* the realized-exposure audit — compositional drift as a
+function of training position at small scale, quantified per scale. *Main paper:* both plus
+the causal arm — stratified vs. sequential sampling reruns at 10–50M with many seeds,
+testing whether data order confounds small-scale recipe decisions, with the
+drift-shrinks-with-scale account of proxy-scale mispredictions. **Speed: second.** Sub A is
+half-done, sub B is analysis over sub A's machinery; only the main paper's intervention
+involves training, and it's tiny. Minimal outcome risk anywhere. **Scoop risk: medium** —
+the label correction is discoverable by anyone who looks, but nobody seems to be looking,
+and the order-effect experiment isn't obvious until you've done the audit. **Expected
+impact: medium-high** (steady citations from every suite user). **Ceiling: medium-high**,
+jumping to high if the order effect is large — 'proxy-scale data decisions are confounded
+with data order' would be genuinely disruptive."
+
+**P3 — Auditing the Schedule: Annealed Readouts for Cosine-Trained Suites.** "*Sub A:* MPL
+correction + decision-flip analysis (the T0 half, with the held-out validation predicting
+final decayed loss). *Sub B:* checkpoint merging on cosine checkpoints, validated against a
+small pilot grid of ground-truth decay branches. *Main paper:* the full [annealed-readouts
+project] — proxy validation at scale, the ~300-decision flip analysis against seed-noise
+floors, branch-length sweep, canonical annealed re-release of the suite's decisions.
+**Speed: third.** Sub A is fast; sub B introduces the eval-parity harness and first
+branches, which is where wall-clock and fiddliness live. Outcome-robust at every level
+(merging works → method; fails → ground-truth audit). **Scoop risk: highest of the four** —
+it's the most obvious-in-retrospect question about DataDecide, WSM/merging papers are
+circling it, and the Ai2 authors could run it internally with better access. Sub A should
+ship early partly as a flag-plant. **Expected impact: high. Ceiling: high** ('annealed evals
+for free' + flipped published decisions)."
+
+**P4 — What MoE Configurations Actually Change: Partitions and Movement.** "*Sub A:*
+taxonomy invariance — expert-matching across the sweep's configs and balancing mechanisms,
+with token-ID/frequency shallow-routing controls. *Sub B:* reroute-vs-rewrite — the exact
+router/expert swap decomposition over training on OLMoE/FLAME plus one or two of your own
+densely-checkpointed runs. *Main paper:* a unified account of what varies and what's
+invariant across quality-matched MoEs — the partition, its resolution-refinement across
+granularities, where training movement lives, and the frozen-router/thaw causal arm
+connecting to the stability-apparatus question. This is the direct sequel to your NeurIPS
+submission and mechanistically explains its own headline finding. **Speed: fourth** —
+checkpoint-survival audit, matching-method development, possibly fresh runs. **Scoop risk:
+low** — the sweep is the moat; nobody else holds balancing-mechanism variation at matched
+everything-else. **Expected impact: high. Ceiling: high**, with an option on very-high if
+the causal arm shows suppressed routing adaptivity costs quality." *(Checkpoints since
+confirmed to exist.)*
+
+| | Speed | Scoop risk | Expected | Ceiling |
+|---|---|---|---|---|
+| P1 Psychometrics | 1 | Med-high | Med-high | High |
+| P2 Data/order | 2 | Medium | Med-high | Med-high (→High) |
+| P3 Schedule audit | 3 | **High** | High | High |
+| P4 MoE partitions | 4 | **Low** | High | High (→Very high) |
+
+"Note the portfolio shape: speed and scoop risk run together (P1–P3 are races on public data;
+P4 is protected), which is exactly why you shouldn't execute serially."
+
+**Where to start.** "The infra argument is decisive here, because P1, P2, and P3 sit on one
+foundation: the DataDecide access layer — outcome tables with full (recipe × scale × seed ×
+step × task) structure, the per-instance coverage check, the trajectory accessor with
+spacing statistics, and the manifest/composition module. That's roughly two weeks of work
+that simultaneously *starts* three projects and *runs their gates* (per-instance coverage
+gates P1's DIF, checkpoint spacing gates nothing here but feeds P3's analysis, loss-curve
+coverage gates P3's MPL). So concretely: **start P1 as the primary effort** — it's the
+fastest to two subs, its outputs (θ, item parameters, noise-aware measurement) are inputs to
+P2's intervention analysis and P3's flip-significance testing, and shipping it first blunts
+the scoop exposure where the race is tightest. Run **P2's sub A in the background** from week
+one — it's mechanical, half-done, and its manifest module is P2's foundation anyway. And
+spend **one day, immediately, on the P4 checkpoint audit**: whether the sweep's checkpoints
+survive is a zero-compute fact that determines whether your lowest-scoop-risk, highest-moat
+project is cheap or expensive — and if they're at risk of deletion, that's the single most
+urgent action item in this entire conversation." *(Done: final checkpoints confirmed; see
+`open-questions-answered.md`.)*
+

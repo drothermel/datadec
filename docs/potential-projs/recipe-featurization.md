@@ -205,3 +205,14 @@ decisions. Only notes about this project are kept here.
   **Ceiling: medium-high**; it caps out unless the order effect is large, in which case
   'small-scale data decisions are confounded with data order' becomes a genuinely disruptive
   claim." A scoop race.
+
+### 2026-08-21 — position in the "four main-conference projects from two workshop subs" list (full list in `docs/portfolio-rankings.md`)
+
+- **P2 — What's Actually in the Data: Composition, Order, and Small-Scale Validity.** Sub A:
+  REC-a + label correction + REC-5. Sub B: the realized-exposure audit. Main paper: both plus
+  "stratified vs. sequential sampling reruns at 10–50M with many seeds." "**Speed: second.**…
+  Minimal outcome risk anywhere. **Scoop risk: medium** — the label correction is
+  discoverable by anyone who looks, but nobody seems to be looking. **Expected impact:
+  medium-high**… **Ceiling: medium-high**, jumping to high if the order effect is large."
+  Recommendation: run sub A "in the background from week one — it's mechanical, half-done,
+  and its manifest module is [the project's] foundation anyway."
