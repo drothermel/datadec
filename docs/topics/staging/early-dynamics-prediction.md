@@ -598,6 +598,49 @@ configs, so they are collinear with `d_model`/`n_layers` — fine for trees, but
 recipe-level columns are hand-assigned estimates; `REC` would replace them with measured
 properties.
 
+### 2025-07 — Answers: what to tune, what to normalise, what to prune
+
+**Hyper-parameters (condensed).** Tune `num_leaves` (64–1024), `min_data_in_leaf`
+(10–200), `learning_rate` (0.01–0.20, log), `feature_fraction` (0.6–1.0) lightly; keep
+`bagging_fraction=0.8`, `max_depth=-1`; `n_estimators` large with early stopping; add
+`lambda_l1/l2` only if overfitting persists. Tune **once** on a 10% validation split of the
+training-size bucket (≤ 20M) and reuse unless the feature count doubles, categorical splits
+are added, or the target transform changes. ~100 Optuna trials, <30 min on GPU.
+
+**Normalisation per size bucket.** YES for raw metric levels (`*_first_val`, `*_last_val`,
+`*_window_mean`, after log / logit), differences and slopes, and variance/RMSE/std-err
+(they inherit the metric's scale). NO for counts (`*_num_steps`, `total_steps`,
+`total_tokens` — take `log1p` instead), hyper-parameters (`lr_max`, `batch_size`),
+booleans (0/1), and 0–1 composition features (optional). Pattern: `StandardScaler` fit per
+`model_size` group over the selected columns, applied *after* log/logit of the raw curves.
+
+**Other prep.** `log1p` heavy-tailed counts; real `np.nan` for missing (−1/Unknown for
+categoricals); remove perfectly collinear twins; store `tokens_last` for the extrapolation
+baselines; persist the design matrix to Parquet; fix seeds (`random_state=42`).
+Pre-train checklist: no unexpected NaNs; roughly Gaussian transformed distributions;
+~120–140 columns after pruning; early stopping actually triggers (best_iteration < 4,000,
+else lower the LR); validation RMSE ≲ the extrapolation baselines before touching the test
+set.
+
+**`log1p`.** ln(1 + x): finite at 0, numerically precise for tiny x, no hand-tuned ε —
+replace `log(x + 1e-8)` with `log1p(x)` for counts that can be zero.
+
+**Pruning the fit statistics.** Per window and fit type keep **slope** plus **one**
+goodness-of-fit scalar (R² *or* `std_err`); drop `p_value` (function of R² and n), `rmse`
+(rescaling of `std_err`), `ci_lower/upper` (slope ± t·std_err). With fixed n per window the
+dropped columns are affine functions of the kept ones; trees waste depth choosing among
+twins. Sanity check: far fewer |corr| > 0.95 off-diagonals after pruning.
+
+*Intake notes.* (1) The Optuna objective sketch uses a plain random `train_test_split`
+inside training — it should use the grouped, size-stratified split already designed, or
+tuning will leak across (recipe, size) rows. (2) "Perplexity counts → `log1p`" is a slip:
+perplexity is ≥ 1 and never zero, so plain `log` is correct there; `log1p` is for genuine
+counts. (3) With per-size z-scoring *and* the tuned model reused across expanding windows,
+the bucket statistics for held-out (larger) sizes must come from the training sizes only
+or from a size-extrapolated fit — a per-test-size scaler fit on test rows is leakage; the
+earlier reviews' "store (μ_s, σ_s) from training rows" rule does not directly cover unseen
+sizes, and this gap is unresolved.
+
 ## Open questions
 
 - Is this still live (July 2025 draft; DataDecide scaling-law baselines have since been
@@ -610,6 +653,9 @@ properties.
 - Unresolved disagreements across reviews: full 16-point + slopes feature set vs. a
   four-feature minimal slice first; two heads vs. one LambdaMART. (Decided in the third
   thread: CV axis = model scale; targets = Pile-val perplexity + MMLU correct prob.)
+- Per-size z-scoring under held-out *sizes*: how to normalise rows of sizes absent from
+  training (extrapolate μ_s/σ_s vs. drop the per-size normalisation in the scale-axis
+  design and rely on `size_log`).
 - Any-step setting: confirm the feature window stays fixed at S₀ (see intake note); decide
   τ grid (K = 3 {33, 66, 100%} per the first review, or {25, 50, 75, 100%}).
 - Promote, absorb into `TINY` as an option, or archive. If promoted, source the static

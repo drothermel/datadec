@@ -1843,3 +1843,8 @@ runtime figures.
 
 Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
 ("Implementation state: extracted features and training setup"); answer to follow.
+
+(Answer to the three questions above — tuning set, normalisation map, `log1p`, pruning of
+fit statistics — recorded under "Answers: what to tune, what to normalise, what to prune",
+with intake notes on the ungrouped Optuna split, the perplexity/`log1p` slip, and the
+unresolved per-size normalisation for held-out sizes.)
