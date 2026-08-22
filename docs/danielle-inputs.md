@@ -3607,3 +3607,19 @@ entry: three-axis frame, placement table, 13-paper list, cell-coverage gaps note
 20 agent-supplied + 1 Claude-added ledger rows. No project ID; vocabulary for
 MOVE/PART/MSUITE and the pending "tiny LLMs as components" thread.
 
+### HumanEval and MBPP prompting conventions (two turns)
+
+> I'm trying to understand how people normally prompt a model to evaluate the human eval
+> task.  from the original paper, "Evaluating Large Language Models Trained on Code" it
+> seems that they just literally pass in the stub but I suspect that at this point there's
+> some form of instruction somewhere in the prompt (system or otherwise)?
+
+> Great, can you find me the same information for MBPP evaluation standard prompt
+> practices?
+
+Routed to [topics/reference/code-benchmarks-landscape.md](topics/reference/code-benchmarks-landscape.md)
+(new entry) with a §4 pointer in
+[potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+(prompt condition as part of the TLC-0 harness contract). No new ledger rows (HumanEval
+2107.03374 and MBPP 2108.07732 already present; other sources are GitHub pages).
+

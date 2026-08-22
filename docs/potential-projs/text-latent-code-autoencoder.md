@@ -1541,3 +1541,14 @@ suite and optimizer loop in sync between the two.
   objective); log per-test outcomes; decompose P(runnable) × E[fraction | runnable]; verify
   asserts run independently (done — `check()` split); log per-test vectors for McNemar-style
   pairing; fraction is within-problem only; audit order-independence of the split tests.
+
+### 2026-08-22 — Prompt condition is part of the harness contract
+
+HumanEval's original prompt is the raw stub (completion mode); MBPP's original prompt is
+already a few-shot NL task + visible asserts; both have named instruct variants in current
+harnesses, and pass rates are not comparable across the raw/instruct choice. For the TLC-0
+condition matrix, record per run whether signature/oracle-spec conditions use the raw
+stub or an instruct wrapper, and pin the harness commit. MBPP's prompt leaks test cases by
+design, which matters for leakage accounting. Details and sources:
+`../topics/reference/code-benchmarks-landscape.md` (prompt-format entry).
+

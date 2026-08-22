@@ -13,6 +13,59 @@ benchmarks the report does not cover.
 
 ---
 
+## Undated (intake 2026-08-22) — How HumanEval and MBPP are actually prompted (two turns)
+
+**Danielle's prompts.** (1) The Codex paper seems to "just literally pass in the stub"; she
+suspects modern practice adds an instruction somewhere (system or otherwise). (2) The same
+question for MBPP.
+
+**Response — HumanEval (condensed).** Original: prompt = header + signature + docstring,
+completion-mode with stop sequences (`\ndef`, `\nclass`, …); `openai/human-eval` passes
+`problems[task_id]["prompt"]` and stores only the completion — no instruction in the
+benchmark. Modern instruct variants: OpenAI `simple-evals` prepends "Read the following
+function signature and docstring, and fully implement the function described. Your
+response should only contain the code for this function." before the stub;
+lm-evaluation-harness separates `humaneval` from `humaneval_instruct`; BigCode harness
+keeps plain HumanEval as zero-shot completion and has InstructHumanEval with chat
+role/template tokens. Rule offered: raw prompt for base models; for chat models report
+which condition was used — raw, instruct wrapper, or a named variant — because the wrapper
+is a different evaluation condition.
+
+**Response — MBPP (condensed).** Original (Austin et al.) was already instruction-shaped:
+few-shot, NL task description + "Your code should satisfy these tests:" + visible asserts,
+then the model writes the function; few-shot exemplars in the same format were prepended
+(omitted from the paper figure). The original-style template as reproduced in
+lm-evaluation-harness issue 2644 (Jan 2025): `You are an expert Python programmer, and
+here is your task: {prompt} Your code should pass these tests: … [BEGIN]` with `[DONE]`
+as the end delimiter. BigCode instead builds an InCoder-style docstring prompt —
+`"""\n{description}\n{test_example}\n"""\n` — a harness choice, not the paper's format.
+lm-evaluation-harness has since added a separate "MBPP Instruct" task. Net: HumanEval
+original is raw completion; MBPP original is already few-shot instruction + tests; both now
+have named instruct variants.
+
+**Intake notes.**
+
+- Directly relevant to the TLC decoder pass (`../../potential-projs/text-latent-code-
+  autoencoder.md`): the prompt condition is part of the harness contract. The decoder
+  reconstructs code from a representation, so its prompt is a *new* format regardless;
+  but the oracle-spec / signature conditions in the TLC-0 condition matrix should state
+  whether they use the raw HumanEval stub or an instruct wrapper, since pass rates are
+  not comparable across that choice. Record the condition per run, do not pick one
+  globally.
+- MBPP's visible asserts are in the prompt by design — so for TLC's leakage accounting
+  and for ELI's verifier suite, MBPP leaks test cases into the task statement while
+  HumanEval leaks only the docstring examples (which are also doctest-style asserts, just
+  fewer). Neither benchmark's prompt is test-free; the "hidden test" distinction is about
+  the *held-out* split, not the prompt.
+- The `[BEGIN]`/`[DONE]` delimiters and the "only the code" instruction are exactly the
+  structured-output concern in `structured-output-literature.md`: extraction failures are
+  an evaluation-condition artifact and should be counted separately from solution
+  failures (the format-vs-content split).
+- Claims are from response-cited GitHub READMEs/issues (unverified; harness behaviour
+  drifts by version — pin the harness commit when recording a condition). EvalPlus
+  (HumanEval+/MBPP+) prompt handling was not covered and is the variant most likely to be
+  used in 2025–26 papers.
+
 ## 2026-08-22 — SciSpace deep review (undated, ~early 2026)
 
 **Danielle's prompt (verbatim):**
