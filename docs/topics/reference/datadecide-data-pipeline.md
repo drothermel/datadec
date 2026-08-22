@@ -539,7 +539,8 @@ product is exactly what the pipeline generates before the cast. The fix is to co
 cast as float (or keep the `float64` logical type and cast at the boundary), not to split
 into significand/exponent columns. The split is defensible only for range queries by
 magnitude, which `log10(compute)` gives just as well. Unverified against the actual
-traceback; Danielle's to confirm.
+traceback. **Flag, not a task** (Danielle, 2026-08-22): not an immediate issue; check when
+the project is picked up again.
 
 **Data-card relevance.** Whatever the storage, the card (DCARD-4) should state the compute
 convention: FLOP via 6·N·D with which N (nominal vs. exact parameter count — the existing

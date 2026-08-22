@@ -240,3 +240,16 @@ informal comparison of agents on real research questions, a record of her own th
 of those conversations into this repo follows the same weighting: her statements are
 quoted in full, responses are condensed to surviving pointers, and response errors are
 noted as data about the agents.
+
+## 2026-08-22 — Calibrate after selection (standing principle; Danielle approved)
+
+Whenever a reported number is the score of something *chosen* from many — the best
+optimizer candidate, the best-predicted model or prompt, the best recipe, checkpoint, or
+wrapper — the number is optimistic unless it is computed under the full selection rule on
+data the selection never saw. The rule: run the exact selection procedure on held-out
+units, score the *selected* item there, and report that; keep an "optimization metric"
+(rich, educational, may be partial credit) distinct from a "final metric" (locked holdout,
+uncompromising). The more options searched, the larger the bias. Came up three times on
+2026-08-22 in different clothes (TLC optimizer reporting, conformal calibration after model
+selection, best-recipe claims from DataDecide); detailed record in
+`estimation-and-calibration-methods.md`. Applies to every project that chooses anything.

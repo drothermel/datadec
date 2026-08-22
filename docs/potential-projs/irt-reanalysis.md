@@ -74,6 +74,17 @@ correctness, `choices.parquet` for per-choice likelihoods).
   order; forward passes only) to split small-scale failure into format artifact vs.
   genuine difficulty. First concrete instance of the elicitation thesis (cross-listed in
   `elicitation-gain.md`).
+- **IRT-11 — Which item representation explains difficulty.** Once IRT-1 has fitted
+  per-item difficulty (and DIF from IRT-3), compare several ways of representing the
+  items — text embeddings of the question, task-format features, token-level statistics,
+  the pass/fail vector itself — by how much difficulty structure each recovers without a
+  trained predictor: cluster R²/η² with adjusted R² under one clustering rule, NMI /
+  V-measure / ARI on binned difficulty, kNN difficulty smoothness against a
+  within-benchmark shuffled-label null, and Spearman between pairwise embedding distance
+  and pairwise difficulty difference with permutation p-values. Generalizes IRT-7 from
+  "cluster DIF items by task/domain" to "which representation of an item predicts its
+  difficulty and its DIF". Prerequisite: IRT-1. (Added 2026-08-22 from two conversations
+  recorded in `../topics/reference/estimation-and-calibration-methods.md`.)
 
 ## 2. Doability and impact
 
@@ -102,6 +113,7 @@ but a custom EM/VI fit is a few hundred lines). Main engineering risks:
 | IRT-8 BoolQ autopsy | High | Case study that makes the psychometrics concrete; reviewers' "too hard" reading is testable and plausibly wrong. |
 | IRT-9 margin decomposition | Medium–High | Cheap, decisive, self-contained metric finding; fixes the response-model choice. |
 | IRT-10 format intervention | Medium | Turns the autopsy into an intervention; T1 forward passes. |
+| IRT-11 item representation vs. difficulty | Medium | Training-free, T0 once IRT-1 exists; the figure that says what makes an item hard, and the item-side half of the featurization program. |
 
 **Likely paper shape.** IRT-1 + IRT-5 + IRT-2 as the core ("a psychometric
 reanalysis of DataDecide"), IRT-3 as the headline if it lands, IRT-4 as a figure.
@@ -164,7 +176,7 @@ held-out facet) is the cheap generalization check for IRT-3's recipe-DIF claims.
 respondent-count caveat (2PL noisy at 32 respondents) does not bind here — the checkpoint
 pool is thousands — but the same caution applies to any per-recipe or per-size subfit.
 
-### 2026-08-22 — scoring item embeddings against IRT difficulty without a trained predictor
+### 2026-08-22 — scoring item embeddings against IRT difficulty without a trained predictor (now IRT-11)
 
 Danielle's framing (from a separate conversation; record in
 `../topics/reference/estimation-and-calibration-methods.md`, second entry): once the

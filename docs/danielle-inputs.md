@@ -3543,3 +3543,14 @@ the DSPy/GEPA incumbent; standing instrumentation updated. Header records that D
 primary interest is the representation program and the compression project is the thesis
 track. Items 2–4 of the walkthrough (int64 check; calibrate-after-selection principle;
 IRT-11 ID) still open.
+
+> for 2, lets leave that as a flag in the doc, its not immediate an issue for me now so
+> lets leave it to be checked when I pick up the project again.
+> 3. yeah, lets add the paragraph
+> 4. yes, definitely lets add an id, its a real thing and lets pull it out now.
+
+Applied: int64 diagnosis marked "flag, not a task" in the pipeline reference;
+calibrate-after-selection added to
+[topics/reference/project-approach-principles.md](topics/reference/project-approach-principles.md)
+as a standing principle; **IRT-11** (which item representation explains difficulty) added to
+[potential-projs/irt-reanalysis.md](potential-projs/irt-reanalysis.md) with an impact row.
