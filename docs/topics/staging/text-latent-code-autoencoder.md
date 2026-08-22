@@ -480,6 +480,58 @@ the reachability question from point 1, answered empirically. Divergence means
 initialization sensitivity is real, which is both a reportable finding and the justification
 for the diagnosis-driven arm later."
 
+## 2026-07-11 — Recap of conclusions; what the large-n phase must output
+
+**Danielle's recap (confirmed accurate).** Many design decisions become arms of the
+experiment. First need: "a regime where there is the potential for optimization, and a
+statistical understanding of how many samples we need to get any type of signal on the
+behavior of a given prompt." So: coarse sweep → find cliffs → choose those regions for large
+sample collection. Then a simple optimizer (sample prompts, evaluate in sequence), run from
+both the baseline and the task-targeted seed to see whether there is a difference, plus "the
+experience of doing a human-in-the-loop version where I am the optimizer," to design the
+first real optimization approach that tries to move the metrics rather than validate the
+loop. Open question she raised: beyond the power calculation (samples needed to detect the
+expected difference), what other actionable conclusions should the large-n sweeps yield?
+
+**Response (near-verbatim).**
+
+*Refinement.* "'Variance estimation' is subtly the wrong frame for binary outcomes.
+Per-problem variance is fully determined by the pass probability — p(1−p) — so the large-n
+phase isn't measuring variance as an independent quantity. It's estimating pass
+probabilities precisely where they're informative, and locating where the stochasticity
+enters."
+
+*What the large-n phase should output.*
+1. "The power table — minimum detectable difference versus samples-per-candidate, plus the
+   kill thresholds for racing (when a candidate's interval can't reach the incumbent, stop
+   paying for it)."
+2. "An encoder-vs-decoder variance decomposition. Run k encodings × m decodings on a few
+   problems and see which stage carries the noise. This sets your sample allocation and
+   answers whether caching one encoder output per candidate is statistically sound or a
+   lucky-draw bias. Problem-to-problem heterogeneity will likely dominate the aggregate —
+   that's the formal justification for paired evaluation."
+3. "The stratified training subset: problems whose cliffs sit near the operating tiers, a
+   few refusal-zeros kept for compliance signal, broken problems quarantined — some 0%s will
+   be harness or test bugs, and those get fixed before optimizing, or the optimizer learns to
+   route around them. Held-out set frozen."
+4. "Failure-taxonomy base rates per tier: refusal vs extraction vs wrong-code. This predicts
+   how much early 'gain' will be compliance and is the raw material for the diagnosis arm."
+5. "The frozen baseline Pareto curve with confidence bands — the reference all later results
+   report against, and the noise floor determining which score differences you're allowed to
+   show the LLM optimizer."
+6. "A stationarity check. You're on OpenRouter's cheapest models: the same model name can be
+   served by different providers at different quantizations, and temp-0 isn't
+   deterministic. Measure run-to-run drift on identical inputs and decide whether to pin
+   providers — otherwise every cross-day comparison inherits that confound."
+
+*Sharpening.* "The simple-optimizer runs aren't just loop validation — they're a permanent
+arm (the null every smarter optimizer must beat) and the source of the failure transcripts
+that design the diagnosis arm. Nothing there is throwaway."
+
+**Next requested artifact (2026-07-11).** A structured write-up of the motivation, the goal,
+Danielle's interests, the lab's compression interest, and the plan for pursuing the
+compression goal first — the natural seed for this topic's project doc if promoted.
+
 ## Open questions
 
 - Bottleneck: now framed as *optional* and itself an experimental variable — does
@@ -513,5 +565,8 @@ for the diagnosis-driven arm later."
   (attribution-clean delta); second arm seeds from a task-aligned prompt (method ceiling /
   initialization-sensitivity check); the true objective is stated in the meta-prompt either
   way.
+- Large-n phase deliverables (six, above): power table; encoder/decoder variance
+  decomposition; stratified train subset + frozen held-out; failure-taxonomy base rates;
+  baseline Pareto curve with bands; OpenRouter provider stationarity check.
 
 **Waiting on:** the remaining points of the point-by-point discussion; a promotion decision.

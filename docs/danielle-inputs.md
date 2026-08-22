@@ -1149,3 +1149,38 @@ Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-c
 Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-code-autoencoder.md)
 ("Baseline vs. seed"). The response's closing advice on what to say to the adviser was
 dropped; the baseline constraint is recorded as a project fact.
+
+### Text-latent code autoencoder — recap and large-n deliverables — conversation 2026-07-11, intake 2026-08-22
+
+> Okay. This has been very helpful. So, basically, the conclusion, like, I'm gonna do my
+> best to recap what I'm taking away from this conversation, and then I'm gonna ask you to
+> make a document that actually captures, um, your improved, uh, writing and structured
+> version of the motivation, the goal, my interests, my adviser's interests, and the plan
+> for pursuing my adviser's interest first. Um, so my summary is basically that many
+> different design decisions can be just considered arms in the experiment, but It is true
+> that the first thing we really need is a statistical… well, we need a regime where there
+> is the potential for optimization, and we need a statistical understanding of how many
+> samples we need to get, um, any type of signal, um, on the behavior of a given prompt.
+> And so we should start with a course sweep, um, and look at, for example, cliffs. And then
+> we can choose those regions in order to do large sample collection to understand what the
+> confidence bounds are. I guess, actually, that's a question that I have, which is
+> basically, like, I do see, like, it's clear to me that we need a large sample collection,
+> and we probably are interested in both variance and confidence estimation. Um, but I'm
+> not sure exactly what the, like, conclusion that is actionable is that I wanna take out
+> of that. Like, clearly, one actionable conclusion is basically given the expected
+> difference that we wanna be able to capture, How many samples do we need to have the
+> statistical power to do so? Um, if we're trying to optimize. But it seems like there are
+> probably other key conclusions that we're trying to extract from this first pass of large
+> n sweeps once we've identified the, like, key regimes. Um, yes. So that's an open
+> question that I'm sure you can provide some insight into. And then I guess the last piece
+> is basically that in addition to our, like, evaluation, then we can start with a simple
+> optimizer That's just like a sampling sampling prompts and evaluating them in sequence.
+> And we can run that with both the baseline and the task targeted prompt to see whether
+> there is a difference and then to take those findings, plus maybe the experience of doing
+> a human in the loop version where I am the optimizer, to design what the actual, like,
+> first real optimization approach will be that trying to actually move the metrics more so
+> than just validate the optimization loop. Would you say that this fairly accurately
+> captures what we've discussed and concluded.
+
+Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-code-autoencoder.md)
+("Recap of conclusions; what the large-n phase must output").
