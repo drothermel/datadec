@@ -2689,6 +2689,21 @@ and a one-line provenance caveat on every §4 note that cites reproduction numbe
 (irt-reanalysis ×2, trajectory-statistics, annealed-readouts, recipe-featurization ×2,
 README program note).
 
+### 2026-08-22 — Deep-research report: code feature extraction (brief dated 2026-07-03)
+
+> great! ok, a completely different topic, I did a deep research prompt based on the
+> attached doc. and got the answering report.
+
+(attached: `~/Desktop/2026.07.03-report2_code_features_brief.md` — her own Report-2
+brief — and the resulting report
+`~/Desktop/2026.07.03-code-feature-extraction-for-python-source-code-deep-research-report.md`;
+the deep-research prompt itself was not pasted.)
+
+Routed to: [topics/reference/code-feature-extraction-tooling.md](topics/reference/code-feature-extraction-tooling.md)
+(new reference topic: the brief's contract condensed; the report's tool inventory as a
+seed list; intake note that the report broke the brief's form rules and omitted three of
+four deliverables; links to TLC, the clean-code staging topic, and ELI's verifiers).
+
 ### Post-intake decisions — 2026-08-22 (data-layer conversation)
 
 > 1. I think data-card/ validation work should be its own project doc, so b as you say.
