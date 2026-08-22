@@ -370,3 +370,6 @@ WizardCoder; `chang2024effective` there is 2402.04177 (different paper) and
 | 2403.04811 | HumanEval/MBPP contamination in the Pile / The Stack (Levenshtein + Dolos) | `code-benchmarks-landscape` (HumanEval afterlife / overlap) | agent-supplied | TLC/ELI/IRT | |
 | 2402.19173 | StarCoder2 / The Stack v2 — near-dedup pipeline | `code-benchmarks-landscape` (HumanEval afterlife / overlap) | agent-supplied | TLC/ELI/IRT | |
 | (no ID) | ShortenDoc — docstring compression on HumanEval/EvoEval; no identifier given in the response | `code-benchmarks-landscape` (HumanEval afterlife) | agent-supplied | TLC (gate 1) | |
+| 2407.17465 | u-µP: Unit-Scaled Maximal Update Parametrization (Blake et al.) — Danielle-supplied PDF/URL | `parametrization-and-hp-transfer` | Danielle-supplied | GEO/TINY/EDP/DataDecide-dense | |
+| 2203.03466 | µTransfer (Yang et al.) — named in intake note only | `parametrization-and-hp-transfer` | Claude-added | — | |
+| 2303.11257 | Unit Scaling (Blake et al.) — named in intake note only | `parametrization-and-hp-transfer` | Claude-added | — | |

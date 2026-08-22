@@ -3656,3 +3656,17 @@ and 21 ledger rows. Flagged: ShortenDoc belongs in TLC litreview gate 1; the
 within-benchmark redundancy question Danielle actually asked is not answered by any cited
 study.
 
+### u-µP paper summary and Figure 1 (two turns)
+
+> Can you describe the key takeaways from the attached paper? (also available online at
+> https://arxiv.org/html/2407.17465v3
+
+> Please describe the contents and importance of the figure that I've provided that is
+> from the paper.
+
+Routed to the new
+[topics/reference/parametrization-and-hp-transfer.md](topics/reference/parametrization-and-hp-transfer.md)
+with a design-option pointer in
+[topics/staging/datadecide-dense.md](topics/staging/datadecide-dense.md) and three ledger
+rows (one Danielle-supplied, two Claude-added). No project ID.
+

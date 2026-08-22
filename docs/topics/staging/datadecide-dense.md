@@ -72,3 +72,8 @@ cosine twins with matched data order (WSD-opt-3) done small first.
   delta "noise") are unverified.
 - Not started; sequenced after the pure-T0 work (IRT matrix builder, 2PL fit) per the
   conversation, with the design doc written first.
+- Design option to record when the doc is written (2026-08-22): parametrize the retrain
+  with u-µP (`../reference/parametrization-and-hp-transfer.md`) to get width transfer and
+  a ~9-run independent HP sweep per recipe, at the cost of departing from DataDecide's
+  own per-size hand-set hyperparameters — a comparability trade-off, undecided.
+
