@@ -344,27 +344,24 @@ Dated notes from the external conversation this doc was promoted from, recorded 
 consolidation — not decisions. Related-work claims in quoted text are unverified unless a
 citation is given; Danielle's prompts are logged verbatim in `../danielle-inputs.md`.
 
-### 2026-08-22 — code-compression related work, and a missed near-neighbour
+### 2026-08-22 — code-compression related work
 
 From Danielle's SciSpace deep review of code compression, run with this paper as the
 stated context (record in `../topics/reference/code-compression-literature.md`; 173-file
-bundle with `INDEX.md`). **Gate item, high priority:** Maveli, Vergari & Cohen, "Can LLMs
-Compress (and Decompress)? Evaluating Code Understanding and Execution via
-Invertibility" — an LLM compress→decompress invertibility evaluation of code — is the
-nearest published protocol to TLC-1's census and was absent from the prior-art bundle
-whose verdict was "appears novel" (the agent here scored it 18/100 relevance). Read it
-before the novelty sentence is written; expect it to be either the primary related work
-or a baseline. Landscape for the related-work section: "code compression" in the
-literature means learned embeddings (CuBERT, ContraCode, autoencoders), prompt/context
-compression for code LLMs (ICAE, gist tokens, 500xCompressor, CodePromptZip,
-LongCodeZip, Stingy Context), model compression (Compressor, LORD), LLMs as entropy
-coders, library learning (Leroy — the contrast case for "compressing functions"), and
-semantic compression / precise rewriting (Cummins et al.). Girish et al.'s
-rate–distortion framework for black-box prompt compression (2407.15504) supplies the
-formal axis for this paper's length-vs-reconstruction curve. Standard comparisons to
+bundle with `INDEX.md`). Landscape for the related-work section: "code compression" in
+the literature means learned embeddings (CuBERT, ContraCode, autoencoders),
+prompt/context compression for code LLMs (ICAE, gist tokens, 500xCompressor,
+CodePromptZip, LongCodeZip, Stingy Context), model compression (Compressor, LORD), LLMs
+as entropy coders, library learning (Leroy — the contrast case for "compressing
+functions"), and semantic compression / precise rewriting (Cummins et al.). Girish et
+al.'s rate–distortion framework for black-box prompt compression (2407.15504) supplies
+the formal axis for this paper's length-vs-reconstruction curve. Standard comparisons to
 match: compression ratio in tokens, reconstruction fidelity (exact match / AST
 similarity) *and* functional retention (pass@k), against gzip / truncation / selective
-context baselines. Prior-art gate still parked, but Maveli et al. is now its first item.
+context baselines. One title-level false alarm resolved the same day: Maveli, Vergari &
+Cohen, "Can LLMs Compress (and Decompress)?" asks coding LLMs to forward- and
+reverse-predict four lossless compressors as a code-understanding probe — Danielle read
+it; not related. Prior-art gate still parked.
 
 ### 2026-08-22 — where the optimizer loop sits in the prompt-optimization landscape
 

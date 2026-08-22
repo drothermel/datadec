@@ -2864,6 +2864,19 @@ for the related-work section; rate–distortion axis; comparisons to match); and
 intake note in [topics/reference/nl-bottleneck-prior-art.md](topics/reference/nl-bottleneck-prior-art.md)
 that the novelty verdict missed this paper.
 
+### 2026-08-22 — correction: the Maveli et al. paper is unrelated
+
+> so, "Can LLMs Compress (and Decompress)? Evaluating Code Understanding and Execution via
+> Invertibility" seems like its code compression, but actually its using coding llms to try
+> to forward predict and reverse predict the effect of four lossless compression models. it
+> seems so promising and yet it really isn't very related to my work at all sadly
+
+Applied: demoted in [topics/reference/code-compression-literature.md](topics/reference/code-compression-literature.md),
+[potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+§4, [topics/reference/nl-bottleneck-prior-art.md](topics/reference/nl-bottleneck-prior-art.md),
+the topics README row, and the bundle's `INDEX.md`; recorded as checked-and-unrelated so
+it is not re-flagged.
+
 ### Post-intake decisions — 2026-08-22 (data-layer conversation)
 
 > 1. I think data-card/ validation work should be its own project doc, so b as you say.

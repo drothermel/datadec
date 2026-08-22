@@ -69,14 +69,15 @@ numbering is broken).**
 - *Evaluation gaps the report names:* little rigorous functional testing of
   "functionality-preserving" claims; Python/Java-centric; efficiency rarely reported.
 
-**The one paper that matters most here.** Maveli, Vergari & Cohen, *"Can LLMs Compress (and
-Decompress)? Evaluating Code Understanding and Execution via Invertibility"*
-(SciSpace https://scispace.com/paper/QfvwlJrWh6EJ; no DOI/arXiv in the tables) — an
-invertibility evaluation of code through an LLM compress→decompress cycle. The agent's
-relevance tag: 18/100, "Low Relevance … compression is not the central contribution."
-For TLC it is the nearest published protocol, and it was **not surfaced by the
-prior-art search that declared the mechanism novel** (`nl-bottleneck-prior-art.md`).
-Must be read before any novelty claim; likely a baseline or the primary related work.
+**Maveli, Vergari & Cohen, "Can LLMs Compress (and Decompress)? Evaluating Code
+Understanding and Execution via Invertibility"** (SciSpace
+https://scispace.com/paper/QfvwlJrWh6EJ). Flagged at intake as a possible near-neighbour
+of TLC from its title; **Danielle read it (2026-08-22): it is not.** Her summary: "its
+using coding llms to try to forward predict and reverse predict the effect of four
+lossless compression models" — i.e. the LLM is asked to *execute* compression algorithms
+(and their inverses) on inputs as a code-understanding probe; the compression is the
+task, not the method. The agent's 18/100 relevance score was right. Recorded so it is not
+re-flagged.
 
 **Intake notes.**
 
@@ -89,6 +90,6 @@ Must be read before any novelty claim; likely a baseline or the primary related 
 - All ratios and percentages are as the agent reported; unverified.
 - Positioning takeaway for TLC: the literature's "compression" is almost entirely
   lossless-or-embedding (a) or context-budget (b); functional-equivalence reconstruction
-  through a *text* latent is represented only by Maveli et al. and by HumanEvalExplain
-  (`humanevalexplain-results.md`). Rate–distortion (Girish) supplies the axis
+  through a *text* latent is represented in this bundle by nothing closer than
+  HumanEvalExplain (`humanevalexplain-results.md`). Rate–distortion (Girish) supplies the axis
   vocabulary; library learning (Leroy) is the contrast case for "compressing functions."

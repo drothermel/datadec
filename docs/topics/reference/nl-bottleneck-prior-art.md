@@ -78,12 +78,11 @@ code/artifacts listed in `REPRODUCIBLE_PAPERS_WITH_CODE.md`.
   "portable semantic contracts"; evaluation-driven contract/harness optimization). That is
   the same draft whose internals are recorded in the TLC doc §4 (Eq. 4–5, 7; COMP-NL vs
   COMP-SHORT).
-- **Missed neighbour (found 2026-08-22 in the code-compression bundle,
-  `code-compression-literature.md`):** Maveli, Vergari & Cohen, "Can LLMs Compress (and
-  Decompress)? Evaluating Code Understanding and Execution via Invertibility" — an
-  LLM compress→decompress invertibility evaluation of code. Not in this bundle's 378- or
-  414-paper corpus. The "appears novel" verdict should be treated as not yet established
-  until it is read.
+- Title-level false alarm, resolved: Maveli, Vergari & Cohen, "Can LLMs Compress (and
+  Decompress)?" (surfaced 2026-08-22 from the code-compression bundle) has LLMs
+  forward/reverse-predict four lossless compressors as a code-understanding probe;
+  Danielle read it — unrelated. The verdict stands as the agent gave it; GenDLN remains
+  the one item still needing her read.
 - The "six novel aspects" and "proceed with confidence" sections are agent
   editorializing, dropped; the rubric and partial list are kept because they are the
   related-work skeleton.
