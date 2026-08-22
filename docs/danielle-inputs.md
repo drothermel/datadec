@@ -3082,9 +3082,14 @@ with the five failure modes and their instances; promotions — TINY-opt-5 (whic
 axis) in [tiny-scale-measurement.md](potential-projs/tiny-scale-measurement.md),
 TOK-opt-6 (selection–movement coincidence) in [token-movement.md](potential-projs/token-movement.md),
 MIC-opt-5 (sequential vs. direct distillation) in
-[movement-microscope.md](potential-projs/movement-microscope.md). Steps 3 (citation
-ledger), 4 (TLC litreview plan), 6 (topics README grouping) follow in the next commits;
-step 3's verification run (c) is parked until a gate runs.
+[movement-microscope.md](potential-projs/movement-microscope.md). Steps 3, 4, 6 applied in the following commits:
+[litreview/citation-verification-ledger.md](litreview/citation-verification-ledger.md)
+(every arXiv ID that entered the reference topics today — 208 rows — tagged
+agent-supplied vs. Claude-added, with the gate it feeds; verification run parked);
+[litreview/tlc-litreview-plan.md](litreview/tlc-litreview-plan.md) (five subdomains with
+seeds on file, six gate items incl. the GenDLN read, bounded orchestration by reference
+to the REC plan); the topics README reference table regrouped into eight themed
+sections.
 
 ### Post-intake decisions — 2026-08-22 (data-layer conversation)
 
