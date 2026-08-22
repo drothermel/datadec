@@ -582,3 +582,13 @@ distill-into-fresh-network arm and its control);
 [topics/icl-as-posttraining.md](topics/icl-as-posttraining.md) (function-vs-trajectory test
 for elicitability); the potential-projs README program-level notes.
 
+### Interest flag — reinitialization and transfer (2026-08-22)
+
+> I'm actually really interested in what happened with the reinit and transfer literature
+> and looking at whether there are places that I could contribute to that direction.
+
+Recorded as an interest flag at the top of
+[topics/reinit-and-transfer-literature.md](topics/reinit-and-transfer-literature.md) and in
+the topics index; the flag spells out what acting on it would take (targeted literature
+pass → gap list → staging topic or project doc if warranted).
+

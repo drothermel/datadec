@@ -3,6 +3,15 @@
 **Kind:** reference (standing accumulator of paper references and thoughts). Entries are dated
 and quoted close to verbatim; related-work claims are unverified unless a citation is given.
 
+> **Danielle interest flag (2026-08-22).** Danielle is specifically interested in what happened
+> with this literature after her early embedding-reset result, and in whether there are
+> places she could contribute to the direction. This is the only reference topic carrying
+> such a flag. Acting on it would mean: (1) a targeted literature pass on the current state
+> — tokenizer/vocabulary transfer and its continued-pretraining costs, body-frozen interface
+> transfer, reset-and-distill methods (ITER-style) in and beyond RL, and the
+> basin-preserving-vs-determining reading; (2) a gap list; (3) if a gap is real, a staging
+> topic or project doc. Until then, keep accumulating references here.
+
 Why it matters here: resets are "ways to jump to different spots in the loss landscape"
 (Danielle); the embedding-reset result is an early Danielle hypothesis that became standard
 practice; and the distinction between basin-preserving interface resets and
