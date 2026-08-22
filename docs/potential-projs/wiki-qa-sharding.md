@@ -1,18 +1,106 @@
-# Wikipedia sharding for QA — co-locating what is retrieved together
+# Wikipedia QA sharding — co-locating what is retrieved together
 
-**Kind:** staging. Candidate exits: a standalone project doc (systems / retrieval; program
-pillars served: none), or absorption into a larger QA-infrastructure project if one emerges.
-Gate: a literature check of the claimed gap ("physically shard all of Wikipedia by observed
-QA evidence locality and evaluate end-to-end QA latency" is unsaturated) and of the named
-tools/papers.
+> **Draft scaffolding (2026-08-22).** Promoted from the staging topic `wiki-qa-sharding`.
+> §1–§3 are synthesized from the 2026-08-16 discussion; §4 is the dated record. Treat §1–§3
+> as provisional until this note is removed. Flagged by Danielle as a post-PhD or
+> "engineering break" paper rather than part of the current arc.
 
-Source: excerpts from the Notion page "MAQA Next Steps" (MAQA = multi-answer question
-answering; literature in `../reference/multi-answer-qa-literature.md`) (conversation dated 2026-08-16; intake
-2026-08-22). The respondent browsed while answering, but every citation and tool claim below
-is still **unverified** here — treat as leads.
+**Program pillars served:** none — outside the DataDecide program; systems/retrieval.
+(Program: `README.md` → Program.)
+
+**One-line pitch.** Physically shard a full Wikipedia snapshot so that the evidence sets QA
+queries actually touch co-locate — workload-aware hypergraph partitioning over a
+hyperlink + semantic + co-retrieval affinity graph, with a compact global router and bounded
+boundary replication — and evaluate end-to-end: shards touched per query, router recall,
+retrieval recall, answer F1, latency, and balance, against hash/category/hyperlink-only
+baselines.
+
+IDs: SHARD-1–SHARD-3, SHARD-opt-1–SHARD-opt-3.
+
+**Paper goal.** A systems/IR paper (workshop or a data-systems venue): "shard all of
+Wikipedia by observed QA evidence locality and measure end-to-end QA latency and recall" —
+claimed unsaturated (unverified). Doable solo as an engineering-focused project.
+
+Compute tiers: **CPU** = partitioning, indexing, evaluation on one large machine; **GPU-light**
+= embeddings for the semantic kNN graph and dense index.
+
 ---
 
-## 2026-08-16 — Turn wiki corpus into shards
+## 1. What the project involves
+
+### Core experiment (SHARD-1–SHARD-3)
+
+**SHARD-1 — Data and graph.** One dated English Wikipedia snapshot (pinned directory,
+checksums). Derive `nodes.parquet` / `edges.parquet` from the Structured Wikipedia Parquet
+dataset (flatten recursive `links`, keep internal links, strip fragments, normalize, join to
+page IDs, resolve redirects; retain anchor text and section path), with the SQL
+`pagelinks` tables as a completeness check. Article-level vertices sized by storage
+footprint; passages chunked inside shards. Build affinity layers: hyperlinks (lead/body vs.
+navigation), embedding-kNN edges, QA supporting-document sets (HotpotQA, 2WikiMultiHopQA,
+MuSiQue, QAMPARI evidence) as hyperedges, optional clickstream; hub downweighting.
+
+**SHARD-2 — Partitioning conditions.** Same snapshot: hash/random; title/category;
+hyperlink-only balanced k-way (METIS/KaMinPar); semantic-kNN partition; hybrid; workload
+hypergraph (Mt-KaHyPar, connectivity objective Σ f_q(λ_q − 1)); workload hypergraph +
+bounded boundary replication. Partition on training queries, evaluate on held-out.
+
+**SHARD-3 — Serving and evaluation.** A global routing layer (titles/aliases, shard
+centroids, small lexical index, entity→shard map) over shard-local stores (text,
+lexical/vector indexes, local adjacency) with boundary support. Single-machine stack:
+canonical Lance/Parquet corpus; DuckDB for construction and evaluation; LanceDB (or
+Qdrant if serving) with `graph_partition` as an indexed filter column. Metrics: % gold
+evidence sets within one / two shards; mean and p95 shards touched; router recall vs.
+shards searched; Recall@k; answer and supporting-fact F1; p50/p95 latency; storage/QPS
+imbalance; replication factor. Central objective: expected number of shards required to
+recover a high-recall evidence set under balance constraints.
+
+### Optional directions
+
+- **SHARD-opt-1 — Entity-sparse candidate fetch as a routing signal** (Qdrant `entities`
+  sparse vector; head-entity strategies; mmap CSR neighbor expansion).
+- **SHARD-opt-2 — Streaming/update partitioning** for monthly snapshots.
+- **SHARD-opt-3 — Multi-answer workload** — evaluate whether list-QA evidence (many
+  articles per question) is sharding-friendly at all, connecting to `maqa-brute-force-baseline.md`.
+
+## 2. Doability and impact
+
+### Overall doability: **high** (engineering-bound, one large machine), impact **medium**
+
+All inputs are public; the hard parts are data plumbing and a careful evaluation design. The
+headline risk is the "placement only pays if first-stage retrieval is routable" point: if
+queries fan out to all shards, placement helps fetch and expansion only — the router is the
+load-bearing component and must be evaluated with the partition. Claimed literature gap is
+unverified.
+
+### Per-direction impact
+
+- **SHARD-1–3.** A clean systems result with a reusable sharded-Wikipedia artifact.
+- **SHARD-opt-3.** The interesting cross-over with MAQA if multi-answer evidence turns out to
+  cluster.
+
+## 3. Infrastructure build sequence
+
+1. Snapshot pull (Structured Wikipedia Parquet + SQL graph tables ≈ 11 GB) with a dated
+   directory and checksums.
+2. DuckDB pipeline: nodes/edges, degree statistics, hub weights, QA hyperedges from
+   benchmark supporting sets.
+3. Partitioners: KaMinPar / Mt-KaHyPar wrappers; condition registry.
+4. Section-level passage corpus with `graph_partition`; Pyserini BM25 reference; LanceDB
+   hybrid index (migrate to Qdrant/Vespa only if serving demands it).
+5. Router + evaluation harness producing the metric table above, with cost per condition.
+
+---
+
+## 4. External assessments and origin notes
+
+Dated notes from the external conversation this doc was promoted from, recorded for
+consolidation — not decisions. Tool and literature claims are unverified. Tooling
+comparisons live in `../topics/reference/retrieval-storage-tooling.md`; entity linking in
+`../topics/reference/entity-linking-at-scale.md`.
+
+### Origin notes — moved from `topics/staging/wiki-qa-sharding.md`
+
+### 2026-08-16 — Turn wiki corpus into shards
 
 **Danielle's question.** How to store a full Wikipedia corpus sharded such that "the shards
 co-locate things that are likely to be accessed together when doing question-answer tasks."
@@ -89,7 +177,7 @@ and supporting-fact F1; p50/p95 end-to-end latency; storage/QPS/compute imbalanc
 replication factor and update amplification. Central objective: "Expected number of physical
 shards required to recover a high-recall evidence set, subject to storage and QPS balance."
 
-## 2026-08-16 — Downloading Wikipedia under a storage budget
+### 2026-08-16 — Downloading Wikipedia under a storage budget
 
 **Danielle's question.** With limited storage, where to download Wikipedia data, at what
 granularity (metadata vs. text), what sizes, and whether one can download a percentage /
@@ -142,7 +230,7 @@ raw wikitext, rendered HTML, or an extractor was used. Server holds recent month
 (Feb–Aug 2026 at the time); older snapshots via Internet Archive per Wikimedia's
 "Finding older xml dumps" guidance. One date ⇒ no need for the revision-history dump.
 
-## 2026-08-16 — Link graph from Structured Wikipedia
+### 2026-08-16 — Link graph from Structured Wikipedia
 
 **Danielle's question.** Is there something like the Hugging Face Structured Wikipedia
 dataset for the link graph too?
@@ -175,7 +263,7 @@ from Structured Wikipedia. You get a snapshot-aligned corpus and graph, link con
 QA-aware weighting, and avoid maintaining two substantially different ingestion pipelines.
 Use the SQL graph only as a completeness check."
 
-## 2026-08-16 — Index stack: BM25 to vectors at Wikipedia scale
+### 2026-08-16 — Index stack: BM25 to vectors at Wikipedia scale
 
 **Danielle's question.** Pyserini used to be the best way to implement indices from BM25 to
 vector indexes; what are the newer, better options that still work at Wikipedia scale?
@@ -222,7 +310,7 @@ distributed serving, graph-partition filters, richer ranking features, or online
 are needed (skip LanceDB and go straight to Vespa if the goal is already a durable
 multi-node service).
 
-## 2026-08-16 — LanceDB alone: pros, cons, how far it goes
+### 2026-08-16 — LanceDB alone: pros, cons, how far it goes
 
 **Danielle's question.** Pros and cons of building on LanceDB, and how far could it carry
 retrieval on its own?
@@ -272,7 +360,7 @@ construction, retrieval research and a credible single-machine demonstrator." Mi
 when query concurrency exceeds one machine, sophisticated lexical/ranking behavior is
 needed, or automatic distributed sharding/HA is required.
 
-## 2026-08-16 — A Qdrant-based solution
+### 2026-08-16 — A Qdrant-based solution
 
 **Danielle's question.** What would a solution with Qdrant look like?
 
@@ -324,9 +412,9 @@ version like a columnar dataset." First implementation: one collection, one poin
 passage, `dense + bm25`, RRF, article grouping, external cross-encoder, communities as
 payload only — "leaving each additional component independently measurable."
 
-## 2026-08-16 — Workbench vs. engine: DuckDB + LanceDB over one Lance dataset
+### 2026-08-16 — Workbench vs. engine: DuckDB + LanceDB over one Lance dataset
 
-General comparison recorded in `../reference/retrieval-storage-tooling.md`. Project
+General comparison recorded in `../topics/reference/retrieval-storage-tooling.md`. Project
 application (near-verbatim, condensed): DuckDB for building, inspecting, partitioning, and
 evaluating the corpus — parse/normalize Parquet shards; join passages with metadata,
 redirects, Wikidata IDs, categories; construct and inspect the link-edge table; degree
@@ -339,15 +427,15 @@ rerank, fetch scattered rows. Canonical corpus as one Lance dataset read by both
 Lance extension; small Parquet tables for the link graph and evaluations. Don't use DuckDB
 VSS as the sole Wikipedia-scale vector index.
 
-## 2026-08-16 — Entity-based candidate fetch: the stack to build now
+### 2026-08-16 — Entity-based candidate fetch: the stack to build now
 
 How the entity mentions themselves get produced (replacing string matching with a
 ReLiK/ReFinED cascade plus lexical proposals and document propagation) is recorded in
-`../reference/entity-linking-at-scale.md`; its page-level aggregate table is the input to
+`../topics/reference/entity-linking-at-scale.md`; its page-level aggregate table is the input to
 the `entities` sparse vector below.
 
 Context and the general analysis (sparse-retrieval reframing, CSR/mmap, LMDB/RocksDB,
-head-entity strategies) are in `../reference/retrieval-storage-tooling.md`. Danielle's
+head-entity strategies) are in `../topics/reference/retrieval-storage-tooling.md`. Danielle's
 earlier project fetched candidates from question entities over an entity-ID graph and hit
 join blow-ups on frequent entities.
 
@@ -361,7 +449,7 @@ Cross-encoder or reader after fusion of entity-sparse + BM25 + dense. Fewest com
 Qdrant (entity sparse + BM25 + dense) + one mmap CSR file for neighbor expansion + Parquet
 source data.
 
-## Open questions
+### Open questions (carried from staging)
 
 - What the surrounding MAQA system needs (latency target, shard count, update
   cadence, whether first-stage retrieval is routable) — determines whether placement matters
@@ -381,5 +469,3 @@ source data.
   community as payload not shard key); DuckDB (+ Lance extension) as the analytical
   workbench over the same Lance dataset; section-level passages with title/section prefix; RRF first;
   article-level diversification for multi-answer readers.
-
-**Waiting on:** further excerpts from the MAQA Next Steps page; a promotion decision.

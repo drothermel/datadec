@@ -2,7 +2,7 @@
 
 **Kind:** reference — a standing accumulator for Danielle's own methodology principles,
 drawn from looking back at past projects, plus feedback received on them. Cross-project;
-applied concretely in `../staging/maqa-oracle-ladder.md`.
+applied concretely in `../../potential-projs/maqa-brute-force-baseline.md`.
 
 Source: Danielle's statement on the "MAQA Next Steps" page (2026-08-17; intake 2026-08-22)
 and the response to it.

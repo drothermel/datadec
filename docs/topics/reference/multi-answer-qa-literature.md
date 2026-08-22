@@ -8,7 +8,7 @@ where the line went and how frontier models do with and especially without a cor
 
 Source: excerpts from the Notion page "MAQA Next Steps" (conversation dated 2026-08-16; intake
 2026-08-22). The respondent ran a browsing deep-search; numbers and citations below are its
-claims and remain **unverified** here. Related: `../staging/wiki-qa-sharding.md`.
+claims and remain **unverified** here. Related: `../../potential-projs/wiki-qa-sharding.md`.
 ---
 
 ## 2026-08-16 — Deep-search summary (report body pasted separately)
@@ -224,7 +224,7 @@ be verified at all."
 ## 2026-08-17 — Second validation pass on the state of the field
 
 A second deep-search response to Danielle's restated goals (three-paper arc recorded in
-`../staging/maqa-oracle-ladder.md`). Near-verbatim, condensed; claims unverified.
+`../../potential-projs/maqa-brute-force-baseline.md`). Near-verbatim, condensed; claims unverified.
 
 - **"F1 is still surprisingly low" — confirmed.** MoNaCo: frontier LLMs at most 61.2% F1,
   "hampered by low recall and hallucinations"; across 15 frontier LLMs (GPT-5, o3, Claude Opus

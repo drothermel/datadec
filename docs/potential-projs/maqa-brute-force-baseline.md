@@ -1,18 +1,161 @@
-# MAQA oracle ladder — decomposing multi-answer QA into measurable ceilings on QAMPARI
+# MAQA brute-force baseline — exhaustive multi-answer QA over raw Wikipedia, decomposed into ceilings
 
-**Kind:** staging. Candidate exit: a standalone project doc (multi-answer QA; program pillars
-served: none — though "measurement science at academic scale" is the same spirit). Gate: a
-decision to pursue MAQA again, and confirmation of the QAMPARI release details assumed below
-(official dump + chunking, metrics, enriched 200-question subset, construction metadata).
+> **Draft scaffolding (2026-08-22).** Promoted from the staging topic `maqa-oracle-ladder`.
+> §1–§3 are synthesized from the 2026-08-16/17 discussions and Danielle's own problem
+> statement; §4 is the dated record. Treat §1–§3 as provisional until this note is removed.
 
-Source: excerpts from the Notion page "MAQA Next Steps" (conversation dated 2026-08-16; intake
-2026-08-22). Literature context in `../reference/multi-answer-qa-literature.md`;
-infrastructure in `wiki-qa-sharding.md`, `../reference/retrieval-storage-tooling.md`,
-`../reference/entity-linking-at-scale.md`. Dataset facts quoted below are the respondent's
-and **unverified**.
+**Program pillars served:** none — outside the DataDecide program; gets its own topic
+proposal if pursued (pending). Its spirit — measure ceilings before building systems — matches
+the "how" pillar's measurement-science stance. (Program: `README.md` → Program.)
+
+**One-line pitch.** Revisit exhaustive multi-answer QA (QAMPARI-style: entity-centric, few
+hops, simple set operations, 4–10 answers) over an unannotated Wikipedia corpus with the
+simplest clean brute-force design — entity-centric candidate fetch, evidence selection,
+reading — and make the *oracle ladder* the paper: per-stage ceilings (answer universe,
+corpus, chunking, retrieval pool, evidence budget, reader, evaluator) with simplest-heuristic
+baselines and oracle swaps, per-question loss attribution, and cost on every plot.
+
+IDs: MAQA-1–MAQA-4 (papers/phases), MAQA-opt-1–MAQA-opt-5.
+
+**Paper goal.** Paper 1 (workshop): the revisit + eval audit — the ceiling ladder with the dumb
+floor system as its floor, official and cleaned numbers side by side, noise-vs-difficulty
+audit of QAMPARI. Paper 2 (workshop or main conference): the clean brute-force baseline
+updated for the current landscape, F1-vs-compute as the contribution. Papers 3+: targeted
+failure-point methods. Thesis-scale if MAQA becomes an alternative topic proposal.
+
+Compute tiers: **CPU/API** = corpus processing, BM25, and API reads; **GPU-light** = dense
+embeddings and an entity linker over Wikipedia once.
+
 ---
 
-## 2026-08-16 — Danielle's goal (the seed)
+## 1. What the project involves
+
+### Problem and solution shape (Danielle, 2026-08-17)
+
+Exhaustive QA for QAMPARI-style questions over raw Wikipedia; success = F1 on the cleanest
+possible dataset. Solution space: prepare corpus → get evidence → choose evidence → answer,
+entity-centric (form an entity set, answer from it). Impact hypotheses: a complete but
+precise entity set; evidence chunks small enough that multi-hop evidence fits the answerer;
+evidence diversity for the long tail; mention normalization that is linkable and matches
+answer form; an answerer accurate on clean evidence; bounded evidence explosion. Added on
+feedback: **precision control / knowing when to stop** and **eval fidelity** as first-class
+axes; the entity-set commitment stated as a measured cap ("caps recall at X%; accepted").
+
+### Core experiment: the oracle ladder on QAMPARI (MAQA-1)
+
+Start with QAMPARI only (released dump + chunking; official metrics). Run, in dependency
+order, each with the simplest heuristic and an oracle swap:
+
+0. Closed-book baseline (contamination control), scored officially and with a lenient judge.
+1. Answer-universe ceiling: titles → +redirects → +Wikidata labels/aliases → +anchor strings;
+   evaluator self-test on canonical gold strings (must be 100%).
+2. Question entity linking: longest-match title/redirect lookup; alias priors with M ∈ {1,
+   4, 16, 64}; gold spans; gold IDs — with downstream retrieval coverage as the metric that
+   matters.
+3. Corpus/chunking: exact gold-passage presence, entity presence, alias presence; small
+   size/overlap/unit grid.
+4. Single-round retrieval: BM25, entity-postings, RRF hybrid; N ∈ {10…5,000} stored once;
+   exact-evidence recall, answer-presence (primary), entity-bearing coverage, threshold
+   success, area under recall-vs-log N; all-answers-covered@k.
+5. Budget/diversity: greedy set cover → minimum passages per question (headline plot);
+   oracle-at-budget U_{N,K}; loss decomposition into candidate-generation / selection /
+   ranking; article round-robin as the trivial diversifier.
+6. Graph reachability: gold answers within 1–2 hops of linked question entities, comparing
+   anchor-link edges (free) vs. string-matched mentions vs. a neural linker.
+7. Single-round vs. iterative ladder (gold question entities; oracle answer entity; oracle
+   evidence entities; two rounds system vs. oracle).
+8. Reader ceilings: one gold passage / all gold independent / all gold joint / retrieved;
+   non-neural extractors first; conditional metrics incl. unsupported-prediction rate.
+9. Output-budget ceiling min(L, |G|)/|G|; metric self-test under surface perturbations.
+10. Gold incompleteness: the 200 enriched test questions as a diagnostic set; adjudicated
+    precision of off-gold predictions.
+
+Deliverable: a per-question "which stage first made 100% impossible" table and a funnel
+report (KB coverage → evidence availability → pool → budgeted oracle → selected → gold-evidence
+reader → retrieved-evidence reader → evaluator-recognized P/R), each with cost.
+
+### Bounded dataset-noise work (part of MAQA-1)
+
+Error-driven annotation of a small subset using a union of generic baselines (BM25, dense,
+closed-book LLM) as the sampling frame — never the proposed method; system-blind judging;
+freeze and hash `qampari-dev-clean-v1` before the method exists; report noise-rate scalars
+and error bars, official and cleaned numbers side by side; a ~50-line answer normalizer with
+a test file of known-equivalent pairs. State the residual bias (lower bound on noise) as a
+limitation. Time-boxed.
+
+### The floor system (MAQA-2)
+
+string-link → BM25@k → read → normalize via redirect table → dedupe. Shipped first; the
+ladder explains it stage by stage. Then the updated brute-force variant: entity-sparse +
+BM25 + dense candidates with RRF, article grouping, per-entity evidence clustering and
+reranking, reader with explicit inclusion thresholding; F1-vs-compute curves.
+
+### Optional directions
+
+- **MAQA-opt-1 — Verification-first re-annotation of QAMPARI/QUEST/RoMQA** (pool candidates
+  from heterogeneous systems; pointwise structured verdicts; adversarial evidence
+  judgments; independent verifier families; capture–recapture estimates of residual
+  incompleteness). No cleaned versions of these datasets exist; a credible standalone
+  contribution.
+- **MAQA-opt-2 — Neural entity linking for every mention** (ReLiK/ReFinED cascade with
+  lexical proposals and document propagation) replacing string matching; bake-off on 5–20k
+  chunks first.
+- **MAQA-opt-3 — Graph-based exhaustive retrieval evaluated on multi-answer benchmarks**
+  (the GraphRAG lineage never evaluates on QAMPARI/QUEST/RoMQA/MoNaCo) — paper 3 candidate.
+- **MAQA-opt-4 — Failure-point methods**: inclusion thresholding / abstention calibration;
+  coverage-aware iterative retrieval conditioned on verified entities; set-operation
+  handling.
+- **MAQA-opt-5 — MoNaCo as the second dataset** once the design stabilizes (paper-time only;
+  no transfer slices during iteration).
+
+## 2. Doability and impact
+
+### Overall doability: **high** for MAQA-1/2 (CPU/API; QAMPARI-scale), **medium** for paper-3 methods
+
+Everything in the ladder is computable from the released QAMPARI corpus with BM25 and API
+reads; the only GPU pass is optional (dense embeddings, neural linker). Risks: QAMPARI
+artifacts (construction metadata, enriched subset, metric scripts) may not be as assumed;
+contamination of 2022 Wikipedia answers in frontier models; the cleaning-and-tooling rabbit
+hole — mitigated by the time-box and "front-load findings, defer scaffolding."
+
+### Per-direction impact
+
+- **MAQA-1 (ladder + audit).** Workshop paper; the "how much of QAMPARI's headline difficulty
+  is dataset noise vs. task difficulty" number is the most citable result.
+- **MAQA-2 (clean brute force).** Workshop or main conference depending on how far it gets;
+  the F1-vs-compute curve is the claim.
+- **MAQA-opt-1.** Standalone resource paper if done properly; otherwise folded into MAQA-1.
+- **MAQA-opt-3/4.** Main-conference ceiling; depends on what the ladder says is the binding
+  stage.
+
+## 3. Infrastructure build sequence
+
+1. **Corpus + metric loaders** for QAMPARI (dump, chunks, gold evidence, official scorer);
+   pinned snapshot; persisted intermediates (questions, entity candidates/predictions, gold
+   answer entities, passage–answer coverage, top-5,000 retrieval runs, evidence selections,
+   reader predictions, normalized predictions, evaluation matches).
+2. **Title/redirect/alias tables** and the answer normalizer with its test pairs.
+3. **BM25 index** (Pyserini reference; LanceDB for hybrid experiments — see
+   `wiki-qa-sharding.md` §3 for the engine choice rationale, duplicated there).
+4. **Ceiling scripts** 0–10 with the per-question first-failing-stage table and funnel
+   report; cost logged per run.
+5. **Floor system** and the error-driven annotation tooling; `qampari-dev-clean-v1` frozen.
+6. *(Optional)* entity-sparse index (Qdrant `entities` vector), neural linker cascade,
+   graph-neighbor CSR.
+
+---
+
+## 4. External assessments and origin notes
+
+Dated notes from the external conversations this doc was promoted from, recorded for
+consolidation — not decisions. Related-work and dataset claims in quoted text are
+unverified unless a citation is given; Danielle's prompts are logged verbatim in
+`../danielle-inputs.md`. Literature lives in `../topics/reference/multi-answer-qa-literature.md`;
+methodology in `../topics/reference/project-approach-principles.md`.
+
+### Origin notes — moved from `topics/staging/maqa-oracle-ladder.md`
+
+### 2026-08-16 — Danielle's goal (the seed)
 
 Lesson from the first attempt: "there are so many pieces that interact, and there are kind
 of infinitely complex ways to try to address each of the pieces." What she wants: "start
@@ -29,7 +172,7 @@ set, together or individually, and "whether our evaluation metric actually consi
 answers correct." "Each of those things are things that can be analyzed before trying to
 hook up the whole system together."
 
-## 2026-08-16 — The oracle ladder (response, near-verbatim, condensed)
+### 2026-08-16 — The oracle ladder (response, near-verbatim, condensed)
 
 "Formalize it as an oracle ladder: at each stage, compare the simplest heuristic with an
 oracle replacement for that stage. That gives you empirical ceilings without assuming the
@@ -143,10 +286,10 @@ evaluator-recognized recall and precision — "whether the next unit of complexi
 into entity linking, retrieval breadth, diversity, iterative search, reading, or simply
 fixing the evaluator."
 
-## 2026-08-17 — Danielle's three-paper arc (program framing for MAQA)
+### 2026-08-17 — Danielle's three-paper arc (program framing for MAQA)
 
 Her own statement of the project, paraphrased from the prompt (verbatim in
-`../../danielle-inputs.md`):
+`../danielle-inputs.md`):
 
 1. **Revisit the original approach** — same shape, same-era datasets (QAMPARI, QUEST, RoMQA;
    MoNaCo named too), applying what she has learned since to make faster/better progress.
@@ -182,7 +325,7 @@ retrieval evaluated on QAMPARI/QUEST/RoMQA/MoNaCo "appears genuinely underexplor
 favorable gap for paper 2. Date correction: MoNaCo is 2025 (TACL 2026), not from the original
 era.
 
-## 2026-08-17 — A second, leaner version of the ladder
+### 2026-08-17 — A second, leaner version of the ladder
 
 Same decomposition question posed again (prompt identical to the 2026-08-16 seed); this
 response is shorter and adds a few distinct ideas. Near-verbatim, condensed.
@@ -242,9 +385,9 @@ headline plot, and the anchor-link vs. string-match graph ablation. The earlier 
 more complete on the experiment matrix, the N/K/L value grids, output-budget and
 gold-incompleteness protocols, and persisted intermediates.
 
-## 2026-08-17 — Problem definition, solution shape, impact hypotheses (Danielle)
+### 2026-08-17 — Problem definition, solution shape, impact hypotheses (Danielle)
 
-Applying principle 1 of `../reference/project-approach-principles.md`:
+Applying principle 1 of `../topics/reference/project-approach-principles.md`:
 
 **Problem.** Exhaustive QA for QAMPARI-style questions — entity-centric, few hops max, some
 simple set operations, generally 4–10 answers — over an unannotated knowledge corpus;
@@ -289,18 +432,18 @@ category intersections and RoMQA's constraint clusters. Decide kill criteria for
 entity-centric shape up front; put cost on every plot — "the F1-vs-compute curve is the
 contribution."
 
-## Open questions
+### Open questions (carried from staging)
 
 - Confirm QAMPARI artifacts: released dump + chunked corpus, construction metadata (source
   entities/relations), the 200-question enriched subset, official metric scripts.
 - Where the oracle ladder sits in the three-paper arc: it is the natural spine of paper 1
   (revisit + eval audit) and the measurement layer for paper 2 (clean brute-force baseline).
 - Which graph for paper 1's reachability ceiling: anchor links (free) vs. string-matched
-  mentions vs. the ReLiK-style linker from `../reference/entity-linking-at-scale.md`.
+  mentions vs. the ReLiK-style linker from `../topics/reference/entity-linking-at-scale.md`.
 - Relationship to the cleaner-dataset pipeline in the literature topic (verification-first
   gold sets) — same project or a follow-on.
 
-- Bounded dataset-noise work for QAMPARI (per `../reference/project-approach-principles.md`,
+- Bounded dataset-noise work for QAMPARI (per `../topics/reference/project-approach-principles.md`,
   2026-08-17): error-driven annotation of a small subset (baseline's top evidence that is not
   gold → hand-check; predicted-but-marked-wrong answers → hand-check), reported as noise-rate
   scalars with error bars rather than a "clean dataset"; a ~50-line answer normalizer with a
@@ -310,5 +453,3 @@ contribution."
   proposed method runs. Deliver the floor number first, ceilings in the same report.
 - Kill criteria for the entity-centric shape (undecided); precision-control / stopping
   mechanism as an explicit impact axis.
-
-**Waiting on:** further excerpts; a promotion decision.

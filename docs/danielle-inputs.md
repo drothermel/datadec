@@ -1234,7 +1234,7 @@ pasted one at a time.
 > options are, but then also how people have applied this type of thing to something like
 > Wikipedia or some other large corpus for QA purposes in the literature.
 
-Routed to: new staging topic [topics/wiki-qa-sharding.md](topics/staging/wiki-qa-sharding.md).
+Routed to: new staging topic [topics/wiki-qa-sharding.md](potential-projs/wiki-qa-sharding.md).
 
 ### Multi-answer QA state of the field — conversation 2026-08-16
 
@@ -1297,14 +1297,14 @@ Routed to: [topics/multi-answer-qa-literature.md](topics/reference/multi-answer-
 > split it up yourself? Let's assume that I just want one date of Wikipedia, and it can be
 > a current date or like very recent, or it can be historical.
 
-Routed to: [topics/wiki-qa-sharding.md](topics/staging/wiki-qa-sharding.md) ("Downloading
+Routed to: [topics/wiki-qa-sharding.md](potential-projs/wiki-qa-sharding.md) ("Downloading
 Wikipedia under a storage budget").
 
 ### Link graph from Structured Wikipedia — conversation 2026-08-16
 
 > is there something like the huggingface structed dataset for the wikipedia link graph too?
 
-Routed to: [topics/wiki-qa-sharding.md](topics/staging/wiki-qa-sharding.md) ("Link graph from
+Routed to: [topics/wiki-qa-sharding.md](potential-projs/wiki-qa-sharding.md) ("Link graph from
 Structured Wikipedia"); data-plan open question revised.
 
 ### Index stack at Wikipedia scale — conversation 2026-08-16
@@ -1313,7 +1313,7 @@ Structured Wikipedia"); data-plan open question revised.
 > used to be to use pyserini, but there must be newer better options now that still work at
 > wikipedia scale?
 
-Routed to: [topics/wiki-qa-sharding.md](topics/staging/wiki-qa-sharding.md) ("Index stack:
+Routed to: [topics/wiki-qa-sharding.md](potential-projs/wiki-qa-sharding.md) ("Index stack:
 BM25 to vectors at Wikipedia scale").
 
 ### LanceDB alone — conversation 2026-08-16
@@ -1321,14 +1321,14 @@ BM25 to vectors at Wikipedia scale").
 > so what are the pros and cons of building on lancedb, and how far could i get using it
 > alone for retrieval?
 
-Routed to: [topics/wiki-qa-sharding.md](topics/staging/wiki-qa-sharding.md) ("LanceDB alone:
+Routed to: [topics/wiki-qa-sharding.md](potential-projs/wiki-qa-sharding.md) ("LanceDB alone:
 pros, cons, how far it goes"); index-plan open question revised.
 
 ### Qdrant solution — conversation 2026-08-16
 
 > ok, so then, what would a solution with qdrant look like?
 
-Routed to: [topics/wiki-qa-sharding.md](topics/staging/wiki-qa-sharding.md) ("A Qdrant-based
+Routed to: [topics/wiki-qa-sharding.md](potential-projs/wiki-qa-sharding.md) ("A Qdrant-based
 solution").
 
 ### DuckDB vs. LanceDB — conversation 2026-08-16
@@ -1339,7 +1339,7 @@ solution").
 Routed to: new reference topic
 [topics/retrieval-storage-tooling.md](topics/reference/retrieval-storage-tooling.md) (the
 general comparison, per Danielle's emphasis); project application in
-[topics/wiki-qa-sharding.md](topics/staging/wiki-qa-sharding.md).
+[topics/wiki-qa-sharding.md](potential-projs/wiki-qa-sharding.md).
 
 ### Entity-ID graph candidate fetch and HDF5 — conversation 2026-08-16
 
@@ -1362,7 +1362,7 @@ general comparison, per Danielle's emphasis); project application in
 > alternative, or do solutions exist for this that I just didn't, I wasn't aware of?
 
 Routed to: [topics/retrieval-storage-tooling.md](topics/reference/retrieval-storage-tooling.md)
-(general analysis) and [topics/wiki-qa-sharding.md](topics/staging/wiki-qa-sharding.md)
+(general analysis) and [topics/wiki-qa-sharding.md](potential-projs/wiki-qa-sharding.md)
 (the proposed stack).
 
 ### Entity linking beyond string matching — conversation 2026-08-16
@@ -1376,7 +1376,7 @@ Routed to: [topics/retrieval-storage-tooling.md](topics/reference/retrieval-stor
 
 Routed to: new reference topic
 [topics/entity-linking-at-scale.md](topics/reference/entity-linking-at-scale.md); pointer
-added in [topics/wiki-qa-sharding.md](topics/staging/wiki-qa-sharding.md).
+added in [topics/wiki-qa-sharding.md](potential-projs/wiki-qa-sharding.md).
 
 ### MAQA decomposition goal — conversation 2026-08-16
 
@@ -1410,7 +1410,7 @@ added in [topics/wiki-qa-sharding.md](topics/staging/wiki-qa-sharding.md).
 > of these things and the values that would actually be useful for understanding kind of
 > like the very coarse-grain impact of different types of decisions.
 
-Routed to: new staging topic [topics/maqa-oracle-ladder.md](topics/staging/maqa-oracle-ladder.md)
+Routed to: new staging topic [topics/maqa-oracle-ladder.md](potential-projs/maqa-brute-force-baseline.md)
 (Danielle's goal recorded as the seed).
 
 ### MAQA goals restated (second model) — conversation 2026-08-17
@@ -1457,7 +1457,7 @@ Routed to: new staging topic [topics/maqa-oracle-ladder.md](topics/staging/maqa-
 > the field and provide me a foundation to work from + provide any feedback to my thoughts
 > that you have.
 
-Routed to: [topics/maqa-oracle-ladder.md](topics/staging/maqa-oracle-ladder.md) (three-paper
+Routed to: [topics/maqa-oracle-ladder.md](potential-projs/maqa-brute-force-baseline.md) (three-paper
 arc as program framing + plan feedback) and
 [topics/multi-answer-qa-literature.md](topics/reference/multi-answer-qa-literature.md)
 (second validation pass).
@@ -1467,7 +1467,7 @@ arc as program framing + plan feedback) and
 Prompt identical to the 2026-08-16 "MAQA decomposition goal" entry above (with "Campari" for
 QAMPARI); not repeated.
 
-Routed to: [topics/maqa-oracle-ladder.md](topics/staging/maqa-oracle-ladder.md) ("A second,
+Routed to: [topics/maqa-oracle-ladder.md](potential-projs/maqa-brute-force-baseline.md) ("A second,
 leaner version of the ladder", with a cross-reference to the first).
 
 ### Project-approach principles and MAQA problem definition — conversation 2026-08-17
@@ -1525,7 +1525,7 @@ leaner version of the ladder", with a cross-reference to the first).
 Routed to: new reference topic
 [topics/project-approach-principles.md](topics/reference/project-approach-principles.md)
 (the four general principles + feedback) and
-[topics/maqa-oracle-ladder.md](topics/staging/maqa-oracle-ladder.md) (problem definition,
+[topics/maqa-oracle-ladder.md](potential-projs/maqa-brute-force-baseline.md) (problem definition,
 solution shape, impact hypotheses, plan-specific feedback).
 
 ### Implementation time and bounded cleaning — conversation 2026-08-17
@@ -1567,7 +1567,7 @@ solution shape, impact hypotheses, plan-specific feedback).
 Routed to: [topics/project-approach-principles.md](topics/reference/project-approach-principles.md)
 (integration tax; front-load findings; error-driven annotation; over-indexing guardrails)
 and a bounded-cleaning open question in
-[topics/maqa-oracle-ladder.md](topics/staging/maqa-oracle-ladder.md).
+[topics/maqa-oracle-ladder.md](potential-projs/maqa-brute-force-baseline.md).
 
 ### Baseline-surfaced annotation — conversation 2026-08-17
 
@@ -1581,5 +1581,21 @@ and a bounded-cleaning open question in
 
 Routed to: [topics/project-approach-principles.md](topics/reference/project-approach-principles.md)
 (sequencing for delivery; unbiased error-driven annotation) and the bounded-cleaning entry
-in [topics/maqa-oracle-ladder.md](topics/staging/maqa-oracle-ladder.md). The response's
+in [topics/maqa-oracle-ladder.md](potential-projs/maqa-brute-force-baseline.md). The response's
 collaborator-management advice was dropped; its method-neutral sequencing point was kept.
+
+### Post-intake decisions — 2026-08-22
+
+> ok, lets start with (1) and I think we should call out two projects, because while the
+> sharding isn't on my arc now, I think its an interesting and doable paper for a post-phd
+> arc or a point where I want an "do some engineering" type of break
+> (2) yes, defer
+> (3) keep here
+> (4) defer
+> (5) defer
+
+Applied: `maqa-oracle-ladder` → [potential-projs/maqa-brute-force-baseline.md](potential-projs/maqa-brute-force-baseline.md)
+(`MAQA`); `wiki-qa-sharding` → [potential-projs/wiki-qa-sharding.md](potential-projs/wiki-qa-sharding.md)
+(`SHARD`, flagged post-PhD / engineering break). Alternative topic proposals for non-pillar
+projects deferred; `project-approach-principles` stays a reference topic; literature gates
+and the draft-scaffolding review remain parked.

@@ -45,8 +45,6 @@ directory only holds live, unresolved material.
 |---|---|
 | [checkpoint-tomography.md](staging/checkpoint-tomography.md) | A prior-art pass (devinterp / WSD follow-up literature); then a decision on whether the five-probe battery (decay, hot, twin, data-shifted, reset) becomes the flagship instrument framing or is absorbed into annealed readouts, landscape geometry, token-level movement, functional featurization, and embedding-reset dynamics |
 | [frozen-body-transfer-audit.md](staging/frozen-body-transfer-audit.md) | A forward-citation sweep of arXiv 2107.12460; then a promotion decision (gaps G5/G6). G6 is cross-listed as ICL-opt-5 in ICL elicitability |
-| [wiki-qa-sharding.md](staging/wiki-qa-sharding.md) | Workload-aware (hypergraph) sharding of Wikipedia so QA evidence sets co-locate, with a global router and bounded boundary replication. Gate: verify the claimed literature gap and tool citations; learn what the MAQA system needs |
-| [maqa-oracle-ladder.md](staging/maqa-oracle-ladder.md) | Decompose multi-answer QA on QAMPARI into measurable ceilings (answer universe → corpus → chunking → pool → budgeted oracle → reader → evaluator) with simplest-heuristic baselines and oracle swaps at each stage. Gate: decide to pursue MAQA; confirm QAMPARI artifacts |
 
 Promoted on 2026-08-22 (text moved into the new project docs' §4): `icl-as-posttraining` →
 `../potential-projs/icl-elicitability.md`; `warmstarting-decomposition` +

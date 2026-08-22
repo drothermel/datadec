@@ -6,7 +6,7 @@ retriever–reader linkers.
 
 Source: excerpts from the Notion page "MAQA Next Steps" (conversation dated 2026-08-16; intake
 2026-08-22). System names, numbers, and repository claims are the respondent's and
-**unverified**. Downstream use: `../staging/wiki-qa-sharding.md` (entity–page index).
+**unverified**. Downstream use: `../../potential-projs/wiki-qa-sharding.md` (entity–page index).
 ---
 
 ## 2026-08-16 — Replacing string-match linking

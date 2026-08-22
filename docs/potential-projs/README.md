@@ -5,6 +5,8 @@ program pillars, or LM training dynamics at all. Projects that do serve the prog
 on their "Program pillars served" line; others simply say "none". The apex question and
 pillars below are *one* thesis-topic proposal; projects that do not fall under it get
 alternative topic proposals of their own rather than being forced in or dropped.
+Non-pillar projects so far: `TLC`, `MAQA`, `SHARD` — alternative proposals deferred
+(2026-08-22) until one is chosen for pursuit.
 
 One document per candidate workshop-paper project. Each is written to stand alone so it can be
 evaluated on its own merits: shared infrastructure is restated in every document that needs it
@@ -38,6 +40,8 @@ Each document has the same three parts:
 | [Movement microscope](movement-microscope.md) (`MIC`) | What does post-training movement look like at 150M — noise floor, calibrated sensitivity, decomposition — and do recipes differ in movement profile at matched loss? | tiny fine-tunes | T2 | Workshop from Stages 1–3; main-conference with Stage 4 |
 | [Embedding-reset dynamics](embedding-reset-dynamics.md) (`RESET`) | How fast does an LM recover from an embedding reset as a function of scale, stage, and seed; why are input and output resets different; is the reset basin-preserving; does it restore plasticity? | small continued-training runs on PolyPythias | T2 | Workshop from the recovery curves; main-conference with the basin and plasticity arms |
 | [Text-latent code autoencoder](text-latent-code-autoencoder.md) (`TLC`) | Frozen-LLM encoder/decoder with a text latent and prompts as the only learned object: can lossy functional compression + lossless coding beat lossless compression of code; then what representations can be induced, how portable and controllable they are, and whether function and style factor | none (API inference only) | API | Workshop from the compression result; main-conference against LLM arithmetic coding; thesis-scale representation program |
+| [MAQA brute-force baseline](maqa-brute-force-baseline.md) (`MAQA`) | How far does the simplest clean entity-centric brute-force design get on exhaustive multi-answer QA over raw Wikipedia, and which stage (answer universe, linking, retrieval pool, evidence budget, reader, evaluator) caps each question? | none (CPU/API; optional light GPU) | CPU/API | Workshop from the ceiling ladder + audit; paper 2 from the clean baseline; failure-point papers after |
+| [Wikipedia QA sharding](wiki-qa-sharding.md) (`SHARD`) | Can workload-aware hypergraph partitioning of all of Wikipedia plus a global router cut shards-touched per QA query without hurting recall, measured end-to-end? | none | CPU | Systems/IR paper; flagged as a post-PhD or engineering-break project |
 
 Compute tiers: **T0** = analysis of published tables only; **T1** = forward passes with
 existing checkpoints; **T1+** = checkpoint merging plus re-running evals; **T2** = short decay

@@ -2,7 +2,7 @@
 
 **Kind:** reference — a standing accumulator for tooling comparisons around corpus storage,
 analytical scans, BM25, vector/ANN indexes, and hybrid retrieval. Project-specific
-application lives in `../staging/wiki-qa-sharding.md`.
+application lives in `../../potential-projs/wiki-qa-sharding.md`.
 
 Source: excerpts from the Notion page "MAQA Next Steps" (conversation dated 2026-08-16; intake
 2026-08-22). Product claims are the respondent's and **unverified**; feature sets move fast.
@@ -80,7 +80,7 @@ Qdrant when concurrent serving, replication, and distributed operation dominate.
 
 See also the engine survey (Pyserini, LanceDB, Vespa, OpenSearch, Qdrant, Milvus,
 ColBERT/PLAID) and the LanceDB and Qdrant deep-dives recorded in
-`../staging/wiki-qa-sharding.md`.
+`../../potential-projs/wiki-qa-sharding.md`.
 
 ## 2026-08-16 — Entity–page candidate fetch at scale: beyond a hand-built HDF5 index
 
