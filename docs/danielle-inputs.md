@@ -668,3 +668,32 @@ Six staging topics created from the ten gaps:
 [topics/reset-effects-many-seed-lm.md](topics/reset-effects-many-seed-lm.md) (G8).
 Promotion decisions deferred to the end-of-intake review.
 
+### Toggle 17, sub-toggles 4–7 — skipped
+
+Skipped at Danielle's direction (2026-08-22): not relevant to this consolidation.
+
+### Toggle 18 — 2026-08-18 19:59 (practical plan for the three-paper replication + grid; CNN and LM in parallel; adviser context)
+
+> Okay. So let's go back to practical considerations. Right now, I'm interested in taking
+> the three foundational papers and doing a replication and then breakdown of each of them
+> into the grid that we've already discussed to highlight the related aspects of each of
+> them and form the shared vocab and conclusion space. And then I think the extension
+> direction that I would wanna do from that is to tie them into the idea of identifiability
+> (along the causal representation learning direction that you highlighted). And I think it
+> would be ideal to do these experiments both with CNN vision models like the original
+> papers used along with small LLMs on language tasks. this would let us do the parallel
+> experiments and see how they diverge or parallel each other + provides flexibility for
+> what direction we may want to go next as we scale. what do you think of this idea/starting
+> point? how might it look under the goal of getting convincing results rapidly? my advisor
+> doesn't particularly want papers, he wants evidence theres hope of making me an
+> independent researcher, so just choosing small bundles i could submit has been clearly
+> indicated as not sufficient (hence the less immediately publishable but more strongly
+> defensible as a foundation plan)
+
+Routed to: [topics/warmstarting-decomposition.md](topics/warmstarting-decomposition.md)
+(the one-harness plan, money figure, identifiability-as-measurement-layer, staggered
+modalities, six-month checkpoints, two flags);
+[topics/critical-period-timing-study.md](topics/critical-period-timing-study.md) (the
+figure spec); the potential-projs README program-level notes (closing loops;
+pre-registration; scope discipline).
+

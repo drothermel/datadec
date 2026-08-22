@@ -163,3 +163,71 @@ hypothesis]: re-tune the regime-mismatched knobs and watch how much 'impossibili
 evaporates." Supporting measurement to add: *optimum displacement* — "how far the
 warm-start regime's tuned optimum sits from the from-scratch default in hyperparameter
 space," knob by knob. See [../research-hypothesis.md](../research-hypothesis.md).
+
+---
+
+## 2026-08-18 — the practical plan: one harness, one figure, six months (from the Research Trajectory page)
+
+Question posed (Danielle): replicate the three foundational papers (Achille et al.; Ash &
+Adams; Igl et al.) and break each into the grid to form a shared vocabulary and conclusion
+space; extend toward identifiability (the CRL direction); run both CNN vision models as in
+the originals and small LMs on language tasks, in parallel, to see where they diverge and to
+keep flexibility for scaling. How might it look under the goal of convincing results
+rapidly, given an adviser who wants evidence of independent-researcher ability rather than
+small publishable bundles?
+
+"The idea is right — this is the correct foundation, and the CNN+LM parallelism is what
+gives it legs. But as specified it's a 3-papers × full-factorial × 2-modalities object,
+which is the scope-explosion reflex again… the unification itself, taken seriously, is what
+compresses the work."
+
+**Build one harness, not three replications.** "All three papers are the same experiment:
+apply an *intervention schedule* to training (data poverty for Ash & Adams, input
+corruption for Achille, distribution drift for Igl), vary onset/duration, measure permanent
+damage, log a diagnostic panel. So the deliverable is a single framework where each paper
+is a config file… three replications demonstrate diligence; one framework that *subsumes*
+three literatures demonstrates exactly the taste and abstraction ability your adviser is
+asking for evidence of. Conveniently, Igl's repo already contains supervised CIFAR variants
+of their claim (label noise, dataset-size interventions) — so you can drop the RL machinery
+entirely and keep all three phenomena in the supervised setting, same backbone, same data.
+That's a 3× cost reduction with no loss of the vocabulary claim." (Unverified: that Igl's
+repo contains supervised CIFAR variants.)
+
+**Design backwards from the one figure.** "A shared training-time axis on which you plot,
+for the same architecture and dataset, (a) the deficit-sensitivity window, (b) the
+warm-start-damage window, (c) the non-stationarity memory-effect window, and (d) the panel
+events — Fisher-trace peak, basin-commitment time (interpolation barriers between sibling
+seeds), representation-similarity divergence. If those windows and events align, that
+single figure states the thesis of the retrospective: three literatures, one sensitive
+period, with candidate mechanisms timestamped. If they *don't* align, that's arguably
+better — it dissociates phenomena the vocabulary would otherwise merge, and it's a
+discovery."
+
+**The identifiability extension costs analysis, not compute.** "The CRL tie-in should be a
+measurement layer on the *same runs*, not new experiments: sibling seeds from shared init,
+pairwise interpolation barriers (raw and permutation-aligned), and representation
+similarity over time, interpreted as 'when does the solution become determined.' The
+operational claim: interventions inside the sensitive window change *which solution class*
+you land in (barriers and representation distance to control siblings stay permanently
+elevated); interventions after it change only parameters within the class (alignment
+recovers them)… Save the formal CRL machinery for the writeup's framing; don't let it
+generate experiments yet."
+
+**Stagger the modalities; don't parallelize them.** "Make every grid cell modality-agnostic
+by construction (interventions defined on the data stream, panel defined on any network),
+run the *complete* grid in CNNs where training is nearly free, then run a chosen
+*diagonal* in small LMs — I'd pick the warm-start/data-poverty cell and one deficit cell,
+with ICL curves added as the LM-only outcome column. And pre-register the divergence
+hypotheses before the LM runs… Note the LM data-poverty cell is *literally your DataDecide
+question* at miniature scale."
+
+**Six-month structure (pre-committed falsifiable checkpoints).** "Month 2 — harness
+validated by replicating the warm-start gap with CIs (a known answer, so it's a pure
+execution test); month 4 — the alignment figure, with your written predictions from month 1
+graded against it; month 6 — the LM diagonal and the identifiability layer, plus the
+long-form manuscript that unifies it (TMLR-shaped…)."
+
+**Two flags.** "Pin the replication targets narrowly (Ash & Adams' chunked-CIFAR ResNet cell
+and Achille's blur-deficit cell — not their full papers)… and budget the statistics up front
+— decide seed counts per cell from a power target at month zero rather than discovering
+mid-grid that the interesting effects need n=15."

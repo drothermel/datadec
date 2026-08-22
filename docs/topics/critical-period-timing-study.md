@@ -96,3 +96,17 @@ literature can currently distinguish."
 
 The unified design with the warm-starting reproduction is in
 [warmstarting-decomposition.md](warmstarting-decomposition.md).
+
+---
+
+## 2026-08-18 — the "money figure" this study produces (from the practical-plan discussion)
+
+"A shared training-time axis on which you plot, for the same architecture and dataset, (a)
+the deficit-sensitivity window, (b) the warm-start-damage window, (c) the non-stationarity
+memory-effect window, and (d) the panel events — Fisher-trace peak, basin-commitment time
+(interpolation barriers between sibling seeds), representation-similarity divergence."
+Alignment states the retrospective's thesis; non-alignment "dissociates phenomena the
+vocabulary would otherwise merge." The identifiability layer is the same runs read as
+"interventions inside the sensitive window change *which solution class* you land in…
+interventions after it change only parameters within the class." Full plan in
+[warmstarting-decomposition.md](warmstarting-decomposition.md).

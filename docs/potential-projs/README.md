@@ -370,3 +370,17 @@ Full text for each: `recipe-featurization.md` §4 (first),
   [../topics/grokking-and-hidden-progress.md](../topics/grokking-and-hidden-progress.md),
   [../topics/identifiability-literature.md](../topics/identifiability-literature.md).
 
+### 2026-08-18 — closing loops: pre-registered falsifiable checkpoints (from the Research Trajectory page)
+
+- On the adviser's actual ask: "what he's actually asking for isn't papers or foundations;
+  it's evidence you can *close loops*: pose a question, design its test, execute, and change
+  your mind on schedule. So structure the six months as pre-committed falsifiable
+  checkpoints rather than deliverables… The pre-registered predictions are the piece I'd not
+  skip: nothing signals independent-researcher more than a document dated before the runs
+  saying what you expected and why, next to results that graded it. It's also, fittingly,
+  the demonstration-hygiene standard from your own program applied to yourself."
+- Scope discipline worth generalizing: "design backwards from the one figure"; "build one
+  harness, not three replications"; "stagger the modalities; don't parallelize them";
+  "budget the statistics up front." Plan in
+  [../topics/warmstarting-decomposition.md](../topics/warmstarting-decomposition.md).
+
