@@ -2178,3 +2178,29 @@ Routed to: new [topics/experiment-tooling.md](topics/reference/experiment-toolin
 (her requirement statement quoted as the `deconCNN` design statement and linked to the
 seven-track record and to GEO / TINY; the logger comparison condensed and flagged as a
 vendor-page summary that never evaluated against the stated requirements).
+
+### 2026-08-22 — CNN-deconstruction scoping prompt (Perplexity, undated; with `top-5-cnn-innovations.md` from the Desktop)
+
+Her prompt (verbatim):
+
+> I want to evaluate the impact of the fundamental building blocks of modern day CNN based
+> vision architectures by choosing 5-10 of the largest research advances in architecture or
+> training methodology (including things like residual connections, optimizer and
+> initialization improvements, etc).
+>
+> Please present a definitive timeline of the major improvements to the CNN based vision
+> architecture starting from LeNet in 1998 through modern day. The timeline should make it
+> easy to visually understand the major change, and also to unfold more information about
+> the change, why it was transformational at the time, and how it contributed to modern SOTA
+> CNN based vision models.
+>
+> Focus on accuracy of your claims, and select the 5 largest impact changes to highlight as
+> the first that I should run experiments on. Ask questions first if you need any
+> additional information from me to refine the outcome to exactly what I'm looking for
+
+Routed to: new staging topic [topics/cnn-deconstruction-ladder.md](topics/staging/cnn-deconstruction-ladder.md)
+(both framing statements quoted; the timeline and the top-5 file condensed into one table;
+intake notes: response answered at architecture level rather than building-block level,
+ignored "ask questions first," mixes top-1/top-5 figures, and its Adam-as-standard claim is
+wrong for CNN classification). The Desktop top-5 file was folded in rather than copied to
+`refs/` (it is short and fully represented).
