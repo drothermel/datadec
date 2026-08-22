@@ -197,3 +197,21 @@ mass on demonstrations vs. query; task-vector norm growth across demonstrations
 (`task-vectors.md`); prompt-order entropy. Related empirical literature (mine, unverified):
 ICL as implicit gradient descent / meta-optimisation analyses; demonstration repetition
 and duplication studies; many-shot ICL with repeated vs. unique examples.
+
+**Follow-up — researchers and papers on ICL scaling (same conversation).** Danielle asked
+for a search of recent arXiv papers: ~four senior (last-author) researchers whose labs work
+on ICL scaling, plus directly relevant papers. Response named: David Alvarez-Melis
+("MIT"), Percy Liang (Stanford), Jacob Andreas (MIT), Tatsunori Hashimoto (Stanford); and
+papers *Bayesian Scaling Laws for In-Context Learning* (arXiv 2410.16531, late 2024),
+*Scaling Laws for Many-Shot In-Context Learning with Self-Generated Annotations* (March
+2025), *MachineLearningLM: Scaling Many-Shot In-Context Learning via Continued Pretraining*
+(September 2025), and *Prompt Design and Repetition Strategies in In-Context Learning*
+("Hashimoto et al., 2025").
+
+*Reliability note.* The **author/lab attributions look fabricated or wrong** and must not be
+reused: the one linked paper (2410.16531) is not an Alvarez-Melis paper as far as the
+intake can tell, and Alvarez-Melis is at Harvard, not MIT; the fourth "paper" has the
+shape of an invented title matching Danielle's own repetition idea. Keep only the three
+paper *titles* and the one arXiv ID as search leads; rebuild the researcher list from a
+real citation graph if wanted. Useful seed for a lit pass: many-shot ICL scaling laws;
+Bayesian framings of accuracy vs. shots; continued-pretraining-for-ICL.

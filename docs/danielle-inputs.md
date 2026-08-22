@@ -1964,3 +1964,11 @@ response content-free; Danielle's framing cross-referenced to the ICL-elicitabil
 Routed to: [topics/icl-literature.md](topics/reference/icl-literature.md) (follow-up;
 responses content-free; the unique-examples × repetitions factorial recorded as a
 Danielle-flagged protocol lead for ICL-elicitability).
+
+> Interesting. Can you again do a search, this time specifically in recent papers published
+> on Archive, and give me an overview of maybe like four senior researchers, so like last
+> authors who are working in this space, since presumably their labs are working in this
+> space, and then maybe like a few papers that are directly relevant to this?
+
+Routed to: [topics/icl-literature.md](topics/reference/icl-literature.md) (follow-up; paper
+titles + one arXiv ID kept as leads; author/lab attributions flagged as unreliable).
