@@ -252,3 +252,56 @@ now.
   drops conventionally shown on validation loss) are unverified.
 - The "Project B" referenced in response 2 maps to the WSD / MoE recipe suites (both list
   "training config parity" as step 1); inferred.
+
+---
+
+## 2026-08-22 — WSD arms in DataDecide-dense (same conversation, next turn)
+
+**Danielle (verbatim):**
+
+> if I was going to do DataDecide-dense I'd want to also do WSD. because if we're investing
+> in getting to the point that we can train and doing a grid then the value of having the
+> smallscale wsd becomes much higher than the cost
+
+**Response, condensed:** agrees, and argues WSD arms transform rather than pad the
+mini-suite. (1) Cosine twins with matched data order — same recipe, same realized token
+stream, only the schedule differs — is the cleanest experiment in the annealing program
+and only possible in runs you control; it converts the assumption that cosine-resumed
+decay branches / checkpoint merges approximate a true anneal into a measurement, before
+the 150M–300M branch budget is spent on released checkpoints (this is WSD-opt-3 done
+small first). (2) Every intermediate readout becomes a proper annealed readout, enabling
+the hypothesis that annealed readouts improve measurement SNR most at small scales, where
+wall oscillation is proportionally largest — "WSD + branches is what makes 10M-scale
+experimentation measurable at all." (3) Schedule × sampling-strategy × seed gives the
+order-effect × schedule interaction (does data-order sensitivity differ between
+stable-phase and decaying-LR training?) for free.
+
+Where the cost hides (design, not GPUs): **tuning parity** — WSD's stable-phase LR is not
+"reuse the cosine peak"; budget a small LR sweep at one scale, transfer with a stated
+rule, report sensitivity, or every twin comparison is confounded. **Pilot-first
+sequence** — cosine reproduction of one recipe (parity gate) → its WSD twin → two or three
+branch points with a small decay length/shape sweep on that run → freeze the spec → fan
+out; do not skip the pilot because reruns are cheap, since what it protects is suite
+homogeneity, not compute. **Define what branches consume** — the continuation of the
+parent's data stream (natural; keeps twins exactly matched) vs. fresh/replayed data; pin
+it in the spec because it interacts with the order-effects arm and MiniCPM-style
+decay-data experiments.
+
+Portfolio effect: DataDecide-dense-WSD becomes the shared interventional substrate (REC's
+order-effect arm, the annealing validation arm, TINY's measurement substrate) and is the
+WSD suite's pilot entered deliberately. Hold the scope line at *scale*, not schedule:
+150M+ stable-phase runs or many more recipes is the separate resource-paper decision.
+The branch runner and results-store `variant` conventions move earlier on the critical
+path; building them against 10M-scale runs is the cheapest place to get them right. The
+mini-suite itself (true loss, true LR, realized order, twins, annealed readouts) is a
+releasable object.
+
+**Intake notes.**
+
+- The cost figures ("branches add ~10% per branch point"; Hägele et al. guidance
+  "calibrated at larger scales") are unverified response claims.
+- "B-opt-3" in the response = WSD-opt-3 in `../../potential-projs/wsd-suite.md`; the
+  quoted phrase "makes Project A's method validatable" is a paraphrase of that doc's
+  impact table, not a quote.
+- Danielle's statement is the decision-relevant content: the WSD arm is conditional on
+  doing DataDecide-dense at all, which is itself unstarted.

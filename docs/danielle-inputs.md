@@ -2600,6 +2600,18 @@ spacing answer) and dated notes in
 [potential-projs/recipe-featurization.md](potential-projs/recipe-featurization.md) §4
 (own-mixture CE reconstruction; fourth ledger entry, unconfirmed).
 
+### 2026-08-22 — WSD arms in DataDecide-dense (same conversation)
+
+> if I was going to do DataDecide-dense I'd want to also do WSD. because if we're investing
+> in getting to the point that we can train and doing a grid then the value of having the
+> smallscale wsd becomes much higher than the cost
+
+Routed to: [topics/reference/datadecide-data-pipeline.md](topics/reference/datadecide-data-pipeline.md)
+(fourth entry) and dated notes in [potential-projs/wsd-suite.md](potential-projs/wsd-suite.md)
+§4 (small-scale pilot, WSD-opt-3 first; design cautions) and
+[potential-projs/tiny-scale-measurement.md](potential-projs/tiny-scale-measurement.md) §4
+(annealed-readout SNR hypothesis at small scale).
+
 ### Post-intake decisions — 2026-08-22 (third pass)
 
 > (1) promote (2) I did run a few versions of this, I think we need a new section that

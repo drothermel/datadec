@@ -142,6 +142,24 @@ it also validates the training stack for any decay branches resumed from release
 Dated, attributed notes from external review conversations, recorded for consolidation — not
 decisions. Only notes about this project are kept here.
 
+### 2026-08-22 — a small-scale pilot via "DataDecide-dense"
+
+Danielle, in a conversation on the data layer (record in
+`../topics/reference/datadecide-data-pipeline.md`): "if I was going to do
+DataDecide-dense I'd want to also do WSD. because if we're investing in getting to the
+point that we can train and doing a grid then the value of having the smallscale wsd
+becomes much higher than the cost." DataDecide-dense is a proposed many-seed,
+densely-checkpointed, fully-logged retrain of a few recipes at the 2–4 smallest scales
+(see `tiny-scale-measurement.md` §4). With WSD arms it becomes this suite's pilot,
+entered deliberately: cosine twins with matched data order (WSD-opt-3) done small first,
+validating cosine-resumed branching before any 150M–300M branch budget is spent. Design
+cautions recorded from the response: tuning parity for the WSD stable-phase LR (small
+sweep at one scale, stated transfer rule, sensitivity reported); pilot-first — parity
+reproduction → WSD twin → 2–3 branch points with a decay length/shape sweep → freeze the
+spec → fan out; pin whether decay branches consume the continuation of the parent's
+data stream or fresh/replayed data. Scope line held at scale: 150M+ stable-phase runs or
+many more recipes remain the separate resource-paper decision this doc describes.
+
 ### 2026-08-21 — on stage-dependent data value
 
 - WSD-opt-4 (mixed-in decay data) reframed: "Your docs already flagged this and deferred it

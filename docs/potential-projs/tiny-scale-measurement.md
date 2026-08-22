@@ -112,6 +112,15 @@ Dated, attributed-by-date notes from external review conversations, recorded for
 consolidation — not decisions. Only notes about this project are kept here. Related-work
 claims in quoted text are unverified.
 
+### 2026-08-22 — WSD arms in the substrate
+
+Danielle would add WSD arms to DataDecide-dense if it is built at all (verbatim in
+`../topics/reference/datadecide-data-pipeline.md`). Hypothesis this enables for TINY:
+annealed readouts improve measurement SNR most at small scales, where wall oscillation
+is proportionally largest relative to signal — if true, WSD + branches is what makes
+10M-scale experimentation measurable, a finding only a controlled small-scale suite can
+produce. Candidate TINY-opt direction; unverified reasoning from the response.
+
 ### 2026-08-22 — the "DataDecide-dense" substrate
 
 From a conversation on the data layer (record in
