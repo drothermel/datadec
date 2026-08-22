@@ -127,3 +127,67 @@ late data (*Early Data Exposure…*), the final-window effects (*Similar Models 
 Differently*), safety behaviors from pretraining resisting post-training removal — are
 critical-period phenomenology at scale, mostly published without the connection drawn." See
 `critical-periods.md`.
+
+## Undated (~2026) — Danielle's first-hand account of the earlier project, and "the AI2 dataset by Kyle"
+
+Danielle's statement (verbatim — the project fact of record for why the previous project
+ended; see `../../potential-projs/movement-microscope.md` §4 for the follow-up design):
+
+> So a while ago, I was working on a research project with a friend where we were
+> considering the data decide model set, where you have models of a variety of sizes from 4
+> million all the way up to 1 billion trained on a variety of different recipes, released
+> with checkpoints and evaluations. And we were exploring the effect of post-training,
+> specifically supervised fine tuning, but what we found was that using established
+> post-training datasets like Tulu, Tulu 3, didn't make any difference in task performance
+> on any of the tasks that we tried, ranging from like multiple choice tasks all the way up
+> to things like human eval, just like no movement at all, which was really shocking, but
+> then when we talked to more people, then they suggested that this actually might be more
+> common than we expect and that they were working at AllenAI on creating a dataset that
+> actually could be used in fine-tuning to move metrics on very specific tasks. I think
+> one of the author's names was Kyle. And so I'm curious whether that dataset has come out
+> and also what types of explorations exist for ways to fit pretrained models, whether
+> that's supervised fine-tuning or other methods of post-training, but with a focus on
+> specifically fairly low-budget approaches to fitting very small models on tasks where we
+> can actually evaluate performance.
+
+Facts fixed by this: the SFT data was Tulu / Tulu 3; evaluations spanned multiple-choice
+through HumanEval; the result was no movement on any of them; the AI2 contact said this is
+"more common than we expect" and that a dataset built to move metrics on specific tasks
+via fine-tuning was in progress, with a co-author named Kyle. The open item is whether
+that dataset has been released.
+
+**Response (condensed).** Two diagnoses — (A) eval misalignment (SFT changes
+style/format/alignment, the harness does not reward it, or penalizes format drift) and
+(B) benchmark signal-to-noise at small deltas (small but real gains invisible without
+tight train–eval matching; "a core theme in DataDecide-style work"). Identified the
+dataset as **FollowIR** (arXiv 2403.15246; Kyle Lo co-author; instruction-following
+reranking; FollowIR-train on HF; FollowIR-7B). Low-budget methods that "tend to move
+metrics" for small models: task-targeted, eval-shaped SFT (hundreds–thousands of in-domain
+examples in the harness's prompt style, LoRA/QLoRA); capability distillation from a
+stronger teacher (verified solutions / traces) rather than chat-style instruction tuning;
+preference optimization on verifiable tasks (DPO; RLVR-style loops with deterministic
+rewards; cites an "Olmo-3.1-32B-Instruct" card for SFT → DPO → verifiable-reward RL);
+data selection over data volume (arXiv 2503.01807). A concrete plan: one task with tight
+feedback (HumanEval/MBPP, GSM-style exact match, or FollowIR pairs) → lock the harness and
+run evals twice for variance → 500–5,000 eval-shaped examples, verifier-filtered if
+synthetic → short PEFT with a small LR sweep and a held-out slice → DPO on verifier-ranked
+pairs if SFT moves a little.
+
+**Intake notes.**
+
+- The FollowIR identification is a guess, not a finding: FollowIR is a JHU-led retrieval
+  benchmark (Weller et al.) with Kyle Lo as one co-author; it has nothing to do with
+  "fine-tuning to move metrics on multiple-choice / coding tasks for small pretrained
+  models," which is what the contact described. Treat the "did it come out?" question as
+  **open** — the resolution is to ask the contact, not to search for "Kyle + AI2 + dataset."
+  The "Olmo-3.1-32B-Instruct" citation looks fabricated (OLMo 3 exists; a 3.1 32B Instruct
+  card is unverified); the rest of the citations are plausible but unchecked.
+- Diagnoses (A) and (B) are the two hypotheses the movement-microscope doc already
+  operationalizes (noise floor / detection limit; within-reach tasks; eval-format
+  sensitivity) — this entry adds nothing to the design but is the cleanest statement of the
+  original observation in Danielle's own words, which the project docs had only
+  paraphrased.
+- The method list is standard; the one point worth keeping is the ordering *task-shaped
+  SFT → distillation → DPO on verifiable pairs*, with LR sweep flagged as mattering more
+  than expected for small models — consistent with MIC's "guaranteed-effect calibration"
+  step (memorization / distillation first, to prove the instrument can see movement at all).

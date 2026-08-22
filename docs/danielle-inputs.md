@@ -2463,3 +2463,33 @@ Routed to: [topics/cnn-deconstruction-ladder.md](topics/staging/cnn-deconstructi
 (arm-set design recorded; intake note that the "frequently used" list misstates practice
 and the AMSGrad recommendation gives almost no dynamical contrast to AdamW — Lion / SAM /
 RMSProp are the contrasting arms; per-arm LR sweeps required; PyTorch answers correct).
+
+### 2026-08-22 — Earlier post-training project: first-hand account + "the AI2 dataset by Kyle" (last of tonight)
+
+> ok great, a completely different topic, and the last one for tonight!
+
+Her prompt (verbatim):
+
+> So a while ago, I was working on a research project with a friend where we were
+> considering the data decide model set, where you have models of a variety of sizes from 4
+> million all the way up to 1 billion trained on a variety of different recipes, released
+> with checkpoints and evaluations. And we were exploring the effect of post-training,
+> specifically supervised fine tuning, but what we found was that using established
+> post-training datasets like Tulu, Tulu 3, didn't make any difference in task performance
+> on any of the tasks that we tried, ranging from like multiple choice tasks all the way up
+> to things like human eval, just like no movement at all, which was really shocking, but
+> then when we talked to more people, then they suggested that this actually might be more
+> common than we expect and that they were working at AllenAI on creating a dataset that
+> actually could be used in fine-tuning to move metrics on very specific tasks. I think
+> one of the author's names was Kyle. And so I'm curious whether that dataset has come out
+> and also what types of explorations exist for ways to fit pretrained models, whether
+> that's supervised fine-tuning or other methods of post-training, but with a focus on
+> specifically fairly low-budget approaches to fitting very small models on tasks where we
+> can actually evaluate performance.
+
+Routed to: [topics/pretraining-to-posttraining.md](topics/reference/pretraining-to-posttraining.md)
+(statement verbatim as the project fact of record; response condensed; intake note that the
+FollowIR identification is a guess and a mismatch, the "Olmo-3.1-32B-Instruct" citation
+looks fabricated, and the "did the dataset come out?" question stays open — resolve by
+asking the contact); origin pointer added to
+[potential-projs/movement-microscope.md](potential-projs/movement-microscope.md) §4.

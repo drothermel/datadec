@@ -266,3 +266,13 @@ fully worked version of "interrogate whether 'no movement' was real or a metric 
 noise floor (including a continued-pretraining control) → guaranteed-effect calibration
 (memorization, distillation with KL-to-teacher as a ground-truth axis, within-reach tasks)
 → decomposition by layer, token bucket, and direction → recipe movement profiles.
+
+### Origin — Danielle's first-hand account (added 2026-08-22)
+
+The original observation, in her words, is recorded verbatim in
+`../topics/reference/pretraining-to-posttraining.md` (the "first-hand account" entry): SFT
+on Tulu / Tulu 3 over DataDecide models produced no movement on any task from multiple
+choice through HumanEval; an AI2 contact said this is more common than expected and that a
+dataset built to move specific-task metrics by fine-tuning was in progress (co-author
+"Kyle"). Whether that dataset was released is an open item to resolve by asking the contact
+— an external search guessed FollowIR, which is a retrieval benchmark and not a match.
