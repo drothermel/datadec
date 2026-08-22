@@ -1,25 +1,154 @@
-# Early dynamics predict model performance — forecasting DataDecide outcomes from the first 10% of training
+# Early-dynamics prediction — forecasting DataDecide outcomes from the first 10% of training
 
-**DataDecide link.** This proposal runs entirely on the DataDecide suite (25 recipes × 14
-sizes × 3 seeds, per-checkpoint perplexity + OLMES) — the same data every `T0`/`T1` project
-in `potential-projs/` uses — so if promoted it serves the program's "how" pillar
-(measurement at small scale / early time) and the "independent variable" pillar (recipe
-effects). The recipe-family CV scheme below is reusable by any leave-recipe-out design on
-DataDecide.
+> **Draft scaffolding (2026-08-22).** Promoted from the staging topic
+> `early-dynamics-prediction`. §1–§3 are synthesized from Danielle's July 2025 draft (local
+> copy `../refs/2025-07-early-dynamics-predict-model-performance.pdf`), her implementation
+> state, and the design decisions settled in the 2025-07 review threads; §4 is the dated
+> record. Treat §1–§3 as provisional until this note is removed.
 
-**Kind:** staging. Candidate exits: a standalone project doc (it is a complete proposal with a
-draft paper), or absorption into tiny-scale measurement (`TINY`) / trajectory statistics
-(`TRJ`) as a prediction arm. Gate: Danielle's decision on whether this July-2025 direction is
-still live, and a check of its overlap with the published loss-to-loss / task-scaling-law
-work already listed in `../reference/loss-curve-forecasting.md`.
+**Program pillars served:** how — measurement at small scale and *early time*: the
+early-time analogue of tiny-scale measurement's early-scale question; independent variable
+— recipe effects as they appear in early dynamics. (Program: `README.md` → Program.)
 
-Source: Danielle's July 2025 LaTeX draft (local copy
-`../../refs/2025-07-early-dynamics-predict-model-performance.pdf`) and an external review of
-it plus her Gemini refinement notes (notes not in this repo). Intake 2026-08-22. Feedback
-claims (e.g. "warm-up % alone explains ~20% of variance") are **unverified**.
+**One-line pitch.** Predict where a DataDecide run ends — final (or annealed) perplexity and
+downstream correct-prob, and the *ranking* of recipes — from features of the first ≤ 10% of
+training (or ≤ 2B tokens), with GBDTs over curve-shape features; test generalisation across
+model scale (train ≤ 20M → predict ≥ 60M, expanding) and across recipe families; compare
+against scaling-law extrapolation and naive continuation baselines.
+
+IDs: EDP-1–EDP-4, EDP-opt-1–EDP-opt-5.
+
+**Paper goal.** Workshop: the thin vertical slice — one CV axis (model scale), two targets
+(Pile-validation perplexity; MMLU correct prob), baselines vs. GBDT, SHAP. Main conference:
+add leave-recipe-family-out and the family × size stress test, the any-step predictor, the
+all-metrics → MMLU setting, and a GP comparison with uncertainty.
+
+Compute tiers: **T0** = analysis of published tables only — the entire core; **T1** only if
+extended early metrics (curvature, gradient statistics) are added.
+
 ---
 
-## 2025-07 — The proposal (from the draft)
+## 1. What the project involves
+
+### Core experiment (EDP-1–EDP-3)
+
+**Data.** DataDecide: 25 recipes × 14 sizes (4M–1B) × seeds; per-checkpoint perplexity on
+11 validation splits and OLMES downstream tasks. Seed coverage to be reconciled: the
+July-2025 premise ("only one seed runs to completion below 1B") conflicts with the
+2026-08-21 check in `../open-questions-answered.md` (3 seeds at every size in the aggregate
+table; instance tables 3 seeds at ≥ 150M). If all seeds complete, every seed is a row and
+splits are on (recipe, size, seed).
+
+**Setup.** Early window S₀ = min(10% of training, 2B tokens); target at step S (final) —
+CORRECT PROB for downstream tasks (larger spread, less noise than accuracy at small scale),
+log perplexity for validation splits. Targets transformed (log / logit), never z-scored per
+size; inverted for reporting.
+
+**Features (per metric curve, three windows: warm-up, early LR-decay, full early).** Per
+window: step count, first/last value, first–last difference and slope, four fit types
+(log-log, lin-lin, log-lin, lin-log) each with slope and one goodness-of-fit statistic (R²
+or std err; p-values and CI bounds dropped as deterministic twins), window mean and std;
+optionally the 16 log-spaced interpolated points and 12 rolling OLS slopes. Plus
+architecture/schedule scalars (`d_model`, `n_layers`, `n_heads`, `mlp_ratio`, LR
+schedule, batch, total tokens — collinear with size under fixed per-size configs) and
+recipe properties (to be taken from `recipe-featurization.md`'s measured set rather than
+hand-assigned percentages). Transforms: `log` for perplexity levels, logit for
+correct-prob, signed-log for differences, `log1p` for counts; slopes and R² untransformed.
+Per-size z-scoring is **not** used on the scale-generalisation axis (held-out sizes have no
+training statistics; global z-scoring is a no-op for trees) — `log(size)` carries the size
+trend.
+
+**EDP-1 — Thin vertical slice (workshop core).** Scale axis only: train ≤ 20M, test per
+held-out size, then expand (≤ 60M, ≤ 90M, …). Targets: Pile-val perplexity, MMLU correct
+prob. Models: LightGBM regressor (starter params; tune `num_leaves`, `min_data_in_leaf`,
+`learning_rate`, `feature_fraction` once on a grouped, size-stratified 10% slice of the
+training sizes). Baselines: train-set mean; repeat-last-value; two-point linear
+extrapolation; log-log power-law extrapolation; random ranking; a Kaplan-style
+scaling-law fit on ≤ 60M models. Metrics: ρ/τ (ordering), MAE/MAPE or NRMSE (magnitude),
+pairwise decision accuracy (binary), ECE with hand-rolled quantile bins (calibration);
+bootstrap CIs over pairs. SHAP per fold, mean |SHAP| with cross-fold std.
+
+**EDP-2 — Ranking head and recipe-family generalisation.** `lambdarank` head on the same
+features with queries = one *size* (recipes as the ranked items); leave-recipe-family-out
+CV over the eight provenance families (Dolma 1.7 + ablations; Dolma 1.6++; C4; FineWeb
+Pro+Edu; Falcon; Falcon+CC QC; DCLM + QC; λ-mixtures), with singleton-family folds
+reported with CIs; the family × size stress test (train ≤ 60M on 7 families → test ≥ 90M
+on the held-out family, with an in-family/out-of-family split of the error).
+
+**EDP-3 — Any-step and all-metrics settings.** (a) One model predicting a metric at any
+target step: long format with `τ_target` as a feature, features fixed at S₀ (never masked
+at τ), group = run; ranking metrics computed within τ and size. (b) All early metrics →
+final MMLU: 28 features per metric curve + recipe properties; direct regression, and the
+*oracle* variant feeding true final values of the other metrics as the actual upper
+bound; permutation test as leakage guard.
+
+**EDP-4 — Target choice: annealed vs. raw.** Because late-training rankings are partly a
+cosine-tail artefact (`annealed-readouts.md`, `trajectory-statistics.md`), repeat EDP-1
+with the annealed readout as the target where available and report which is more
+predictable from early dynamics.
+
+### Optional directions
+
+- **EDP-opt-1 — GP comparison.** Sparse / multi-output GP on the validated
+  low-dimensional feature subset; uncertainty bands; active-learning extension (which run
+  to continue next).
+- **EDP-opt-2 — Extended early metrics.** Curvature (top Hessian eigenvalue, trace
+  estimate), feature stability, gradient/activation variance — requires checkpoints (T1).
+- **EDP-opt-3 — Finetune-outcome prediction.** Predict SFT/DPO outcomes from pretraining
+  early dynamics + early finetune metrics (the post-training bridge).
+- **EDP-opt-4 — Early-window sweep.** Performance vs. early-window fraction / absolute
+  tokens; where does predictability saturate.
+- **EDP-opt-5 — Cost-aware framing.** "Replace 90% of training with 10% + a predictor":
+  F1-of-decision vs. compute saved, per size.
+
+## 2. Doability and impact
+
+### Overall doability: **high** (T0; pipeline already partly built in July 2025)
+
+Feature extraction, the pruned 67-column schema, transforms, and the LightGBM setup exist;
+all experiments are post-processing of published tables. Risks: seed-coverage premise;
+small per-size test folds (noisy ranking metrics — CIs mandatory); the published
+DataDecide scaling-law baselines must be positioned against honestly; collinearity of
+schedule features with size on the held-out-size axis; rabbit-holing on features (the
+third review's minimal-slice advice).
+
+### Per-direction impact
+
+- **EDP-1.** Workshop paper on its own if early dynamics beat scaling-law extrapolation on
+  held-out sizes; the SHAP story (which window, which fit) is the interpretable payload.
+- **EDP-2.** Turns it into a recipe-selection result — the DataDecide question proper.
+- **EDP-3/4.** Main-conference material; EDP-4 connects to the annealing-confound line.
+- **EDP-opt-1/3.** Highest ceiling (uncertainty-driven run selection; post-training
+  prediction).
+
+## 3. Infrastructure build sequence
+
+1. **Loaders and canonical frame** — long (run, metric, tokens, value) + metadata; pinned
+   DataDecide table versions; resolve seed coverage from `../open-questions-answered.md`.
+2. **Feature pipeline** — windows, fit statistics, transforms, pruning; cached Parquet
+   with a hash-tagged filename; `dyn_*` / `stat_*` namespaces; recipe properties from
+   `REC`.
+3. **Splitters** — expanding-size windows; grouped, size-stratified inner split; recipe
+   families; family × size stress split.
+4. **Baselines + LightGBM heads** (regression, `lambdarank`) with the starter params and
+   one-time tuning; evaluation script emitting ρ/τ, MAE/MAPE/NRMSE, decision accuracy,
+   ECE, NDCG, bootstrap CIs; SHAP aggregation.
+5. **Deliverables** — baseline-vs-GBDT table per target; predicted-vs-true scatter for
+   held-out sizes; SHAP bar chart; runtime note.
+6. *(Optional)* any-step long format; all-metrics → MMLU; GP baseline.
+
+---
+
+## 4. External assessments and origin notes
+
+Dated notes from Danielle's July 2025 draft and the review threads this doc was promoted
+from — recorded for consolidation, not decisions. Figures, attributions, and ballparks
+quoted from the reviews are unverified; Danielle's prompts are logged verbatim in
+`../danielle-inputs.md`.
+
+### Origin notes — moved from `topics/staging/early-dynamics-prediction.md`
+
+### 2025-07 — The proposal (from the draft)
 
 **Motivation.** Scaling-law extrapolation from small models is best practice for choosing
 designs but "not always accurate" (cites Li et al. 2025 *(mis)fitting*; Lourie, Hu & Cho 2025
@@ -63,7 +192,7 @@ activation variance (less interference during acquisition).
 **Related work named.** Loss curve prediction (Brandfonbrener et al. 2024, loss-to-loss);
 early-metric performance estimation for NAS (Ru et al. 2021); loss-landscape metrics.
 
-## 2025-07 — External review of the plan (near-verbatim, condensed)
+### 2025-07 — External review of the plan (near-verbatim, condensed)
 
 Framed as six themes for a workshop-first, conference-extension plan within a 30–50 h budget.
 
@@ -92,19 +221,19 @@ Framed as six themes for a workshop-first, conference-extension plan within a 30
    predicted-vs-actual figure for held-out large models with GP bands; feature-importance
    bars by category; reproducibility statement + Colab; compute-budget appendix.
 
-## Relation to existing docs
+### Relation to existing docs
 
-- `../reference/loss-curve-forecasting.md` holds the loss-to-loss / multi-power-law /
+- `../topics/reference/loss-curve-forecasting.md` holds the loss-to-loss / multi-power-law /
   task-scaling-law references this proposal positions against.
-- `../../potential-projs/tiny-scale-measurement.md` (`TINY`) asks how far down the scale
+- `tiny-scale-measurement.md` (`TINY`) asks how far down the scale
   ladder decision signal survives — the early-*time* analogue of the same question is this
   proposal; natural cross-listing.
-- `../../potential-projs/trajectory-statistics.md` (`TRJ`) and
-  `../../potential-projs/annealed-readouts.md` (`ANN`) supply the caveat that late-training
+- `trajectory-statistics.md` (`TRJ`) and
+  `annealed-readouts.md` (`ANN`) supply the caveat that late-training
   rankings are partly a cosine-tail artifact, which bounds what "predicting the final
   ranking" can mean.
 
-## 2025-07 — Second review: GBDT v0 design details (near-verbatim, condensed)
+### 2025-07 — Second review: GBDT v0 design details (near-verbatim, condensed)
 
 One of several similar reviews Danielle requested of the same plan; recorded where it adds
 to the first. Focused on the GBDT-based proof of concept (GP comparison later). The plan it
@@ -142,7 +271,7 @@ log-time per metric. Fit visualisation: one subplot per fit type overlaid.
 *Timeline claim.* With cached fits, full LOOCV over 25 recipes ≈ 3 CPU-hours; expanding
 window (≤60M → rest) ≈ 2 more. Everything is post-processing — no extra GPU jobs.
 
-## 2025-07 — Third response: a recipe-family scheme for leave-family-out CV
+### 2025-07 — Third response: a recipe-family scheme for leave-family-out CV
 
 Reusable beyond this proposal (any DataDecide leave-recipe-family-out design: `REC`, `IRT`,
 `ANN`). Verify membership against the repo's authoritative recipe list
@@ -175,7 +304,7 @@ wrong as written: three families are single recipes (Dolma 1.6++, C4, Falcon bas
 42 runs each). Test folds that small are fine for a held-out domain but their ranking
 metrics will be noisy — pair with the bootstrap CIs from the first review.
 
-## 2025-07 — Fourth and fifth responses: singleton folds; expanding-window over sizes
+### 2025-07 — Fourth and fifth responses: singleton folds; expanding-window over sizes
 
 **Danielle's pushback on the family scheme.** Dolma 1.6++, C4, and Falcon base folds hold a
 single recipe; and the Dolma 1.7 ablations would plausibly look different from the base —
@@ -214,14 +343,14 @@ group; loop over windows; per-size metrics. Headline shape: "with only models up
 already predict the 300M model within ±Z%, and adding 60M cuts that error in half."
 
 *Intake note (2026-08-22).* The seed-truncation premise should be re-checked before reuse:
-`../../open-questions-answered.md` (2026-08-21) records the aggregate OLMES table as 25
+`../open-questions-answered.md` (2026-08-21) records the aggregate OLMES table as 25
 recipes × **3 seeds at every size**, and instance-level tables with 3 seeds at 150M–1B and 1
 seed below 150M (and 750M's aggregate table truncated at step 26,250 while its instance
 table runs to 63,599). If the three-seeds-to-completion reading holds, the canonical-seed
 construction is unnecessary and the expanding window can use all seeds as rows — with the
 (recipe, size, seed) split rule from the second review.
 
-## 2025-07 — Sixth and seventh responses: inner validation split; family × size stress test
+### 2025-07 — Sixth and seventh responses: inner validation split; family × size stress test
 
 **Inner validation split (Danielle asked how the seed finding changes the earlier
 "hold out unseen seeds" suggestion).** Response (condensed): with one canonical row per
@@ -257,7 +386,7 @@ corrected above. Singleton-family test sets at 6 large sizes × 1 seed = 6 rows 
 for stable ranking metrics — report them with CIs or pool singleton families for this
 stress test.
 
-## 2025-07 — Eighth and ninth responses: featurization
+### 2025-07 — Eighth and ninth responses: featurization
 
 **Danielle's questions.** Explain "log-transform and z-score within each model-size bucket"
 (what and why); why those five recipe features and are they sufficient; any more
@@ -302,7 +431,7 @@ project (`REC`) — if this proposal is promoted, its "static" feature set shoul
 measured recipe properties from `REC`, not hand-assigned percentages, which would also make
 the two projects share one artefact.
 
-## 2025-07 — Tenth response: transform the targets too?
+### 2025-07 — Tenth response: transform the targets too?
 
 **Danielle's question.** Apply the same transformation to the prediction targets?
 
@@ -320,7 +449,7 @@ inverse needed for NDCG/τ. Sanity ballparks quoted (unverified): log-perplexity
 → ≤ 0.07, Spearman ρ > 0.85. GPs may prefer raw targets later (they model heteroscedastic
 noise differently).
 
-## 2025-07 — Eleventh response: training method details
+### 2025-07 — Eleventh response: training method details
 
 **Danielle's questions.** Spearman/Kendall and ECE — how and why? Is `lambdarank` different
 from LambdaMART for the regression target? Why 16 log-spaced points? Are the quoted LightGBM
@@ -355,7 +484,7 @@ the corrected counts above) cannot actually grow 512 leaves — effective depth 
 bounded by `min_data_in_leaf`; treat the setting as harmless rather than tuned. The
 "16 × 11 metrics" count also predates the choice to subsample recipes/metrics.
 
-## 2025-07 — Responses 12–15: metric suite, ECE binning, lambdarank inputs, two-head code
+### 2025-07 — Responses 12–15: metric suite, ECE binning, lambdarank inputs, two-head code
 
 **Metric suite (Danielle asked whether only ρ and ECE should be reported, vs. the standard
 absolute/relative error and decision accuracy).** Response: report four complementary
@@ -400,7 +529,7 @@ Also, one query per recipe ranks *sizes* against each other, which is trivially 
 is better); the decision the project cares about is ranking *recipes* at a fixed size, so
 the query should be per size (or per size × seed), with recipes as items.
 
-## 2025-07 — Responses 16–18: SHAP, rolling slopes, three feature clarifications
+### 2025-07 — Responses 16–18: SHAP, rolling slopes, three feature clarifications
 
 **SHAP per fold, mean |SHAP| across folds.** TreeExplainer gives exact Shapley attributions
 for tree ensembles cheaply; compute once per CV fold on that fold's validation/test rows;
@@ -438,7 +567,7 @@ only through the token budgets, so it is nearly collinear with `size_log` plus t
 sampling-grid position. Expect it to add little unless the early window is defined in
 absolute tokens (S₀ = min(2B, 10%)), in which case it does carry size information.
 
-## 2025-07 — Responses 19–20: any-step targets; all-metrics → MMLU
+### 2025-07 — Responses 19–20: any-step targets; all-metrics → MMLU
 
 **Danielle's two remaining settings.** (1) One model predicting the target metric at *any*
 step — the target step must be featurized as an input. (2) Use all evaluation measures
@@ -477,7 +606,7 @@ bound in any strict sense — it is a second estimator; the actual upper bound f
 other metrics, which is also the cleaner diagnostic (how much of MMLU is explained by final
 perplexity/correct_prob at all).
 
-## 2025-07 — Third distinct review: "thin vertical slice first"
+### 2025-07 — Third distinct review: "thin vertical slice first"
 
 Another review of the same plan (not a duplicate of the earlier two). Condensed; where it
 contradicts the earlier reviews, the disagreement is noted rather than resolved.
@@ -520,7 +649,7 @@ overstate the canonical dataset (≈ 350 rows per metric, 8 family folds + 7 siz
 the structural advice (one axis, one target, minimal features, naive baselines, seed
 handling) stands regardless.
 
-## 2025-07 — Responses 21–22 (third-review thread): targets, baselines, implementation plan
+### 2025-07 — Responses 21–22 (third-review thread): targets, baselines, implementation plan
 
 **Danielle's decisions/questions.** Likes the narrow slice; why Pile perplexity rather than
 a downstream metric — expand slightly to one perplexity + one downstream task? **Chooses
@@ -561,7 +690,7 @@ Table 3 of your notes" claim references the unrecoverable Gemini notes. The base
 (mean / repeat-last / linear / power-law / random) is the durable content here and aligns
 with the oracle-ladder habit of reporting a floor row.
 
-## 2025-07 — Implementation state: extracted features and training setup (Danielle)
+### 2025-07 — Implementation state: extracted features and training setup (Danielle)
 
 **Feature schema** extracted per (model size, dataset) pair, 131 columns:
 - *Three early windows* — `warmup_*`, `early_lr_decay_*`, `full_early_*` — each with: number
@@ -598,7 +727,7 @@ configs, so they are collinear with `d_model`/`n_layers` — fine for trees, but
 recipe-level columns are hand-assigned estimates; `REC` would replace them with measured
 properties.
 
-### 2025-07 — Answers: what to tune, what to normalise, what to prune
+#### 2025-07 — Answers: what to tune, what to normalise, what to prune
 
 **Hyper-parameters (condensed).** Tune `num_leaves` (64–1024), `min_data_in_leaf`
 (10–200), `learning_rate` (0.01–0.20, log), `feature_fraction` (0.6–1.0) lightly; keep
@@ -641,7 +770,7 @@ or from a size-extrapolated fit — a per-test-size scaler fit on test rows is l
 earlier reviews' "store (μ_s, σ_s) from training rows" rule does not directly cover unseen
 sizes, and this gap is unresolved.
 
-### 2025-07 — R² vs. RMSE: are they really redundant?
+#### 2025-07 — R² vs. RMSE: are they really redundant?
 
 **Danielle:** "I was under the impression that residuals (R²) and RMSE give you different
 information that you should interpret differently and can sometimes point in different
@@ -667,7 +796,7 @@ row-wise functions of (slope, std_err, n) with n fixed per window — and `std_e
 *are* redundant across rows only if Σ(xᵢ − x̄)² is constant per window, which it is for a
 fixed sampling grid.
 
-### 2025-07 — Pruned feature set and Danielle's normalisation plan
+#### 2025-07 — Pruned feature set and Danielle's normalisation plan
 
 **Pruned set (67 columns).** Per window (`warmup_`, `early_lr_decay_`, `full_early_`):
 `num_steps`, `first_val`, `last_val`, `val_first_last_diff`, `val_first_last_slope`, and for
@@ -717,7 +846,7 @@ duplicate `total_tokens_billions`; and it keeps `log1p` for perplexity levels (h
 for ppl ≫ 1, but then the `xlogylog` slopes — fit on `log` — and the `log1p`-transformed
 levels are on slightly different transforms; unify to plain `log` for perplexity).
 
-### 2025-07 — Z-scoring implementation, and the unseen-bucket problem (resolved)
+#### 2025-07 — Z-scoring implementation, and the unseen-bucket problem (resolved)
 
 **Danielle's `zscore_by_param`** (groupby `params` = model size; per-column mean/std;
 `transform` with `x.name` as the group key). **Answer:** correct as written; tighten with
@@ -743,7 +872,7 @@ under the scale-generalisation axis, drop it (B) and carry `size_log`, or use C 
 size-normalised inputs are wanted. This closes the "per-size z-scoring under held-out
 sizes" open question below.
 
-## Open questions
+### Open questions (carried from staging)
 
 - Is this still live (July 2025 draft; DataDecide scaling-law baselines have since been
   published by the DataDecide team — the "does early dynamics beat scaling-law
@@ -760,7 +889,4 @@ sizes" open question below.
   global z-scoring is a no-op for trees.
 - Any-step setting: confirm the feature window stays fixed at S₀ (see intake note); decide
   τ grid (K = 3 {33, 66, 100%} per the first review, or {25, 50, 75, 100%}).
-- Promote, absorb into `TINY` as an option, or archive. If promoted, source the static
-  recipe features from `REC`'s measured properties.
-
-**Waiting on:** Danielle's status call.
+- Source the static recipe features from `REC`'s measured properties.

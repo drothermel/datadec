@@ -1635,20 +1635,20 @@ Routed to: [topics/schedules-and-annealing-literature.md](topics/reference/sched
 > your reasoning for each suggestion.
 
 (PDF attached; the Gemini notes markdown was not provided.) Routed to: new staging topic
-[topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md); PDF
+[topics/early-dynamics-prediction.md](potential-projs/early-dynamics-prediction.md); PDF
 copied to [refs/](refs/README.md).
 
 ### Early-dynamics draft review, second response — 2025-07 (intake 2026-08-22)
 
 Same prompt as the entry above (Danielle asked several similar questions); response
-recorded in [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
+recorded in [topics/early-dynamics-prediction.md](potential-projs/early-dynamics-prediction.md)
 ("Second review: GBDT v0 design details").
 
 ### Early-dynamics draft review, third response (recipe families) — 2025-07 (intake 2026-08-22)
 
 Follow-up in the same review sequence (prompt not provided; Danielle notes the Gemini notes
 file cannot be recovered). Recorded in
-[topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md) ("a
+[topics/early-dynamics-prediction.md](potential-projs/early-dynamics-prediction.md) ("a
 recipe-family scheme for leave-family-out CV"), with a correction to its family-size claim.
 
 > this is related to the datadecide dataset, huh, we should note that link
@@ -1670,7 +1670,7 @@ index row updated.
 > model sizes?
 
 (Screenshot of the DataDecide recipe table attached.) Routed to:
-[topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
+[topics/early-dynamics-prediction.md](potential-projs/early-dynamics-prediction.md)
 ("Fourth and fifth responses"), with an intake note that the seed-truncation premise
 conflicts with the 2026-08-21 coverage check in open-questions-answered.md.
 
@@ -1686,7 +1686,7 @@ conflicts with the 2026-08-21 coverage check in open-questions-answered.md.
 > recipe families + smaller model sizes and testing them on larger models from held-out
 > recipes?
 
-Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
+Routed to: [topics/early-dynamics-prediction.md](potential-projs/early-dynamics-prediction.md)
 ("Sixth and seventh responses"), with a row-count correction.
 
 ### Early-dynamics draft review, eighth and ninth responses (featurization) — 2025-07 (intake 2026-08-22)
@@ -1705,7 +1705,7 @@ Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-p
 > perplexity but should I also do this for correct_prob since its already on the 0 to 1
 > scale?
 
-Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
+Routed to: [topics/early-dynamics-prediction.md](potential-projs/early-dynamics-prediction.md)
 ("Eighth and ninth responses: featurization"), with a note linking the static features to
 `REC`.
 
@@ -1714,7 +1714,7 @@ Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-p
 > Interesting, so then would you recommend I apply the same transformation to the
 > prediction target metrics?
 
-Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
+Routed to: [topics/early-dynamics-prediction.md](potential-projs/early-dynamics-prediction.md)
 ("Tenth response: transform the targets too?").
 
 ### Early-dynamics draft review, eleventh response (training method) — 2025-07 (intake 2026-08-22)
@@ -1731,7 +1731,7 @@ Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-p
 > lambda-rank objective for pairwise tasks; regression MSE for scalar targets." - are these
 > what youd recommend I start with?
 
-Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
+Routed to: [topics/early-dynamics-prediction.md](potential-projs/early-dynamics-prediction.md)
 ("Eleventh response: training method details"), with an intake note on the leaf-count
 setting vs. dataset size.
 
@@ -1750,7 +1750,7 @@ setting vs. dataset size.
 > Ok, great, so can you expand your code example above to show what I'd do to have one
 > ranking head and one regression head, including the suggested default params?
 
-Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
+Routed to: [topics/early-dynamics-prediction.md](potential-projs/early-dynamics-prediction.md)
 ("Responses 12–15"), with intake notes on two code defects and on the query definition
 (rank recipes within a size, not sizes within a recipe).
 
@@ -1772,7 +1772,7 @@ Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-p
 > Batch size is number of sequences per batch and the sequence length is a uniform 2024 per
 > model. Is this recommendation still relevant?
 
-Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
+Routed to: [topics/early-dynamics-prediction.md](potential-projs/early-dynamics-prediction.md)
 ("Responses 16–18"), with an intake note on `%_decay_done` collinearity.
 
 ### Early-dynamics draft review, responses 19–20 (any-step targets; all-metrics → MMLU) — 2025-07 (intake 2026-08-22)
@@ -1793,7 +1793,7 @@ Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-p
 > Given these clarifications, please propose a way to accomplish these while staying as
 > close to my existing setup as possible.
 
-Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
+Routed to: [topics/early-dynamics-prediction.md](potential-projs/early-dynamics-prediction.md)
 ("Responses 19–20"), with intake notes on the feature-masking contradiction, per-τ metric
 computation, and what the real upper bound is.
 
@@ -1805,7 +1805,7 @@ computation, and what the real upper bound is.
 Not a duplicate — a third review with different calls (minimal feature slice; one CV axis;
 one LambdaMART head; naive extrapolation baselines; clip before logit; average seeds after
 splitting). Recorded in
-[topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md) ("Third
+[topics/early-dynamics-prediction.md](potential-projs/early-dynamics-prediction.md) ("Third
 distinct review"), with cross-review disagreements listed in the open questions.
 
 ### Early-dynamics, third-review thread responses 21–22 — 2025-07 (intake 2026-08-22)
@@ -1821,7 +1821,7 @@ distinct review"), with cross-review disagreements listed in the open questions.
 > implement from scratch to the meeting deliverables we just described. For each step,
 > provide the code snippets that I will use.
 
-Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
+Routed to: [topics/early-dynamics-prediction.md](potential-projs/early-dynamics-prediction.md)
 ("Responses 21–22"); her axis/target decisions recorded in the open questions; code kept
 out of the doc (structure only) with intake notes on the stub split and placeholder
 runtime figures.
@@ -1841,7 +1841,7 @@ runtime figures.
 > features? And is there anything else I need to do to prepare my features to use for
 > training the gbdt?
 
-Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
+Routed to: [topics/early-dynamics-prediction.md](potential-projs/early-dynamics-prediction.md)
 ("Implementation state: extracted features and training setup"); answer to follow.
 
 (Answer to the three questions above — tuning set, normalisation map, `log1p`, pruning of
@@ -1855,7 +1855,7 @@ unresolved per-size normalisation for held-out sizes.)
 > that you should interpret diffferently and can sometimes poinnt in different directions.
 > Is this false?
 
-Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
+Routed to: [topics/early-dynamics-prediction.md](potential-projs/early-dynamics-prediction.md)
 ("R² vs. RMSE"), with an intake note that the response's within-one-fit argument does not
 transfer to features compared across rows — Danielle's intuition holds there.
 
@@ -1874,7 +1874,7 @@ transfer to features compared across rows — Danielle's intuition holds there.
 > normalization
 > Is this correct?
 
-Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
+Routed to: [topics/early-dynamics-prediction.md](potential-projs/early-dynamics-prediction.md)
 ("Pruned feature set and Danielle's normalisation plan"), with the answer (signed-log for
 diffs; slopes/R² untransformed; optional log10 of learning rates) and intake notes.
 
@@ -1890,7 +1890,7 @@ diffs; slopes/R² untransformed; optional log10 of learning rates) and intake no
 > normalization? it seems this type of scaling will inherently make this type of
 > generalization harder
 
-Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
+Routed to: [topics/early-dynamics-prediction.md](potential-projs/early-dynamics-prediction.md)
 ("Z-scoring implementation, and the unseen-bucket problem"); resolves the earlier open
 question, with a note that global z-scoring is a no-op for LightGBM.
 
@@ -2089,3 +2089,13 @@ Routed to: [topics/clean-code-preference-icl.md](topics/staging/clean-code-prefe
 Routed to: [topics/icl-literature.md](topics/reference/icl-literature.md) (many-shot vs.
 long-context leads) and [topics/clean-code-preference-icl.md](topics/staging/clean-code-preference-icl.md)
 ("Tooling for generating variants without API keys", with concrete CLI modes noted).
+
+### Post-intake decisions — 2026-08-22 (second pass)
+
+> great, yes for 1 promot to a project doc, yes for 2 keep staged, yes for 3 crosslisting.
+> yes for defering 4/5
+
+Applied: `early-dynamics-prediction` → [potential-projs/early-dynamics-prediction.md](potential-projs/early-dynamics-prediction.md)
+(`EDP`); `clean-code-preference-icl` stays staged; ICL-opt-7 (repetition-as-step-size
+factorial) added to [potential-projs/icl-elicitability.md](potential-projs/icl-elicitability.md)
+with the seed quoted in §4; literature gates and the draft-scaffolding review remain parked.

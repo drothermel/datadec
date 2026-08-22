@@ -15,7 +15,7 @@ curves on existing checkpoints at matched loss across recipes, validate the prot
 statistics, and use the tuned elicitation ceiling as the null that any weight-update claim
 must beat.
 
-IDs: ICL-1–ICL-5, ICL-opt-1–ICL-opt-6.
+IDs: ICL-1–ICL-5, ICL-opt-1–ICL-opt-7.
 
 **Paper goal.** Workshop-sized first paper from ICL-1–ICL-3 on DataDecide checkpoints
 (recipe differences in ICL-ability at matched loss, either way); a main-conference version
@@ -68,6 +68,17 @@ continued-training branches or fine-tunes; **T3** = new pretraining runs.
   modern probes (cross-listed from the frozen-body audit topic, gap G6).
 - **ICL-opt-6: Learned task vectors** instead of extracted ones for the geometry statistic;
   tasks chosen within the rank limitation.
+- **ICL-opt-7: Repetition as step size — the (unique examples × repetitions) factorial.**
+  Treat the number of *unique* demonstrations as the data axis and how often each is
+  repeated in the prompt as the step-size axis; at matched total context, compare splits
+  of (unique × repetitions) on the per-token ICL curve. If repetition shifts the curve the
+  way a larger LR shifts a training curve (faster early movement, different plateau or
+  instability), ICL has a separable step-size axis; if it only adds tokens, it does not.
+  Same design separates "more examples help" from "longer context hurts." Candidate ICL
+  x-axes to log alongside: cumulative demonstration tokens, query-loss trajectory,
+  attention mass on demonstrations vs. query, task-vector norm growth, prompt-order
+  entropy. (Danielle-flagged seed, 2026-08-22; origin in
+  `../topics/reference/icl-literature.md`.)
 
 ---
 
@@ -245,6 +256,26 @@ chapter of the same question. See [warmstarting-decomposition.md](intervention-g
 Paper references for each in [icl-literature.md](../topics/reference/icl-literature.md).
 
 ---
+
+## 2026-08-22 — Danielle-flagged seed: ICL learning curves and their x-axes (origin of ICL-opt-7)
+
+> I previously found it very surprising, the comparison between fine-tuning and in-context
+> learning … the idea that by consuming more tokens, a model is moving towards a,
+> quote-unquote, more trained state, kind of, is a parallel to fine-tuning … is that
+> something that is also investigated in the prompt-tuning space in terms of … how many
+> examples … or how different choices of prompts impact that, like, quote-unquote learning
+> curve.
+
+> I see the number of examples in context learning as being more similar to either a
+> compute metric or a number of tokens metric … one [analogy] might be … how often you
+> repeat examples in your prompt, in that like if you considered n to be the number of
+> unique examples, and then your step size or your learning rate or whatever was like how
+> often each of the examples was repeated, then you're arguing maybe you're taking a bigger
+> step on each example.
+
+Recorded as ICL-opt-7. The surrounding conversation's responses were content-free; the
+paper leads it produced (many-shot ICL scaling, *In-Context Learning with Long-Context
+Models*, NAACL 2025) are in the ICL literature topic with reliability flags.
 
 ## 2026-08-22 — refinements to protocol statistic #4 (task-vector geometry), from Danielle's citations
 
