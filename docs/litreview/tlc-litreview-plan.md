@@ -42,6 +42,7 @@ series), mixed prose+code handling (Report 1), neural code embeddings as represe
 3. **Supply the prompt-optimization anchors** (APE, OPRO, ProTeGi, TextGrad,
    DSPy/MIPROv2, GEPA) — none appear in any SciSpace output; verify IDs and position the
    optimizer loop against them (meta-prompting with execution feedback, system-level).
+   GEPA arrived with an ID on 2026-08-22 (2507.19457, unverified; `prompt-optimization-landscape.md`).
 4. **Decide the benchmark precedent sentence**: HumanEvalExplain is the reconstruct-from-
    explanation protocol; state what TLC adds (length pressure, optimizer loop,
    cross-model encode/decode) and whether TLC-1 runs on HumanEvalPack as a free task set.

@@ -448,6 +448,59 @@ tokens-per-solved-problem metric — the published analog of this project's opti
 accounting). The SciSpace search CSVs on disk are a seeded candidate list for the full
 prior-art pass (still parked).
 
+### 2026-08-22 — evaluations as optimizer signal: DSPy + GEPA, task/test selection, no requirement labels
+
+Two further turns in the estimation conversation (record in
+`../topics/reference/estimation-and-calibration-methods.md`, third entry, second
+continuation) put the difficulty machinery in service of the optimizer. Danielle's
+framing: automated prompt optimization with something like DSPy and GEPA, "at two levels,
+or maybe even just at one level initially, but eventually at two levels" (i.e. encoder and
+decoder prompts); per-test feedback "might actually be very helpful"; difficulty lets her
+cluster and select or characterize the most useful tasks and test cases. Response's design,
+condensed; DSPy/GEPA API claims are the respondent's and unverified:
+
+- **Objective shifts** from "which tasks are hard" to "which tasks and tests yield the
+  most useful optimization signal without overfitting the prompt". Difficulty is one input
+  to *example utility*; the best optimization tasks are medium-difficulty with high prompt
+  sensitivity, diverse interpretable failure modes, and clear feedback — not the hardest.
+  Suggested mix: ~10–15% smoke, 45–60% near-boundary, 20–30% hard-but-solvable, 10–20%
+  edge/failure-mode tasks; never all-hard (repetitive feedback, no gradient).
+- **Three pools**: optimization trainset (GEPA reflects on it; rich feedback), valset
+  (Pareto-score tracking; DSPy reuses train if absent — don't), locked holdout scored by
+  full hidden-suite pass/fail only.
+- **Metric returns score + text feedback** (GEPA's design: reflect on trajectories,
+  propose prompt edits, combine lessons on a Pareto frontier; predictor-level feedback via
+  `pred_name`/`pred_trace`). Score: hybrid, e.g. 0.5·full_pass + 0.4·test-pass rate
+  (requirement-grouped if possible) + 0.1·compile/runtime; feedback: compile status, n/N,
+  failed groups, ≤4 representative failures (input / expected / got / likely issue),
+  one-line advice. Final metric uncompromising; optimization metric educational.
+- **Tiered tests**: smoke on every candidate; diagnostic subset on most; full suite on
+  validation/final candidates. Store raw per-test outcomes; never let a 100-test task
+  outweigh a 5-test task — one score per task-generation.
+- **IRT becomes a sampling/curriculum tool**: per-task full-pass and partial difficulty,
+  prompt sensitivity (within the model to be optimized), model sensitivity, failure-mode
+  entropy, feedback clarity, cost; per-test pass rate, discrimination, flakiness,
+  redundancy. Task-level clusters (algorithmic pattern, I/O format, edge-case profile,
+  failure modes) for stratified batches; test-level clusters for diagnostic coverage.
+- **One level first** (generation prompt), then two (plan/generate + repair-from-feedback,
+  or here encoder + decoder); two-level attribution is harder — did the generator improve
+  or did the other prompt compensate? Per-predictor feedback is what makes the
+  two-level case tractable.
+- **No requirement labels?** (Danielle: "I don't actually have a way to group the tests
+  by requirement, do I?") Start without: full-pass primary, per-task test-pass rate as
+  partial credit, representative failed tests as feedback. Then **cluster tests
+  empirically by their pass/fail vector across the model × prompt grid** — tests that fail
+  together are one bug counted many times; cluster, then label clusters with an LLM or by
+  hand later. If test content is available, cluster on test name / body / assertion /
+  error message. If tests are generated going forward, emit requirement metadata with
+  them.
+
+What this changes for the plan: TLC-1's census already yields the model × prompt grid the
+empirical test clustering needs; the "simple optimizer" of TLC-2 gets a concrete
+incumbent (DSPy/GEPA with score + feedback) and the three-pool split becomes a standing
+instrumentation decision. GEPA's arXiv ID (2507.19457, unverified) closes one entry of the
+prior-art gate's missing-anchor list.
+
 ### 2026-08-22 — full-pass vs. fractional test score as the response: a design tension
 
 A follow-up in the estimation conversation (record in

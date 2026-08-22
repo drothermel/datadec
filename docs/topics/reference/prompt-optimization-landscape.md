@@ -92,3 +92,15 @@ Scope answers (verbatim):
   framing.
 - Citation hygiene: [6] appears under two names; [5] in two roles; the comparison
   table's header is malformed. All identifiers as produced.
+
+## 2026-08-22 — GEPA and DSPy as the optimizer incumbent (from the estimation conversation)
+
+Surfaced with identifiers in a conversation on using test results as optimizer signal
+(record: `estimation-and-calibration-methods.md`, third entry): **GEPA** — "Reflective
+Prompt Evolution Can Outperform Reinforcement Learning", arXiv 2507.19457 — samples
+trajectories, reflects on failures in text, proposes prompt edits, and combines lessons
+across a Pareto frontier; in DSPy the metric may return a scalar plus textual feedback, at
+whole-program or predictor level (`pred_name`, `pred_trace`), with a trainset for
+reflection and a valset for Pareto tracking (`dspy.ai` optimizer docs). This is the first
+of the missing-anchor list (APE, OPRO, ProTeGi, TextGrad, DSPy/MIPROv2, GEPA) to arrive
+with an ID; the rest still need supplying. All claims are the respondent's, unverified.

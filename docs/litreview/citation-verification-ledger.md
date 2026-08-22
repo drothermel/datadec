@@ -269,6 +269,7 @@ Context column = the ~80 characters preceding the ID in the topic, as a memory a
 | 1604.04173 | Lei et al. — distribution-free predictive inference for regression (split conformal) | `estimation-and-calibration-methods` | agent-supplied | TLC, ELI, EDP | |
 | 2208.02814 | Angelopoulos et al. — Conformal Risk Control | `estimation-and-calibration-methods` | agent-supplied | TLC, ELI, EDP | |
 | 2107.03374 | Codex / HumanEval — unbiased pass@k estimator | `estimation-and-calibration-methods` | agent-supplied | TLC, ELI, EDP | |
+| 2507.19457 | GEPA — Reflective Prompt Evolution Can Outperform Reinforcement Learning | `prompt-optimization-landscape` | agent-supplied | TLC | |
 
 Rows: 208 (181 agent-supplied, 27 Claude-added, 5 named without ID).
 

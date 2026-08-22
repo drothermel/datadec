@@ -3274,3 +3274,22 @@ entry in [topics/reference/estimation-and-calibration-methods.md](topics/referen
 test-level diagnostic with a generation random effect; test-suite-density caveat;
 per-instruction report); TLC §4 note recording the tension with TLC's fractional-score choice
 and the near-miss score as an optimizer signal.
+
+> Okay, so then, now, how does it change things if I'm actually using the evaluations as
+> signal for an automated prompt optimization approach that uses something like DSPy and an
+> algorithm like GEPA, where I want to optimize the prompt at two levels, or maybe even just
+> at one level initially, but eventually at two levels. And so the kind of pair test feedback
+> then might actually be very helpful. And so measuring the difficulty could allow me to
+> cluster things to select the most useful or characterize, to select or characterize the
+> most useful tasks and test cases to run, for example. How does that change the design and
+> what would you recommend then?
+
+> So you talk about grouping by requirement, but I don't actually have a way to group the
+> tests by requirement, do I?
+
+(Continuation.) Routed: TLC §4 note (utility over difficulty; three pools; score + feedback
+metric; tiered tests; IRT as a curriculum tool; one level then two; empirical test
+clustering by pass/fail vector when no requirement labels exist); GEPA entry in
+[topics/reference/prompt-optimization-landscape.md](topics/reference/prompt-optimization-landscape.md)
+(first missing anchor with an ID; plan gate 3 annotated); second continuation in the
+estimation topic; ledger row.

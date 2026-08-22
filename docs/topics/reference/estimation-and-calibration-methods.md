@@ -272,3 +272,35 @@ task weights, or nesting).
   secondary, with the density caveat. Noted in TLC §4 as a design tension, not a change.
 - The conditional near-miss score (pass rate given not full pass) is also a natural
   *optimizer* signal for TLC-2/ELI: it orders failures, which all-pass cannot.
+
+### Second continuation — the evaluations as signal for automated prompt optimization (DSPy / GEPA)
+
+**Danielle's follow-ups.** (1) How does the design change when the evaluations drive an
+automated prompt optimizer like DSPy + GEPA, at one level initially and eventually two,
+where per-test feedback may help and difficulty could select or characterize the most
+useful tasks and tests? (2) "You talk about grouping by requirement, but I don't actually
+have a way to group the tests by requirement, do I?"
+
+**Response (condensed; full project-facing version in
+`../../potential-projs/text-latent-code-autoencoder.md` §4 2026-08-22).** Objective becomes
+example *utility*, not difficulty: medium-difficulty, high prompt-sensitivity, diverse
+interpretable failure modes, clear feedback, low flakiness and cost. Three pools (reflective
+trainset / Pareto valset / locked full-pass holdout). Metric = hybrid scalar + structured
+text feedback (compile, n/N, failed groups, ≤4 representative failures, one-line advice).
+Tiered tests (smoke / diagnostic / full). One score per task-generation so test count does
+not weight tasks. IRT estimates (task and test difficulty, discrimination, sensitivities,
+flakiness, redundancy) feed stratified batch construction and task/test clustering. One
+level first; per-predictor feedback for two. Without requirement labels: full-pass +
+per-task pass rate + representative failures now; **cluster tests by their pass/fail vector
+across the respondent grid** (co-failing tests ≈ one bug), label clusters later; cluster on
+test content if available; emit requirement metadata if tests are generated going forward.
+
+**Intake notes.**
+- The empirical test clustering is the test-level analogue of the item-embedding question
+  in the second entry, with the pass/fail vector as the embedding — and the same η² / kNN
+  metrics apply to scoring candidate test groupings against held-out generations
+  (Claude-added).
+- "Optimization metric educational, final metric uncompromising" is the calibrate-
+  after-selection rule from the first entry in optimizer form: the holdout is what the
+  selection rule is scored on.
+- GEPA 2507.19457 added to the ledger (agent-supplied).
