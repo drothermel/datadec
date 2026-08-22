@@ -809,7 +809,7 @@ Applied: four new project docs — [potential-projs/icl-elicitability.md](potent
 replaced throughout by paper/thesis goals.
 
 
-### Text-latent code autoencoder — 2026-08-22 (outside the DataDecide program)
+### Text-latent code autoencoder — 2026-08-22
 
 Danielle's prompt was not pasted; the respondent's playback of it: frozen frontier LLMs as
 encoder and decoder behind APIs, a *text* latent, the harness (prompts) as the only learned
@@ -819,4 +819,10 @@ weight updates.
 
 Routed to: new staging topic
 [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-code-autoencoder.md)
-(not project-specific; not program-level — sits outside the three pillars).
+(not project-specific; not program-level).
+
+> ok, so we're actually collecting potential projects wide and far, they don't have to have
+> anything to do with datadecide
+
+Standing rule recorded in the potential-projs and topics READMEs: the project collection is
+wide; non-DataDecide ideas are first-class.

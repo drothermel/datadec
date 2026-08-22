@@ -1,8 +1,7 @@
 # Text-latent code autoencoder — frozen LLMs as encoder/decoder, prompts as the only learned object
 
-**Kind:** staging. Candidate exits: a standalone project doc (this idea sits outside the
-DataDecide program and its three pillars; it is a representation-learning / program-synthesis
-project), or a parked idea. Gate: pin down the bottleneck constraint on the latent (see
+**Kind:** staging. Candidate exits: a standalone project doc (representation learning /
+program synthesis; program pillars served: none), or a parked idea. Gate: pin down the bottleneck constraint on the latent (see
 "The open question" below) before any promotion decision.
 
 Source: an external conversation excerpt, 2026-08-22. Danielle's original prompt was not
@@ -70,5 +69,4 @@ this is more than a compression trick, whether style survives) depends on it. Se
 single monolithic latent vs. factored schema; how the style and function objectives are
 balanced.
 
-**Waiting on:** Danielle's answer on the bottleneck; a decision on whether this belongs in
-this repository at all or in its own planning home.
+**Waiting on:** Danielle's answer on the bottleneck; a promotion decision.

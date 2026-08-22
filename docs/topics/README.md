@@ -6,7 +6,8 @@ candidates; [`reference/`](reference/) holds informational accumulators.
 Two kinds of topic doc:
 
 - **Staging** topics hold ideas without a project home and have the two exits described
-  below (promoted to a project, or absorbed into project §4s; deleted either way).
+  below (promoted to a project, or absorbed into project §4s; deleted either way). Any
+  research idea qualifies — the collection is wide, not DataDecide-specific.
 - **Reference** topics are standing accumulators — paper references and thoughts on a theme
   (plasticity, loss-curve forecasting, …) that many projects draw on. They are never
   "resolved"; they just grow, dated entry by dated entry.
@@ -44,7 +45,7 @@ directory only holds live, unresolved material.
 |---|---|
 | [checkpoint-tomography.md](staging/checkpoint-tomography.md) | A prior-art pass (devinterp / WSD follow-up literature); then a decision on whether the five-probe battery (decay, hot, twin, data-shifted, reset) becomes the flagship instrument framing or is absorbed into annealed readouts, landscape geometry, token-level movement, functional featurization, and embedding-reset dynamics |
 | [frozen-body-transfer-audit.md](staging/frozen-body-transfer-audit.md) | A forward-citation sweep of arXiv 2107.12460; then a promotion decision (gaps G5/G6). G6 is cross-listed as ICL-opt-5 in ICL elicitability |
-| [text-latent-code-autoencoder.md](staging/text-latent-code-autoencoder.md) | Outside the DataDecide program: frozen-LLM encoder/decoder with a text latent, prompts optimized by an LLM outer loop against round-trip test pass. Gate: pin the verifiable bottleneck constraint on the latent; decide whether it lives in this repo |
+| [text-latent-code-autoencoder.md](staging/text-latent-code-autoencoder.md) | Frozen-LLM encoder/decoder with a text latent, prompts optimized by an LLM outer loop against round-trip test pass. Gate: pin the verifiable bottleneck constraint on the latent |
 
 Promoted on 2026-08-22 (text moved into the new project docs' §4): `icl-as-posttraining` →
 `../potential-projs/icl-elicitability.md`; `warmstarting-decomposition` +
