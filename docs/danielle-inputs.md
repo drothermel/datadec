@@ -1734,3 +1734,22 @@ Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-p
 Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
 ("Eleventh response: training method details"), with an intake note on the leaf-count
 setting vs. dataset size.
+
+### Early-dynamics draft review, responses 12–15 (metrics, ECE, lambdarank, two heads) — 2025-07 (intake 2026-08-22)
+
+> So are you suggesting that I only need to report spearman rho and ECE? What about the
+> fairly standard baseline measurements of relative and absolute accuracy + decision
+> accuracy?
+
+> when you say "Expected Calibration Error (ECE) on binned residuals", does "ece =
+> expected_calibration_error(y_true, yhat)" handle binning already?
+
+> for lambdarank win/loss, the X set should be different right because it should pass in
+> pairs, or are you saying this is handled *by* the lambdarank algo?
+
+> Ok, great, so can you expand your code example above to show what I'd do to have one
+> ranking head and one regression head, including the suggested default params?
+
+Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
+("Responses 12–15"), with intake notes on two code defects and on the query definition
+(rank recipes within a size, not sizes within a recipe).

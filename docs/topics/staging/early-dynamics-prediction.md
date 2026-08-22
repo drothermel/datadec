@@ -355,6 +355,51 @@ the corrected counts above) cannot actually grow 512 leaves — effective depth 
 bounded by `min_data_in_leaf`; treat the setting as harmless rather than tuned. The
 "16 × 11 metrics" count also predates the choice to subsample recipes/metrics.
 
+## 2025-07 — Responses 12–15: metric suite, ECE binning, lambdarank inputs, two-head code
+
+**Metric suite (Danielle asked whether only ρ and ECE should be reported, vs. the standard
+absolute/relative error and decision accuracy).** Response: report four complementary
+dimensions — *ordering* (Spearman ρ / Kendall τ; NDCG@k if a ranking head exists),
+*magnitude* (MAE or RMSE on the original scale; MAPE), *binary decision* (decision accuracy =
+pairwise winner hit-rate, computed once from regression or ranker outputs), *calibration*
+(ECE on binned residuals — two predictors with equal MAE can differ wildly in bias). ρ and
+ECE were called out first as "the two most sensitive indicators of trouble," not as
+replacements. Per-fold reporting table: ρ, τ, MAE, MAPE, decision acc., ECE, NDCG@10, plus
+one baseline row (global mean, or "final = last early value"). Slide deck: ρ, MAE, decision
+acc., ECE; full table in an appendix. Decision accuracy on log-space targets is identical
+(sign of differences unchanged).
+
+**ECE binning.** Scikit-learn's `calibration_error` is for classification probabilities;
+for regression targets you implement the binning yourself (equal-count quantile bins,
+e.g. 15; `np.digitize`; Σ |mean pred − mean truth| × bin fraction) or use a small library
+(`netcal` was named). ECE varies a lot with the binning scheme, so control bin count and
+strategy explicitly.
+
+**lambdarank inputs.** Keep the same one-row-per-run `X`; `LGBMRanker` takes items plus a
+**group/query vector** (e.g. one query per recipe — all sizes × seeds ranked together), and
+forms the within-group pairs and NDCG-gradient lambdas internally. Relevance label = any
+monotone transform with higher-is-better (e.g. −log final perplexity). LightGBM's
+`"lambdarank"` objective *is* LambdaMART (LambdaRank + boosted trees). Explicit pairs are
+only needed for an external "A beats B" classifier, which is discouraged.
+
+**Two-head sketch.** One feature matrix (`dyn_*`, `stat_*` columns); `y = log(final
+perplexity)` (logit for correct_prob); `qid` = recipe code; size-bucket-stratified,
+qid-grouped 90/10 split; `LGBMRegressor(objective='regression', metric='rmse')` and
+`LGBMRanker(objective='lambdarank', metric='ndcg')` with shared params `num_leaves=512,
+learning_rate=0.05, min_data_in_leaf=20, feature_fraction=0.9, bagging_fraction=0.8,
+bagging_freq=1`, `n_estimators=10_000`, `early_stopping_rounds=50`; ranker gets
+`group=lengths(qid_train)`, `group_eval=[lengths(qid_val)]`; evaluate MAE/MAPE/ρ on the
+inverted scale, NDCG on the ranker, decision accuracy pairwise.
+
+*Intake notes.* Two defects in the final code sketch: (1) its `decision_accuracy` compares
+`argsort` arrays positionally (fraction of items at the same rank), which is not the
+pairwise hit-rate defined earlier — use the `itertools.combinations` version from the
+metric-suite response; (2) `lgb.engine._eval_function.NDCG` is not a real LightGBM API —
+compute NDCG with `sklearn.metrics.ndcg_score` per group or via `ranker.evals_result_`.
+Also, one query per recipe ranks *sizes* against each other, which is trivially easy (bigger
+is better); the decision the project cares about is ranking *recipes* at a fixed size, so
+the query should be per size (or per size × seed), with recipes as items.
+
 ## Open questions
 
 - Is this still live (July 2025 draft; DataDecide scaling-law baselines have since been
