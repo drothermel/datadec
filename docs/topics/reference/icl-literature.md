@@ -215,3 +215,7 @@ shape of an invented title matching Danielle's own repetition idea. Keep only th
 paper *titles* and the one arXiv ID as search leads; rebuild the researcher list from a
 real citation graph if wanted. Useful seed for a lit pass: many-shot ICL scaling laws;
 Bayesian framings of accuracy vs. shots; continued-pretraining-for-ICL.
+
+**Closing note (same conversation).** Danielle tabled the related-work investigation to
+test the approach practically at small scale first; the practical setup is staged in
+`../staging/clean-code-preference-icl.md`.

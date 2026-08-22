@@ -1972,3 +1972,57 @@ Danielle-flagged protocol lead for ICL-elicitability).
 
 Routed to: [topics/icl-literature.md](topics/reference/icl-literature.md) (follow-up; paper
 titles + one arXiv ID kept as leads; author/lab attributions flagged as unreliable).
+
+### Clean-code preference test — undated (intake 2026-08-22)
+
+> Wow. Huh. Interesting. Okay. So, I guess I didn't realize that I was so interested in
+> this before I started asking questions, but I think probably I should table this
+> investigation into the related work for now, since my goal is to test this approach out
+> practically for myself in a small-scale way first. But it's cool to see that it actually
+> does directly link to some very interesting and current research that could be helpful
+> for my future research directions. Okay. Cool. So, now maybe we can think about how to
+> set up kind of a very simple version that would be practically useful for me in this
+> specific setting. And I guess some things that seem very, like, some high-priority
+> aspects, I would say I think having some form of automated feedback. And I think that,
+> like, probably trying to figure out agent feedback is, like, complex. And so, I was
+> thinking something along the lines of having, like, a clear test case. So, basically,
+> like, working with individual functions that have a very clear purpose. And then having,
+> like, clear tests for each of the functions to verify that the, like, implemented
+> version performs according to the expectations. Then using my reference implementations
+> and comparing the length of the implementation from the model with the length of my
+> implementation to get some sense of, like, is this a, like, was this efficiently
+> implemented? Are kind of two of the initial forms of automated feedback that I imagined.
+> What do you think about these ideas? Do you have feedback or other thoughts about how we
+> can get some automated feedback on these functions?
+
+> Okay, so then I guess the next piece of it that I'm trying to think through is I guess I
+> want to be able to give the model as much signal about the piece, like the aspect of the
+> example that I care the most about as possible. And I think that for me, it's basically
+> like simplicity and what's it called, simplicity and like semantically meaningful naming
+> and grouping of the code so that it's easy to read and tell what's happening in the
+> code, and they're not like random additional things that like, I don't know, checks that
+> are if else on things that are basically simplifiable to a Boolean or something like
+> this. So I think they're just like a bunch of coding best practices that I would love to
+> just enforce in the model's expectations from the beginning. And I understand that some
+> of that is basically having a code base that follows all those best practices. But I
+> also think that at the very least, I'd like to know how far I can expect models that
+> have been in context prompted a bit to be able to go in terms of just like following
+> these practices. So I guess I see this both as like an approach to set up a process for
+> like preparing my models to be useful, but also an approach to kind of understanding
+> like their limitations. And in that case, I would think that one approach to this would
+> be to take some of my like, utterly clean examples, and then farm them out to a bunch of
+> different models, where half of the models are trying to make them cleaner, and half of
+> the models are trying to make them substantially less clean by inserting all of these
+> different things that would actually violate the idea of clean code. So like
+> intentionally replacing a succinct way of doing something with a less succinct way of
+> doing something. And then basically, I can manually go through, like, I guess I could do
+> a first pass to make sure that basically just to filter out things that don't actually
+> run. But then I can manually go through to make sure I have like a quick labeling of the
+> example implementations of like, bad to good. And then that can be like a little data
+> set that can be used for like, giving what's it called? paired paired examples, which
+> was a big thing. There's a name for that. What's the name for the idea of not giving
+> rewards, but instead giving paired examples good and bad.
+
+Routed to: new staging topic
+[topics/clean-code-preference-icl.md](topics/staging/clean-code-preference-icl.md);
+closing note in [topics/icl-literature.md](topics/reference/icl-literature.md).
