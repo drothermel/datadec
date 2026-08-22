@@ -78,3 +78,13 @@ ablations."
 dynamics,' not 'data features → benchmark scores.' The DataDecide work then becomes the first
 instrument-validation study in a program rather than the whole program — which is also a much
 better story for a thesis or grant than a single-suite reanalysis."
+
+---
+
+## 2026-08-21 — Position in the ranked lists (full lists in `../portfolio-rankings.md`)
+
+Cross-suite features→dynamics is **Tier 2, #3** in the 6–12-month flagship list: "The 6–12
+month frame is what makes the multi-suite ingest feasible and fixes n=25. Main-conference
+plausible, and the practically hottest topic here. But it's irreducibly correlational, and
+its best headline… actually belongs inside [the flagship] as the data-link section. As a
+standalone it's a very good paper whose reviews will all say 'but why.'"

@@ -159,3 +159,14 @@ decisions. Only notes about this project are kept here.
   MoE training infra") already removed. (Full discussion in
   `docs/topics/moe-recipe-suite.md`.)
 
+### 2026-08-21 — positions in three ranked lists (full lists in `docs/portfolio-rankings.md`)
+
+- **6–12-month flagship list: Tier 2, #5** (as a datasets-track resource + WSD-3): "Feasible
+  in this window and DataDecide-WSD would be cited for years. But resource papers live or
+  die on adoption, the operational risk (data-order/eval parity) is the highest in the set,
+  and its headline analyses are subsets of [the flagship]. Correct role: run the stable
+  phases as background cluster utilization feeding [the flagship's] branch grid, and let
+  'release the suite' be a second paper if the runs are clean — not the primary bet." Offered
+  as the "safer enabler" alternative to the multi-recipe MoE mini-suite for the
+  background-cluster track.
+- **Workshop-sized list** and **full-conference list:** not included.

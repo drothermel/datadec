@@ -262,3 +262,20 @@ decisions. Only notes about this project are kept here.
   instruments for the 10–150M range, where "most benchmark items sit at chance, accuracy is
   quantized into a few reachable values, and seed variance swamps treatment effects." (Full
   discussion in `docs/topics/small-scale-measurement-science.md`.)
+
+### 2026-08-21 — positions in three ranked lists (full lists in `docs/portfolio-rankings.md`)
+
+- **6–12-month flagship list: Tier 3 (component)**: "under the workshop lens this was my #1;
+  under this lens it's the measurement/noise-floor section of whichever flagship you pick,
+  plus the churn figures. Its standalone ceiling is a good-but-forgettable methods paper."
+- **Workshop-sized list: #3**: "Also pure T0… robust to outcome — the movement-SNR table is
+  the artifact regardless of what it shows, and the noise floor is a citable public good on
+  its own… Slightly slower than IRT only because the windowed drift+diffusion modeling and
+  its validation on synthetic series involve more judgment calls."
+- **Full-conference list: #3**, "Anatomy of the Noise Term" (TRJ-6 + TRJ-1 + TRJ-4 + TRJ-2 +
+  item churn): "*Speed:* T0, but slower than [IRT] because the windowed drift+diffusion
+  modeling requires real iteration and the LR test has a known confound… Pivot is clear: the
+  SNR table + noise floors stand without the river-valley claim. **Expected impact:
+  medium-high.** **Ceiling: high** — a clean zero-training confirmation of river-valley
+  structure in public data is a widely quotable figure." Overlap warning with the IRT paper;
+  a scoop race.

@@ -182,3 +182,19 @@ the same shared instruments — which at this point is the clearest sign the por
 converged: every new direction you've raised has turned out to be a new consumer of the same
 five or six pieces of measurement infrastructure, which is exactly what a coherent research
 program looks like from the inside."
+
+---
+
+## 2026-08-21 — Positions in the ranked lists (full lists in `../portfolio-rankings.md`)
+
+- Decision-reliability frontier: **workshop-sized #5** ("robust to outcome (the frontier is
+  the artifact, wherever it sits)… its clock effectively starts after [IRT]").
+- Realized-exposure audit + order-effect experiment: **workshop-sized #7**; also part of
+  **full-conference #2**.
+- The whole tiny-scale program: **full-conference #6, "Measuring Learning Where Benchmarks
+  Can't See"** (CoLLAs or ICLR): "the most iteration-heavy entry — getting *any* clean
+  RL/posttraining signal at 10–50M may take several design loops… The frontier arm is the
+  safe core; the RL arm is the differentiator. **Expected impact: medium** — big-lab
+  reviewers may shrug. **Ceiling: medium-high**; if IRT-scheduled reward shaping demonstrably
+  unlocks RL at scales where naive reward gives zero gradient, the local-model and academic
+  communities adopt it."

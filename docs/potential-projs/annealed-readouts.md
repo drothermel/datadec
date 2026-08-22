@@ -207,3 +207,21 @@ decisions. Only notes about this project are kept here.
 - Proposed as one of four probes in a "checkpoint tomography" battery; see
   `docs/topics/checkpoint-tomography.md`.
 
+### 2026-08-21 — positions in three ranked lists (full lists in `docs/portfolio-rankings.md`)
+
+- **6–12-month flagship list: Tier 1, #1** as the practical-hook and method halves of "the
+  unified causal program" (with token-level movement and the determinism features): "the
+  decision-flip audit… Everyone using the suite cares"; "validated checkpoint merging on
+  cosine checkpoints as cheap annealed evals, with real decay branches as ground truth."
+  "Degrades gracefully: if the token-level mechanism is noisy at 150M, the audit +
+  merging-validation half is still a solid paper." Advice: "budget one scale step up (~1B)
+  for the core grid." Barriers-on-annealed-variants "folded in."
+- **Workshop-sized list: #4** (T0 half only): "T0, cheap, and answers the question every
+  DataDecide user has… section-shaped [without branches]… the MPL's extrapolation… is
+  unvalidated — the mandatory held-out check could partially fail and cap the claims. Fast,
+  but with a real methodological gate."
+- **Full-conference list: #5**, "How Much of Your Checkpoint Suite Is Schedule Artifact?" —
+  "*Speed:* medium… unusually outcome-robust (merging works → methods contribution; fails →
+  ground-truth audit still stands)… **Expected impact: high**… **Ceiling: high**, especially
+  if a meaningful fraction of published decisions flip." Flagged as a scoop race (public
+  data, Ai2 authors adjacent).

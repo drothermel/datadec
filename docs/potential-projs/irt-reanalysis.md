@@ -199,3 +199,21 @@ pitch is rigor and science rather than large-lab adoption?
 - IRT as curriculum: "'IRT-scheduled RL for small models' — pick tasks whose difficulty puts
   the model's pass rate in the informative band, advance the ladder as θ moves." (Full
   discussion in `docs/topics/small-scale-measurement-science.md`.)
+
+### 2026-08-21 — positions in three ranked lists (full lists in `docs/portfolio-rankings.md`)
+
+- **6–12-month flagship list: Tier 2, #4**: "The problem isn't quality… it's that this
+  project doesn't scale with time. The 10-week version and the 10-month version are nearly
+  the same paper… Reweighted: do it anyway in months 1–2 as the fast insurance paper… then
+  let its dimensionality answer inform how you frame [the flagship's] recipe claims. As the
+  flagship bet: no."
+- **Workshop-sized list: #2**: "Pure T0… the safest bet in the portfolio on outcome… The only
+  real work is the response-matrix builder and principled item filtering."
+- **Full-conference list: #1**, "The Psychometrics of Pretraining Suites" (IRT-1 + IRT-5 +
+  IRT-3 + the derived tiny-scale instrument): "*Fastest because:* entirely T0, every
+  component is either-way publishable… if DIF is sparse, the measurement-instrument
+  contribution carries the paper. Best venue fit: ACL/EMNLP or NeurIPS D&B. **Expected
+  impact: medium-high**… **Ceiling: high** — if recipes are one-dimensional at these scales,
+  'matched loss = matched everything' is a quotable negative result." Overlap warning with
+  the drift/diffusion paper ("a cynical reviewer could ask why they aren't one paper — have
+  the answer ready"); a scoop race.

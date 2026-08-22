@@ -35,7 +35,8 @@ Source inventories: [../refs/lr-schedule-wsd-synthesis.md](../refs/lr-schedule-w
 Resolved gate checks and open questions (with the code used to answer them) are logged in
 [../open-questions-answered.md](../open-questions-answered.md). The recipe-featurization
 literature review (plan and process) lives in [../litreview/](../litreview/). Ideas that do not yet
-belong to a project are staged in [../topics/](../topics/). Danielle's own prompts from the source
+belong to a project are staged in [../topics/](../topics/). Ranked lists of directions
+under different objectives are in [../portfolio-rankings.md](../portfolio-rankings.md). Danielle's own prompts from the source
 conversations are logged verbatim in [../danielle-inputs.md](../danielle-inputs.md).
 
 ## Program-level notes
@@ -155,4 +156,19 @@ stand on their own. This applies equally to every §4 section.
   question unifying the schedule, data-order, plasticity, and MoE work, with the
   frozen-routing hypothesis as its first case study. Full text in
   [../topics/nonstationarity-accounting.md](../topics/nonstationarity-accounting.md).
+
+### 2026-08-21 — portfolio-shape observations from the three ranked lists
+
+- Changing the objective from "workshop, fast" to "strong main-conference, 6–12 months"
+  "inverts most of the weighting logic… variance becomes affordable… infrastructure stops
+  being a penalty… the bar shifts from 'defensible' to 'memorable.' Pure T0 reanalyses mostly
+  cap out below that bar no matter how long you polish them."
+- "The speed ordering and the ceiling ordering are close to inverted — your fastest papers
+  are your safest and your slowest are your biggest — which is the correct shape for a
+  portfolio, and argues for running one from the top third, one from the middle, and
+  starting the long-lead training for one from the bottom third concurrently."
+- "Scoop risk is also inverted: [the T0 DataDecide papers] are races (public data,
+  obvious-in-retrospect questions, and the Ai2 authors adjacent to all of them), while [the
+  sweep- and stack-dependent MoE and branch work] are protected by your stack and sweep."
+- Full lists: [../portfolio-rankings.md](../portfolio-rankings.md).
 

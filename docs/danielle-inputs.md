@@ -215,3 +215,26 @@ the frozen-routing experiments also noted in
 self-curriculum point to [potential-projs/token-movement.md](potential-projs/token-movement.md) §4;
 the accounting framing to the potential-projs README program-level notes.
 
+### Three ranking prompts
+
+> ok great, now, can you reweight the different project directions (including additional
+> ones you might define) based on strongest project outcome from a 6-12 month long effort.
+> main conference paper thats really strong vibes possible depending on how the results come
+> out.
+
+> Ok, given everything we've discussed, can you pull out the 10 strongest clearly separate
+> workshop paper sized contributions, ordered with highest likelihood to come together
+> quickly first + your justification for why? Put aside the question of shared infra for now.
+
+> Then, can you give me a list of 10 weak accept tier or higher full conference submission
+> projects (NeurIPS, ICLR, ACL, CoLLAs, etc) with as much distinction between them as
+> possible (likely there will be some overlap because our idea space isn't quite large enough
+> to support 10 non-overlapping directions, but do your best). Rank them by speed to produce
+> (which includes the iteration time needed if its a less clear cut outcome or if there isn't
+> an obvious pivot if the results don't go our way) but clearly label each by the "expected
+> impact" and the "impact ceiling."
+
+Responses routed to: [portfolio-rankings.md](portfolio-rankings.md) (all three lists, whole);
+each project's or topic's own entries copied into its §4 / topic doc; portfolio-shape
+observations into the potential-projs README program-level notes.
+

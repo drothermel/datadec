@@ -144,3 +144,11 @@ decisions. Only notes about this project are kept here.
 - Proposed as one of four probes in a "checkpoint tomography" battery; see
   `docs/topics/checkpoint-tomography.md`.
 
+### 2026-08-21 — positions in three ranked lists (full lists in `docs/portfolio-rankings.md`)
+
+- **6–12-month flagship list: Tier 3 (component)**: "standalone drops (the 'all
+  cross-recipe barriers are high' degenerate outcome is too likely), but [GEO-opt-3] — does
+  annealing collapse barriers between recipes — is a genuinely great section inside [the
+  flagship], with a causal knob."
+- **Workshop-sized list:** not included. **Full-conference list:** not included as a
+  standalone.

@@ -208,3 +208,19 @@ balancing/z-loss/router-LR arms; mid-training router reset; annealing the balanc
 raising router LR late; router-vs-expert timescale separation as a knob), plus a standard
 diagnostic — per-expert input drift from routing logs. Full text in
 [nonstationarity-accounting.md](nonstationarity-accounting.md).
+
+---
+
+## 2026-08-21 — Positions in the ranked lists (full lists in `../portfolio-rankings.md`)
+
+- Sweep reanalysis: **workshop-sized #6** ("Either outcome is strong… mid-list only because
+  of practical unknowns: whether the sweep saved checkpoints… If checkpoints exist, this
+  could move up two slots" — they do) and **full-conference #4, "One Partition, Many
+  Architectures"** ("the soft/hierarchical matching method needs genuine development and
+  validation — that's the iteration cost. Both outcomes strong; no pivot needed. **Expected
+  impact: high**… **Ceiling: high**"). Protected from scooping by the sweep.
+- Reroute vs. rewrite: **workshop-sized #9** ("Ninth on logistics, not on merit") and
+  **full-conference #7, "Reroute or Rewrite? Where Training Moves an MoE"** ("iteration risk
+  is logistical rather than scientific. **Expected impact: high**… **Ceiling: high.**").
+- Tiny-MoE floor study: **deliberately cut** from the workshop list ("fair dense-baseline
+  tuning at 5M-active is a tarpit and it's outcome-fragile").

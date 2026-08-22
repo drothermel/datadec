@@ -235,3 +235,15 @@ If DataDecide's realized per-window source mixture drifts from nominal (small sa
 fractions, no per-window stratification), "every run has an implicit, unintended curriculum"
 — which "confounds every timing/curriculum claim built on these suites including your own
 U_c(t) program." Open gate in [../open-questions-answered.md](../open-questions-answered.md).
+
+---
+
+## 2026-08-21 — Position in the ranked lists (full lists in `../portfolio-rankings.md`)
+
+**Deliberately cut** from the workshop-sized list ("remain your strongest *eventual* papers
+but are second-act by construction"). **Full-conference #10, "The Functional Types of
+Pretraining Data"**: "*Speed:* slowest by design — it consumes the frozen branch policy
+from [annealed readouts], the response-vector spec, and the powered tiny-scale substrate… its
+central risk… has only a modest pivot (the surrogate-validation study stands alone as a
+methods paper). **Expected impact: high** if the effects exist. **Ceiling: the highest on
+the list**… it's the paper the previous nine were quietly building toward."

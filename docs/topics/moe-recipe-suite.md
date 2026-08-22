@@ -71,3 +71,20 @@ load-balancing artifact. Recorded in full in
 Final checkpoints for the full sweep exist and are headed to Hugging Face; intermediate
 checkpoints/logs are likely obtainable for some of the collaborator's upcoming experiments.
 Details in [../open-questions-answered.md](../open-questions-answered.md).
+
+---
+
+## 2026-08-21 — Position in the ranked lists (full lists in `../portfolio-rankings.md`)
+
+The 6–12-month flagship list names this as **Tier 1, #2, "Does the data choose the
+experts?"** — the "reweighting" previously referenced here. "Train small MoE models
+(FLAME-MoE-style config, ~40–100M active) on 4–6 DataDecide recipes spanning the outcome
+range, 2–3 seeds, dense checkpoints with routing logged… Nobody has this. It's simultaneously
+a resource contribution (the MoE analogue of DataDecide, at pilot scale), a mechanism result…
+and it rescues [the routing follow-up] from orphan status… Risks: operationally the heaviest
+new-training item after [the WSD suite], MoE training at tiny scale can be finicky, and
+expert specialization at 64-experts/small-scale may be weak. I'd rate it slightly below #1
+on probability-of-strong-outcome but comparable on ceiling." Offered as the
+background-cluster track "if you're willing to accept MoE training risk for a shot at a
+second novel paper." (That list predates the Slicing-and-Dicing discussion, so it assumes a
+FLAME-MoE-style config rather than the sweep's validated defaults.)

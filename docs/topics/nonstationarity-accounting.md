@@ -138,3 +138,17 @@ does training secretly depend on' is a thesis-shaped question that unifies the s
 work, the data-order work, the plasticity work, and the MoE work under one roof — which,
 given how consistently your last four directions have converged on shared instruments, might
 just be the name of the thing you've been circling."
+
+---
+
+## 2026-08-21 — Position in the ranked lists (full lists in `../portfolio-rankings.md`)
+
+The frozen-routing case study is **workshop-sized #10** ("Last only because every experiment
+is a new training intervention… the most sequential of the ten. If the reset test lands on
+outcome three — frozen routing costs loss — this retroactively becomes the most important
+paper on the list") and **full-conference #8, "Does MoE Training Suppress Its Own
+Non-Stationarity?"** ("inherently sequential (pilot → grid) and its most exciting outcome…
+is the least likely one… **Expected impact: medium-high.** **Ceiling: very high** — if
+suppressed routing adaptivity measurably costs quality, this changes how people train MoEs,
+full stop"). Overlaps with the reroute-vs-rewrite paper ("#8 genuinely needs #7's
+machinery").

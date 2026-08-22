@@ -185,3 +185,23 @@ decisions. Only notes about this project are kept here.
   itself be a candidate explanation for why small-scale decisions sometimes mispredict
   large-scale ones." Interventional follow-up: "retrain 10–50M models with stratified vs.
   sequential sampling of the same recipe, n=10 seeds, and measure the order effect directly."
+
+### 2026-08-21 — positions in three ranked lists (full lists in `docs/portfolio-rankings.md`)
+
+- **6–12-month flagship list:** the determinism-profile data link is "folded in" to the
+  flagship; cross-suite features→dynamics is **Tier 2, #3** ("irreducibly correlational…
+  its best headline… actually belongs inside [the flagship] as the data-link section"); the
+  data card is **Tier 3 (component)** — "indispensable hygiene and your most citable single
+  table; not a main-conference paper. Ship it early as a short paper or blog-plus-artifact."
+- **Workshop-sized list: #1** (REC-a + REC-5): "Fastest by a wide margin… the headline
+  finding… is *already in hand*… Zero outcome risk… Two to three weeks to a draft." Also
+  **#7**, the realized-exposure audit + order-effect experiment: "Outcome-robust in a useful
+  way: material drift is a confound finding about a widely used suite; no drift is a
+  validation people will cite defensively."
+- **Full-conference list: #2**, "What Is Actually in DataDecide" (REC-a + label correction +
+  REC-5 + the realized-exposure/order-effect audit with the stratified-sampling
+  intervention): "*Speed:* the core is mechanical and half-started; the only training is
+  10–50M reruns with many seeds; no outcome risk anywhere. **Expected impact: medium-high**…
+  **Ceiling: medium-high**; it caps out unless the order effect is large, in which case
+  'small-scale data decisions are confounded with data order' becomes a genuinely disruptive
+  claim." A scoop race.

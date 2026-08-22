@@ -295,3 +295,22 @@ decisions. Only notes about this project are kept here.
   [TOK-4] are measurements of exactly this. Loss-of-plasticity in 'stationary' pretraining
   stops being paradoxical under this lens: from the gradient's perspective, pretraining was
   never stationary." (Full discussion in `docs/topics/nonstationarity-accounting.md`.)
+
+### 2026-08-21 — positions in three ranked lists (full lists in `docs/portfolio-rankings.md`)
+
+- **6–12-month flagship list: Tier 1, #1** as the mechanism and thesis halves of "the unified
+  causal program": "causal per-token decay-responsiveness [TOK-3], crossed with the
+  epistemic/aleatoric split [TOK-2] and the entropy-bucket observational result [TOK-obs-4]
+  — the first causal token-level test of the river/wall picture"; "cross-recipe migration
+  dynamics [TOK-4]… with each corpus's determinism profile as the predictor." The "vibes"
+  figure: "a heatmap of per-token decay-responsiveness vs. entropy bucket vs. training
+  position, with recipes overlaid."
+- **Workshop-sized list: #8** (Stage 1): "the highest-ceiling figure in the dense program…
+  Eighth because it's the first entry needing a real compute campaign *and* the first with
+  genuine null risk: a clean null… folds back into [the drift/diffusion paper] as a section.
+  The item-flip piece [TOK-obs-2] de-risks it and ships early regardless."
+- **Full-conference list: #9**, "Which Tokens Does the Cooldown Fix?" (Stage 2): "*Speed:*
+  slow — gated on [the annealed-readouts] branch grid existing with per-token logging… real
+  iteration before the signal is trusted. Pivot exists (descriptive taxonomy + partial
+  decomposition) but is a step down. **Expected impact: high**… **Ceiling: very high** —
+  clean signal here is main-venue-strong and the mechanistic anchor for the whole program."
