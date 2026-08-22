@@ -197,3 +197,14 @@ axis, and the failure mode of routing at tiny scale is informative about what ro
 doing at normal scale." Credible because of the sweep's validated small-scale
 hyperparameters. Full text in
 [small-scale-measurement-science.md](small-scale-measurement-science.md).
+
+---
+
+## 2026-08-21 — Frozen-routing case study (from the non-stationarity discussion)
+
+The reroute-vs-rewrite machinery is reused by four small experiments testing whether early
+routing commitment is imposed by the stability apparatus or intrinsic (commitment timing vs.
+balancing/z-loss/router-LR arms; mid-training router reset; annealing the balancing loss or
+raising router LR late; router-vs-expert timescale separation as a knob), plus a standard
+diagnostic — per-expert input drift from routing logs. Full text in
+[nonstationarity-accounting.md](nonstationarity-accounting.md).

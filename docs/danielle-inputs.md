@@ -195,3 +195,23 @@ The expanded form of the previous prompt, from the other conversation. Routed to
 tiny-MoE part to [topics/moe-analysis-program.md](topics/moe-analysis-program.md); the
 Drosophila composition point to the potential-projs README program-level notes.
 
+### Non-stationarity in MoE routing, and as a cross-cutting subthread
+
+> Interesting! on the non-stationarity piece, I've actually been thinking about how
+> non-stationarity is handled in MoE models. specifically "The OpenMoE analysis found that
+> routing decisions are predominantly based on token IDs with minimal context relevance, and
+> token-to-expert assignments are determined early in pretraining and remain largely fixed."
+> then, I would expect routing changes to lead to non-stationarity in training which would
+> likely make things instable, and I wonder whether we've optimized the training setup to try
+> to remove that instability which has had the effect of removing the ability or incentive for
+> routing to update over training. I'm not confident enough in that very specific hypothesis
+> to build a program around it, but it does seem like non-stationarity is a potentially large
+> subthread that is playing out in many of these model training settings, not just the
+> "continual learning" and "RL" spaces that often discuss them explicitly. thoughts?
+
+Routed to: [topics/nonstationarity-accounting.md](topics/nonstationarity-accounting.md);
+the frozen-routing experiments also noted in
+[topics/moe-analysis-program.md](topics/moe-analysis-program.md); the endogenous
+self-curriculum point to [potential-projs/token-movement.md](potential-projs/token-movement.md) §4;
+the accounting framing to the potential-projs README program-level notes.
+

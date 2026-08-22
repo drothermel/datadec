@@ -285,3 +285,13 @@ decisions. Only notes about this project are kept here.
   exactly the right covariate set for this"; and the load-balancing objective "actively
   pushes routing toward uniformity," confounding observed assignments. (Full discussion in
   `docs/topics/moe-analysis-program.md`.)
+
+### 2026-08-21 — on endogenous non-stationarity
+
+- "Even under iid data, the effective distribution is data weighted by current gradient
+  magnitude, so as easy/deterministic tokens saturate, the learning signal automatically
+  migrates toward harder tokens. Every model runs an implicit self-curriculum; your
+  Rho-1-style loss-trajectory taxonomy [TOK-opt-2] and the river/wall token migration
+  [TOK-4] are measurements of exactly this. Loss-of-plasticity in 'stationary' pretraining
+  stops being paradoxical under this lens: from the gradient's perspective, pretraining was
+  never stationary." (Full discussion in `docs/topics/nonstationarity-accounting.md`.)
