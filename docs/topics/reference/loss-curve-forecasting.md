@@ -10,6 +10,13 @@ emergence-as-measurement claim both depend on.
 
 ---
 
+## 2026-08-22 — pointer: proxy-metric forecasting literature
+
+The downstream-*accuracy* forecasting line (Patel et al. 2026 proxy metrics over expert
+trajectories; NeuNeu 2601.19831; FLP 2410.08527; model ladders 2412.04403; observational
+scaling laws 2405.10938) is accumulated in `small-scale-evaluation-metrics-literature.md`;
+this file stays with loss-curve shape and extrapolation.
+
 ## 2026-08-18 — the LLM loss-curve-prediction thread (from the Research Trajectory page)
 
 **Papers**

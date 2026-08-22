@@ -122,6 +122,18 @@ and the compute-/loss-matched pairing utility.
 
 ## 4. External assessments
 
+### 2026-08-22 — a published downstream consumer of DataDecide to track
+
+From Danielle's SciSpace literature review on small-scale evaluation metrics
+(record in `../topics/reference/small-scale-evaluation-metrics-literature.md`; Danielle-supplied ID arXiv 2605.18607; author list unresolved across the two review versions). Patel et al. 2026 use the 25 DataDecide corpora and the 1B target
+rankings as a data-selection benchmark and report beating the suite's own proxies
+(decision accuracy > 0.85 at ~10⁻⁵ target compute). For the data card this is (1) a
+consumer whose numbers can be re-derived from the validated tables — a second
+reproduction target after the original paper, and a check on whether their ground-truth
+ranking used the nominal-compute or label-as-token-share assumptions this card
+corrects; (2) evidence for the "eval suite used as a decision benchmark" framing.
+Unverified beyond the agent summaries.
+
 ### 2026-08-22 — the validation section's thesis and its three-way classification
 
 *Provenance caveat: the reproduction numbers cited here come from agent-written verification code that Danielle has not yet personally read, debugged, run, or analyzed; treat them as flags for where to look first, not as findings (her statement in `../topics/reference/datadecide-data-pipeline.md`).*

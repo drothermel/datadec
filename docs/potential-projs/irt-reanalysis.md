@@ -139,6 +139,21 @@ other and can be picked by impact.
 Dated, attributed notes from external review conversations, recorded for consolidation — not
 decisions. Only notes about this project are kept here.
 
+### 2026-08-22 — frontier baseline from the literature: token-level proxies over expert trajectories
+
+From Danielle's SciSpace literature review on small-scale evaluation metrics
+(record in `../topics/reference/small-scale-evaluation-metrics-literature.md`; Danielle-supplied ID arXiv 2605.18607; author list unresolved across the two review versions). Patel et al. 2026 rank models with a RankSVM over 80 token-level proxies
+computed on expert solutions (Spearman 0.81 vs. 0.36 for cross-entropy; 0.33 for
+rBridge) and rank DataDecide corpora at 10⁻⁵ of target compute. For the
+decision-reliability frontier this is the strongest published proxy to beat alongside
+the reproduced DataDecide continuous metrics: the question becomes "how much further
+does θ-based measurement push past proxy-over-expert-trajectory", and the honest
+comparison needs their proxies reimplemented on the instance tables (their statistics
+are per-token; `choices.parquet` has per-choice likelihoods, which is coarser — note
+the mismatch). Also relevant to the response-model choice: their finding that
+entropy- and frequency-weighted variants dominate echoes the per-character
+normalization result here. Unverified beyond the agent summaries.
+
 ### 2026-08-22 — margin demoted, the metric hierarchy, the two-cluster null, and a BoolQ twist
 
 *Provenance caveat: the reproduction numbers cited here come from agent-written verification code that Danielle has not yet personally read, debugged, run, or analyzed; treat them as flags for where to look first, not as findings (her statement in `../topics/reference/datadecide-data-pipeline.md`).*

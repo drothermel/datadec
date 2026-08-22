@@ -112,6 +112,22 @@ Dated, attributed-by-date notes from external review conversations, recorded for
 consolidation — not decisions. Only notes about this project are kept here. Related-work
 claims in quoted text are unverified.
 
+### 2026-08-22 — the incumbent proxy for small-scale decisions: Patel et al. 2026
+
+From Danielle's SciSpace literature review on small-scale evaluation metrics
+(record in `../topics/reference/small-scale-evaluation-metrics-literature.md`; Danielle-supplied ID arXiv 2605.18607; author list unresolved across the two review versions). "Forecasting Downstream Performance of LLMs With Proxy Metrics" builds
+80 proxies (10 token-level statistics × 8 weightings) from one forward pass over
+expert-written solutions and, on DataDecide's 25 corpora, reports decision accuracy
+> 0.85 for the 1B target at ~10⁻⁵ of target compute using frequency-weighted top-5
+accuracy — i.e. it already claims the "how far down does decision signal survive"
+result TINY-1 is built to measure, from the same tables. Consequences: (1) TINY's
+method axis must include their proxy family as the incumbent, not only DataDecide's
+own continuous metrics; (2) their result is at the corpus-ranking level for one
+target; TINY's replicate/seed and per-task analyses, and the IRT θ comparison, are the
+parts they do not cover; (3) the expert-trajectory trick (score the candidate on a
+strong model's solution) is the natural proxy to add to the decision-reliability
+frontier. Unverified beyond the two agent summaries; read the paper first.
+
 ### 2026-08-22 — WSD arms in the substrate
 
 Danielle would add WSD arms to DataDecide-dense if it is built at all (verbatim in

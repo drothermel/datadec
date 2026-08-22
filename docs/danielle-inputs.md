@@ -2891,6 +2891,34 @@ Routed to: [topics/reference/moe-literature.md](topics/reference/moe-literature.
 behind the "mixture of parrots" line; mechanism for the reasoning null; the
 knowledge-vs-reasoning decomposition as the comparison to reproduce on the sweep).
 
+### 2026-08-22 — SciSpace literature review: evaluation metrics at small scale (two versions)
+
+> Please do a literature review of papers related to metrics for evaluation of language
+> models at small scale, especially for downstream tasks. One example of a related paper
+> would be https://arxiv.org/abs/2605.18607 which you can start with.
+
+> I want you to significantly expand sections 3.4, 3.5, 5.2, 5.3, 5.4, 6.2, 6.3, 7.2, 7.3,
+> 7.4, 7.5, 7.6, which more details about the specific experiments and key takeaways. Also
+> create a comparison table summarizing the most important papers with their methods,
+> evaluation metrics, key results, followup questions, potential weaknesses, and any other
+> crucial information.
+
+(pasted: version 1 as markdown, version 2 as a LaTeX document with a 34-row comparison
+table. No artifact bundle path was given for this one.)
+
+Routed to: [topics/reference/small-scale-evaluation-metrics-literature.md](topics/reference/small-scale-evaluation-metrics-literature.md)
+(new reference topic: the seed paper condensed, the landscape by theme, intake notes on
+the conflicting author lists, v2's swapped bibliography entries, and v2 restructuring
+instead of expanding the requested sections) and dated notes in
+[potential-projs/tiny-scale-measurement.md](potential-projs/tiny-scale-measurement.md)
+§4 (incumbent proxy for small-scale decisions),
+[potential-projs/irt-reanalysis.md](potential-projs/irt-reanalysis.md) §4 (frontier
+baseline), [potential-projs/early-dynamics-prediction.md](potential-projs/early-dynamics-prediction.md)
+§4 (training-time forecasting prior art; NeuNeu),
+[potential-projs/datadecide-data-card.md](potential-projs/datadecide-data-card.md) §4
+(a published consumer to re-derive), and a pointer in
+[topics/reference/loss-curve-forecasting.md](topics/reference/loss-curve-forecasting.md).
+
 ### Post-intake decisions — 2026-08-22 (data-layer conversation)
 
 > 1. I think data-card/ validation work should be its own project doc, so b as you say.

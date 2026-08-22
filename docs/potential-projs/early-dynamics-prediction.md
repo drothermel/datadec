@@ -146,6 +146,21 @@ from — recorded for consolidation, not decisions. Figures, attributions, and b
 quoted from the reviews are unverified; Danielle's prompts are logged verbatim in
 `../danielle-inputs.md`.
 
+### 2026-08-22 — training-time forecasting prior art: Patel et al. 2026 and NeuNeu
+
+From Danielle's SciSpace literature review on small-scale evaluation metrics
+(record in `../topics/reference/small-scale-evaluation-metrics-literature.md`; Danielle-supplied ID arXiv 2605.18607; author list unresolved across the two review versions). Two results sit directly on EDP's question for LMs: (1) Patel et al.
+extrapolate downstream accuracy along the OLMo-3-7B checkpoint trajectory over an 18×
+compute horizon using token-level proxies, at roughly half the RMSE of loss-based
+baselines — one architecture, one scale; (2) NeuNeu / "Neural Neural Scaling Laws"
+(2601.19831) frames scaling-law prediction as time-series extrapolation over observed
+accuracy trajectories plus token-level validation losses, 2.04% MAE on 66 tasks vs.
+3.29% for logistic fits, zero-shot to unseen families. Both belong in the related-work
+gate beside the LC-PFN / Domhan / Klein line: EDP's distinguishing claim has to be the
+*early-curve-feature* framing (shape features of the first window predicting final
+rank across recipes/seeds), since "proxy at checkpoint t predicts accuracy at
+checkpoint 18t" is now published. Unverified beyond the agent summaries.
+
 ### 2025 (undated, pre-July) — Lineage: the CIFAR-10 loss-slope study
 
 An analysis of Danielle's notes from an earlier period (the original notes export is lost;
