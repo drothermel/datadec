@@ -400,6 +400,67 @@ table; and −log p_LM(r) depends on which LM prices the representation — it s
 decoder, or a fixed public LM declared as a prior, for the same fairness reason as the
 dictionary rule in the baseline suite.
 
+### 2026-08-22 — extractable information: 𝒱-information, the behavioral retention ratio, and the leakage split
+
+Danielle's follow-up (verbatim core): "in practice models often take a function and just
+strip out white space and flatten etc to shorten so while length of representation can be
+a proxy, there is a real concept of no behavioral information being lost even if the
+representation can't literally be run (because I guess our encoder already knows
+'programming' so that part doesn't have to be preserved in the representation). So I'm
+looking for alternative measures that get at the 'extractable info' overlap between the x
+from X and z from Z that could be useful from an analysis perspective even if not directly
+optimizable. It could use a separate LM and prompting setup (or set of them) to aim to
+measure some type of baseline, etc?" Response, condensed; adopt as the analysis layer.
+
+- **The confound named**: compression by abstraction ("returns the number of unique
+  elements") vs. compression by minification (`def f(x):return len(set(x))`) — both short,
+  both behaviour-preserving, only the second carries implementation identity. Length and
+  Shannon MI cannot separate them; what is wanted is *agent-relative, extractable*
+  information.
+- **Formalism: predictive 𝒱-information** (Xu et al., arXiv 2002.10689). For an
+  extractor family 𝒱, H_𝒱(B | Z) = inf_{v∈𝒱} E[−log v(B | Z)] and I_𝒱(Z → B) = H_𝒱(B) −
+  H_𝒱(B | Z): how much Z reduces a *chosen LM/probe family's* uncertainty about
+  behaviour B. The pretrained LM's programming knowledge is part of 𝒱 — so "the encoder
+  already knows programming" becomes a feature of the measurement rather than a bug, and
+  Z need only carry the task-specific facts the prior lacks.
+- **Behavioral retention ratio**: Retention_𝒱(Z) = I_𝒱(Z → B) / I_𝒱(X → B), with the
+  denominator measured by giving the same extractor the source — because even full source
+  does not yield perfect extraction for a bounded probe. Conditional form I_𝒱(Z → B | C)
+  with C = signature, imports, type hints, template: what Z adds beyond the coding prior
+  and the visible interface.
+- **Information profile rather than one B**: input–output behaviour; edge cases;
+  exceptions / mutation / side effects; algorithm class; complexity class; and two
+  *leakage* targets — names/formatting/exact AST, and "which implementation among
+  equivalent variants". Define S = implementation-specific details and measure
+  **I_𝒱(Z → S | B)**: after controlling for behaviour, how much does Z still reveal about
+  the original implementation? A good abstraction: high I_𝒱(Z → B), low I_𝒱(Z → S | B);
+  minified source scores high on both — exactly the distinction wanted.
+- **Behavioral bottleneck index**: BBI(Z) = I_𝒱(Z→B | C)/I_𝒱(X→B | C) − γ ·
+  I_𝒱(Z→S | B,C)/I_𝒱(X→S | B,C).
+- **Four instantiations of 𝒱**: (i) *decoder-pass* — K decodes, −log q_Z as a behavioral
+  conditional description length (pass@k, Codex 2107.03374); (ii) *question–answer* —
+  generate semantic questions ("what does this return on …?", "can it mutate its
+  argument?", "what happens on an empty list?", "is the output sorted?") and score an LM's
+  answers given X, Z, minified X, signature only, or nothing — H_𝒱(B | ·) without Z being
+  runnable; (iii) *contrastive* — one Z against N candidate behaviours (semantic
+  information) or N behaviourally-equivalent candidate sources (leakage); (iv) *MDL probe*
+  — a small probe predicting behavioural labels from Z, reported as online codelength not
+  accuracy (Voita & Titov, EMNLP 2020).
+- **Experimental matrix**: conditions ∅ / signature only / Z / minified X / X / oracle
+  docstring or spec; per condition report H_𝒱(B | ·) and H_𝒱(S | B, ·). Target sentence
+  of the kind: "the NL representation preserves 92% of extractable behavioural
+  information and 18% of extractable implementation identity; minified code preserves
+  98% and 93%."
+
+What this adds: the analysis layer the plot needs beside the rate axis. The minified-code
+column is the control that makes "abstraction, not shortening" a measured claim rather
+than an assertion; the leakage term I_𝒱(Z → S | B) is the principled successor to §1's
+n-gram copy detection and to the previous note's log p_D(x | r). Two Claude-added notes:
+𝒱 must be declared and frozen per experiment (model, prompt set, K), since every number
+here is relative to it; and the same machinery is ELI's measurement of "extractable
+competence" with the roles swapped (there the model is the thing probed and the wrapper is
+𝒱), so the two projects can share one probe harness.
+
 ### 2026-08-22 — the correctness ladder and the classical code-compression precedents (Pro-mode search)
 
 A four-turn conversation (record in `../topics/reference/code-compression-literature.md`,

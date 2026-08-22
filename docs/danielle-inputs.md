@@ -3492,3 +3492,19 @@ Routed: TLC §4 note (IB objective; relevance variable = test-suite signature, n
 proxies — description length −log p_LM(r) for I(X;R), smoothed K-sample pass probability
 for I(R;Y_T), leakage incl. log p_D(x|r), InfoNCE lower bound; Behavioral Bottleneck
 Score; two cautions on K and on which LM prices the rate); three ledger rows.
+
+> Interesting, so the reason I'm interested in thinking in this direction is because in
+> practice models often take a function and just strip out white space and flatten etc to
+> shorten so while length of representation can be a proxy, there is a real concept of no
+> behavioral information being lost even if the representation can't literally be run
+> (because I guess our encoder already knows "programming" so that part doesn't have to be
+> preserved in the representation). So I'm looking for alternative measures that get at the
+> "extractable info" overlap between the x from X and z from Z that could be useful from an
+> analysis perspective even if not directly optimizable. It could use a separate LM and
+> prompting setup (or set of them) to aim to measure some type of baseline, etc?
+
+(Continuation of the IB conversation.) Routed: TLC §4 note (abstraction-vs-minification
+confound; predictive 𝒱-information; behavioral retention ratio; information profile with
+the leakage target I_𝒱(Z→S | B); behavioral bottleneck index; four extractor
+instantiations; the ∅/signature/Z/minified/X/oracle matrix); ELI §4 pointer (same
+machinery, roles swapped); two ledger rows.

@@ -296,6 +296,8 @@ Context column = the ~80 characters preceding the ID in the topic, as a memory a
 | physics/0004057 | Tishby, Pereira & Bialek — The information bottleneck method | `text-latent-code-autoencoder` §4 | agent-supplied | TLC | |
 | 1612.00410 | Alemi et al. — Deep Variational Information Bottleneck (OpenReview HyxQzBceg; ID Claude-supplied) | `text-latent-code-autoencoder` §4 | Claude-added | TLC | |
 | 1807.03748 | van den Oord et al. — Contrastive Predictive Coding / InfoNCE | `text-latent-code-autoencoder` §4 | agent-supplied | TLC | |
+| 2002.10689 | Xu et al. — A Theory of Usable Information Under Computational Constraints (𝒱-information) | `text-latent-code-autoencoder` §4 | agent-supplied | TLC, ELI | |
+| (ACL 2020.emnlp-main.14) | Voita & Titov — Information-Theoretic Probing with Minimum Description Length | `text-latent-code-autoencoder` §4 | agent-supplied | TLC | |
 
 Rows: 208 (181 agent-supplied, 27 Claude-added, 5 named without ID).
 

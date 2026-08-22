@@ -141,6 +141,16 @@ The TLC draft PDF the conversation was conducted against is not on file; its int
 surfaced are recorded in `text-latent-code-autoencoder.md` §4. Related-work claims in the
 responses are unverified.
 
+### 2026-08-22 — 𝒱-information as the shared measurement language with TLC (pointer)
+
+TLC §4 (2026-08-22, extractable information) records predictive 𝒱-information (Xu et al.
+2002.10689) — information usable by a declared extractor family — as the analysis layer
+for "what is recoverable from a representation". The same object, roles swapped, is this
+project's "extractable competence": here the probed variable is the model and the wrapper
+family is 𝒱, so ELI's competence-vs-size curves are I_𝒱(model → task) for a declared 𝒱.
+One probe harness can serve both; the declaration of 𝒱 (wrappers, prompts, budget) is the
+thing both must publish.
+
 ### 2026-08-22 — structured-output literature as external evidence for the wrapper-vs-skill split
 
 Danielle, in a separate conversation (record in
