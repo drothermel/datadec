@@ -448,6 +448,26 @@ tokens-per-solved-problem metric — the published analog of this project's opti
 accounting). The SciSpace search CSVs on disk are a seeded candidate list for the full
 prior-art pass (still parked).
 
+### 2026-08-22 — estimation design for the census and optimizer loop (from a per-docstring estimation conversation)
+
+A four-turn conversation on estimating a (model, docstring) pass fraction at fixed samples
+(full record in `../topics/reference/estimation-and-calibration-methods.md`) is, in effect,
+TLC-1's measurement design. Items to carry into the census spec: fractional test score as
+the response (already chosen, §4 2026-07-11) with the *program* as the independent unit;
+canonicalize and deduplicate completions but keep multiplicities; bootstrap over
+completions (block bootstrap over API calls, since OpenRouter temp-0 is not iid); Wilson or
+Jeffreys for all-pass rates at small n; empirical Bernstein when a conservative floor is
+wanted; paired designs for candidate-vs-incumbent comparisons. Two additions beyond the
+noise-floor plan: (1) **conformalized shrinkage** — combine the small-n mean with a cheap
+predictor (compile rate from 1–3 samples, visible-test score, sample diversity, a
+docstring-adequacy judge) and calibrate the residual against high-n estimates on held-out
+problems, simulating the same budget; (2) **calibrate after selection** — the optimizer
+picks the best candidate from many, so its reported score must be calibrated under the
+full selection rule, not per candidate. The docstring-adequacy judge ("does the docstring
+determine the behaviour the tests check?", structured ambiguity fields) doubles as a
+prompt-repair and routing instrument. Danielle flags conformal prediction as a
+cross-project tool.
+
 ### 2026-08-22 — a second novelty check returns the opposite verdict: "Language Bottleneck Models"
 
 A separate novelty query (Danielle's prompt not kept; the response plays it back as "a

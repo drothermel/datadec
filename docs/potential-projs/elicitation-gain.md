@@ -432,6 +432,16 @@ AlphaCodium should also be cited in TLC's prior-art gate. The "agreed" list is t
 response's reading; the only explicit decision Danielle made in the conversation is
 wrapper-only.
 
+### 2026-08-22 — estimation toolkit shared with TLC
+
+The per-docstring estimation conversation recorded in
+`../topics/reference/estimation-and-calibration-methods.md` applies to this project's
+harness unchanged (fractional score, program as the unit, block bootstrap over provider
+batches, Wilson/Jeffreys at small n, calibrate-after-selection when the best wrapper is
+chosen). One ELI-specific use: a split-conformal predictor from cheap wrapper signals to
+the expensive elicited-competence target gives calibrated intervals on "how much is
+extractable" per model size — Danielle flags conformal prediction as a cross-project tool.
+
 ### Intake notes (first turn)
 
 - The response is sensible and matches the TLC machinery, but it is unsourced, and it

@@ -78,6 +78,20 @@ attributions) are unverified: the responding agents did not run literature searc
 reliable knowledge of the current landscape. Treat them as leads to check, not facts. The ideas
 stand on their own. This applies equally to every §4 section.
 
+### 2026-08-22 — conformal prediction as a cross-project tool (Danielle's flag)
+
+From a conversation on estimating per-(model, docstring) code-generation performance at a
+fixed sample budget (record: `../topics/reference/estimation-and-calibration-methods.md`).
+Danielle: "even though this is in the context of a specific task, I think this whole line
+of questioning is super relevant to many of the projects that we've discussed. especially
+conformal prediction is something I want to make sure to flag as a potential tool/analysis
+method." Where it plausibly lands (Claude-added map, unconfirmed): calibrated intervals on
+any cheap-predictor → expensive-target forecast (EDP early curves, REC/FUNC featurization
+→ rank, TINY proxies); conformal risk control for accept/route decisions in the TLC/ELI
+harnesses; calibrate-after-selection whenever a best recipe, checkpoint, candidate, or
+wrapper is chosen from many (IRT, ANN, TLC); the interval-method table as the default
+reporting stack behind "DataDecide with error bars".
+
 ### 2026-08-22 — "DataDecide with error bars" as a unifying sentence
 
 *Provenance caveat: the reproduction numbers cited here come from agent-written verification code that Danielle has not yet personally read, debugged, run, or analyzed; treat them as flags for where to look first, not as findings (her statement in `../topics/reference/datadecide-data-pipeline.md`).*

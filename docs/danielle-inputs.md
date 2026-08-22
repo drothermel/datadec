@@ -3184,3 +3184,44 @@ Applied: new [topics/staging/rewritten-anneal-slice.md](topics/staging/rewritten
 TLC §1's positioning paragraph with her read; a maintained working list (keepers by role,
 known drift and term collisions) at the top of
 [topics/reference/schedules-and-annealing-literature.md](topics/reference/schedules-and-annealing-literature.md).
+
+### Undated (intake 2026-08-22) — estimating per-(model, docstring) performance; bootstrap; intervals; conformal prediction
+
+> Ok, next topic. So even though this is in the context of a specific task, I think this
+> whole line of questioning is super relevant to many of the projects that we've discussed.
+> especially conformal prediction is something I want to make sure to flag as a potential
+> tool/analysis method.
+
+> ### Task
+> I'm using LLMs to write functions based on a docstring and method signature.
+> The model performance is defined as the percentage of test cases that its output passes
+> on a predefined test set.
+> I want to estimate a given model's performance at writing code for a single docstring.
+> **Challenge**: Even with temperature 0 many models give diverse results which means I
+> need multiple samples to estimate the expected performance.
+> How can I improve the accuracy of my estimates at a fixed number of samples from a given
+> (model, docstring) pair?
+
+> What about bootstrapping?
+
+> Ok, and what are the comparable other non bootstrap methods of estimating uncertainty.
+> How do they compare to bootstrapping?
+
+> How does conformal prediction relate to the problem and methods we've discussed so far?
+
+> Ok, so I'm interested in how I could use conformal prediction along with cheap estimators
+> given multiple docstrings and potentially multiple models.
+> One thing I imagine is I could give a docstring to a model and ask whether it provides
+> enough info to exactly reconstruct the original function, or to pass strict test sets or
+> something like this
+> How could something like that work to either improve my ability to predict model success,
+> improve my estimates of model perf or improve a prompt use to have the model generate the
+> code from the docstring?
+
+Routed: new methods toolkit
+[topics/reference/estimation-and-calibration-methods.md](topics/reference/estimation-and-calibration-methods.md)
+(full condensed record: estimator discipline, interval-method table, conformal vs.
+bootstrap targets, the conformal + cheap-estimator design, relevance map); TLC §4 note
+(census measurement design, conformalized shrinkage, calibrate-after-selection); ELI §4
+pointer; program-level note in the potential-projs README carrying her flag verbatim;
+three IDs to the ledger.

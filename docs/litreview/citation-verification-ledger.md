@@ -266,6 +266,9 @@ Context column = the ~80 characters preceding the ID in the topic, as a memory a
 | 2505.05427 | quality-over-quantity claim support (unexamined) | `schedules-and-annealing-literature` | agent-supplied | ANN | |
 | 2412.06724 | LLM-as-judge quality assessment (unexamined) | `schedules-and-annealing-literature` | agent-supplied | ANN | |
 | 2509.23629 | Annealed-RLVR — SFT heating inside RLVR; term collision | `schedules-and-annealing-literature` | agent-supplied | ANN | |
+| 1604.04173 | Lei et al. — distribution-free predictive inference for regression (split conformal) | `estimation-and-calibration-methods` | agent-supplied | TLC, ELI, EDP | |
+| 2208.02814 | Angelopoulos et al. — Conformal Risk Control | `estimation-and-calibration-methods` | agent-supplied | TLC, ELI, EDP | |
+| 2107.03374 | Codex / HumanEval — unbiased pass@k estimator | `estimation-and-calibration-methods` | agent-supplied | TLC, ELI, EDP | |
 
 Rows: 208 (181 agent-supplied, 27 Claude-added, 5 named without ID).
 
