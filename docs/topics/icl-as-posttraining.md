@@ -167,3 +167,15 @@ recipe effects on ICL-ability only hold within low-barrier pairs, that's a findi
 hold across basins, that's a stronger one." Also: "mechanism-level metrics (task vectors,
 GD-similarity scores) may not be comparable across basins at all" (Juneja et al., ICLR
 2023).
+
+---
+
+## 2026-08-18 — a falsifiable prediction: a critical period for elicitability (from the critical-periods discussion)
+
+"Is there a critical period for *elicitability* distinct from the one for performance —
+i.e., can a deficit window leave final loss fully recovered while permanently flattening
+the in-context learning curve? Given that induction-head formation is a known sharp phase
+transition early in training, there's a specific, falsifiable prediction: deficits spanning
+that transition should damage ICL disproportionately." Protocol statistics 1–2 (ICL loss
+curves, induction-head strength) are the outcome columns. See
+[critical-period-timing-study.md](critical-period-timing-study.md).

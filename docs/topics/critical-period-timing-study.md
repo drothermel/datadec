@@ -37,3 +37,62 @@ featurization thread, and your basin thread all at once."
 plasticity diagnostic panel (warm-starting decomposition); ICL curves and induction-head
 strength (ICL-as-post-training protocol statistics 1–2); the many-seed tiny-scale substrate
 (tiny-scale measurement).
+
+---
+
+## 2026-08-18 — reproducing Achille et al. directly, then deconstructing it (from the Research Trajectory page)
+
+Question posed (Danielle): if the goal were the same reproduce-then-deconstruct treatment
+applied directly to the 2019 critical-periods paper, what would it look like? Reproducing
+and deconstructing these two core papers from the current-era perspective seems like a
+great way to start, with each continuation thread tying into one or both, and the ultimate
+goal being to reconcile them in the modern era.
+
+"The parallel reproduction works, and it's actually cleaner than the warm-starting one in
+some ways because the original already comes with a mechanism claim to test."
+
+**The original protocol, restated as a template.** "Train on CIFAR with a *deficit*
+(blurred/downsampled images) for a window of epochs, remove it, train to convergence, and
+plot final performance as a function of deficit onset and duration — the dose-response
+curve that mirrors the animal experiments. Plus the two controls that made the paper:
+high-level deficits like vertical flipping leave no permanent damage, and the Fisher trace
+tracks the sensitive window. The reproduction is trivially affordable at your scale, and
+your CNN statistics framework slots in directly — the original's dose-response curves
+were, in classic 2018 style, thin on seeds, so even the pure replication with proper
+confidence bands on the *shape* of the sensitivity window is a contribution."
+
+**Deconstruction axes — "whether the critical period is a fact about *networks* or about
+*training recipes*."**
+- (a) "**Effective-learning-rate artifact** — the sharpest modern challenge. The original
+  used fixed decay schedules, so 'the period closed' is confounded with 'the LR dropped.'
+  Test: after deficit removal, re-warm the LR (or use a WSD schedule where the deficit ends
+  during the stable phase) and see how much of the permanence evaporates — the exact analog
+  of the ELR result that closed the warm-starting gap, and the river-valley reading is that
+  a still-high LR should let the run climb out and find a different valley."
+- (b) "**Basin commitment** — run sibling seeds from shared init, with and without deficit,
+  and measure pairwise interpolation barriers over time. The critical-period claim becomes
+  geometric: the period closes when the deficit run's basin diverges irreversibly from the
+  control's. This turns 'decisive early transient' from metaphor into a measurable event
+  time."
+- (c) "**The Fisher peak** — the original's own mechanism, now one hypothesis among several
+  rather than the conclusion; log it alongside the Dohare/Lyle panel (dead units, feature
+  rank, curvature) and see which diagnostic's timeline actually predicts the sensitivity
+  window."
+- (d) "**Optimizer/normalization modernization** — does the window survive AdamW, warmup,
+  BatchNorm→LayerNorm, ViT vs. CNN? Nobody has systematically checked whether critical
+  periods are an SGD-era phenomenon."
+
+**The forward bridge — elicitability as an outcome column.** "Run the deficit protocol on
+your small transformers and measure ICL curves and induction-head strength alongside
+accuracy. The pointed question: is there a critical period for *elicitability* distinct
+from the one for performance — i.e., can a deficit window leave final loss fully recovered
+while permanently flattening the in-context learning curve? Given that induction-head
+formation is a known sharp phase transition early in training, there's a specific,
+falsifiable prediction: deficits spanning that transition should damage ICL
+disproportionately… a critical period for elicitability is 'pretraining shapes
+post-training beyond final loss' with a mechanism and a *timestamp*; no such period would
+dissociate capability formation from elicitability formation, which none of the existing
+literature can currently distinguish."
+
+The unified design with the warm-starting reproduction is in
+[warmstarting-decomposition.md](warmstarting-decomposition.md).

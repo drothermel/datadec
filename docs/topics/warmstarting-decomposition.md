@@ -93,3 +93,28 @@ this frame, interventions that artificially reopen the period. The literature ha
 the adjacency (papers on relearning cite both works side by side) but your factorial
 breakdown would be the first to test whether the Fisher trajectory actually *predicts* which
 fix works." See [critical-periods.md](critical-periods.md).
+
+---
+
+## 2026-08-18 — the unification: one early-window intervention grid (from the Research Trajectory page)
+
+"**Ash & Adams and Achille et al. are *the same experiment*.** Both apply an early-window
+distribution intervention and measure permanent damage: warm-starting's 'train on 50% of
+the data first' is just a data-poverty deficit, and blur is a data-corruption deficit. So
+rather than two reproductions, you can build one intervention grid — intervene(*what*:
+blur, subset, label noise, mixture shift; *when*: onset; *how long*: duration) ×
+recipe(*LR schedule, optimizer, architecture*) × measure(*final accuracy, diagnostic
+panel, basin divergence*) — in which each classic paper is a single cell. Every result in
+both papers becomes a special case, and the modern fixes (shrink-perturb, ELR re-warming,
+continual-backprop resets) become 'period-reopening interventions' whose success or failure
+per cell is itself mechanism evidence. That grid *is* the retrospective's experimental
+spine, and it's honest to your history: you're not retrofitting a story, you're showing the
+two papers that bracketed your entry into the field were probing one phenomenon from two
+sides."
+
+**Sequencing.** "Do the warm-start reproduction first anyway. It's the smaller grid, it
+debugs the shared infrastructure (seed management, diagnostic logging,
+interpolation-barrier tooling), and its factorial results tell you which axes are live
+before you commit the critical-period grid, which is the bigger design." The critical-period
+half (reproduction template, deconstruction axes, elicitability column) is in
+[critical-period-timing-study.md](critical-period-timing-study.md).

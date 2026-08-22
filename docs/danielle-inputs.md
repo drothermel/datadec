@@ -520,3 +520,25 @@ reference topic [topics/critical-periods.md](topics/critical-periods.md); new st
 [topics/pretraining-to-posttraining.md](topics/pretraining-to-posttraining.md); the
 potential-projs README program-level notes.
 
+### Toggle 13 — 2026-08-18 18:04 (reproducing the critical-periods paper; reconciling the two core papers)
+
+> Wow. It's really cool that it all does come together. Um, so my question is basically for
+> the introduction to the retrospective, and then we discussed the experiments that I could
+> do if my goal was basically to reproduce the Ash and Adams paper and then decompose. And I
+> see how just adding fisher information, um, ties in the, um, critical learning periods
+> idea as well. But I guess I'm curious if I wanted to do the same type of reproduction
+> directly on the critical learning periods paper, like, whatever one we'd consider to be
+> kind of the first, the twenty nineteen one, um, then what would that look like? because it
+> seems like basically having experiments that kind of reproduce and then deconstruct with
+> the reference or the perspective of current era. Um, these two core papers as the
+> beginning seems like a really great way to start. And then as you've pointed out, each of
+> the different continuation threads tie into one or both, and, really, the whole ultimate
+> goal is to reconcile them in the modern era.
+
+Routed to: [topics/critical-period-timing-study.md](topics/critical-period-timing-study.md)
+(reproduction template, deconstruction axes, elicitability column);
+[topics/warmstarting-decomposition.md](topics/warmstarting-decomposition.md) (the unified
+intervention grid and sequencing); [topics/icl-as-posttraining.md](topics/icl-as-posttraining.md)
+(the elicitability critical-period prediction); the potential-projs README program-level
+notes (spine and one-sentence pitch).
+

@@ -299,4 +299,13 @@ Full text for each: `recipe-featurization.md` §4 (first),
   thread, and your basin thread all at once." Reference topic:
   [../topics/critical-periods.md](../topics/critical-periods.md); staged study:
   [../topics/critical-period-timing-study.md](../topics/critical-period-timing-study.md).
+- The retrospective's experimental spine and one-sentence pitch (same date): one
+  early-window intervention grid — intervene(what, when, how long) × recipe × measure — "in
+  which each classic paper is a single cell," with modern fixes as "period-reopening
+  interventions." "Two foundational anomalies from 2019–2020 showed that *when* a network
+  learns something determines *what* it can become, the modern field keeps rediscovering
+  this at LLM scale without the connection, and the thesis builds the measurement framework
+  that reconciles them." Staging topics:
+  [../topics/warmstarting-decomposition.md](../topics/warmstarting-decomposition.md),
+  [../topics/critical-period-timing-study.md](../topics/critical-period-timing-study.md).
 
