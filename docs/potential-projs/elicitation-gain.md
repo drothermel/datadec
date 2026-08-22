@@ -128,6 +128,11 @@ argument.
 5. **ELI-2 runs** with controls; cliff bisection; plots with cost.
 6. **ELI-3** once pre/post checkpoint pairs are located or produced.
 
+**Cross-listed (2026-08-22).** `irt-reanalysis.md` IRT-10 — the BoolQ format intervention
+(cloze vs. MCQ, label-balanced subsets, flipped label order on a checkpoint subset) — is
+the first concrete instance of the elicitation thesis: an apparent capability floor that
+may be a measurement floor. Keep its design consistent with the ELI-2 controls.
+
 ## 4. External assessments and origin notes
 
 Dated notes from the source conversation (undated, ~2026; intake 2026-08-22), moved from

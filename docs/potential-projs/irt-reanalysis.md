@@ -57,6 +57,23 @@ correctness, `choices.parquet` for per-choice likelihoods).
 - **IRT-7 — Explain DIF items.** Cluster recipe-DIF items by task/domain. (The
   token-determinism clustering from the synthesis needs a reference model;
   out of scope for this T0 project unless it is already built elsewhere.)
+- **IRT-8 — BoolQ autopsy: hard or broken as measurement?** Separate "universally
+  too hard" from "prior-tracking / response style" with the variance structure rather
+  than item parameters: residual inter-item dependence within checkpoints (IRT-6
+  machinery), regression of per-checkpoint accuracy on predicted-yes fraction, and
+  whether margins are structured by label rather than content. Addendum: test whether
+  BoolQ's nontrivial *decision* accuracy survives controlling for prior alignment — a
+  benchmark that is predictable while measuring nothing.
+- **IRT-9 — Margin decomposition.** Using per-choice likelihoods in `choices.parquet`,
+  plot correct-prob and best-incorrect-prob trajectories separately per task to test the
+  mechanism for margin's negative correlation with accuracy on strong-distractor tasks;
+  establishes per-character Normalized Correct Probability as the continuous response
+  for IRT-5 and margin as an object of study.
+- **IRT-10 — BoolQ format intervention.** Re-score BoolQ on a checkpoint subset under
+  alternative formats (cloze vs. MCQ presentation, label-balanced subsets, flipped label
+  order; forward passes only) to split small-scale failure into format artifact vs.
+  genuine difficulty. First concrete instance of the elicitation thesis (cross-listed in
+  `elicitation-gain.md`).
 
 ## 2. Doability and impact
 
@@ -82,6 +99,9 @@ but a custom EM/VI fit is a few hundred lines). Main engineering risks:
 | IRT-4 per-item emergence | **Medium** | Nice figure and connects to proxy-metric literature; less novel on its own. |
 | IRT-6 diagnostics | Low (supporting) | Necessary hygiene, not a result. |
 | IRT-7 DIF clustering | Medium | Depends on IRT-3; domain clustering alone is modest. |
+| IRT-8 BoolQ autopsy | High | Case study that makes the psychometrics concrete; reviewers' "too hard" reading is testable and plausibly wrong. |
+| IRT-9 margin decomposition | Medium–High | Cheap, decisive, self-contained metric finding; fixes the response-model choice. |
+| IRT-10 format intervention | Medium | Turns the autopsy into an intervention; T1 forward passes. |
 
 **Likely paper shape.** IRT-1 + IRT-5 + IRT-2 as the core ("a psychometric
 reanalysis of DataDecide"), IRT-3 as the headline if it lands, IRT-4 as a figure.

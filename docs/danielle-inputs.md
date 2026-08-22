@@ -2689,6 +2689,21 @@ and a one-line provenance caveat on every §4 note that cites reproduction numbe
 (irt-reanalysis ×2, trajectory-statistics, annealed-readouts, recipe-featurization ×2,
 README program note).
 
+### Post-intake decisions — 2026-08-22 (data-layer conversation)
+
+> 1. I think data-card/ validation work should be its own project doc, so b as you say.
+> 2. yes for folding BoolQ into IRT as a named direction
+> 3. yes to data decide dense + wsd, I think this convo made it seem much more plausible
+> 4. yes, lets add them
+
+Applied: new [potential-projs/datadecide-data-card.md](potential-projs/datadecide-data-card.md)
+(`DCARD`; the four data-card notes moved out of REC §4 with a pointer left behind; README
+row); IRT-8 BoolQ autopsy, IRT-9 margin decomposition, IRT-10 format intervention added to
+[potential-projs/irt-reanalysis.md](potential-projs/irt-reanalysis.md) (IRT-10 cross-listed
+on ELI); new staging topic [topics/staging/datadecide-dense.md](topics/staging/datadecide-dense.md)
+consolidating the design constraints from TINY/TRJ/WSD §4; two open items (training-loss
+availability; 750M seed coverage) in [open-questions-answered.md](open-questions-answered.md).
+
 ### Post-intake decisions — 2026-08-22 (third pass)
 
 > (1) promote (2) I did run a few versions of this, I think we need a new section that

@@ -156,6 +156,18 @@ experiments will log intermediates.
   claim built on DataDecide (including the stage-dependent data-value ideas in
   `docs/potential-projs/functional-featurization.md`) and is itself a candidate audit paper — the
   time-resolved extension of REC-a.
+- **Training-loss availability.** Danielle recalls the DataDecide authors saying they could
+  not provide loss metrics across runs, but asked that this not be treated as fact until she
+  double-checks. Repo fact: `processed/scaling-law/checkpoint-losses.parquet` carries
+  `train_cross_entropy` and four validation cross-entropies, populated for ~16% of rows —
+  none at ≤90M, 7–22% at 150M–750M, 79% at 1B. The data-card ledger entry must state which
+  of "not logged" / "logged but not released" / "released partially" applies. Gates the
+  wording of `docs/potential-projs/datadecide-data-card.md` DCARD-1(d) and whether
+  DCARD-opt-1 (own-mixture CE reconstruction) is a replacement or a supplement.
+- **750M seed coverage.** Danielle's recollection: "750M only has 1 seed that trains
+  fully" (hedged). Established so far: the 750M aggregate OLMES table is truncated at step
+  26,250 while the instance table runs to 63,599 (entry above). Check per-seed max step
+  from the instance table. Gates DCARD-3's abnormality ledger and any 750M seed-level CI.
 - **The AI2 "fine-tuning dataset that moves specific-task metrics" (co-author "Kyle").** Has
   it been released? Raised by an AI2 contact during the 2025 post-training project (SFT on
   Tulu / Tulu 3 over DataDecide models moved nothing from multiple choice through
