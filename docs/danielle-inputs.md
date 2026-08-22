@@ -313,3 +313,15 @@ to [topics/pretraining-to-posttraining.md](topics/pretraining-to-posttraining.md
 [potential-projs/annealed-readouts.md](potential-projs/annealed-readouts.md); the tension and
 asymmetric design to the potential-projs README program-level notes.
 
+### Toggle 4 — Use In-Context Learning as the Post-Training
+
+> Alternatively could we treating "in context learning" as the "post-training" and explore
+> any features that could be extracted from that or elicitation.
+
+Routed to: staging topic [topics/icl-as-posttraining.md](topics/icl-as-posttraining.md);
+papers to [topics/pretraining-to-posttraining.md](topics/pretraining-to-posttraining.md) and
+[topics/plasticity.md](topics/plasticity.md); cross-note in
+[topics/posttraining-experiment-design.md](topics/posttraining-experiment-design.md);
+[potential-projs/tiny-scale-measurement.md](potential-projs/tiny-scale-measurement.md) §4;
+the potential-projs README program-level notes.
+

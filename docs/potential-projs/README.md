@@ -246,4 +246,8 @@ Full text for each: `recipe-featurization.md` §4 (first),
   testing a *ranking* the cheap tier predicted — a much lower-powered, therefore
   affordable, test than estimating effect sizes." Staging topic:
   [../topics/posttraining-experiment-design.md](../topics/posttraining-experiment-design.md).
+- Same-date restatement of the recurring question, from the ICL discussion: "Your whole
+  trajectory — loss curves, proxy metrics, elicitation — keeps circling one question: *what
+  cheap continuous observable reveals latent capability?*" Staging topic:
+  [../topics/icl-as-posttraining.md](../topics/icl-as-posttraining.md).
 

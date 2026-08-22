@@ -86,3 +86,11 @@ claim is false at your scales, that's also a finding."
 - "Then spend the expensive budget on two or three confirmation runs testing a *ranking* the
   cheap tier predicted — a much lower-powered, therefore affordable, test than estimating
   effect sizes."
+
+---
+
+## 2026-08-18 — a gradient-free variant
+
+Treating in-context learning as the post-training stage makes "seeds" one forward pass and
+sidesteps the elicitation threshold; the proxy candidate is the ICL curve (loss on the k-th
+demo vs. k) on existing checkpoints. Recorded in [icl-as-posttraining.md](icl-as-posttraining.md).

@@ -106,3 +106,14 @@ learner' in plasticity terms) predicts post-training outcomes."
   causal rather than correlational.
 - TinyZero — "RL visibly works at 0.5–3B on countdown and simple arithmetic."
 - The design alternatives themselves are in `posttraining-experiment-design.md`.
+
+---
+
+## 2026-08-18 — ICL vs. fine-tuning as access routes to the same capabilities
+
+- *Eliciting Fine-Tuned Transformer Capabilities via Inference-Time Techniques* — "a formal
+  argument that capabilities acquired through SFT can be approximated by the base model via
+  in-context learning without parameter updates."
+- Bornschein, Lyle, Pascanu et al., *Fine-Tuned In-Context Learners for Efficient Adaptation*
+  — "prompt-based methods excel in few-shot scenarios but their effectiveness plateaus as
+  more data becomes available." Design consequence in `icl-as-posttraining.md`.

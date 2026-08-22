@@ -268,3 +268,12 @@ program looks like from the inside."
 - **Asymmetric design.** Full sweep with seeds only where cheap; expensive budget on "two or
   three confirmation runs testing a *ranking* the cheap tier predicted." Full discussion in
   `docs/topics/posttraining-experiment-design.md`.
+
+### 2026-08-18 — a gradient-free proxy candidate (from the Research Trajectory page)
+
+- In-context learning curves — "loss on the k-th demo as a function of k — a continuous,
+  smooth, per-token metric, no benchmark thresholds" — measured on existing checkpoints,
+  averaged over prompt orderings and samples, as a candidate predictor of post-training
+  movement; and round-trip reconstruction fidelity through a natural-language bottleneck as
+  "a capability probe — one that's graded rather than thresholded, unlike pass@1." Full
+  discussion in `docs/topics/icl-as-posttraining.md`.

@@ -53,3 +53,11 @@ multi-power law.
   proposes for LM training.
 - Regime: "plasticity work assumes an explicitly non-stationary data stream (task sequences,
   RL bootstrapping)."
+
+---
+
+## 2026-08-18 — the plasticity group's move into ICL-vs-fine-tuning
+
+"*Fine-Tuned In-Context Learners for Efficient Adaptation* is by Bornschein, Clare Lyle,
+Razvan Pascanu et al. — the plasticity crowd literally moved into 'ICL vs fine-tuning as
+adaptation' territory." See `icl-as-posttraining.md`.
