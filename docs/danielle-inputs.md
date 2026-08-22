@@ -943,3 +943,29 @@ Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-c
 
 Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-code-autoencoder.md)
 ("Point 3" section; new open question on borrowed geometry + the embedder check).
+
+### Text-latent code autoencoder, Point 4 (prior art) — conversation 2026-07-11, intake 2026-08-22
+
+> Yeah. I see your point there. Um, but I actually think that there's another nearby cluster
+> of related work, which is, um, I guess, they're kind of two pieces of this. One piece is
+> in the actual coding space, and that is around using natural language intermediates for
+> tasks like translation between coding languages or to do, um, debugging. So, like,
+> translating code into natural language, making hypotheses about what might be going
+> wrong, and then doing rollouts in natural language before moving into… back into code. So
+> I think an ld bug is the… is, like, in the title of the debugging paper that I'm talking
+> about, and there were a few different natural language for translation papers that I saw
+> as well. So that's one piece. And then there's another paper that was… I think it was
+> called, like, natural language bottleneck or something like this. And the idea was
+> basically that you… it wasn't for code, but it was for, like, student work, um, for,
+> like, grading student work. And so the idea was that you did the bottleneck on the
+> student work, and you use the intermediate representation for scoring, um, and they
+> found that it was useful or something like that. But they didn't really optimize the
+> bottleneck. They just tried a few different prompts, and that's also true for the code,
+> um, example. So I think that, like, each of the individual pieces has definitely been
+> done in terms of, like, having a bottleneck and using it, um, between code and natural
+> language, and then separately optimizing a loop that has… optimizing a loop with a
+> language model. of these pieces individually has been done, but I haven't really seen
+> anything that does all of them together.
+
+Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-code-autoencoder.md)
+("Point 4" section; prior-art map flagged as needing a literature pass).

@@ -198,6 +198,44 @@ and if you're right, they should form a better-organized vector space than embed
 the raw code — clustering by function rather than surface. Cheap to check, and it converts
 this whole dispute into a measurement."
 
+## 2026-07-11 — Point 4, prior art to position against
+
+**Claude's initial map (unverified).** Round-trip correctness (attributed to Allamanis et al.,
+DeepMind) — the same code→NL→code loop with tests, used purely as an LLM evaluation metric;
+LLM-driven prompt optimization (DSPy, OPRO, TextGrad); prompt compression (LLMLingua). "None
+of them treat the optimized intermediate representation itself as the object of interest."
+
+**Danielle's additions (from memory; titles to be resolved).** A nearer cluster in two
+pieces. (1) In the coding space: natural-language intermediates for *translation between
+programming languages* ("a few different natural language for translation papers") and for
+*debugging* — "translating code into natural language, making hypotheses about what might be
+going wrong, and then doing rollouts in natural language before moving back into code"; she
+recalls "LDB" or similar in the debugging paper's title. (2) A "natural language bottleneck"
+paper — not code, but grading student work: bottleneck the student work, use the intermediate
+for scoring, found useful. In both, "they didn't really optimize the bottleneck. They just
+tried a few different prompts." Summary: "each of the individual pieces has definitely been
+done ... but I haven't really seen anything that does all of them together."
+
+**Response (near-verbatim; unverified attributions).** "The useful cut is what each line does
+with the intermediate. In the code work (explain-then-translate for cross-language
+translation, the self-debugging line where the model narrates hypotheses in NL before
+touching code), the intermediate is ephemeral scaffolding: generated, consumed once,
+discarded ... The bottleneck-for-grading paper — which is essentially the
+concept-bottleneck-model lineage with free text in place of a concept vector — does treat
+the representation as the object, but statically ... And the DSPy/OPRO line has the loop but
+aims it at task instructions rather than representations. So your gap statement gets crisp:
+**everyone uses NL intermediates, some even treat them as representations, but nobody learns
+them.**"
+
+Two upshots: "this literature is feasibility evidence, not just positioning: unoptimized
+intermediates already carry enough information to translate, debug, and grade. So the bet
+isn't 'can natural language hold the information' — that's settled — it's 'does optimizing
+the channel buy abstraction and control.'" And the differentiating claims: "that an
+optimized representation beats a sensibly hand-prompted one (otherwise it's
+explain-then-translate with extra steps), and that one representation serves multiple
+downstream uses (otherwise it's scaffolding, not a representation). Those two comparisons
+are the entire defense of the gap."
+
 ## Open questions
 
 - Bottleneck: now framed as *optional* and itself an experimental variable — does
@@ -209,7 +247,10 @@ this whole dispute into a measurement."
   cross-decoding as objective; readability of S as nearly free vs. needing pressure.
   (Loss design deferred — motivation stage.)
 - Borrowed geometry: formalize the discrete-latent / information-geometry reading; run the
-  embed-the-representations check (function-clustering vs. raw-code embeddings). Points 4+
-  pending.
+  embed-the-representations check (function-clustering vs. raw-code embeddings). 
+- Prior-art map needs a real literature pass: resolve the NL-for-code-translation papers,
+  the LDB-like debugging paper, the NL-bottleneck-for-grading paper, round-trip correctness,
+  concept bottleneck models. Differentiating claims: optimized > hand-prompted baseline;
+  one representation serves multiple downstream uses. Points 5+ pending.
 
 **Waiting on:** the remaining points of the point-by-point discussion; a promotion decision.
