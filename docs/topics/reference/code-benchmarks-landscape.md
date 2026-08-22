@@ -13,6 +13,113 @@ benchmarks the report does not cover.
 
 ---
 
+## Undated (intake 2026-08-22) — HumanEval's derivative ecosystem, and cross-benchmark overlap/dedup studies (two turns)
+
+**Danielle's prompts.** (1) HumanEval is so widely adopted that many works must build on
+it — test augmentation (HumanEval+), extracting the comments or just the stub, using the
+snippets for docstring creation, LM- or program-based augmentation — "please explore what
+has been done" across tasks, benchmarks, datasets, extensions, and name other test-backed
+code datasets with the same kind of afterlife. (2) Are there attempts to catalog or
+deduplicate across major coding datasets/benchmarks? "A substantial portion of the data
+samples are very very similar functions or compositions of similar functions" — how has
+this been studied, what are the conclusions and impact, how would one categorize/cluster.
+
+**Response 1 — HumanEval as a seed dataset (condensed, all IDs response-supplied).**
+
+- *Harder / less gameable:* HumanEval+ / EvalPlus 2305.01210 (~80× tests, LLM + mutation
+  input generation); EvoEval 2403.19114 (LLM-evolved into 7 benchmarks / 828 problems:
+  difficult, creative, subtle, combine, tool-use, verbose, concise); HumanEval Pro
+  2412.21199 (self-invoking: solve base, then a harder problem that uses it);
+  contamination-resistant branch — HumanEval_T (template tasks by combinatorial test
+  design), DyCodeEval (dynamic prompt variants + DyPass metric), HumanEvalNext (manual
+  revision; 2551 vs 1325 assertions) — cited together as 2412.01526 (which paper that ID
+  actually is, unchecked).
+- *Multilingual:* HumanEval-X 2303.17568 (hand-written C++/Java/JS/Go, 820 samples);
+  MultiPL-E 2208.08227 (transpiled to 18 languages; also MBPP); MBXP / Multilingual
+  HumanEval; HumanEval-XL 2402.16694 (23 NLs × 12 PLs); mHumanEval (200+ NLs);
+  CL-HumanEval (strips function names, variable names, execution examples to isolate
+  cross-lingual transfer); HumanEval.jl.
+- *Task reformulations on the same problems:* HumanEvalPack (Fix / Explain / Synthesize
+  in 6 languages; `fixdocs` variant); InstructHumanEval (docstring → instruction, with a
+  no-context setting); HumanEval Infilling (single-line, multi-line, random-span).
+  **On docstring generation specifically: no major HumanEval-derived benchmark whose
+  headline task is code → docstring was found**; HumanEval-X's README notes the fields
+  can be recombined for summarization.
+- *Prompt / docstring / comment manipulation:* ReCode 2212.10264 (30+ semantics-preserving
+  transformations over docstrings, names, syntax, format; HumanEval + MBPP); NLPerturbator
+  / HumanEval-R 2406.19783; HumanEvalComm 2406.00215 (762 ambiguous/inconsistent/
+  incomplete descriptions; Communication Rate, Good Question Rate); substrate studies —
+  unit-test generation under random comments / animal names / partial docstrings
+  (2404.03114; incorrect comments hurt most), LLM docstring reformulation (little
+  change), **ShortenDoc** (docstring compression on HumanEval and EvoEval; ~30%
+  compression often preserves or improves pass@1).
+- *New modalities / domains:* HumanEval-V 2410.12381 (visual context required); Qiskit
+  HumanEval 2406.14712; a bio-image-analysis HumanEval-style set (57 prompts).
+- *Other families with afterlives:* MBPP (MBPP+ 35× tests, MultiPL-E/MBXP, MBPP Pro);
+  SWE-bench (Lite, Verified 500, Multilingual 300, Multimodal 517); BigCodeBench
+  (1,140 tasks, Hard ~150, Complete/Instruct, Lite Pro); reactions to HumanEval's limits
+  — LiveCodeBench 2403.07974, NaturalCodeBench, CoderEval (230 Py + 230 Java, six
+  dependency levels), HumanEvo.
+
+**Response 2 — cataloguing and overlap (condensed).** No master deduplicated map exists;
+three lines of work:
+
+- *Benchmark-of-benchmarks audits:* How2Bench 2501.10711 audits 274 code benchmarks —
+  62% did not deduplicate or did not say; 81.8% of 2023–24 benchmarks did not address
+  contamination; 18% later served as sources for newer benchmarks (lineage propagates
+  overlap).
+- *Cross-benchmark leakage:* LessLeak-Bench 2502.06215 — 83 SE benchmarks vs
+  pretraining corpora, MinHash+LSH then manual verification, 1.7T comparisons; average
+  leakage modest (Py 4.8%, Java 2.8%, C/C++ 0.7%) but QuixBugs 100%, BigCloneBench
+  55.7%, APPS 10.8%, SWE-bench-Verified 10.6%; on APPS StarCoder-7B 4.4% pass@1 on leaked
+  vs 0.9% on non-leaked items. CodeSearchNet vs five downstream sets 2401.07930
+  (SourcererCC clone detection, Jaccard fingerprints, duplicate graph; CodeTrans 22.8%,
+  Python-150 15.0%, TLC 13.8% — "TLC" there is a code-summarization dataset, not this
+  project's acronym); LoRA/prefix tuning more susceptible to leakage than full FT.
+  HumanEval/MBPP contamination 2403.04811 — solution-level overlap: HumanEval 12.2% in
+  the Pile / 18.9% in The Stack, MBPP 3.6% / 20.8%; StarCoderBase-15.5B 72% on the
+  top-10%-most-similar MBPP items vs 22% on the bottom 10%; decontamination narrows the
+  StarCoderBase–Pythia gap from 23.8 to 13.9 points. Substring Levenshtein + AST Dolos.
+- *Dedup-by-construction:* ContextBench 2602.05892 (4,497 pooled issue tasks → 3,100
+  unique via metadata + embedding near-dup + manual review → 1,136); CrossCodeEval (repos
+  chosen disjoint from The Stack); StarCoder2 / The Stack v2 2402.19173 (MinHash+LSH,
+  5-grams, Jaccard 0.7; Kaggle notebooks shrank 78%).
+- *Background:* DéjàVu (~85M unique of 428M GitHub files, ~70% clones; ACM
+  10.1145/3133908); Allamanis — metrics inflated up to 100% on duplicated corpora.
+- *Proposed clustering scheme:* clone depth (Type 1–4) × granularity (sample / function
+  / file / repo / issue) × representation view (prompt, code-lexical, AST, semantic);
+  build a multi-layer graph (exact hash, MinHash/LSH, token/AST clone, embedding edges),
+  connected components / community detection, human review of borderline clusters; for
+  HumanEval-like sets keep **three overlap matrices — prompt↔prompt, code↔code,
+  prompt↔code** — since they leak independently.
+
+**Intake notes.**
+
+- *TLC prior art, by relevance:* ShortenDoc is the closest existing thing to the
+  compression project's NL-side question (how much docstring can you remove before
+  pass@1 moves) and is not yet in `nl-bottleneck-prior-art.md` or the TLC litreview
+  plan; it belongs in gate 1 alongside GenDLN. ReCode and NLPerturbator are the
+  perturbation-robustness baselines the TLC-0 control tasks should be compared against
+  (semantics-preserving prompt transforms with a measured pass-rate delta). CL-HumanEval's
+  name-stripping is a ready-made "signature without hints" condition for the condition
+  matrix. HumanEvalPack/Explain is already the loop baseline (`humanevalexplain-results.md`).
+- *The docstring-generation gap is a real finding:* the response searched for it and found
+  no flagship benchmark; `humanevalexplain-results.md` and TLC's Explain baseline are the
+  nearest things. Worth a targeted second search before relying on "nobody has done it."
+- *Overlap for TLC-0 and IRT:* the three-matrix recommendation maps directly onto the
+  leakage accounting (prompt↔code overlap between the representation and the source is
+  exactly I(Z→S)); for IRT-style per-item work, near-duplicate items violate local
+  independence and should be clustered before fitting — the clone-depth × view scheme is
+  a usable pre-processing spec. HumanEval's within-benchmark redundancy ("compositions of
+  similar functions") was Danielle's actual question and is **not answered**: every study
+  cited measures benchmark↔corpus or benchmark↔benchmark overlap, not within-benchmark
+  item similarity. That is a small, doable analysis on 164 items (AST clone + docstring
+  embedding clustering) and would feed IRT-11 directly.
+- *Response errors/cautions:* 2412.01526 is used for three different contamination-
+  resistant benchmarks — at most one is right; 2404.03114's identity is unchecked;
+  response-cited "v1/v3" HTML versions mean numbers may be from superseded drafts. All
+  percentages are quoted from the response, unverified.
+
 ## Undated (intake 2026-08-22) — How HumanEval and MBPP are actually prompted (two turns)
 
 **Danielle's prompts.** (1) The Codex paper seems to "just literally pass in the stub"; she

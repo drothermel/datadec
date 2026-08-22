@@ -3623,3 +3623,36 @@ Routed to [topics/reference/code-benchmarks-landscape.md](topics/reference/code-
 (prompt condition as part of the TLC-0 harness contract). No new ledger rows (HumanEval
 2107.03374 and MBPP 2108.07732 already present; other sources are GitHub pages).
 
+### HumanEval's derivative ecosystem; cross-benchmark overlap and dedup (two turns)
+
+> HumanEval is such a commonly used coding dataset for language models that I'm sure
+> there are many additional works that build on top of it in some way. I think an obvious
+> way would be HumanEval++, which builds on top of it to augment the test sets to
+> demonstrate that it could have more use if you do that. But it seems likely that there
+> are things that, for example, extract the comments themselves, or just the stub, and see
+> how well models can do at predicting. Or places where people use the code snippets to
+> test things like docstring creation, etc. Or, for example, using it to generate
+> additional data by doing artificial methods of augmenting either with the language model
+> or using programmatic methods to manipulate code. I can think of a ton of different ways
+> that you could build on something like HumanEval. And since it is so widely adopted, my
+> thought is that probably some of this has been done. Please explore what has been done
+> and give me an overview of the things, the different types of tasks, benchmarks,
+> datasets, extensions that have been done on HumanEval. And if there are other datasets
+> that are similar in that they are code datasets that can be used for generation with
+> test sets or things like this, but that have been extensively manipulated and built upon
+> in the way that I'm describing, then I'm interested in those as well.
+
+> Very interesting. Are there attempts anywhere to catalog or deduplicate across major
+> sets of coding datasets and or benchmarks? It seems like a substantial portion of the
+> data samples are very very similar functions or compositions of similar functions and
+> I'm curious about how this has been studied and what the conclusions have been/what type
+> of impact this can have or even how you could go about categorizing/clustering etc on
+> this info.
+
+Routed to [topics/reference/code-benchmarks-landscape.md](topics/reference/code-benchmarks-landscape.md)
+(new entry) with a §4 prior-art pointer in
+[potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+and 21 ledger rows. Flagged: ShortenDoc belongs in TLC litreview gate 1; the
+within-benchmark redundancy question Danielle actually asked is not answered by any cited
+study.
+

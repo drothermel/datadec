@@ -1552,3 +1552,17 @@ stub or an instruct wrapper, and pin the harness commit. MBPP's prompt leaks tes
 design, which matters for leakage accounting. Details and sources:
 `../topics/reference/code-benchmarks-landscape.md` (prompt-format entry).
 
+### 2026-08-22 — HumanEval derivative ecosystem as prior art and controls
+
+From the HumanEval-afterlife survey in `../topics/reference/code-benchmarks-landscape.md`:
+**ShortenDoc** (docstring compression on HumanEval/EvoEval; ~30% compression often keeps
+or improves pass@1) is the nearest existing work to the compression project's NL-side
+question and should join gate 1 of the litreview plan; **ReCode** and **NLPerturbator**
+are the semantics-preserving perturbation baselines the TLC-0 control tasks are compared
+against; **CL-HumanEval**'s name-stripping is a ready "signature without hints" condition
+for the condition matrix; **EvoEval** supplies harder/creative variants if HumanEval
+saturates. No flagship code→docstring benchmark was found (HumanEvalExplain remains the
+loop baseline). The overlap literature's three-matrix scheme (prompt↔prompt, code↔code,
+prompt↔code) is the same bookkeeping as TLC-0's leakage accounting; within-HumanEval item
+redundancy is unstudied and is a small analysis worth doing before per-item claims.
+

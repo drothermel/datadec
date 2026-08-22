@@ -349,3 +349,24 @@ WizardCoder; `chang2024effective` there is 2402.04177 (different paper) and
 | 1701.06538 | Sparsely-Gated MoE (Shazeer et al.) — response 1 citation | `moe-literature` (design space) | agent-supplied | MOVE/PART/MSUITE | |
 | 2209.14375 | "hydra"/shared-trunk citation in response 1 — paper identity unchecked | `moe-literature` (design space) | agent-supplied | MOVE/PART/MSUITE | |
 | 2403.07816 | Branch-Train-MiX — named in response 1, dropped from the list; closer fit for the gated-whole-model cell | `moe-literature` (design space) | Claude-added | MOVE/PART/MSUITE | |
+| 2305.01210 | HumanEval+ / EvalPlus — ~80× tests | `code-benchmarks-landscape` (HumanEval afterlife / overlap) | agent-supplied | TLC/ELI/IRT | |
+| 2403.19114 | EvoEval — LLM-evolved HumanEval, 7 benchmarks / 828 problems | `code-benchmarks-landscape` (HumanEval afterlife / overlap) | agent-supplied | TLC/ELI/IRT | |
+| 2412.21199 | HumanEval Pro / MBPP Pro — self-invoking code generation | `code-benchmarks-landscape` (HumanEval afterlife / overlap) | agent-supplied | TLC/ELI/IRT | |
+| 2412.01526 | cited for HumanEval_T / DyCodeEval / HumanEvalNext together — at most one is right | `code-benchmarks-landscape` (HumanEval afterlife / overlap) | agent-supplied | TLC/ELI/IRT | |
+| 2303.17568 | CodeGeeX / HumanEval-X — multilingual hand-written | `code-benchmarks-landscape` (HumanEval afterlife / overlap) | agent-supplied | TLC/ELI/IRT | |
+| 2208.08227 | MultiPL-E — HumanEval/MBPP transpiled to 18 languages | `code-benchmarks-landscape` (HumanEval afterlife / overlap) | agent-supplied | TLC/ELI/IRT | |
+| 2402.16694 | HumanEval-XL — 23 NLs × 12 PLs | `code-benchmarks-landscape` (HumanEval afterlife / overlap) | agent-supplied | TLC/ELI/IRT | |
+| 2212.10264 | ReCode — robustness transformations over docstrings/names/syntax/format | `code-benchmarks-landscape` (HumanEval afterlife / overlap) | agent-supplied | TLC/ELI/IRT | |
+| 2406.19783 | NLPerturbator / HumanEval-R — NL perturbations | `code-benchmarks-landscape` (HumanEval afterlife / overlap) | agent-supplied | TLC/ELI/IRT | |
+| 2406.00215 | HumanEvalComm — ambiguous descriptions, clarifying-question metrics | `code-benchmarks-landscape` (HumanEval afterlife / overlap) | agent-supplied | TLC/ELI/IRT | |
+| 2404.03114 | unit-test generation under comment/name/docstring manipulation — identity unchecked | `code-benchmarks-landscape` (HumanEval afterlife / overlap) | agent-supplied | TLC/ELI/IRT | |
+| 2410.12381 | HumanEval-V — visual context | `code-benchmarks-landscape` (HumanEval afterlife / overlap) | agent-supplied | TLC/ELI/IRT | |
+| 2406.14712 | Qiskit HumanEval | `code-benchmarks-landscape` (HumanEval afterlife / overlap) | agent-supplied | TLC/ELI/IRT | |
+| 2403.07974 | LiveCodeBench | `code-benchmarks-landscape` (HumanEval afterlife / overlap) | agent-supplied | TLC/ELI/IRT | |
+| 2501.10711 | How2Bench — audit of 274 code benchmarks | `code-benchmarks-landscape` (HumanEval afterlife / overlap) | agent-supplied | TLC/ELI/IRT | |
+| 2502.06215 | LessLeak-Bench — 83 SE benchmarks vs pretraining corpora | `code-benchmarks-landscape` (HumanEval afterlife / overlap) | agent-supplied | TLC/ELI/IRT | |
+| 2401.07930 | CodeSearchNet inter-dataset duplication (SourcererCC) | `code-benchmarks-landscape` (HumanEval afterlife / overlap) | agent-supplied | TLC/ELI/IRT | |
+| 2602.05892 | ContextBench — pooled + deduplicated issue-resolution tasks | `code-benchmarks-landscape` (HumanEval afterlife / overlap) | agent-supplied | TLC/ELI/IRT | |
+| 2403.04811 | HumanEval/MBPP contamination in the Pile / The Stack (Levenshtein + Dolos) | `code-benchmarks-landscape` (HumanEval afterlife / overlap) | agent-supplied | TLC/ELI/IRT | |
+| 2402.19173 | StarCoder2 / The Stack v2 — near-dedup pipeline | `code-benchmarks-landscape` (HumanEval afterlife / overlap) | agent-supplied | TLC/ELI/IRT | |
+| (no ID) | ShortenDoc — docstring compression on HumanEval/EvoEval; no identifier given in the response | `code-benchmarks-landscape` (HumanEval afterlife) | agent-supplied | TLC (gate 1) | |
