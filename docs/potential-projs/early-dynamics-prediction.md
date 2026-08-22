@@ -146,6 +146,27 @@ from — recorded for consolidation, not decisions. Figures, attributions, and b
 quoted from the reviews are unverified; Danielle's prompts are logged verbatim in
 `../danielle-inputs.md`.
 
+### 2025 (undated, pre-July) — Lineage: the CIFAR-10 loss-slope study
+
+An analysis of Danielle's notes from an earlier period (the original notes export is lost;
+only the response survives, and its date is inferred from the tools it references — 4o vs.
+o3, Heptabase — so roughly spring 2025) lists an "ExpMan + loss-slope study" as one of
+seven active tracks: an "empirical study of loss-curve linearity vs. accuracy across sweeps
+on CIFAR-10. Focus on early-epoch metrics as predictors and on regression slope/R²
+diagnostics." The response's summary of early findings: "validation-loss slope (epoch
+0–20) anticorrelates with final accuracy; RMSE strongest single predictor," with advice to
+"confirm on ImageNet-subset to rule out CIFAR artefacts," "report adjusted-R² and
+confidence intervals," and "consider mixed-effects model to separate optimiser vs
+augmentation contributions."
+
+Intake note: this is the CNN-sweep precursor of EDP — the same question (early-window
+curve-shape features → final performance) asked on Danielle's own `dr_exp`/`deconCNN`
+CIFAR-10 runs before the July 2025 DataDecide draft. The "early findings" quoted above are
+the response's paraphrase of notes that no longer exist and are unverified; treat them as
+a pointer that a CIFAR-scale pilot of the slope/R² features was run, not as a result.
+The "RMSE strongest single predictor" line is also ambiguous (RMSE of what fit?) and
+matches the later residual-vs-RMSE confusion flagged in the 2025-07 review thread.
+
 ### Origin notes — moved from `topics/staging/early-dynamics-prediction.md`
 
 ### 2025-07 — The proposal (from the draft)

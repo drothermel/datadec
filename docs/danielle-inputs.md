@@ -2099,3 +2099,22 @@ Applied: `early-dynamics-prediction` → [potential-projs/early-dynamics-predict
 (`EDP`); `clean-code-preference-icl` stays staged; ICL-opt-7 (repetition-as-step-size
 factorial) added to [potential-projs/icl-elicitability.md](potential-projs/icl-elicitability.md)
 with the seed quoted in §4; literature gates and the draft-scaffolding review remain parked.
+
+### 2026-08-22 — Heptabase notes analysis (2025, original notes lost)
+
+> sadly I don't have the original doc anymore, but the answer seems useful.
+
+Her prompt to the assistant (verbatim):
+
+> I have started taking notes on my learning and research experiments in this new tool that
+> lets me export the data as a markdown even though it was originally different cards on
+> different boards, etc. It's been about two weeks that I've been using this tool for notes.
+> Please analyze the contents of my notes and (1) highlight the major projects I've been
+> working on (either learning or research) and (2) provide analysis, feedback and insight
+> around both the note taking and the subjects of the notes.
+
+Routed to: [topics/project-approach-principles.md](topics/reference/project-approach-principles.md)
+(seven-track record + workflow feedback) and
+[potential-projs/early-dynamics-prediction.md](potential-projs/early-dynamics-prediction.md) §4
+(the CIFAR-10 loss-slope study as EDP lineage, with the quoted "early findings" marked
+unverified).

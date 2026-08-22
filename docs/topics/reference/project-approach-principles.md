@@ -4,8 +4,9 @@
 drawn from looking back at past projects, plus feedback received on them. Cross-project;
 applied concretely in `../../potential-projs/maqa-brute-force-baseline.md`.
 
-Source: Danielle's statement on the "MAQA Next Steps" page (2026-08-17; intake 2026-08-22)
-and the response to it.
+Sources: Danielle's statement on the "MAQA Next Steps" page (2026-08-17; intake 2026-08-22)
+and the response to it; a 2025 (spring, inferred) analysis of two weeks of Heptabase
+research notes (original notes lost; response only; intake 2026-08-22).
 ---
 
 ## 2026-08-17 — Four principles (Danielle, lightly edited from speech)
@@ -136,3 +137,50 @@ collaborators' expectations was dropped from this record.)
   answers no system finds, stay invisible. Put it in a limitations sentence: the cleaned set
   is a lower bound on dataset noise. "You're estimating error bars, not achieving ground
   truth."
+
+---
+
+## 2025 (undated, ~spring) — Note-taking workflow feedback and the project tracks of that period
+
+Danielle asked an assistant to analyze a two-week markdown export of her Heptabase research
+notes: "(1) highlight the major projects I've been working on (either learning or research)
+and (2) provide analysis, feedback and insight around both the note taking and the subjects
+of the notes." The notes themselves are gone; only the response survives. Date inferred
+from tool references (4o vs. o3, Heptabase Insight).
+
+**Tracks it identified (historical record of what was active then).**
+
+| Track | Summary from the response |
+|---|---|
+| Engineering Journey (`dr_exp` ↔ `deconCNN` ↔ `dr_analyze`) | Reproducible pipeline to generate, schedule, run, and analyse CNN experiments; Stage 1 planning → Stage 2 parallel impl → Stage 3 integration & testing (then current). Jobs DB, Manager/Worker, adapter layer, test refactor. |
+| ExpMan + loss-slope study | Loss-curve linearity vs. accuracy on CIFAR-10 sweeps; early-epoch metrics as predictors; slope/R² diagnostics. → lineage of EDP, recorded in `../../potential-projs/early-dynamics-prediction.md` §4. |
+| Learn-with-agents #1: empirical NTKs | Comparative learning sprint across Claude / Gemini / Perplexity for eNTK intuition. |
+| Content-distribution mini-project | Platform comparison (Medium, Substack, Ghost, Hashnode) for dev tutorials. |
+| Infrastructure cleanup & storage | `dr_results` repo split, `.gitignore` trim, Supabase run sync, git-LFS. |
+| Tool / model landscape tracker | 4o vs. o3, Claude tiers, aggregators, dev tooling. |
+| Personal productivity / knowledge management | Heptabase workflows, daily journals, whiteboard hierarchies, atomic-card method. |
+
+**Workflow feedback that survived (near-verbatim, condensed).**
+
+- What was working: stage-gated boards and daily journals that "mirror true project flow";
+  an atomic-card habit ("one idea per card"); embedding external artefacts for provenance;
+  systematic capture of agent conversations as "an audit trail for agent-generated code and
+  decisions."
+- Suggested refinements: a weekly roll-up card per active project (wins, blockers, next
+  actions) linked to the stage board; a `YYYY-MM-DD-Topic` naming convention to avoid
+  duplicate titles like "Stage 3"; a triaged-link marker; summarise long chat logs and
+  back-link the summary to the log; a master index board with one section per track; tag
+  hygiene (three top-level tags — `project`, `resource`, `prompt` — with specifics nested);
+  status markers in card names (planned / in-flight / blocked / done); a prompt-snippet
+  library; Friday pruning of done cards to a "Closed" board.
+- Project-level advice: lock the `dr_exp` ↔ adapter API before adding sweep features, and
+  keep a single-GPU ResNet-18 benchmark run green in CI before merging refactor PRs; finish
+  the storage split before the next experiment wave "otherwise large artifacts will creep
+  back into the code repos"; turn the tool tracker into a decision log by adding a
+  one-line personal verdict per tool after trying it.
+
+Intake note: most of this is generic productivity advice, kept here only because the
+"audit trail for agent-generated decisions," "weekly roll-up per track," and "decision log,
+not research list" points are the same instincts that now shape this repo's intake
+conventions (`../../danielle-inputs.md`, dated §4 records, the potential-projs README
+table). The seven-track table is the only surviving record of that period's projects.
