@@ -6,7 +6,8 @@ Gate: a literature check of the claimed gap ("physically shard all of Wikipedia 
 QA evidence locality and evaluate end-to-end QA latency" is unsaturated) and of the named
 tools/papers.
 
-Source: excerpts from the Notion page "MAQA Next Steps" (conversation dated 2026-08-16; intake
+Source: excerpts from the Notion page "MAQA Next Steps" (MAQA = multi-answer question
+answering; literature in `../reference/multi-answer-qa-literature.md`) (conversation dated 2026-08-16; intake
 2026-08-22). The respondent browsed while answering, but every citation and tool claim below
 is still **unverified** here — treat as leads.
 ---
@@ -90,7 +91,7 @@ shards required to recover a high-recall evidence set, subject to storage and QP
 
 ## Open questions
 
-- What "MAQA" is and what the surrounding system needs (latency target, shard count, update
+- What the surrounding MAQA system needs (latency target, shard count, update
   cadence, whether first-stage retrieval is routable) — determines whether placement matters
   at all.
 - Verify the gap claim and the tool/paper citations above.

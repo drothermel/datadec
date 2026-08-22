@@ -1235,3 +1235,27 @@ pasted one at a time.
 > Wikipedia or some other large corpus for QA purposes in the literature.
 
 Routed to: new staging topic [topics/wiki-qa-sharding.md](topics/staging/wiki-qa-sharding.md).
+
+### Multi-answer QA state of the field — conversation 2026-08-16
+
+> Okay, great. Now, about four years ago, I worked on multi-answer question answering, the
+> idea that you have a single question that has a full list of answers that you assume is
+> correct. So, what movies did Alfred Hitchcock write? I dunno, maybe he wrote books. But
+> that's the idea. Like, and the questions could be simple, they could be complex. So, like,
+> filtering with these types of questions, etc. And if you, the subset that I was interested
+> in is assuming you have access to a knowledge base, but it isn't, like, parsed. So you
+> have a corpora, but not a knowledge base, I guess. So you have access to the raw Wikipedia
+> pages, but not a Wikipedia knowledge base. And there were a few different datasets that we
+> looked at back then. And so I'm curious, basically, what existing research is there that
+> has continued to either use these datasets or datasets like them, and what is the current
+> state? And then also how effective, like, are there, like, rigorous research
+> demonstrations of how effective large models, like frontier language models, for example,
+> are at this, without a corpus or with a corpus, but especially without, because I think
+> that would be the comparison point that people would be interested in. And so can you
+> look, can you do kind of a deep search for this, looking through sources like Archive to
+> try to find the related work on this and produce a report?
+> the datasets were QAMPARI, QUEST, and RomQA
+
+Routed to: new reference topic
+[topics/multi-answer-qa-literature.md](topics/reference/multi-answer-qa-literature.md)
+(Danielle interest flag); MAQA expanded in the wiki-sharding staging topic.
