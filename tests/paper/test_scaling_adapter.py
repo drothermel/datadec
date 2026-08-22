@@ -1,154 +1,235 @@
 from __future__ import annotations
 
 import hashlib
+from collections import Counter
 from pathlib import Path
-from types import SimpleNamespace
 
 import pandas as pd
 import pytest
 
-from datadec.config import ScalingLawContract, load_paper_validation_contract
-from datadec.paper.contracts import (
-    load_repository_claim_registry,
-    load_toml_model,
-)
-from datadec.paper.models import ContentIdentity, ValidationOutcome
-from datadec.paper.scaling import ScalingVariant
-from datadec.paper.single_scale import DEFAULT_TASK_GROUPING
-from datadec.paper.verifiers import scaling as scaling_adapter
+from datadec.config import DataDecideCatalog, load_paper_validation_contract
+from datadec.paper.contracts import load_repository_claim_registry, load_toml_model
+from datadec.paper.models import AttemptRole, EvidenceLevel, ValidationOutcome
+from datadec.paper.verifiers import scaling
 
-_REPOSITORY_ROOT = Path(__file__).parents[2]
+_ROOT = Path(__file__).parents[2]
+_REAL_DATA = Path.home() / "drotherm/repos/datadec/data"
 
 
-def _scaling_contract() -> ScalingLawContract:
-    return load_toml_model(
-        _REPOSITORY_ROOT / "configs/scaling_law.toml", ScalingLawContract
-    )
-
-
-def _write_partial_evaluations(
-    data_root: Path, *, complete_fit_size_count: int = 5
-) -> Path:
-    scaling_contract = _scaling_contract()
-    recipes = tuple(sorted(scaling_contract.source_group_map.values()))
-    complete_fit_sizes = set(scaling_contract.models[:complete_fit_size_count])
-    rows: list[dict[str, object]] = []
-    for size_index, size_id in enumerate(scaling_contract.models, start=1):
-        parameter_count = float(size_index * 1_000_000)
-        for recipe_index, recipe in enumerate(recipes, start=1):
-            for step, tokens in ((1, 90), (2, 100)):
-                for task in DEFAULT_TASK_GROUPING.source_tasks:
-                    is_mmlu = task in DEFAULT_TASK_GROUPING.mmlu_subjects
-                    final_offset = 0.0 if step == 2 else 1.0
-                    rows.append(
-                        {
-                            "recipe": recipe,
-                            "params": size_id,
-                            "seed": "default",
-                            "step": step,
-                            "task": task,
-                            "tokens": tokens,
-                            "compute": 6 * parameter_count * tokens,
-                            "exact_parameter_count": parameter_count,
-                            "primary_metric": (
-                                0.2
-                                + recipe_index / 1_000
-                                + size_index / 100
-                                + step / 10_000
-                                + (0.2 if is_mmlu else 0.0)
-                            ),
-                            "logits_per_byte_corr": (
-                                (3.0 if is_mmlu else 1.0) + final_offset
-                                if size_id in complete_fit_sizes
-                                else None
-                            ),
-                        }
-                    )
-    path = data_root / "processed/scaling-law/evaluations.parquet"
-    path.parent.mkdir(parents=True)
-    pd.DataFrame(rows).to_parquet(path, index=False)
-    return path
-
-
-def test_partial_scaling_surface_records_missing_groups_without_plot_series(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    input_path = _write_partial_evaluations(tmp_path)
-    captured_final_losses: list[tuple[float, ...]] = []
-
-    def fake_held_out_prediction(
-        final_losses: object,
-        evaluations: object,
-        *,
-        target: object,
-        variant: ScalingVariant,
-    ) -> object:
-        del evaluations, variant
-        losses = tuple(point.loss for point in final_losses)  # type: ignore[attr-defined]
-        captured_final_losses.append(losses)
-        actual_score = target.actual_score  # type: ignore[attr-defined]
-        return SimpleNamespace(
-            predicted_score=actual_score,
-            target=SimpleNamespace(actual_score=actual_score),
-        )
-
-    monkeypatch.setattr(
-        scaling_adapter, "held_out_prediction", fake_held_out_prediction
-    )
-    contract = load_paper_validation_contract()
-    registry = load_repository_claim_registry(_REPOSITORY_ROOT)
-
-    results, series = scaling_adapter.run_scaling_law_attempts(
-        repository_root=_REPOSITORY_ROOT,
-        data_root=tmp_path,
-        registry=registry,
-        contract=contract,
-        input_identities={},
-    )
-
-    assert len(results) == 20
-    assert {result.outcome for result in results} == {
-        ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED
+def _row(
+    *,
+    task: str = "olmes_10_macro_avg",
+    mix: str = "a",
+    setup: str = "3_param",
+    actual: float = 0.6,
+    predicted: float = 0.5,
+) -> dict[str, object]:
+    absolute = abs(actual - predicted)
+    return {
+        "task": task,
+        "mix": mix,
+        "metric": "primary_metric",
+        "setup": setup,
+        "step_1_y": actual,
+        "step_2_y": actual,
+        "stacked_y": actual,
+        "step_1_pred": predicted,
+        "step_2_pred": predicted,
+        "stacked_pred": predicted,
+        "abs_error_step_1": absolute,
+        "abs_error_step_2": absolute,
+        "abs_error_stacked": absolute,
+        "rel_error_stacked": absolute / abs(predicted),
     }
-    assert series == ()
 
-    result = next(value for value in results if value.claim_id == "DD-0180")
-    assert result.plot_series_ids == ()
-    assert (
-        "recipe=c4|size=20M|seed=default|missing=task_loss_surface|incomplete_steps=1,2"
-    ) in result.missing_groups
-    assert "supported_size_subset_count=3" in result.diagnostics
-    assert (
-        result.row_selections[0].local_parquet_sha256
-        == hashlib.sha256(input_path.read_bytes()).hexdigest()
+
+def test_setup_parser_covers_all_21_subsets_and_excludes_intermediate() -> None:
+    sizes = (
+        "4M",
+        "6M",
+        "8M",
+        "10M",
+        "14M",
+        "16M",
+        "20M",
+        "60M",
+        "90M",
+        "150M",
+        "300M",
+        "530M",
+        "750M",
     )
-    assert result.row_selections[0].selected_row_count == 46_200
-    assert captured_final_losses
-    # The first macro task loss is MMLU-first then OLMES-macro, and the final
-    # loss averages both checkpoints in the configured final 10% window.
-    assert captured_final_losses[0][0] == pytest.approx(1.7)
+    setups = scaling._expected_setups(sizes)
+
+    assert len(setups) == 8 * 21
+    assert len({item.name for item in setups}) == len(setups)
+    assert Counter(item.family for item in setups) == {
+        family: 21 for family in scaling._FAMILIES
+    }
+    assert scaling._parse_setup("3_param", sizes) == scaling._Setup(
+        "3_param", "3_param", sizes, "prefix-13", "prefix"
+    )
+    assert scaling._parse_setup("2_param-no_4M_no_6M", sizes).subset == "suffix-drop-02"  # type: ignore[union-attr]
+    assert scaling._parse_setup("3_param-intermediate", sizes) is None
 
 
-def test_scaling_input_identity_mismatch_is_rejected(tmp_path: Path) -> None:
-    _write_partial_evaluations(tmp_path)
+def test_setup_parser_rejects_noncanonical_subsets() -> None:
+    sizes = tuple(f"{value}M" for value in range(13))
+    with pytest.raises(ValueError, match="unsupported setup subset"):
+        scaling._parse_setup("3_param-no_1M", sizes)
 
-    with pytest.raises(ValueError, match="changed after input identity capture"):
-        scaling_adapter.run_scaling_law_attempts(
-            repository_root=_REPOSITORY_ROOT,
-            data_root=tmp_path,
-            registry=load_repository_claim_registry(_REPOSITORY_ROOT),
-            contract=load_paper_validation_contract(),
-            input_identities={
-                "scaling_evaluations": ContentIdentity(
-                    id="scaling_evaluations", sha256="0" * 64
-                )
-            },
+
+def test_pair_semantics_exclude_target_ties_and_default_predicted_ties() -> None:
+    target = {"a": 3.0, "b": 2.0, "c": 2.0, "d": 1.0}
+    predicted = {"a": 4.0, "b": 2.0, "c": 2.0, "d": 2.0}
+
+    strict = scaling._pair(target, predicted)
+    half = scaling._pair(target, predicted, 0.5)
+
+    assert strict.denominator == 5
+    assert strict.target_ties == 1
+    assert strict.predicted_ties == 2
+    assert strict.accuracy == pytest.approx(3 / 5)
+    assert half.accuracy == pytest.approx(4 / 5)
+
+
+def test_catalog_compute_uses_configured_tokens_and_exact_parameters() -> None:
+    catalog = load_toml_model(_ROOT / "configs/catalog.toml", DataDecideCatalog)
+    costs, target = scaling._catalog_compute(catalog)
+    model = next(item for item in catalog.models if item.name == "4M")
+
+    assert costs["4M"] == (
+        6 * model.exact_parameter_count * 100 * model.training_parameter_count
+    )
+    assert target == 7.060992e20
+
+
+def test_subset_compute_is_per_approach_without_variant_count_multiplier() -> None:
+    catalog = load_toml_model(_ROOT / "configs/catalog.toml", DataDecideCatalog)
+    costs, _ = scaling._catalog_compute(catalog)
+    included = ("4M", "6M", "8M")
+
+    assert sum(costs[size] for size in included) == pytest.approx(7.38305905385728e16)
+    assert sum(costs[size] for size in included) != pytest.approx(
+        8 * 7.38305905385728e16
+    )
+
+
+def test_error_summary_persists_both_relative_denominators() -> None:
+    frame = pd.DataFrame([_row(task="task", mix="a", actual=0.6, predicted=0.5)])
+
+    summary, missing, selected = scaling._error(frame, "3_param", ("task",), ("a",))
+
+    assert missing == ()
+    assert len(selected) == 1
+    assert summary is not None
+    assert summary.absolute_percent == pytest.approx(10.0)
+    assert summary.released_relative_percent == pytest.approx(20.0)
+    assert summary.actual_relative_percent == pytest.approx(100 / 6)
+
+
+def test_error_summary_rejects_a_released_denominator_change() -> None:
+    row = _row(task="task", mix="a")
+    row["rel_error_stacked"] = 1 / 6
+    with pytest.raises(ValueError, match="denominator drift"):
+        scaling._error(pd.DataFrame([row]), "3_param", ("task",), ("a",))
+
+
+def test_common_target_requires_every_compatible_setup_to_match() -> None:
+    sizes = (
+        "4M",
+        "6M",
+        "8M",
+        "10M",
+        "14M",
+        "16M",
+        "20M",
+        "60M",
+        "90M",
+        "150M",
+        "300M",
+        "530M",
+        "750M",
+    )
+    setups = scaling._expected_setups(sizes)
+    rows = []
+    for setup in (item for item in setups if item.family in scaling._TARGET_FAMILIES):
+        rows.extend(
+            (
+                _row(mix="a", setup=setup.name),
+                _row(mix="b", setup=setup.name, actual=0.4),
+            )
         )
+    target, missing, _ = scaling._target(pd.DataFrame(rows), setups, ("a", "b"))
+    assert target == {"a": 0.6, "b": 0.4}
+    assert missing == ()
+
+    rows[-1]["stacked_y"] = 0.3
+    _, missing, _ = scaling._target(pd.DataFrame(rows), setups, ("a", "b"))
+    assert missing == (f"target_ranking_mismatch:setup={setups[104].name}",)
+
+
+def test_missing_decision_groups_are_exact_and_deterministic() -> None:
+    sizes = (
+        "4M",
+        "6M",
+        "8M",
+        "10M",
+        "14M",
+        "16M",
+        "20M",
+        "60M",
+        "90M",
+        "150M",
+        "300M",
+        "530M",
+        "750M",
+    )
+    setups = scaling._expected_setups(sizes)
+    points, missing = scaling._points(
+        pd.DataFrame([_row(mix="a", setup=setups[0].name)]),
+        setups,
+        ("a", "b"),
+        {"a": 1.0, "b": 0.0},
+        {size: 1.0 for size in sizes},
+        100.0,
+        0.0,
+    )
+    assert points == ()
+    assert missing == tuple(sorted(missing))
+    assert f"decision:setup={setups[0].name}" in missing
+    assert len(missing) == 168
+
+
+def test_selected_key_hash_is_order_independent() -> None:
+    frame = pd.DataFrame([_row(mix="b"), _row(mix="a")], columns=scaling._CHEAP_COLUMNS)
+    assert scaling._key_sha(frame) == scaling._key_sha(frame.iloc[::-1])
+    assert (
+        scaling._key_sha(frame)
+        == hashlib.sha256(
+            b'[["olmes_10_macro_avg","a","primary_metric","3_param"],["olmes_10_macro_avg","b","primary_metric","3_param"]]'
+        ).hexdigest()
+    )
+
+
+def test_frontier_comparison_uses_only_single_scale_points_at_or_below_compute() -> (
+    None
+):
+    setup = scaling._Setup(
+        "3_param", "3_param", ("4M", "6M", "8M"), "prefix-03", "prefix"
+    )
+    points = (scaling._Point(setup, 10.0, 1.0, scaling._Pair(0.7, 300, 0, 0)),)
+    evidence = scaling._Frontier(
+        ((5.0, 0.6), (10.0, 0.65), (20.0, 0.9)), (), (), 0.9, ()
+    )
+    compared = scaling._compare_frontier(points, evidence)
+    assert compared[0].frontier_accuracy == 0.65
+    assert compared[0].frontier_difference == pytest.approx(0.05)
 
 
 def test_no_scaling_attempts_do_not_read_inputs() -> None:
     contract = load_paper_validation_contract()
-    without_scaling = contract.model_copy(
+    contract = contract.model_copy(
         update={
             "attempts": tuple(
                 attempt
@@ -157,61 +238,97 @@ def test_no_scaling_attempts_do_not_read_inputs() -> None:
             )
         }
     )
-
-    assert scaling_adapter.run_scaling_law_attempts(
-        repository_root=Path("does-not-exist"),
-        data_root=Path("does-not-exist"),
-        registry=load_repository_claim_registry(_REPOSITORY_ROOT),
-        contract=without_scaling,
+    assert scaling.run_scaling_law_attempts(
+        repository_root=Path("missing"),
+        data_root=Path("missing"),
+        registry=load_repository_claim_registry(_ROOT),
+        contract=contract,
         input_identities={},
     ) == ((), ())
 
 
-def test_complete_scaling_plots_preserve_claim_specific_predicates(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    _write_partial_evaluations(tmp_path, complete_fit_size_count=13)
-
-    def fake_held_out_prediction(
-        final_losses: object,
-        evaluations: object,
-        *,
-        target: object,
-        variant: ScalingVariant,
-    ) -> object:
-        del final_losses, evaluations, variant
-        actual_score = target.actual_score  # type: ignore[attr-defined]
-        return SimpleNamespace(
-            predicted_score=actual_score,
-            target=SimpleNamespace(actual_score=actual_score),
-        )
-
-    monkeypatch.setattr(
-        scaling_adapter, "held_out_prediction", fake_held_out_prediction
+def test_real_scaling_aggregate_smoke() -> None:
+    cheap = (
+        _REAL_DATA
+        / "processed/published-results/cheap_decisions_stacked_rc_pred_all.parquet"
     )
-    results, series = scaling_adapter.run_scaling_law_attempts(
-        repository_root=_REPOSITORY_ROOT,
-        data_root=tmp_path,
-        registry=load_repository_claim_registry(_REPOSITORY_ROOT),
+    olmes = _REAL_DATA / "processed/olmes.parquet"
+    if not cheap.is_file() or not olmes.is_file():
+        pytest.skip("local dd_parsed mirror is unavailable")
+
+    results, series = scaling.run_scaling_law_attempts(
+        repository_root=_ROOT,
+        data_root=_REAL_DATA,
+        registry=load_repository_claim_registry(_ROOT),
         contract=load_paper_validation_contract(),
         input_identities={},
     )
 
-    assert {value.id for value in series} >= {
-        "dd-0368-paper-analog",
-        "dd-0369-paper-analog",
-    }
-    for claim_id, count_key in (
-        ("DD-0368", "below_frontier_points"),
-        ("DD-0369", "near_random_points"),
-    ):
-        result = next(value for value in results if value.claim_id == claim_id)
-        expected_holds = (
-            result.computed_value[count_key]
-            > result.computed_value["variant_points"] / 2
-        )
-        assert result.outcome is (
-            ValidationOutcome.REPRODUCED
-            if expected_holds
-            else ValidationOutcome.NOT_REPRODUCED
-        )
+    assert len(results) == 24
+    assert sum(result.role is AttemptRole.DEFAULT for result in results) == 20
+    assert Counter((result.role, result.outcome) for result in results) == Counter(
+        {
+            (AttemptRole.DEFAULT, ValidationOutcome.REPRODUCED): 14,
+            (AttemptRole.DEFAULT, ValidationOutcome.NOT_REPRODUCED): 6,
+            (AttemptRole.SENSITIVITY, ValidationOutcome.REPRODUCED): 1,
+            (AttemptRole.SENSITIVITY, ValidationOutcome.NOT_REPRODUCED): 3,
+        }
+    )
+    assert all(
+        result.evidence_level is EvidenceLevel.AUTHOR_DERIVED_AGGREGATE
+        for result in results
+    )
+    assert tuple(result.attempt_id for result in results) == tuple(
+        sorted(result.attempt_id for result in results)
+    )
+    assert [(value.id, len(value.points)) for value in series] == [
+        ("dd-0180-paper-analog", 168),
+        ("dd-0368-paper-analog", 21),
+        ("dd-0369-paper-analog", 21),
+    ]
+    by_id = {result.attempt_id: result for result in results}
+    displayed = (
+        (5.6, 2.6),
+        (6.0, 2.8),
+        (5.9, 2.9),
+        (6.5, 3.1),
+        (6.5, 3.2),
+        (42.8, 17.4),
+        (42.9, 42.3),
+        (230.8, 65.4),
+    )
+    for claim, expected in zip(range(301, 309), displayed, strict=True):
+        result = by_id[f"dd-{claim:04d}-default"]
+        assert result.outcome is ValidationOutcome.REPRODUCED
+        assert result.computed_value["relative_error_denominator_discrepancy"] is True
+        assert (
+            result.computed_value["displayed_released_relative_error_percent"],
+            result.computed_value["displayed_absolute_error_percent"],
+        ) == expected
+    assert by_id["dd-0119-default"].computed_value[
+        "best_vs_baseline_advantage"
+    ] == pytest.approx(0.0233333333333333)
+    assert by_id["dd-0013-default"].outcome is ValidationOutcome.NOT_REPRODUCED
+    assert by_id["dd-0013-default"].computed_value[
+        "maximum_frontier_difference"
+    ] == pytest.approx(0.05222222222222217)
+    assert (
+        by_id["dd-0189-default"].computed_value["maximum_accuracy_rank_by_setup"][
+            "2_param"
+        ]
+        == 1
+    )
+    assert (
+        by_id["dd-0189-default"].computed_value["maximum_accuracy_rank_by_setup"][
+            "3_param"
+        ]
+        == 5
+    )
+    assert by_id["dd-0312-default"].computed_value[
+        "error_vs_accuracy_spearman"
+    ] == pytest.approx(-0.6190476190476191)
+    assert by_id["dd-0369-default"].outcome is ValidationOutcome.NOT_REPRODUCED
+    assert (
+        by_id["dd-0369-comparison-predicted-tie-credit-grid-2"].outcome
+        is ValidationOutcome.REPRODUCED
+    )
