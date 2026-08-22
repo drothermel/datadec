@@ -2493,3 +2493,19 @@ FollowIR identification is a guess and a mismatch, the "Olmo-3.1-32B-Instruct" c
 looks fabricated, and the "did the dataset come out?" question stays open — resolve by
 asking the contact); origin pointer added to
 [potential-projs/movement-microscope.md](potential-projs/movement-microscope.md) §4.
+
+### 2026-08-22 — Tiny-model specialization via the outer layer (undated ~2026; PDF not on file)
+
+> (I meant the convo was the last one, wee have a few more turns)
+
+> ok, so again I don't have the input doc. but me:
+
+Her prompt (verbatim, from speech) is quoted in full in the new staging topic.
+
+Routed to: new staging topic [topics/tiny-model-specialization.md](topics/staging/tiny-model-specialization.md)
+(hypothesis restated; response condensed into its A/B/C structure; intake notes: the response
+skips the prompt-tuning-is-weak-at-small-scale result that bears directly on the hypothesis,
+the honest form is "external large-model-fit interface makes a tiny model useful on a narrow
+task"; prior-art starting list; links to TINY within-reach tasks, MIC calibration, and TLC
+machinery; proposed first experiment — a capability existence test under an oracle DSL).
+The PDF was the TLC draft, already represented by the TLC project doc.
