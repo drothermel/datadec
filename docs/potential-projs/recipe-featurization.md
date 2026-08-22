@@ -345,3 +345,77 @@ deterministic tokens)? Has it been done?
   single percentage; and dedup interacts with it, since repeated text is trivially
   deterministic, so you'd want the profile computed before and after dedup to separate
   'structured domain' from 'duplicated corpus.'"
+
+### Undated (~2026) — Danielle's framing of the "datasets are unknowable" objection, and the retrieval / perturbation answer
+
+Her statement (verbatim, from speech; external conversation, intake 2026-08-22):
+
+> In a somewhat tangential direction, but related to the data-to-side dataset itself, one
+> of the things that I thought was really cool about the data-to-side dataset is that it
+> might provide a way to get some, what's it called, some quantitative feedback on the
+> impact of different datasets that are used for pretraining. And I initially was really
+> excited about this, and then the response from everyone was basically, it's impossible to
+> understand what's inside the data sets, and so you can't make any claims about
+> differences between data sets, and so you can't make any claims about how differences
+> between datasets impact things. And so there's really no future in being able to
+> investigate any questions around things like this. And I see that point. I think that's
+> fair. But like many problems where people say this is impossible, it just kind of sits in
+> my head and pops back up periodically because it just seems like it shouldn't be
+> impossible, because what's impossible, really? And so one of the questions that I have is
+> whether people try to analyze these huge datasets in terms of their match to specific
+> corpora or tasks by doing some type of retrieval from the dataset on things that are
+> relevant to that task, basically. So like the most direct form of retrieval would be some
+> form of exact string match to questions or code or a corpora or something like that. But
+> I think something that would still perhaps give you interesting aggregate information
+> about the dataset would be all kinds of different ways of doing that, whether it's like
+> querying by entity or embedding it and then doing similarity search or chunking your
+> task space into things and querying that way, querying by question, querying by relevant
+> documents for your task, things like that, to get some sense of what, not just what the
+> metadata tags are for the different components of these datasets, but actually when you
+> perturb it in some way, what is the outcome and then what do the outcome of a sequence
+> of perturbations tell you about the thing itself?
+
+("data-to-side" is the transcription of "DataDecide.") This is the origin statement for
+the project's *task-conditioned* feature family: rather than describing a corpus by
+metadata tags, **query it from the task side** — exact string match against questions /
+code / corpora, entity queries, embedding similarity search, queries over a chunked task
+space, by question, by task-relevant documents — and treat the dataset as something you
+learn about by **perturbing it and reading the outcome sequence**. The objection it
+answers is the one that ended the earlier enthusiasm: "you can't know what's inside, so
+you can't make claims about dataset differences."
+
+The response's method families (condensed; no citations given, so unverified as a survey):
+(1) *direct corpus querying* — exact / near-duplicate search (n-gram, MinHash/SimHash,
+Bloom filters, sketches) for leakage and memorization; entity- and template-based
+retrieval (package / function names, error strings, `groupby(`) for domain coverage and
+long-tail presence; embedding retrieval of task items against the corpus with aggregate
+similarity distributions, cluster coverage, topical density ("semantic proximity mass");
+defensible claims are density / near-duplicate-count / enrichment claims, not "X% of the
+task is in the data." (2) *Corpus profiling without retrieval* — token and language
+statistics, code/text ratio, library-mention counts, topic clustering on samples, dataset
+maps via reference-model loss. (3) *Behavioral attribution* — A/B proxy training on
+controlled slices, with DataDecide's recipes as natural experiments; per-example /
+per-slice influence (TracIn-style, representer points) given checkpoints; membership
+inference / extraction tests ("does the model behave as if it saw it"). (4) *Perturbation
+sequences as system identification* — a task probe set × a set of dataset perturbations
+(remove / add / reweight / swap slices) → outcome vectors → "task T is sensitive to slice S,
+not T"; where training data is fixed, proxy perturbations via tiny probe models on sampled
+subsets, or elicitation wrappers as the perturbation with the model as the instrument.
+Claim types it says are falsifiable without omniscience: coverage, sensitivity,
+attribution. Low-budget plan: tight auto-graded task suite → task query set (entities,
+templates, paraphrases, doc snippets) → per-recipe sample of 1–10M tokens → retrieval /
+proximity statistics → tiny proxy models on the samples → correlate proxy deltas with
+proximity statistics ("predict task lift from measurable dataset signals").
+
+Intake note: families (1)–(3) are already in this doc's §1 and in
+`../topics/reference/data-featurization-literature.md` (model-mediated, similarity,
+intrinsic families; WIMBD-style querying; perplexity correlations; influence). What this
+conversation adds is (a) Danielle's verbatim statement of the objection and why she does
+not accept it — useful in the paper's motivation, since the retrieval-side features are
+the direct rebuttal; (b) the explicit **task-side query set** as a feature-construction
+recipe (entities, templates, paraphrased questions, relevant documents, chunked task
+space), which makes REC's similarity features concrete for the OLMES tasks; and (c) the
+**perturbation-sequence / system-identification** framing, which is REC-2-style
+leave-slice-out attribution restated as an active design — DataDecide's 25 recipes *are*
+the perturbation set, and the outcome vector over sizes × tasks is the readout. None of
+the response's claims are sourced; the relevant literature is in the reference topic.

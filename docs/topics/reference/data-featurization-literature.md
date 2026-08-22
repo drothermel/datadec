@@ -72,3 +72,16 @@ statistics as the crude aggregate version; Task2Vec (Achille et al.) as the Fish
 formalism that the alignment and diversity coefficients build on. Design cautions (relative
 to reference model and context length → curves; pre/post dedup) recorded in
 `../../potential-projs/recipe-featurization.md` §4.
+
+## Undated (~2026) — task-side querying and perturbation sequences (pointer)
+
+Danielle's statement of the "datasets are unknowable" objection and her retrieval-based
+answer (exact match, entity, embedding, chunked-task-space queries; perturb-and-read-out
+sequences) is recorded verbatim in `../../potential-projs/recipe-featurization.md` §4, with
+the response's four method families (direct querying; profiling; behavioral attribution;
+perturbation sequences as system identification) condensed there. Nothing in the response
+was sourced; the entries above remain the literature of record. One addition worth
+tracking here: **near-duplicate / exact-match infrastructure at corpus scale** (MinHash,
+Bloom-filter and sketch-based membership, n-gram indices — the WIMBD / infini-gram line) is
+the prerequisite for the task-side query features, and it overlaps with the corpus-storage
+tooling in `retrieval-storage-tooling.md`.

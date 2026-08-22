@@ -2519,3 +2519,15 @@ detector; response's S_0 / S_opt / ΔS / iterations-to-threshold / stability met
 controls recorded; intake notes link it to ICL-elicitability and MIC, reuse TLC's cliff
 machinery, add swapped-executor and wrapper-transfer controls and an answer-leak audit, and
 suggest testing Q2 on the earlier project's SFT checkpoints if they exist).
+
+### 2026-08-22 — "Datasets are unknowable" objection and task-side querying (undated ~2026)
+
+> me: "In a somewhat tangential direction, but related to the data-to-side dataset itself
+> …" (quoted in full in the REC project doc §4)
+
+Routed to: [potential-projs/recipe-featurization.md](potential-projs/recipe-featurization.md)
+§4 (her statement verbatim as the origin of the task-conditioned feature family and the
+rebuttal to the objection; response's four method families condensed, unsourced); pointer
+entry in [topics/data-featurization-literature.md](topics/reference/data-featurization-literature.md)
+noting that corpus-scale exact/near-duplicate infrastructure is the prerequisite and
+overlaps with the retrieval-storage tooling topic.
