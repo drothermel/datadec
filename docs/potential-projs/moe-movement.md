@@ -269,3 +269,20 @@ is the least likely one… **Expected impact: medium-high.** **Ceiling: very hig
 suppressed routing adaptivity measurably costs quality, this changes how people train MoEs,
 full stop"). Overlaps with the reroute-vs-rewrite paper ("#8 genuinely needs #7's
 machinery").
+
+### 2026-08-18 — origin: routing as a visible basin choice (from the Research Trajectory page)
+
+- "In dense models, 'solution-class selection' is something you infer from interpolation
+  barriers; in MoE, one large piece of it is *directly observable* — which expert claims
+  which token family is a discrete, symmetric, underdetermined choice that gets made early
+  and sticks." Fragments already in the literature: the three load-balance phases ("stable
+  during fine-tuning… is a commitment claim in your exact sense"); under continual
+  pretraining, "routing decisions change most in early layers… early-layer routing changes
+  may be a key mechanism of catastrophic forgetting in MoEs" (the warm-starting cell's
+  MoE-native precedent). "So router-saturation timestamps join Fisher trace, LLC, and LMC
+  onset as a fourth commitment clock… the cheapest to compute and the only one that's
+  exactly zero/one per token."
+- Comparability warning that MOVE-1's swap evaluation must respect: "naive interpolation
+  barriers, checkpoint merging… and stitching all require an expert-alignment step, and
+  re-basin methods for MoE are immature… 'how to quotient MoE symmetries for checkpoint
+  comparison' is an open gap." Paper list in `docs/topics/moe-literature.md`.

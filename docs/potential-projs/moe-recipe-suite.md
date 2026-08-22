@@ -157,3 +157,20 @@ background-cluster track "if you're willing to accept MoE training risk for a sh
 second novel paper." (That list predates the Slicing-and-Dicing discussion, so it assumes a
 FLAME-MoE-style config rather than the sweep's validated defaults.)
 - Tiny-MoE floor: **deliberately cut** from the workshop-sized list ("fair dense-baseline tuning at 5M-active is a tarpit and it's outcome-fragile").
+
+### 2026-08-18 — origin and cautions (from the Research Trajectory page)
+
+- FLAME-MoE (38M–1.7B active, 64 experts, top-8, full openness) as "DataDecide-for-MoE" at
+  the target scale; "start from FLAME-MoE's validated configs rather than tuning fresh"
+  (MoE knobs are folklore-tuned at large scale and "may be mis-set for 20–50M active").
+  (The sweep's own validated defaults, confirmed later, supersede this.)
+- "Tiny-scale noise: Signal-and-Noise found noise worsens as scale shrinks, and routing
+  discreteness plausibly adds eval variance — so the noise-floor stage isn't skippable
+  here, it's more necessary."
+- "Keep a dense control ladder at matched active params… DataDecide's small dense models
+  give it to you for free" (MSUITE-opt-3).
+- Endgame: "matched-loss recipe comparisons run on FLAME-MoE-style models where the
+  *routing fingerprint* is part of the movement profile — and if pretraining recipes at
+  matched loss produce measurably different routing-commitment schedules that predict
+  post-training or elicitation behavior, that's your thesis phenomenon with its mechanism
+  visible to the naked eye."

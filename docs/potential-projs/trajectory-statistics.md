@@ -328,3 +328,14 @@ referencing the Signal-and-Noise paper.
   `docs/open-questions-answered.md`.)
 - Role in the program: "the drift/diffusion fits are the noise floor for any future
   post-training movement claim."
+
+### 2026-08-18 — origin of the routing follow-up (from the Research Trajectory page)
+
+- "Dense-model movement between checkpoints is continuous drift you have to dig out of KL
+  and CKA; MoE gives you *categorical* movement — per-token expert-assignment flips… Your
+  drift/diffusion decomposition applies directly: routing flips that revert are wall
+  oscillation, flips that persist are river movement, and saturation curves are literally
+  cumulative-commitment plots." Router saturation (OLMoE) is the field's existing metric;
+  FLAME-MoE's released routing logs across checkpoints mean "your Stage-0 (zero-training
+  analysis of public trajectories) extends to MoE immediately." Paper list in
+  `docs/topics/moe-literature.md`.

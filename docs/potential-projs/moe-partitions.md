@@ -341,3 +341,18 @@ shows suppressed routing adaptivity costs quality." The recommended day-one acti
   parametrically — is what PART-4's expert matching across expert counts and granularities
   needs; Procrustes alignment of expert output spaces is a concrete starting point. See
   `docs/topics/task-vectors.md`.
+
+### 2026-08-18 — origin: expert assignment as a non-identifiable latent (from the Research Trajectory page)
+
+- "Expert assignment is a textbook non-identifiable latent: the objective is invariant to
+  expert permutation, so *which* expert specializes in what is pure trajectory-selected
+  symmetry breaking — your CRL framing made concrete." *The Myth of Expert Specialization
+  in MoEs*: "expert overlap between different models answering the same question no higher
+  than between entirely different questions — i.e., independently trained MoEs select
+  *unrelated* specialization solutions"; "routers are linear maps, so hidden-state
+  similarity is necessary and sufficient to explain expert-usage similarity —
+  specialization is a property of the representation space, not the routing architecture —
+  and load-balancing loss provably suppresses shared hidden directions." This is prior art
+  for PART-5's invariance question (it predicts non-invariance across independent runs) and
+  for the load-balancing caveat; PART-4's expert matching is the needed "quotient MoE
+  symmetries" step. Paper list in `docs/topics/moe-literature.md`.

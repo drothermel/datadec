@@ -125,3 +125,12 @@ barriers in both raw and permutation-aligned flavors — "whether LLC drops, Fis
 onset, and deficit-window closure coincide is exactly your money figure, now with four
 independently-motivated instruments instead of two." Per-paper sub-claims in
 [identifiability-literature.md](identifiability-literature.md).
+
+---
+
+## 2026-08-18 — a fourth commitment clock (from the MoE discussion)
+
+"Router-saturation timestamps join Fisher trace, LLC, and LMC onset as a fourth commitment
+clock in your money figure — with the advantage of being the cheapest to compute and the
+only one that's exactly zero/one per token." Requires an MoE arm of the grid; see
+`../potential-projs/moe-movement.md`.

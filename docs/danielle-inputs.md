@@ -760,3 +760,18 @@ Routed to origin entries: [potential-projs/trajectory-statistics.md](potential-p
 Standing rule from Danielle (2026-08-22): adviser-management content is always dropped; no
 further reminders about the Notion citation fixes.
 
+### Toggle 23 — 2026-08-18 22:37 (MoE down to 20–50M active)
+
+> You can train moe models that do something at 20-50M active params, so I'm interested in
+> looking all the way down to that scale.
+
+Routed to: new reference topic [topics/moe-literature.md](topics/moe-literature.md); origin
+entries in [potential-projs/trajectory-statistics.md](potential-projs/trajectory-statistics.md)
+(routing follow-up), [potential-projs/token-movement.md](potential-projs/token-movement.md)
+(TOK-obs-5), [potential-projs/moe-movement.md](potential-projs/moe-movement.md),
+[potential-projs/moe-partitions.md](potential-projs/moe-partitions.md),
+[potential-projs/moe-recipe-suite.md](potential-projs/moe-recipe-suite.md),
+[potential-projs/annealed-readouts.md](potential-projs/annealed-readouts.md) (merging needs
+expert matching); [topics/critical-period-timing-study.md](topics/critical-period-timing-study.md)
+(fourth commitment clock); [topics/identifiability-literature.md](topics/identifiability-literature.md).
+

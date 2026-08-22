@@ -140,3 +140,15 @@ low-level features; Ash & Adams: data poverty during the window selects a class 
 to the full distribution, and shrink-perturb works by partially re-opening selection; Igl:
 non-stationarity drift accumulates class-selection scars, and distillation escapes them
 because a fresh student re-runs selection under better data."
+
+---
+
+## 2026-08-18 — MoE expert assignment as the concrete non-identifiable latent
+
+"Expert assignment is a textbook non-identifiable latent: the objective is invariant to
+expert permutation, so *which* expert specializes in what is pure trajectory-selected
+symmetry breaking." Independently trained MoEs selecting unrelated specialization solutions
+(*The Myth of Expert Specialization*) is "about as clean an existence proof of
+solution-class underdetermination as the field has produced." The symmetry group to
+quotient now includes expert permutations; MoE re-basin is immature. See
+`moe-literature.md`.

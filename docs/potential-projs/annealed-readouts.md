@@ -337,3 +337,10 @@ redoing some pretraining with WSD?
   into (measurement noise) + (wall oscillation) + (drift you're too coarse to see), each
   separately estimated… the durable-movement operator is the instrument your matched-loss
   comparisons have needed all along."
+
+### 2026-08-18 — merging on MoE checkpoints needs expert matching first (from the Research Trajectory page)
+
+- "Checkpoint merging (your annealing-proxy trick) needs expert matching first or it
+  averages mismatched experts into mush" — ANN-1 is dense-only as specified; an MoE variant
+  requires the expert-alignment step from MoE partitions (PART-4). See
+  `docs/topics/moe-literature.md`.

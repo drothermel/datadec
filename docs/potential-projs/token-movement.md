@@ -397,3 +397,9 @@ effect buckets, or watching that mapping change over training?
   mechanism in one figure, and you get a practical dividend they'd care about: a principled
   recipe for constructing low-noise evals (weight items by token-determinism) rather than
   their empirical subtask filtering."
+
+### 2026-08-18 — origin of TOK-obs-5 (from the Research Trajectory page)
+
+- "Slice [routing flips] by your token-entropy buckets and you get a sharp question nobody
+  has asked: do hillside tokens keep flipping experts long after river tokens' routes have
+  frozen?" See `docs/topics/moe-literature.md`.
