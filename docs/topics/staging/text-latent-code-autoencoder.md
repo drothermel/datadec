@@ -159,6 +159,45 @@ classical setup never did, and ... an LLM optimizer with semantic priors makes e
 that space tractable. ... the fact that we could sketch three plausible designs in one
 exchange is itself evidence for the plausibility argument."
 
+## 2026-07-11 — Point 3, "this isn't quite an embedding"
+
+**Danielle's position.** "Embedding" is a deliberately handwavy parallel, but LLM input/output
+space "probably is actually a lot more structured than just, like, arbitrary whatever" — the
+inputs and outputs are token embeddings, so "in some sense they are vectors, though the
+vector space is probably not the same shape as, like, a VAE constrained to a unit ball."
+Earlier-era embedding-space design existed "to make it practical to actually learn a
+non-collapsed space that had different things that clustered near or far away from each
+other, whereas by using an LLM ... we're kind of getting the space for free. And the question
+is, is this actually a useful space? But at least when used along with LLMs, then it's
+clearly in some sense a useful space, and we have tools that are able to extract the
+usefulness from the space." Not convinced it is "fundamentally worse"; suspects "digging into
+the math and theory of it all, there would be some things that were surprisingly similar
+that wouldn't seem so on their surface."
+
+**Response (near-verbatim; concession).** "The right distinction isn't geometry versus no
+geometry — it's explicit versus borrowed geometry. Text in isolation has no metric, but text
+consumed by an LLM inherits the model's internal semantic space, and interpretability work
+(the linear representation hypothesis, SAE features) suggests that space is far more
+structured — even surprisingly linear." "Here the space is pretrained; you're not learning a
+geometry, you're choosing an addressing scheme into one that already exists." Lineage
+(unverified pointers): discrete latent variable models — "VQ-VAE showed that discrete codes
+indexing a continuous learned codebook match continuous latents; your setup is that pattern
+with text tokens as compositional discrete codes and the frozen LLM as a gigantic pretrained
+codebook"; an information-geometry reading where the distance between two representations
+is the divergence between the decoder conditionals they induce. "So the parallel isn't
+handwavy so much as unformalized."
+
+What remains: "access cost, not existence. Vector geometry is explicit and free ... Here
+every geometric operation is mediated by an inference call: interpolation becomes 'blend
+these two,' arithmetic becomes 'this, minus X, plus Y' — functional analogs that work but are
+stochastic, priced per token, and back a 'metric' with no guarantees (asymmetric, no
+triangle inequality)."
+
+**Cheap empirical signature.** "Run the representations through an off-the-shelf embedder,
+and if you're right, they should form a better-organized vector space than embeddings of
+the raw code — clustering by function rather than surface. Cheap to check, and it converts
+this whole dispute into a measurement."
+
 ## Open questions
 
 - Bottleneck: now framed as *optional* and itself an experimental variable — does
@@ -168,6 +207,9 @@ exchange is itself evidence for the plausibility argument."
   equivalent pairs (LLM rewrites + test oracle), and what similarity metric on text latents.
 - Factored (F, S) schema: the third "function stays out of S" term and its metric;
   cross-decoding as objective; readability of S as nearly free vs. needing pressure.
-  (Loss design deferred — motivation stage; Points 3+ pending.)
+  (Loss design deferred — motivation stage.)
+- Borrowed geometry: formalize the discrete-latent / information-geometry reading; run the
+  embed-the-representations check (function-clustering vs. raw-code embeddings). Points 4+
+  pending.
 
 **Waiting on:** the remaining points of the point-by-point discussion; a promotion decision.

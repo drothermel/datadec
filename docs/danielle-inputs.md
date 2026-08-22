@@ -915,3 +915,31 @@ Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-c
 
 Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-code-autoencoder.md)
 ("Point 2" section; loss-design detail kept as leads, marked as beyond the motivation stage).
+
+### Text-latent code autoencoder, Point 3 (not quite an embedding) — conversation 2026-07-11, intake 2026-08-22
+
+> Okay. I mean, I definitely am not trying to make the claim that I'm using the term
+> embedding exactly accurately. This is definitely meant to be a, like, handwavy parallel.
+> That being said, like, um, LLMs are trained aggressively over time in a way that means
+> that their input and output space probably is actually a lot more structured than just,
+> like, arbitrary whatever. Um, and so I'm not actually convinced, like, the inputs and
+> outputs are, in some sense, numerical. and that we have the embeddings of the tokens
+> themselves that are being passed into and coming out of the LLMs. So in symptoms, they are
+> vectors, though the vector space is probably not the same shape as, like, a VAE
+> constrained to a, like, unit ball or something like that. I see that point, um, but I'm
+> not sure that, like, I sis… my understanding is that a lot of the design of the vector
+> spaces that form the embeddings of the previous era were made to make it practical to
+> actually learn a noncollapsed space that had different things that clustered near or far
+> away from each other, whereas by using an LLM, like, we're kind of getting the space for
+> free. And the question is, like, is this actually a useful space? But at least when used
+> along with ALMs, then it's, like, clearly in some sense a useful space. Um, and we have,
+> like, tools that are able to extract the usefulness from the space. And so I agree that
+> what I'm talking about is not an intermediate representation that would behave exactly
+> like the embeddings of old, but I'm not so convinced that it's, like, fundamentally worse
+> necessarily, and I suspect that actually digging into, like, the math and theory of it
+> all, there would be some things that were surprisingly similar that wouldn't seem so on
+> their surface talking about just, like, natural language. Um, does that make sense? again,
+> at a high level. Like, we're not talking about detailed details.
+
+Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-code-autoencoder.md)
+("Point 3" section; new open question on borrowed geometry + the embedder check).
