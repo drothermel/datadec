@@ -2694,12 +2694,18 @@ README program note).
 > great! ok, a completely different topic, I did a deep research prompt based on the
 > attached doc. and got the answering report.
 
-(attached: her own Report-2 brief and the resulting report, copied at her request into
-[refs/deep-research/2026-07-03-report2-code-features-brief.md](refs/deep-research/2026-07-03-report2-code-features-brief.md)
-and [refs/deep-research/2026-07-03-code-feature-extraction-report.md](refs/deep-research/2026-07-03-code-feature-extraction-report.md);
+(attached: her own Report-2 brief and the resulting report, plus the two governing
+guideline docs; stored at `~/drotherm/data/convo-artifacts/2026/2026-07-03-code-feature-extraction-deep-research/`;
 the deep-research prompt itself was not pasted.)
 
 > oh, please copy them, the paths will change
+
+> lets actually move the docs from last round to that location too and make that the
+> default destination for convo artifacts we want to refer to.
+
+Convention adopted 2026-08-22: conversation artifacts the planning docs refer to
+(briefs, reports, PDFs, search archives) live under `~/drotherm/data/convo-artifacts/<year>/`
+in a per-conversation folder, not in the repository; planning docs cite the absolute path.
 
 Routed to: [topics/reference/code-feature-extraction-tooling.md](topics/reference/code-feature-extraction-tooling.md)
 (new reference topic: the brief's contract condensed; the report's tool inventory as a

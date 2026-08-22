@@ -21,10 +21,10 @@ Any of these wants a fixed-schema, no-training feature extractor for Python stri
 > attached doc. and got the answering report.
 
 **The brief (Danielle's own document; on file at
-`../../refs/deep-research/2026-07-03-report2-code-features-brief.md`).** Report 2 of a
-series governed by two companion documents, both copied alongside it:
-`../../refs/deep-research/2026-07-03-deep-research-guidelines-fable-v0.md` and
-`../../refs/deep-research/2026-07-03-text-and-code-analysis-guidelines-fable-v0.md`. Its contract, condensed:
+`~/drotherm/data/convo-artifacts/2026/2026-07-03-code-feature-extraction-deep-research/2026-07-03-report2-code-features-brief.md`).** Report 2 of a
+series governed by two companion documents, both stored alongside it:
+`2026-07-03-deep-research-guidelines-fable-v0.md` and
+`2026-07-03-text-and-code-analysis-guidelines-fable-v0.md`. Its contract, condensed:
 
 - Objective: a *landscape survey* of methods, libraries, and research artifacts that
   take source code (Python among the inputs; not Python-exclusive) and produce named
@@ -52,7 +52,7 @@ series governed by two companion documents, both copied alongside it:
   exclusion; the matrix-accounting section; a search-log summary.
 
 **The response (on file at
-`../../refs/deep-research/2026-07-03-code-feature-extraction-report.md`),
+`~/drotherm/data/convo-artifacts/2026/2026-07-03-code-feature-extraction-deep-research/2026-07-03-code-feature-extraction-report.md`),
 condensed to the surviving inventory.** It organizes by layer rather than by the brief's
 eleven families:
 
