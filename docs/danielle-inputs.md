@@ -2274,3 +2274,9 @@ answers a different question; slot left for answer 2).
 > note the hypothesis came from my advisor
 
 Recorded in both the topic entry and the EDP lineage note.
+
+> answer 2:
+
+Answer 2 appended to the same topic entry; intake note that it manufactures support (conflates
+loss-function with loss-curve smoothness; minor applied papers as evidence) and that neither
+answer found a literature basis for *linearity* — the shape priors on record are power-law.

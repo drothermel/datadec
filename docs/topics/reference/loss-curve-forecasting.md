@@ -91,5 +91,47 @@ asked, and its "well-established belief" is the smoothness folklore, sourced to 
 and forum threads. The actual literature relevant to the linearity question is the
 loss-curve *shape* literature above (power laws, the multi-power law, the broken-power-law
 scaling-law fits) and the "linear-in-log-steps means nothing special" reading that follows
-from them; see answer 2 below when it is added, and the EDP intake notes for why the
+from them; see answer 2 below, and the EDP intake notes for why the
 slope/R² features from the CIFAR study were ambiguous.
+
+## Undated (~2025) — same question, answer 2 of 2 (condensed)
+
+**Answer 2 (Perplexity "academic" mode; paper-shaped citations).** Same headline — "a
+widespread belief … that smoother, more linear loss curves generally indicate better
+training quality and stability" — and the same substitution of smoothness for linearity,
+now dressed in citations:
+
+- *Stability*: a fast-adversarial-training paper (IEEE 10376811) where catastrophic
+  overfitting co-occurs with "loss convergence outliers," motivating a "ConvergeSmooth"
+  method that bounds loss differences between adjacent epochs.
+- *Optimization theory*: "smooth loss functions are associated with better convergence
+  properties" (arXiv 2208.04075; IEEE 10255658) — a claim about the smoothness of the
+  **loss function** (Lipschitz gradients), not of the loss **curve**.
+- *Regularization*: an L2-regularized CNN-LSTM whose "curve looks smooth" (IEEE 10872755);
+  three applied papers (hate-speech LSTM, air-quality prediction, a geophysics
+  resistivity-curve paper) cited as evidence that smooth curves mean good generalization.
+- *Noise*: SGD noise driving parameters toward "noise equilibria" (a Semantic Scholar
+  entry); larger LMs "stabilize early in training within the first 20% of epochs" while
+  smaller ones converge "slower and less stable" (arXiv 2410.11451).
+- *Counterarguments*: double descent (arXiv 2407.09845, 2203.07337; IEEE 10222624); loss
+  landscape convergence depends on sample size and local geometry (arXiv 2409.11995); AdaGC
+  (arXiv 2502.11034) removes loss spikes while "maintaining natural convergence patterns."
+- Conclusion: "the current consensus favors controlled smoothness and stability over strict
+  linearity."
+
+Intake note: answer 2 is worse than answer 1 in a specific way — it manufactures support.
+Its "theoretical foundations" conflate loss-*function* smoothness with loss-*curve*
+smoothness; its "empirical evidence" is a set of minor applied papers whose authors
+remarked that their curve looked smooth; a geophysics paper about resistivity–phase curves
+is cited under "medical imaging." None of the cited work tests the proposition that *linear*
+loss curves indicate better training, and the conclusion quietly concedes the point
+("controlled smoothness … over strict linearity"). Net: neither answer found a literature
+basis for the linearity hypothesis, and both defaulted to the smoothness heuristic. The
+honest summary for the project is: **no established belief about linearity exists in the
+literature; the well-documented shape priors are power-law / multi-power-law decay, with
+smoothness as a separate stability heuristic.** That is itself a useful result for the
+loss-slope study's framing — the linearity feature was a hypothesis to test, not a
+consensus to lean on. The only citations worth following for EDP are arXiv 2410.11451
+(early stabilization of larger models — relevant to "how early is early enough") and AdaGC
+2502.11034 (loss-spike handling, relevant to cleaning early-window features); both
+unverified.
