@@ -2836,6 +2836,34 @@ system-level cluster as the outer loop's positioning set) and
 [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
 §4 (where the optimizer loop sits; prompt-length-vs-performance as quotable positioning).
 
+### 2026-08-22 — SciSpace deep review: code compression
+
+> What is the related work on code compression? Both classic approaches that involve
+> learning an embedding that can be reconstructed and more recent approaches that somehow
+> use LLMs as components in the compression and reconstruction process?
+
+> I'm currently writing a paper on compressing functions using an frozen pretrained black
+> box LLMs as encoders and decoders, with instructions to compress the input function and
+> then reconstruct it in a way that preserves functionality not surface form. Then, I'm
+> interested in a broad overview of the landscape of code compression, both the
+> foundational approaches and more recent approaches. Both training models and using LLMs.
+> I want to understand the landscape, the types of comparisons that are done, the common
+> methods, the standard positioning, the framing of why this would be useful, etc. And I
+> want to understand that approaches that are similar to the one that we're proposing to
+> understand such that they might be baselines or related work.
+
+Applied: `INDEX.md` in `~/drotherm/data/convo-artifacts/2026/scispace-code-compression-agent-artifacts-zip_ae5ad3b7-95bd-4c9c-8caf-394ff76ac5fe_1787423736/` (173 files; merged corpora with extracted columns, ~100
+deep-search tables by query stem, raw results, a papers-to-pull-first list, and the
+broken-citation-numbering warning).
+
+Routed to: [topics/reference/code-compression-literature.md](topics/reference/code-compression-literature.md)
+(new reference topic); a dated note in
+[potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+§4 (Maveli–Vergari–Cohen invertibility paper as the first prior-art gate item; landscape
+for the related-work section; rate–distortion axis; comparisons to match); and an added
+intake note in [topics/reference/nl-bottleneck-prior-art.md](topics/reference/nl-bottleneck-prior-art.md)
+that the novelty verdict missed this paper.
+
 ### Post-intake decisions — 2026-08-22 (data-layer conversation)
 
 > 1. I think data-card/ validation work should be its own project doc, so b as you say.
