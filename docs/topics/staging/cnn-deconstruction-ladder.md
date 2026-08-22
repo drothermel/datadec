@@ -130,7 +130,8 @@ incomplete or wrong (marked). **Verify against the papers before encoding a rung
   "landscape metrics" the requirement asked for, and they are the rungs where the landscape
   literature (`../reference/landscape-literature.md`) already has measurements to compare
   against (sharpness, mode connectivity, loss-surface smoothing by skips/BN — Li et al.
-  2018 visualizations; unverified here, check before citing).
+  2018 visualizations; unverified here, check before citing). Candidate eNTK readouts per
+  rung are listed in `../reference/ntk-literature.md`.
 - The rung definitions this Q&A was feeding: the classic recipes differ on *several* axes
   at once (optimizer, WD value, dropout placement, LRN vs. BN, pooling overlap, augmentation
   set, schedule). A clean ladder must hold the training recipe fixed at a modern baseline

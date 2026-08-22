@@ -2247,3 +2247,17 @@ as a recipe fact table with a verification column (ResNet augmentation answer in
 missing scale aug and PCA color; GoogLeNet augmentation shaky; BCE answer dated), plus an
 intake note that the ladder must fix a modern recipe and vary one block per rung rather
 than reproduce each paper's full historical recipe.
+
+### 2026-08-22 — Empirical NTK educational overview (Perplexity, undated ~spring 2025)
+
+> ok, lets store the link with this one because there's an interactive version too:
+> https://www.perplexity.ai/search/15452705-722c-49aa-8fe3-ad348c1b781a
+
+Her original prompt was not pasted; the response describes itself as an "interactive
+educational overview of the empirical NTK" with a seven-section web app (the "Learn with
+agents #1" track in the 2025 seven-track record).
+
+Routed to: new [topics/ntk-literature.md](topics/reference/ntk-literature.md) (link stored
+in the header; overview condensed; intake note on what the tutorial omits for measurement
+use and candidate eNTK readouts for GEO and the CNN ladder); cross-linked from
+`project-approach-principles.md` and `cnn-deconstruction-ladder.md`.

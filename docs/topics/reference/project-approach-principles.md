@@ -154,7 +154,7 @@ from tool references (4o vs. o3, Heptabase Insight).
 |---|---|
 | Engineering Journey (`dr_exp` ↔ `deconCNN` ↔ `dr_analyze`) | Reproducible pipeline to generate, schedule, run, and analyse CNN experiments (the original requirement statement is quoted in `experiment-tooling.md`); Stage 1 planning → Stage 2 parallel impl → Stage 3 integration & testing (then current). Jobs DB, Manager/Worker, adapter layer, test refactor. |
 | ExpMan + loss-slope study | Loss-curve linearity vs. accuracy on CIFAR-10 sweeps; early-epoch metrics as predictors; slope/R² diagnostics. → lineage of EDP, recorded in `../../potential-projs/early-dynamics-prediction.md` §4. |
-| Learn-with-agents #1: empirical NTKs | Comparative learning sprint across Claude / Gemini / Perplexity for eNTK intuition. |
+| Learn-with-agents #1: empirical NTKs | Comparative learning sprint across Claude / Gemini / Perplexity for eNTK intuition (the Perplexity output is condensed in `ntk-literature.md`). |
 | Content-distribution mini-project | Platform comparison (Medium, Substack, Ghost, Hashnode) for dev tutorials. |
 | Infrastructure cleanup & storage | `dr_results` repo split, `.gitignore` trim, Supabase run sync, git-LFS. |
 | Tool / model landscape tracker | 4o vs. o3, Claude tiers, aggregators, dev tooling. |
