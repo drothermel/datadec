@@ -182,12 +182,74 @@ retrieval evaluated on QAMPARI/QUEST/RoMQA/MoNaCo "appears genuinely underexplor
 favorable gap for paper 2. Date correction: MoNaCo is 2025 (TACL 2026), not from the original
 era.
 
+## 2026-08-17 — A second, leaner version of the ladder
+
+Same decomposition question posed again (prompt identical to the 2026-08-16 seed); this
+response is shorter and adds a few distinct ideas. Near-verbatim, condensed.
+
+**Framing.** "Your component ceilings won't compose multiplicatively (errors correlate —
+questions with hard entity linking also tend to have hard retrieval), so treat them as
+brackets, not a factorization. The most useful artifact is a table per question of 'which
+stage first made 100% impossible,' which gives you a loss attribution you can track as you
+swap components."
+
+**Measurements in dependency order.**
+0. **Closed-book baseline first** — contamination control and "embarrassingly often, a
+   strong baseline on 2022 Wikipedia-derived datasets"; run with both the official metric
+   and a lenient judge — the gap is the first estimate of eval noise.
+1. **Answer-vocabulary ceiling.** Titles vs. titles + redirects ("redirects are the poor
+   man's alias table"); fraction of gold answers resolving to a page, per question and
+   aggregate; failures are informative (dates, quantities, non-entity answers).
+2. **Question entity linking.** Longest-match string lookup against the title + redirect
+   table, no ML. Metrics: does the linked set include the seed entity from QAMPARI's
+   construction metadata; and, more operationally, for what fraction of questions does at
+   least one linked entity's page or immediate neighborhood contain ≥1 gold answer —
+   "whether linking failures actually matter downstream or get rescued by retrieval."
+3. **Single-round retrieval ceiling.** BM25 over 100-word chunks, k ∈ {10, 50, 100, 200,
+   1000}: gold-evidence-passage recall and answer-presence recall. Make **answer-presence
+   primary** (gold evidence was heuristically selected) and gold-evidence secondary;
+   "answer-presence overstates … gold-evidence understates … The two together bracket true
+   retrieval quality." Report per-question all-answers-covered@k (MRecall-style) since
+   averages hide the exhaustiveness failure.
+4. **Budget/diversity ceiling.** Answer→passage bipartite map (answer string appears in
+   passage) → greedy set cover per question → minimum passages to cover all answers. "The
+   distribution of that number is one of the most decision-relevant plots you'll produce —
+   it directly tells you what reading budget k makes 100% recall even theoretically
+   possible." Then oracle-at-budget-k.
+5. **Graph reachability ceiling** (for the brute-force design). From linked question
+   entities, what fraction of gold answers lie within 1 hop / 2 hops? Compare two graphs:
+   edges from **wikitext anchor links** (pre-annotated mentions in the raw dump — no NER, no
+   resolution, nearly free) vs. edges from **string-matched mentions** (the old approach).
+   "The delta between those two tells you how much your old entity-resolution pain was
+   actually buying you. This is a nice, cheap ablation with a clear story."
+6. **Reading ceiling.** Gold evidence (or oracle set-cover passages) to the LLM,
+   all-concatenated vs. per-passage with union + dedupe; official metric plus LLM judge or
+   manual audit on a sample. Yields gold-context F1 (ceiling of any retrieve-then-read
+   system), the concat-vs-independent gap (whether reading needs clustering/parallelizing at
+   all), and the official-vs-audited gap (eval noise, decomposable into formatting/alias
+   failures vs. genuinely missing gold).
+7. **Metric self-test.** Run the gold answers through the metric after surface perturbations
+   (redirect aliases, "The X" vs "X", diacritics, reformatted dates); "any score below 100%
+   is pure metric artifact, quantified."
+
+**Simplest end-to-end floor.** string-link → BM25@k → read → normalize via redirect table →
+dedupe. "The ceiling ladder is the paper, with the baseline as its floor."
+
+**Cross-reference to the 2026-08-16 version.** The two ladders agree on structure; distinct
+contributions here are the per-question first-failing-stage table, closed-book as step 0,
+answer-presence as the primary retrieval signal, the minimum-set-cover distribution as a
+headline plot, and the anchor-link vs. string-match graph ablation. The earlier version is
+more complete on the experiment matrix, the N/K/L value grids, output-budget and
+gold-incompleteness protocols, and persisted intermediates.
+
 ## Open questions
 
 - Confirm QAMPARI artifacts: released dump + chunked corpus, construction metadata (source
   entities/relations), the 200-question enriched subset, official metric scripts.
 - Where the oracle ladder sits in the three-paper arc: it is the natural spine of paper 1
   (revisit + eval audit) and the measurement layer for paper 2 (clean brute-force baseline).
+- Which graph for paper 1's reachability ceiling: anchor links (free) vs. string-matched
+  mentions vs. the ReLiK-style linker from `../reference/entity-linking-at-scale.md`.
 - Relationship to the cleaner-dataset pipeline in the literature topic (verification-first
   gold sets) — same project or a follow-on.
 

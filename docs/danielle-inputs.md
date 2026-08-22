@@ -1461,3 +1461,11 @@ Routed to: [topics/maqa-oracle-ladder.md](topics/staging/maqa-oracle-ladder.md) 
 arc as program framing + plan feedback) and
 [topics/multi-answer-qa-literature.md](topics/reference/multi-answer-qa-literature.md)
 (second validation pass).
+
+### MAQA decomposition goal, second model — conversation 2026-08-17
+
+Prompt identical to the 2026-08-16 "MAQA decomposition goal" entry above (with "Campari" for
+QAMPARI); not repeated.
+
+Routed to: [topics/maqa-oracle-ladder.md](topics/staging/maqa-oracle-ladder.md) ("A second,
+leaner version of the ladder", with a cross-reference to the first).
