@@ -289,3 +289,13 @@ program looks like from the inside."
   right instrument for measuring how fast the underdetermination closes with scale." This
   sharpens the external-validity rule: the ladder is not just a check, it is a measurement.
   See `docs/topics/identifiability-literature.md`.
+
+### 2026-08-22 — substrate and scaling result from the reinit literature pass
+
+- PolyPythias (ICLR 2025; arXiv 2503.09543): 50 pretraining runs, 9 seeds × 5 sizes
+  (14M–410M), ~7,000 checkpoints — a released many-seed substrate in exactly this scale
+  range. *Can Scale Save Us From Plasticity Loss in LLMs?* (arXiv 2606.24752): plasticity
+  loss at 5M–314M follows a sublinear scaling law in both continual and stationary
+  settings. *The Butterfly Effect* (arXiv 2506.13234): trajectories are highly sensitive to
+  initial conditions — a seed-count argument. See
+  `docs/topics/reinit-and-transfer-literature.md`.

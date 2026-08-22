@@ -98,3 +98,19 @@ Fisher trace as the diagnostic — and since the Fisher matrix approximates the 
 log-loss, Lyle's later 'plasticity loss is about loss-landscape curvature' finding is nearly
 a rediscovery in different coordinates." Add the Fisher trace to the diagnostic panel. See
 [critical-periods.md](critical-periods.md).
+
+---
+
+## 2026-08-22 — additions from the reinit literature pass (arXiv IDs retrieved)
+
+- Hernandez-Garcia, Figliolia, Millidge, *Can Scale Save Us From Plasticity Loss in Large
+  Language Models?* (arXiv 2606.24752, 2026): 5M–314M; sublinear scaling law; scale delays
+  but does not prevent plasticity loss, in continual and stationary settings.
+- Nikishin et al., *Deep RL with Plasticity Injection* (arXiv 2305.15555) — a diagnostic: if
+  injection helps, plasticity was binding.
+- Zaidi et al., *When Does Re-initialization Work?* (arXiv 2206.10011) — >15,000 vision
+  models; reinit helps without regularization, little once tuned, significantly under label
+  noise.
+- Spectral collapse (arXiv 2509.22335); activation-function design (arXiv 2509.22562);
+  calibrated partial resets (arXiv 2607.24996); plasticity-loss survey in RL (arXiv
+  2411.04832); Fisher-guided selective forgetting (arXiv 2502.00802).

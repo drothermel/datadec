@@ -10,7 +10,11 @@ and quoted close to verbatim; related-work claims are unverified unless a citati
 > — tokenizer/vocabulary transfer and its continued-pretraining costs, body-frozen interface
 > transfer, reset-and-distill methods (ITER-style) in and beyond RL, and the
 > basin-preserving-vs-determining reading; (2) a gap list; (3) if a gap is real, a staging
-> topic or project doc. Until then, keep accumulating references here.
+> topic or project doc. **Step (1) and (2) done 2026-08-22** — see the literature-pass section at the end of this doc
+> and the full report at
+> `~/drotherm/data/.claude/datadec/2026-08-22/0031-reinit-transfer-litpass.md`. Step (3)
+> — deciding whether a gap (G3 is the best-shaped) becomes a staging topic or project — is
+> Danielle's call.
 
 Why it matters here: resets are "ways to jump to different spots in the loss landscape"
 (Danielle); the embedding-reset result is an early Danielle hypothesis that became standard
@@ -52,12 +56,15 @@ though not strong enough to believe. What is the lineage, and how is it handled 
   *starting* loss — but replacing or significantly altering the tokenizer still requires
   extensive continued pretraining to avoid degradation… full recovery after a tokenizer
   change demands on the order of ≥50B tokens of continued training" (*Getting the Most Out
-  of Your Tokenizer for Pre-training and Domain Adaptation*).
+  of Your Tokenizer for Pre-training and Domain Adaptation*). **Correction (lit pass, 2026-08-22):** Dagan,
+  Synnaeve & Rozière (ICML 2024, arXiv 2402.01035) say that with *more than* 50B tokens of
+  fine-tuning one *can profitably specialize* the tokenizer — a statement about when
+  specialization pays off, not a recovery floor. The seeded framing inverts it.
 - "So the field's settled answer is exactly your preliminary finding: reset-and-retrain does
   the real work at a small fraction of from-scratch cost; clever initialization just
   shortens the bill."
-- LM → non-language transfer: Lu et al. 2021, *Frozen Pretrained Transformers as Universal
-  Computation Engines* — "froze the body and swapped input/output layers for non-language
+- LM → non-language transfer: Lu et al. 2021, *Pretrained Transformers as Universal
+  Computation Engines* (arXiv 2103.05247; "Frozen Pretrained Transformer" is the model name) — "froze the body and swapped input/output layers for non-language
   tasks. You were independently converging on both."
 
 **The landscape reading.** "Resetting the embedding layer is a large jump in parameter
@@ -102,3 +109,114 @@ in parameter-space history rather than in the function — you can launder the t
   excels few-shot but plateaus as data grows while fine-tuning keeps going — which means the
   Bornschein–Lyle paper (*Fine-Tuned In-Context Learners for Efficient Adaptation*) is the
   direct descendant of yours."
+
+---
+
+## 2026-08-22 — targeted literature pass (Opus subagent; full report: `~/drotherm/data/.claude/datadec/2026-08-22/0031-reinit-transfer-litpass.md`)
+
+All citations below were retrieved by the subagent (arXiv IDs given); verdicts rest on
+abstracts and paper pages, not full PDFs, and no forward-citation sweep was run.
+
+**Verification of the seeded claims.** All verified except: Dagan et al. (arXiv 2402.01035)
+— the ">=50B tokens to recover" reading is inverted (see correction above); ALLaM (arXiv
+2407.15390) — mechanism not confirmed; FVT — method confirmed, exact citation not; the
+"Vocab Swap" study is an OpenReview submission (MsjB2ohCJO1) with no confirmed venue; Lu et
+al.'s title is *Pretrained Transformers as Universal Computation Engines*. Rothermel et al.
+2021 (arXiv 2107.12460, ICML 2021 SSL workshop) confirmed as stated. The "interface resets
+are basin-preserving / early deficits are basin-determining" reading is an interpretive
+frame with no paper behind it — its absence is gap G3.
+
+**(a) Tokenizer / vocabulary transfer — "converged on initialization quality; recovery
+dynamics measured only as a byproduct."**
+- ZeTT (Minixhofer, Ponti, Vulić; NeurIPS 2024; arXiv 2405.07883): prior init heuristics
+  are near-chance in true zero-shot transfer.
+- OMP tokenizer transplantation (Goddard & Fernandes Neto; arXiv 2506.06607): training-free,
+  beats WECHSEL/FOCUS/ZeTT on zero-shot preservation.
+- MATT (Haltiuk & Smywinski-Pohl; arXiv 2510.21954): distills source→target attention
+  patterns as warm-up — the first method treating the body's dynamics, not just embedding
+  geometry, as the target.
+- *Beyond Initialization Loss* (arXiv 2608.03494, 2026): >20 init strategies on a 30B MoE;
+  best init gives a 6× CPT reduction; **input and output embeddings have distinct optimal
+  inits**; init loss/BPB are unreliable predictors of convergence, ~50 CPT steps are
+  reliable.
+- *Teaching Old Tokenizers New Words* (Purason et al.; EACL 2026 Findings; arXiv
+  2512.03989); Dobler & de Melo academic-budget adaptation (arXiv 2408.15793);
+  convex-hull initialization (arXiv 2407.05841); EEVE (arXiv 2402.14714 — proficiency
+  within 2B tokens, "explicitly contra… trillions of training tokens"); Learned Embedding
+  Propagation (arXiv 2412.21140 — CPT of embeddings "redistribute[s] existing language
+  knowledge among new tokens").
+- Reading: "continued-pretraining cost estimates range across three orders of magnitude
+  (500 steps to >50B tokens) with no controlled study reconciling them."
+
+**(b) Body-frozen transfer — "the 'why does it work' question is largely unanswered."**
+- Lu et al. (arXiv 2103.05247); Rothermel et al. (arXiv 2107.12460) — "despite being the
+  load-bearing rebuttal, this line of critique appears to have been under-absorbed — no
+  2022–2026 paper systematically re-audits frozen-vs-finetuned claims for LR-tuning
+  asymmetry."
+- Frozen-LM multimodal (arXiv 2106.13884); X-Fusion (ICCV 2025; arXiv 2504.20996); Decoding
+  PDEs (arXiv 2510.05278); *Frozen in Time* (arXiv 2508.18130) — frozen *random* dynamics as
+  a reservoir: "a live confound that most frozen-body transfer papers do not rule out."
+
+**(c) Reset-based methods — "large and healthy but almost entirely RL/vision."**
+- Plasticity injection (Nikishin et al.; arXiv 2305.15555) — "the most directly borrowable
+  *instrument*": if injection helps, plasticity was the binding constraint.
+- Reset & Distill (Ahn et al.; arXiv 2403.05066); *When Does Re-initialization Work?*
+  (Zaidi, Berariu, Kim, Bornschein, Clopath, Teh, Pascanu; arXiv 2206.10011) — >15,000
+  vision models: reinit helps without other regularization, little once regularization is
+  tuned, significantly under label noise.
+- Plasticity-loss survey in RL (arXiv 2411.04832): last-layer resets are standard; the
+  "concentrated in last layers" belief is weakly evidenced.
+- *Can Scale Save Us From Plasticity Loss in LLMs?* (Hernandez-Garcia, Figliolia, Millidge;
+  arXiv 2606.24752, June 2026): 5M–314M params; plasticity loss follows a sublinear scaling
+  law; scale delays but does not prevent it, in continual *and stationary* settings.
+- Spectral collapse (arXiv 2509.22335); activation design (arXiv 2509.22562); calibrated
+  partial resets (arXiv 2607.24996).
+
+**(d) Resets in landscape / connectivity terms — "thinnest sub-thread; the instruments
+exist but have not been pointed at resets."**
+- Layer-wise LMC (arXiv 2307.06966): per-layer barriers are insignificant relative to the
+  full-model barrier; **middle layers create barriers** — predicts interface-only
+  perturbations are near-barrier-free.
+- LMC of MoEs (arXiv 2509.11348); *Landscaping LMC* (arXiv 2406.16300); *The Butterfly
+  Effect* (arXiv 2506.13234 — trajectories highly sensitive to initial conditions, so reset
+  studies need many seeds); Fisher-guided selective forgetting (arXiv 2502.00802);
+  representation-plasticity timeline in LLMs (arXiv 2410.06225).
+
+**(e) Small scale, many seeds.**
+- **PolyPythias** (van der Wal, Lesci, Muller-Eberstein, Saphra, Schoelkopf, Zuidema,
+  Biderman; ICLR 2025; arXiv 2503.09543): 50 pretraining runs, 9 new seeds × 5 sizes
+  (14M–410M), ~7,000 checkpoints — "this is the substrate."
+- Critical periods in LM finetuning (TACL, doi:10.1162/tacl_a_00725); *Smooth Scaling Laws
+  Hide Stepwise Token Learning* (arXiv 2606.29858).
+
+**Gap list (ranked by confidence that the gap is real).**
+1. **G1 — Recovery-cost curve for an embedding reset** vs. scale, training stage, seed.
+   Estimates span 500 steps to "2B tokens"; no controlled curve. Cost: small runs.
+2. **G2 — Input-vs-output embedding reset asymmetry, explained.** 2608.03494 observes it as
+   a tuning finding; nobody isolates head-only vs. input-only vs. both (weight tying is an
+   uncontrolled confound). Cost: small runs.
+3. **G3 — Is an interface reset basin-preserving?** Layer-wise LMC predicts yes; nobody has
+   reset an interface and measured the barrier to the pre-reset solution. Cost: forward
+   passes on existing checkpoints + short recovery runs. "The single best-shaped question
+   for Danielle's program."
+4. **G4 — Does an embedding reset restore plasticity, or is it orthogonal?** The plasticity
+   literature resets body layers; the tokenizer literature never asks. Plasticity injection
+   is the ready diagnostic. Cost: small runs on existing checkpoints.
+5. **G5 — LR-tuning asymmetry as an unaudited confound in modern frozen-body claims**
+   (downstream of 2107.12460), with the reservoir null (random frozen body). Cost: small
+   runs. *Medium-high; rests on keyword absence, not a citation sweep.*
+6. **G6 — How much of what the body carries can a frozen interface reach?** (downstream of
+   2107.12460) — reframe the frozen/finetuned gap as an elicitation-ceiling measurement
+   with modern probes. Cost: forward passes + light probe training. *Medium-high.*
+7. **G7 — Reset-response as a critical-period instrument**: recovery cost from an interface
+   reset at step t as a stage probe, on PolyPythias. *Medium.*
+8. **G8 — Many-seed replication of reset effects in LMs** (2206.10011's "disappears under
+   tuned regularization" is unchecked in LMs). *Medium.*
+9. **G9 — Which layers actually need resetting in an LM?** *Medium.*
+10. **G10 — Does init quality matter once you train long enough** (convergence crossover)?
+    *Lower; may exist.*
+
+**Caveats (the subagent's).** No full-PDF reads; no forward-citation sweep (so G5/G6 are
+the weakest "nobody followed up" claims — run the 2107.12460 forward graph before building
+on them); search skewed to recent arXiv HTML, so 2021–2022 workshop work is
+under-represented; several 2026 IDs have had little scrutiny.

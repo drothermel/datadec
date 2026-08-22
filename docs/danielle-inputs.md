@@ -645,3 +645,12 @@ calibration; strong null), [topics/warmstarting-decomposition.md](topics/warmsta
 (optimum displacement), [topics/posttraining-experiment-design.md](topics/posttraining-experiment-design.md)
 (tuning-response curves; demonstration hygiene; meta-analysis).
 
+### Literature pass result — reinit and transfer (2026-08-22)
+
+The Opus subagent's report is at
+`~/drotherm/data/.claude/datadec/2026-08-22/0031-reinit-transfer-litpass.md` and is
+summarized in [topics/reinit-and-transfer-literature.md](topics/reinit-and-transfer-literature.md)
+(verification table, 2023–2026 state, ten ranked gaps). Open decision for Danielle: whether
+G3 ("is an interface reset basin-preserving?") or another gap becomes a staging topic /
+project.
+

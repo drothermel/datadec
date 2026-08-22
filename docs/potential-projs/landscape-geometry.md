@@ -204,3 +204,12 @@ models share a basin?
   they're the same event." A timed-deficit sibling-seed study is staged in
   `docs/topics/critical-period-timing-study.md`; GEO-opt-5 on DataDecide's three seeds is
   its free observational version.
+
+### 2026-08-22 — a ready test from the reinit literature pass
+
+- Layer-wise LMC (arXiv 2307.06966) reports that middle layers own the loss barrier and
+  per-layer perturbations are near-barrier-free; nobody has reset an embedding layer and
+  measured the barrier back to the pre-reset solution (gap G3 in
+  `docs/topics/reinit-and-transfer-literature.md`). The interpolation tool here is the
+  instrument; PolyPythias (arXiv 2503.09543; 50 runs, 14M–410M, ~7k checkpoints) is a
+  ready substrate with seeds.
