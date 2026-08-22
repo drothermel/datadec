@@ -461,6 +461,33 @@ here is relative to it; and the same machinery is ELI's measurement of "extracta
 competence" with the roles swapped (there the model is the thing probed and the wrapper is
 𝒱), so the two projects can share one probe harness.
 
+### 2026-08-22 — the measurement bibliography and five analysis directions
+
+Danielle asked for a deep dive on measuring shared information between language and code
+representations, on relatedness estimators for a task or model, and on bottleneck analysis
+or optimization approaches — noting "I also really like the contrastive directions in
+general." Full record in `../topics/reference/nl-bottleneck-prior-art.md` (measurement
+entry, 2026-08-22; unverified). What to take into the plan:
+
+- Two citations that name the project's analysis stance: **Decodable Information
+  Bottleneck** (IB relative to a predictive family — the theory behind "the decoder
+  already knows programming") and **ContraCode** (contrastive invariance to
+  semantics-preserving transforms — the published form of §1's invariance objective).
+  Saxe et al. is the caution against claiming compression ⇒ generalization.
+- Five directions, and where each lands here: (1) conditional usable-information benchmark
+  and (2) behavioural contrastive evaluation with four negative types → the *analysis
+  layer* of TLC-1, to be built before any optimizer claim (the response's own
+  recommendation); (3) decoder-relative bottleneck score → the objective statement from
+  the IB note; (4) representation-geometry analysis (CKA/RSA) over X, Z, X̂, B, traces →
+  optional, the "does Z collapse equivalents and separate near-misses" figure; (5) search
+  over bottleneck *formats* with a three-axis Pareto frontier → already §1's program; the
+  hunch that the best Z is a behavioural contract rather than a docstring is the
+  hypothesis the census should be able to refute.
+- Data: CodeNet supplies many-implementation / same-problem clusters with I/O tests — the
+  source of behaviour-equivalent positives the contrastive game needs; HumanEval/MBPP stay
+  the small sandbox. Control tasks (shuffled behaviour labels, random implementation
+  identities) belong in the probe suite from day one.
+
 ### 2026-08-22 — the correctness ladder and the classical code-compression precedents (Pro-mode search)
 
 A four-turn conversation (record in `../topics/reference/code-compression-literature.md`,

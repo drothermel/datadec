@@ -3508,3 +3508,18 @@ confound; predictive 𝒱-information; behavioral retention ratio; information p
 the leakage target I_𝒱(Z→S | B); behavioral bottleneck index; four extractor
 instantiations; the ∅/signature/Z/minified/X/oracle matrix); ELI §4 pointer (same
 machinery, roles swapped); two ledger rows.
+
+> Great, this is much more inline with what I was thinking. I also really like the
+> contrastive directions in general. Please now do a deep dive into related work that looks
+> at both trying to measure relatedness or shared info content of language vs code
+> representations, on methods that try to estimate that relatedness for code or language or
+> embeddings for a given task or model, and general analysis or bottleneck approaches that
+> might be relevant to either the analysis or optimization of the bottleneck setup that I've
+> described. Present the related work and then highlight the 5 most plausible/interesting
+> directions that you'd suggest I start looking into.
+
+(Continuation.) Routed: measurement entry in
+[topics/reference/nl-bottleneck-prior-art.md](topics/reference/nl-bottleneck-prior-art.md)
+(seven clusters; the five directions; intake notes); TLC §4 note (Decodable IB and
+ContraCode as the two naming citations; where each direction lands; CodeNet as the source
+of behaviour-equivalent positives); litreview plan subdomain F; twenty ledger rows.

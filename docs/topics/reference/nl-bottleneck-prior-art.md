@@ -134,3 +134,90 @@ fundamentally new invention."
   method, nor comparative results. Cite as the nearest named framework; the agent's
   "minor variation of LBM" verdict does not hold. Her recollection, not a re-read;
   confirm the prompt count when writing §2.
+
+## Undated (intake 2026-08-22) — measurement literature for the bottleneck: usable information, probing, contrastive code semantics, NL intermediates
+
+**Danielle's prompt (verbatim core).** "I also really like the contrastive directions in
+general. Please now do a deep dive into related work that looks at both trying to measure
+relatedness or shared info content of language vs code representations, on methods that
+try to estimate that relatedness for code or language or embeddings for a given task or
+model, and general analysis or bottleneck approaches that might be relevant to either the
+analysis or optimization of the bottleneck setup that I've described. Present the related
+work and then highlight the 5 most plausible/interesting directions." Notation carried
+from the previous turn: X source, Z NL bottleneck, B behavioural facts, S implementation
+facts, C given context; target I_𝒱(Z→B | C) minus I_𝒱(Z→S | B,C). All attributions the
+respondent's, unverified; this is a *measurement* bibliography, distinct from the
+mechanism prior art above.
+
+**Seven clusters.**
+1. *Bottleneck theory.* IB (physics/0004057); Deep VIB (1612.00410) as the "you optimize
+   bounds, not MI" caution; **Decodable Information Bottleneck** (Dubois et al., NeurIPS
+   2020) — IB relative to a predictive family, "almost exactly your setup"; Saxe et al.
+   (ICLR 2018) against the IB-theory-of-deep-learning claims — treat IB as a design
+   language, not a generalization theorem; rationale extraction (Lei, Barzilay & Jaakkola
+   1606.04155; later IB-style rationale objectives) as the text-input, label-output cousin.
+2. *Usable information and probing.* 𝒱-information (2002.10689); **conditional probing**
+   (Hewitt et al., EMNLP 2021) — information beyond a baseline, here C = signature /
+   imports / type hints / "Python knowledge"; probing-as-MI (Pimentel et al., ACL 2020);
+   **control tasks** (Hewitt & Liang) — here shuffled behaviour labels, random
+   implementation identities, impossible labels; MDL probing (Voita & Titov). Metrics
+   given: BehaviorRetained_𝒱(Z) = [H_𝒱(B|C) − H_𝒱(B|Z,C)] / [H_𝒱(B|C) − H_𝒱(B|X,C)];
+   Leakage_𝒱(Z) = H_𝒱(S|B,C) − H_𝒱(S|Z,B,C).
+3. *NL–code alignment models.* CodeSearchNet 1909.09436 (docstring/code pairs — often
+   underspecified relative to behaviour); CodeBERT 2002.08155 (NL–PL probing); GraphCodeBERT
+   2009.08366 (data flow as a middle ground between surface and behaviour); CodeT5
+   2109.00859; UniXcoder (comments + AST + contrastive). Limitation: trained on
+   comments/docstrings, not behavioural equivalence — instruments, not behaviour scores.
+4. *Contrastive code semantics* (Danielle's stated interest). CPC/InfoNCE 1807.03748 (a
+   lower-bound-like proxy, not MI); **ContraCode** 2007.04973 — identify functionally
+   similar variants among distractors via semantics-preserving transforms, "directly
+   attacks the minification/formatting problem"; Corder 2009.02731; CoCoSoDa 2204.03293
+   and CodeRetriever for NL–code contrastive search. Next step: make labels behavioural —
+   positives "different implementation, same tests/properties", hard negatives "similar
+   tokens, different edge-case behaviour".
+5. *What code models encode.* Troshin & Chirkova 2202.08975 (syntax, identifiers,
+   namespaces yes; semantic equivalence poorly); Naik et al. 2207.07706 (RSA on CodeBERT /
+   CodeNet: form-based patterns unless fine-tuned on semantic tasks); SVCCA 1706.05806,
+   CKA; task-transfer scores LEEP 2002.12462, LogME, Task2Vec ("does Z make this
+   behavioural task easy for a light probe?").
+6. *Behavioural evaluation.* HumanEval 2107.03374; MBPP 2108.07732; **CodeNet** 2105.12655
+   (millions of accepted solutions with I/O tests — many-implementation / same-problem
+   clusters); CodeBLEU 2009.10297 and CodeBERTScore as side metrics only; execution-trace
+   representations (dynamic program embeddings 1711.07163; FuzzPretrain); LLM-as-judge
+   survey 2411.15594 and CodeJudge as members of 𝒱, never ground truth.
+7. *NL as intermediate representation.* Intermediate-language study 2407.05411 (NL often the
+   most effective intermediate; intermediate correctness only weakly correlates with
+   final generation — NL intermediates help without being faithful); NL-Debugging
+   2505.15356 (translate buggy code to NL, refine, regenerate — TLC's loop for repair);
+   "equivalent representations" of code (OpenReview RMaB6cn07S; comments, pseudocode,
+   flowcharts); CoT faithfulness (Turpin et al. 2305.04388) — evaluate what can be
+   extracted from Z, not whether Z reads as correct.
+
+**Five suggested directions.** (1) Conditional usable-information benchmark: conditions
+C / C+Z / C+minified X / C+X / C+oracle spec; B = test outputs, edge cases, exceptions,
+mutation, algebraic properties, complexity facts; S = implementation identity,
+identifiers, AST shape, library choice, formatting, exact-source reconstruction.
+(2) Behavioural contrastive evaluation with four negative types — same behaviour /
+different implementation; similar code / different behaviour; same description /
+different edge case; same tests / hidden behavioural difference — run as Z→B (retention)
+and Z→S (leakage) games. (3) Decoder-relative behavioural bottleneck score DBS(z) =
+log q_D(z,x) − λ(−log p_LM(z)) − γ Leak(z,x) with tests + fuzzing + generated edge cases.
+(4) Representation-geometry analysis (CKA/RSA/SVCCA) across X, Z, X̂, B, traces,
+AST/data-flow — does Z cluster by implementation, algorithm family, problem statement,
+I/O behaviour, or lexical features; collapse-equivalents / separate-near-misses test;
+LogME-style probe-ease. (5) Search over bottleneck *formats* — docstring, pseudocode, I/O
+examples, edge-case list, pre/postconditions, invariants, algorithm sketch, complexity +
+side effects + exceptions — and draw the Pareto frontier of behaviour retained vs.
+description length vs. leakage; hunch: the best Z is a compact behavioural contract, not
+a docstring. Recommended first prototype: (1) + (2).
+
+**Intake notes.**
+- Cluster 4 plus CodeNet answer the "where do behaviour-equivalent positives come from"
+  question that InfoNCE needed in the previous turn.
+- Direction 5 overlaps the existing TLC §1 optimizer and the "two research programs"
+  framing; directions 1–3 are new analysis machinery; direction 4 is the item-embedding
+  question from the estimation toolkit applied to representations.
+- Twenty-odd IDs added to the ledger; the ones without arXiv numbers in the response
+  (Decodable IB, Saxe, Hewitt conditional probing, Pimentel, Hewitt & Liang, UniXcoder,
+  CodeRetriever, CKA, LogME, Task2Vec, CodeBERTScore, FuzzPretrain, CodeJudge) need venue
+  or ID lookup.

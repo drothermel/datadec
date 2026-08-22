@@ -298,6 +298,26 @@ Context column = the ~80 characters preceding the ID in the topic, as a memory a
 | 1807.03748 | van den Oord et al. — Contrastive Predictive Coding / InfoNCE | `text-latent-code-autoencoder` §4 | agent-supplied | TLC | |
 | 2002.10689 | Xu et al. — A Theory of Usable Information Under Computational Constraints (𝒱-information) | `text-latent-code-autoencoder` §4 | agent-supplied | TLC, ELI | |
 | (ACL 2020.emnlp-main.14) | Voita & Titov — Information-Theoretic Probing with Minimum Description Length | `text-latent-code-autoencoder` §4 | agent-supplied | TLC | |
+| 1606.04155 | Lei, Barzilay & Jaakkola — Rationalizing neural predictions | `nl-bottleneck-prior-art` (measurement) | agent-supplied | TLC | |
+| 1909.09436 | CodeSearchNet | `nl-bottleneck-prior-art` (measurement) | agent-supplied | TLC | |
+| 2002.08155 | CodeBERT | `nl-bottleneck-prior-art` (measurement) | agent-supplied | TLC | |
+| 2009.08366 | GraphCodeBERT | `nl-bottleneck-prior-art` (measurement) | agent-supplied | TLC | |
+| 2109.00859 | CodeT5 | `nl-bottleneck-prior-art` (measurement) | agent-supplied | TLC | |
+| 2007.04973 | ContraCode — contrastive code representation learning | `nl-bottleneck-prior-art` (measurement) | agent-supplied | TLC | |
+| 2009.02731 | Corder | `nl-bottleneck-prior-art` (measurement) | agent-supplied | TLC | |
+| 2204.03293 | CoCoSoDa | `nl-bottleneck-prior-art` (measurement) | agent-supplied | TLC | |
+| 2202.08975 | Troshin & Chirkova — probing pretrained source-code models | `nl-bottleneck-prior-art` (measurement) | agent-supplied | TLC | |
+| 2207.07706 | Naik et al. — RSA probing of semantic grounding in CodeBERT | `nl-bottleneck-prior-art` (measurement) | agent-supplied | TLC | |
+| 1706.05806 | SVCCA | `nl-bottleneck-prior-art` (measurement) | agent-supplied | TLC | |
+| 2002.12462 | LEEP — transferability estimate | `nl-bottleneck-prior-art` (measurement) | agent-supplied | TLC | |
+| 2108.07732 | MBPP (Austin et al.) | `nl-bottleneck-prior-art` (measurement) | agent-supplied | TLC | |
+| 2105.12655 | Project CodeNet | `nl-bottleneck-prior-art` (measurement) | agent-supplied | TLC | |
+| 2009.10297 | CodeBLEU | `nl-bottleneck-prior-art` (measurement) | agent-supplied | TLC | |
+| 1711.07163 | dynamic neural program embeddings from execution traces | `nl-bottleneck-prior-art` (measurement) | agent-supplied | TLC | |
+| 2411.15594 | LLM-as-a-judge survey | `nl-bottleneck-prior-art` (measurement) | agent-supplied | TLC | |
+| 2407.05411 | intermediate languages for code generation (NL vs pseudocode vs PL) | `nl-bottleneck-prior-art` (measurement) | agent-supplied | TLC | |
+| 2505.15356 | NL-Debugging — NL as intermediate representation for debugging | `nl-bottleneck-prior-art` (measurement) | agent-supplied | TLC | |
+| 2305.04388 | Turpin et al. — language models don't always say what they think (CoT faithfulness) | `nl-bottleneck-prior-art` (measurement) | agent-supplied | TLC | |
 
 Rows: 208 (181 agent-supplied, 27 Claude-added, 5 named without ID).
 
