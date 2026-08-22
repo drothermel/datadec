@@ -119,6 +119,68 @@ other and can be picked by impact.
 Dated, attributed notes from external review conversations, recorded for consolidation — not
 decisions. Only notes about this project are kept here.
 
+### 2026-08-22 — margin demoted, the metric hierarchy, the two-cluster null, and a BoolQ twist
+
+From the "directionally consistent" and "not reproduced" batches of Danielle's
+reproduction of the DataDecide paper (numbers as reported in
+`../topics/reference/datadecide-data-pipeline.md`; not re-checked here).
+
+- **Continuous response variable.** Margin (correct-choice logprob minus best incorrect)
+  was the penciled-in continuous response for the IRT fits. The reproduction finds
+  margin tracks accuracy at mean ρ 0.360 (negative on ARC Challenge, PIQA, WinoGrande)
+  while Normalized Correct Probability tracks at 0.916, and per-character normalization
+  won 9/10 tasks earlier. Design consequence: **per-character Normalized Correct
+  Probability is the primary continuous response; margin becomes an object of study.**
+  Proposed mechanism for the negative correlations: as models improve, all choices get
+  more probable, and plausible-by-construction distractors can rise faster than the
+  correct answer even while the ranking improves — the three negative tasks are the
+  near-minimal-pair / strong-distractor ones. Decisive cheap test: `choices.parquet`
+  has per-choice likelihoods, so decompose margin into correct-prob and
+  best-incorrect-prob trajectories per task; if best-incorrect rises faster on the
+  negative tasks, "margin is an anti-signal on plausible-distractor tasks; use
+  normalized correct probability" is a self-contained finding (links to the
+  metric-functional-form / emergence-mirage line, unverified).
+- **Metric hierarchy from the pipeline.** Raw Correct/Total Prob "dominates at most
+  small scales" failed at 2.38% vs. a >50% predicate, robustly across compute bands
+  (3.30% / 2.38% / 1.77% up to 0.1% / 1% / 10%); the raw-plateau-penalized-converge
+  claim failed on both halves (max raw slope 0.0914; gap grew 0.023 → 0.134). Together
+  with normalized metrics winning 816/830 near target: length-normalized correct
+  probability everywhere, at every scale; raw likelihood and margin each have
+  documentable failure modes. This is the frontier sub's empirical foundation, and #6's
+  diverging gap says metric choice matters *more* with compute on those tasks — the
+  response-model comparison is a permanent methodological question, not a small-scale
+  workaround. Caveat before any public framing: the three strong failures live in
+  proxy-metric territory where a definitional mismatch (what "Total Prob" is, normalized
+  how, over which span) could manufacture divergence; a definition-matching pass
+  against the paper's released analysis code is required first.
+- **Two task clusters (silhouette 0.207 vs. 0.25 default; reproduced at 0.15).** A sharper
+  null than either the paper or the validator used: two proxy-curve *shape* clusters do
+  not imply two ability dimensions. A strictly one-dimensional model produces
+  qualitatively different aggregate shapes if tasks differ in item-difficulty
+  distributions — difficulty mass near the small-model θ range gives early smooth rises
+  (Group A: ARC Easy, BoolQ, CSQA, PIQA, SocialIQA), mass above the range gives
+  flat-then-rise (Group B: ARC Challenge, HellaSwag, MMLU, OpenBookQA, WinoGrande). The
+  dimensionality test (IRT-2-style) is the instrument: fit one factor, ask whether the
+  A/B split is reconstructable from difficulty distributions alone or whether a second
+  factor's loadings recover it. Either outcome is clean (deflationary or confirmatory).
+  BoolQ landing in the "easy-shaped" cluster while sitting at noisy chance is a further
+  hint its curve shape is prior-tracking artifact.
+- **BoolQ twist.** The "nontrivial only at intermediate 1B checkpoints" claim strongly
+  failed: 108 nontrivial (>0.55) decision-accuracy points, 85 below 1B across eight
+  sizes, final 1B at 0.7867. Predictive signal without measurement validity is what
+  prior-tracking predicts: if a recipe's data statistics induce a scale-stable
+  yes-prior, small-scale BoolQ decisions predict 1B BoolQ decisions through a channel
+  that never touches comprehension. Addendum to the autopsy: regress BoolQ decision
+  accuracy on prior-alignment features (predicted-yes fraction) and see whether the
+  predictive signal survives. If not, the benchmark is simultaneously "predictable" and
+  measuring nothing — the sharpest illustration that decision accuracy alone is an
+  insufficient validity criterion.
+- Motivation-section pattern across all batches: every ambiguous or failed reproduction
+  traces to a metric with a bad functional form (margin), a statistic without a noise
+  model (crossovers, seed-SD phrasing), or a threshold without principled basis
+  (silhouette, 0.90 cutoffs) — the three things likelihoods, error bars, and model
+  comparison replace.
+
 ### 2026-08-22 — BoolQ as the diagnostic case study; noise-aware crossings; the frontier's design brief
 
 Prompted by Danielle's claim-by-claim reproduction of the DataDecide paper on the

@@ -386,3 +386,53 @@ bump-plot evidence came in; only the noise-aware version is recorded.
   complete instance table (`../../open-questions-answered.md`).
 - Danielle's bump-plot observation is her own prior evidence, "quite a while ago," and
   she flags she may not have covered every slice.
+
+---
+
+## 2026-08-22 — Reproduction batches two and three; the float-matching correction (same conversation, three turns)
+
+**Danielle (verbatim):** "ok great, so then digging through the "directionally correct
+results" gave this" — then a pasted summary; "Ok, then the last set of findings:" — then a
+pasted summary; then:
+
+> "#1 is the most important finding in all three batches, and it lands squarely in P3's
+> lap" is actually a methodological issue on our part I think. no human would try to
+> compute match with floats, let alone integers, this would be a bucketed comparison
+
+**Directionally consistent (4), as reported:** per-token vs. per-character curve
+similarity mean ρ 0.8957 vs. 0.90 required (32/50 pairs above; Margin curves on MMLU,
+OpenBookQA, ARC Challenge pull it down); two task clusters found (A: ARC Easy, BoolQ,
+CSQA, PIQA, SocialIQA; B: ARC Challenge, HellaSwag, MMLU, OpenBookQA, WinoGrande) at
+silhouette 0.207 vs. 0.25 default (reproduced at 0.15); group A proxies rise with compute
+(+0.0401/decade) but are not "nearly indistinguishable" (mean range 0.2215 vs. 0.05
+tolerance); Norm Correct Prob tracks accuracy at 0.916 but Margin at 0.360 (negative on
+3/10 tasks), so the conjunctive claim is only directional.
+
+**Not reproduced (6), as reported:** intermediate-vs-final compute-matched — 0 exact
+float matches, `-1.0` sentinel, should be `not_assessable`; SocialIQA max decision
+accuracy 0.8233 vs. ≤0.80 rule (borderline); BoolQ nontrivial points not confined to
+intermediate 1B (108 points, 85 below 1B, across 16M–750M, final 1B 0.7867; strong);
+SocialIQA early slope 0.0652 vs. ≤0.02 plateau rule (shape failure, robust to the fit
+threshold); raw Correct/Total Prob dominates at 2.38% of 1,510 small-scale comparisons
+vs. >50% (strong, robust across bands); raw plateau / penalized converge — max raw slope
+0.0914, gap grew 0.0233 → 0.1338 (strong).
+
+**Where the responses went:** margin demotion, metric hierarchy, two-cluster null,
+BoolQ twist, motivation-section pattern → `../../potential-projs/irt-reanalysis.md` §4;
+compute-matched pairing fix, two-act ANN-4, predicate-liveness guard →
+`annealed-readouts.md` §4; validation-section thesis and three-way classification →
+`recipe-featurization.md` §4.
+
+**Intake notes.**
+
+- Danielle's correction stands as the record: the compute-matching result is a verifier
+  bug (exact float equality), not a finding; the response had overridden the validator's
+  own correct caveat and retracted. The reference-topic record keeps only the retracted
+  version's surviving tooling points.
+- The response's distractor-design characterizations (WinoGrande/PIQA near-minimal-pair,
+  ARC Challenge deliberately plausible distractors) and the emergence-mirage link are
+  unverified.
+- All numbers above are as the reproduction agent reported them; the report lives on
+  `main` (`docs/paper-validation-report.md`), not on this branch.
+- "Track B / Track D / A3 / B1 / B5 / D4" labels again belong to the plan not on file;
+  mapped by content to IRT, ANN, TRJ-3.

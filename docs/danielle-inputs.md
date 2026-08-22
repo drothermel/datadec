@@ -2652,6 +2652,28 @@ frontier design brief); [potential-projs/trajectory-statistics.md](potential-pro
 [potential-projs/README.md](potential-projs/README.md) program notes ("DataDecide with
 error bars", candidate only).
 
+### 2026-08-22 — Reproduction batches two and three; float-matching correction (same conversation, three turns)
+
+> ok great, so then digging through the "directionally correct results" gave this
+
+> Ok, then the last set of findings:
+
+(each with a pasted summary from `docs/paper-validation-report.md`), then:
+
+> "#1 is the most important finding in all three batches, and it lands squarely in P3's
+> lap" is actually a methodological issue on our part I think. no human would try to
+> compute match with floats, let alone integers, this would be a bucketed comparison
+
+Routed to: [topics/reference/datadecide-data-pipeline.md](topics/reference/datadecide-data-pipeline.md)
+(sixth entry: as-reported numbers, the correction as the record);
+[potential-projs/irt-reanalysis.md](potential-projs/irt-reanalysis.md) §4 (margin
+demoted to object of study; normalized correct probability as the response variable;
+metric hierarchy; one-ability-two-difficulty-regimes null for the cluster claim; BoolQ
+predictive-without-valid twist); [potential-projs/annealed-readouts.md](potential-projs/annealed-readouts.md)
+§4 (compute-matched claim unassessed not refuted; shared matcher with TRJ-3; predicate
+liveness guard); [potential-projs/recipe-featurization.md](potential-projs/recipe-featurization.md)
+§4 (validation-section thesis; three-way classification; definition-matching pass).
+
 ### Post-intake decisions — 2026-08-22 (third pass)
 
 > (1) promote (2) I did run a few versions of this, I think we need a new section that

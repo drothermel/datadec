@@ -346,6 +346,30 @@ deterministic tokens)? Has it been done?
   deterministic, so you'd want the profile computed before and after dedup to separate
   'structured domain' from 'duplicated corpus.'"
 
+### 2026-08-22 — the validation section's thesis and its three-way classification
+
+After the "directionally consistent" (4) and "not reproduced" (6, one misclassified as
+not assessable) batches of the reproduction: the paper's quantitative headline results
+reproduce (0.80 decision accuracy, compute-reliability trend, task-difficulty spread,
+spread-to-noise), while its qualitative narrative about metric families and curve
+shapes largely does not (raw-likelihood dominance at small scales, raw-plateau /
+penalized-converge, BoolQ-only-at-1B, SocialIQA plateau shape; SocialIQA "low
+reliability" a threshold quibble at 0.8233 vs. 0.80). Charitable framing for the data
+card: the decision-making core survives independent reproduction; the descriptive
+glosses don't. Required before any claim is framed as a contradiction: a three-way
+distinction — *fails on cleaned data* / *depends on definitional choices the paper did
+not pin down* / *not assessable* — and a definition-matching pass against the paper's
+released analysis code for the proxy-metric failures, since the pipeline's own
+choices (source precedence, legacy-seed exclusion, schema normalization) and unpinned
+metric definitions could manufacture divergence. If they survive, major findings; if
+not, the finding is that the claims are irreproducible-as-stated because
+operationalizations were never published. Validation-methodology elements worth
+showcasing: frozen predicates, sensitivity analyses around thresholds, atomic
+decomposition of conjunctive claims (the Norm Correct Prob 0.916 / Margin 0.360 split
+is the model case), the `not_assessable` category, and a predicate-liveness guard (see
+`annealed-readouts.md` §4). The response rated this framework a workshop-sized
+contribution to reproduction practice in its own right (its judgment, not a decision).
+
 ### 2026-08-22 — the validation report and a coverage/abnormality ledger as data-card components
 
 Danielle had an agent reproduce the DataDecide paper's claims from the processed tables

@@ -174,6 +174,32 @@ they also tell you whether that half is worth it.
 Dated, attributed notes from external review conversations, recorded for consolidation — not
 decisions. Only notes about this project are kept here.
 
+### 2026-08-22 — the intermediate-vs-final compute-matched claim is unassessed, not refuted
+
+Danielle's reproduction of the DataDecide paper (record in
+`../topics/reference/datadecide-data-pipeline.md`) classified "an intermediate checkpoint
+predicts rankings as accurately as a final checkpoint with equal compute" as
+`not_reproduced`, but the verifier required exact floating-point equality of compute and
+found zero matched pairs; the `-1.0` "minimum difference" was an empty-set sentinel. The
+validator itself recommended `not_assessable` pending a predeclared approximate-matching
+or interpolation rule (`src/datadec/paper/verifiers/single_scale.py` ~line 1341 on
+`main`). Danielle: "no human would try to compute match with floats, let alone integers,
+this would be a bucketed comparison" — a verifier bug on our side, not a finding about
+the paper; the response withdrew its "most important finding in all three batches"
+framing. What survives for this project: (1) the fixed matcher is shared infrastructure
+— matched-loss pairing (`trajectory-statistics.md` TRJ-3) and compute-matched pairing are
+the same tool with a different matching variable; design decisions: tolerance in
+log-compute space (a ratio, not an absolute difference), predeclared, match distances
+reported; or interpolation along each run's compute axis, which sidesteps bucketing and
+may be cleaner given full trajectories; sweep the tolerance ("holds at 5% but not 1%"
+would itself say how sharp the equivalence is). (2) The analysis enters ANN-4 as
+"reproduce on cleaned data under a defensible matching rule, then re-examine under
+annealing correction" — the normal and arguably stronger two-act shape. (3) Methods
+lesson for the validation framework: a predicate can be formally frozen but physically
+degenerate (exact equality on a continuous quantity), distinct from threshold
+sensitivity; add a "predicate liveness" guard — verify the comparison set is non-empty
+and report its size with every result.
+
 ### 2026-08-21 — two "top-N by workshop-paper likelihood × speed" lists
 
 - **Deliberately left out of a top-3 list.** "It has the highest ceiling of the
