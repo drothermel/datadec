@@ -2157,3 +2157,24 @@ Routed to: new [topics/generalization-and-ood-literature.md](topics/reference/ge
 (responses condensed; all citations marked unverified; intake note that the
 "predicting performance conditioned on the method" half was never answered and is the
 thread that recipe-featurization / EDP pick up).
+
+### 2026-08-22 — CNN-deconstruction logger question (Perplexity, undated, ~late 2024 / early 2025)
+
+> ok another far back one, from perplexity this time.
+
+Her prompt (verbatim):
+
+> I want to slowly deconstruct the improvements in architecture and training procedure that
+> were introduced into CNN based vision models from today all the way back to the earliest
+> "deep" models. For each step I want to train on CIFAR 10 and ImageNet for a minimal
+> length of time to do fast iteration for comparison (not aiming for super competitive
+> results), and I want to track key metrics about the optimization landscape as I go. This
+> will involve making significant numbers of iterative changes and running a substantial
+> number of runs (multiple seeds per configuration + simple hpm sweeps).
+>
+> What are the top options for a logger setup (not tensorboard or wandb)
+
+Routed to: new [topics/experiment-tooling.md](topics/reference/experiment-tooling.md)
+(her requirement statement quoted as the `deconCNN` design statement and linked to the
+seven-track record and to GEO / TINY; the logger comparison condensed and flagged as a
+vendor-page summary that never evaluated against the stated requirements).
