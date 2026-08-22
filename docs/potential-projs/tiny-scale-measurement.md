@@ -112,6 +112,23 @@ Dated, attributed-by-date notes from external review conversations, recorded for
 consolidation — not decisions. Only notes about this project are kept here. Related-work
 claims in quoted text are unverified.
 
+### 2026-08-22 — the "which loss" axis: what the loss-alternative literature offers
+
+From Danielle's SciSpace review of CE/NLL alternatives for evaluation (record in
+`../topics/reference/loss-alternative-metrics-literature.md`). TINY's measurement-method
+axis should enumerate the loss *variants*, not just loss vs. accuracy: (a) per-token vs.
+per-byte normalization (constant tokenizer across DataDecide makes this a no-op within
+the suite, decisive across suites); (b) gold-span vs. whole-sequence likelihood (OLMES
+per-character correct-probability is the gold-span case); (c) token-selected likelihood
+— LongPPL's key-token perplexity (2410.23771) is the published template for "compute
+loss only on tokens a reference model says are informative", and Patel et al.'s
+expert-trajectory reweighting is the same move with a strong model as the selector; (d)
+tokenization-marginal likelihood (Cao & Rimell 2021; Vieira et al. 2412.03719) as a
+robustness check. Candidate TINY-opt: decision-accuracy-vs-compute curves for each
+variant on the same checkpoints, which is the frontier with the response variable as
+the treatment. Representation-side metrics (Diff-eRank) are a separate, hidden-state
+readout — possible GEO/TOK interest, not a TINY method.
+
 ### 2026-08-22 — the incumbent proxy for small-scale decisions: Patel et al. 2026
 
 From Danielle's SciSpace literature review on small-scale evaluation metrics

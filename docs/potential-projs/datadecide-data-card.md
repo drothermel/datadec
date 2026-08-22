@@ -122,6 +122,17 @@ and the compute-/loss-matched pairing utility.
 
 ## 4. External assessments
 
+### 2026-08-22 — report the PPL tables in bits per byte
+
+From Danielle's SciSpace review of CE/NLL alternatives (record in
+`../topics/reference/loss-alternative-metrics-literature.md`). The suite's per-domain
+perplexity tables are per-token cross-entropy under one tokenizer; for the release,
+carry a bits-per-byte column computed over the fixed evaluation byte string (Paloma's
+protocol, 2312.10523) so the tables are comparable to other suites and to
+tokenizer-free models, and state the tokenizer and byte-count convention in the data
+card. Cheap, and it is the form every cross-model comparison in this literature asks
+for. Candidate DCARD-4 detail.
+
 ### 2026-08-22 — a published downstream consumer of DataDecide to track
 
 From Danielle's SciSpace literature review on small-scale evaluation metrics

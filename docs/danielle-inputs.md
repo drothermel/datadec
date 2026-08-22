@@ -2987,6 +2987,29 @@ Routed to: [topics/reference/distillation-literature.md](topics/reference/distil
 control), and a pointer in
 [topics/reference/pretraining-to-posttraining.md](topics/reference/pretraining-to-posttraining.md).
 
+### 2026-08-22 — SciSpace literature review: alternatives to CE / NLL for evaluation
+
+> I want you to do a literature review of alternatives to CE Loss or Negative Log
+> Likelihood for evaluation. I specifically want you to look at metrics that are meant to
+> be a replacement for loss. I want you to exclude task accuracy via generation or
+> ranking, or any similar common metrics. One example of what I might want is a
+> modification of NLL that excludes or reweights certain tokens. I want you to especially
+> pay attention to methods which do NOT depend on vocabulary, tokenization, or model
+> architecture.
+
+Applied: `INDEX.md` in `~/drotherm/data/convo-artifacts/2026/scispace-alt-eval-metrics-for-llms-agent-artifacts-zip_69962c47-a151-4f10-b0bc-84aa7faabc11_1787425013/` (report md/tex/pdf, 10 key PDFs mapped to papers, figure
+manifest, 18 further full texts, the 57 off-topic arXiv downloads flagged, merged CSVs
+with method columns; missing canon listed).
+
+Routed to: [topics/reference/loss-alternative-metrics-literature.md](topics/reference/loss-alternative-metrics-literature.md)
+(new reference topic: evaluation-side families only; training-objective drift, the crank
+source, and the "architecture-independent" mislabel flagged), dated notes in
+[potential-projs/tiny-scale-measurement.md](potential-projs/tiny-scale-measurement.md)
+§4 (the which-loss axis; candidate TINY-opt) and
+[potential-projs/datadecide-data-card.md](potential-projs/datadecide-data-card.md) §4
+(bits-per-byte column for the PPL tables), and a pointer in
+[topics/reference/small-scale-evaluation-metrics-literature.md](topics/reference/small-scale-evaluation-metrics-literature.md).
+
 ### Post-intake decisions — 2026-08-22 (data-layer conversation)
 
 > 1. I think data-card/ validation work should be its own project doc, so b as you say.

@@ -13,6 +13,13 @@ index.**
 
 ---
 
+## 2026-08-22 — pointer: loss-replacement metrics
+
+Metrics that replace the loss itself (token-selected / reweighted NLL such as LongPPL,
+bits per byte, tokenization-marginal likelihood, representation-side readouts) are
+accumulated in `loss-alternative-metrics-literature.md`; this file stays with proxies
+that *predict downstream accuracy*.
+
 ## 2026-08-22 — SciSpace deep review seeded on Patel et al. 2026 (two versions)
 
 **Danielle's prompts (verbatim):**
