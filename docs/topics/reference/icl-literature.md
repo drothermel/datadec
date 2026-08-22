@@ -145,3 +145,25 @@ continuum is exactly the ICL-elicitability ceiling question. Candidate lit-pass:
 hybrids of NL context + learned tokens (e.g. gist/compression tokens, learned
 tool/format tokens, optimized non-readable prompt strings from discrete prompt
 optimisation) — unverified, to be searched.
+
+**Follow-up — ICL learning curves as a parallel to training curves (same conversation).**
+Danielle's thought: the fine-tuning vs. in-context-learning comparison "clearly is a direct
+comparison, and the idea that by consuming more tokens, a model is moving towards a,
+quote-unquote, more trained state, kind of, is a parallel to fine-tuning." So: we study
+scaling laws and performance curves over the course of training for LLMs — is the same
+done in the prompting space, e.g. performance as a function of the number of in-context
+examples ("what is in an n-shot"), and how different prompt choices change that
+"learning curve"? Response (content-free; condensed): yes, people treat example count /
+prompt complexity as a resource analogous to training steps; diminishing returns and
+plateaus; prompt design shifts the curve; mixed NL + learned embeddings can improve sample
+efficiency — **no papers named**.
+
+*Danielle-flagged lead (and a direct restatement of the ICL-elicitability core).* This is
+the "ICL training run" framing in `../../potential-projs/icl-elicitability.md`: the
+per-token/per-demonstration curve is the learning curve, prompt format and ordering are the
+hyper-parameters, and the question of whether ICL curves obey scaling-law-like regularities
+across model size and pretraining recipe is the project's measurement target. Candidate
+lit-pass leads (mine, unverified): many-shot ICL scaling studies (hundreds to thousands of
+demonstrations in long contexts); n-shot curves in the original GPT-3 evaluations; work
+fitting power laws to ICL accuracy vs. number of shots; ICL-vs-fine-tuning matched-budget
+comparisons; demonstration-ordering and calibration effects on the curve.

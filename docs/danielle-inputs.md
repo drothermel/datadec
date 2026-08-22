@@ -1923,3 +1923,16 @@ a quality caveat — the third example is unsourced).
 Routed to: [topics/icl-literature.md](topics/reference/icl-literature.md) (follow-up under
 the same entry; response content-free, question recorded as a Danielle-flagged lead for a
 lit pass).
+
+> I previously found it very surprising, the comparison between fine-tuning and in-context
+> learning, though I think that it's really held out, I guess. It clearly is a direct
+> comparison, and the idea that by consuming more tokens, a model is moving towards a,
+> quote-unquote, more trained state, kind of, is a parallel to fine-tuning, and so then
+> that makes me wonder, we look at, for these large-language models, scaling laws and,
+> like, performance curves over the course of training, and is that something that is also
+> investigated in the prompt-tuning space in terms of, kind of, like, for example, how many
+> examples, like, what is in an in-shot in terms of the performance on a task, or how
+> different choices of prompts impact that, like, quote-unquote learning curve.
+
+Routed to: [topics/icl-literature.md](topics/reference/icl-literature.md) (follow-up;
+response content-free; Danielle's framing cross-referenced to the ICL-elicitability core).
