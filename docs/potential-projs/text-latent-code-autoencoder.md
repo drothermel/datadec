@@ -344,6 +344,21 @@ Dated notes from the external conversation this doc was promoted from, recorded 
 consolidation — not decisions. Related-work claims in quoted text are unverified unless a
 citation is given; Danielle's prompts are logged verbatim in `../danielle-inputs.md`.
 
+### 2026-08-22 — where the optimizer loop sits in the prompt-optimization landscape
+
+From Danielle's SciSpace deep review of prompt optimization, run with this paper as the
+stated context (record in `../topics/reference/prompt-optimization-landscape.md`). The
+LLM-as-optimizer loop over harness parameters θ is, in the review's taxonomy, a
+meta-prompting / generation-refinement optimizer with execution feedback, applied at
+system level (prompts + latent format + stages + sampling) — nearest published
+relatives Trace/OptoPrime, LLM-AutoDiff, and Prochemy/EPiC on the code side; the
+compound-AI survey (2410.16392) supplies the vocabulary for "optimize the whole
+pipeline." Two items for the draft: (1) the review lists *prompt length vs.
+performance* as an open problem, which is this paper's rate–distortion framing stated
+from the other side — quotable positioning; (2) the related-work section should anchor
+on APE / OPRO / ProTeGi / TextGrad / DSPy-MIPROv2 / GEPA, none of which the review
+names — pull them from the bundle's 648-row table. Prior-art gate still parked.
+
 ### 2026-08-22 — task-set choice against the benchmark landscape
 
 From Danielle's SciSpace deep review of coding benchmarks (record in

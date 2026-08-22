@@ -141,6 +141,24 @@ The TLC draft PDF the conversation was conducted against is not on file; its int
 surfaced are recorded in `text-latent-code-autoencoder.md` §4. Related-work claims in the
 responses are unverified.
 
+### 2026-08-22 — the system-level prompt-optimization cluster is the outer loop's positioning set
+
+From Danielle's SciSpace deep review of prompt optimization (record in
+`../topics/reference/prompt-optimization-landscape.md`). ELI's outer model optimizes the
+*interface* — prompts, templates, staging, verifiers, sampling — not only the prompt
+text; the published cluster that does the same is: **Trace / OptoPrime** (2406.16218;
+workflow as a graph, an LLM optimizer over heterogeneous parameters including
+hyperparameters and code), **LLM-AutoDiff** (2501.16673; textual gradients through
+multi-stage pipelines), **SPRIG** (2410.14826; system-prompt components by genetic
+search, transferring across 47 tasks), **RePrompt** (2406.11132; agent instructions
+refined from trajectories), and Lin et al.'s compound-AI optimization survey
+(2410.16392) whose target list — prompt components, sampling parameters, tool specs,
+orchestration — is the ELI action space. Differences to state: these optimize a
+pipeline around a strong model for task performance; ELI fixes the outer optimizer and
+the budget and reads the *executor's* extractable competence as the measurement. The
+review omits APE, OPRO, ProTeGi, TextGrad, DSPy/MIPROv2, and GEPA; add those from the
+bundle's 648-row search table when the gate runs. Gate still parked.
+
 ### 2026-08-22 — EPiC as the nearest published outer-optimizer with budget accounting
 
 From a SciSpace paper summary (record in

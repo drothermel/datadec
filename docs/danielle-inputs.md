@@ -2802,6 +2802,40 @@ Routed to: [topics/reference/code-benchmarks-landscape.md](topics/reference/code
 §4 (task-set choice: contamination critiques; code-reasoning benchmarks as the nearest
 neighbour to reconstruct-from-description).
 
+### 2026-08-22 — SciSpace deep review: prompt optimization
+
+> artifact (lets just index all of these going forward).
+
+> What is the current state of the Prompt Optimization subfield? What are the related
+> works that are foundational, and what are the strongest recent themes? Please focus
+> especially on approaches that use LLMs to do the prompt optimization and on approaches
+> that optimize not just the prompt but also other aspects of the system (for example
+> sampling hpms, tool use, etc). My goal is to get a general understanding of the subfield
+> before diving deeper into specifics, so prioritize breadth and qualitative comparisons.
+
+> Please include as broad a set of methods as possible, I'd say focus mostly on things like
+> prompt optimization, so RAG systems are a bit further afield for this deep research. I'm
+> interested across broad domains, but especially in the realm of verifiable tasks like
+> code generation. And focus on recent developments but provide a brief intro on the
+> historical perspective.
+>
+> For context, I'm currently writing a paper on compressing functions using an frozen
+> pretrained black box LLMs as encoders and decoders, with instructions to compress the
+> input function and then reconstruct it in a way that preserves functionality not surface
+> form. We're using an external LLM to optimize the compression prompt. So I'm interested
+> in things related to this but more interested in getting a broad understanding of the
+> landscape.
+
+Standing instruction adopted: every artifact bundle gets an `INDEX.md` at intake.
+Applied here: `INDEX.md` in `~/drotherm/data/convo-artifacts/2026/scispace-prompt-optimization-agent-artifacts-zip_97f96bdd-5f03-456a-8061-f2e8204d51c2_1787423566/`.
+
+Routed to: [topics/reference/prompt-optimization-landscape.md](topics/reference/prompt-optimization-landscape.md)
+(new reference topic; omissions of canonical anchors flagged) and dated notes in
+[potential-projs/elicitation-gain.md](potential-projs/elicitation-gain.md) §4 (the
+system-level cluster as the outer loop's positioning set) and
+[potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+§4 (where the optimizer loop sits; prompt-length-vs-performance as quotable positioning).
+
 ### Post-intake decisions — 2026-08-22 (data-layer conversation)
 
 > 1. I think data-card/ validation work should be its own project doc, so b as you say.
