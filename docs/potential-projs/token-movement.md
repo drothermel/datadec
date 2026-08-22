@@ -274,3 +274,14 @@ decisions. Only notes about this project are kept here.
   about." Adjacent work on load-balance phases across OLMoE/OpenMoE checkpoints is said to be
   aggregate-level only (unverified). (Full discussion in
   `docs/topics/moe-routing-as-data-instrument.md`.)
+
+### 2026-08-21 — on TOK-obs-5 as the MoE twin of TOK-obs-4
+
+- TOK-obs-5 ("high-entropy tokens keep flipping after low-entropy tokens' routes freeze") "is
+  the MoE twin of the dense program's single most interesting figure [TOK-obs-4]. The two
+  would make each other far more credible if they land together." Caveat for any routing
+  claim: "regress assignments on token ID, frequency band, and position first, and make the
+  taxonomy claim only about the residual structure" — the reference-entropy scorer "is
+  exactly the right covariate set for this"; and the load-balancing objective "actively
+  pushes routing toward uniformity," confounding observed assignments. (Full discussion in
+  `docs/topics/moe-analysis-program.md`.)

@@ -99,3 +99,24 @@ of the response was captured; it references an earlier "reweighting" of directio
 also not captured); project-specific part to
 [potential-projs/wsd-suite.md](potential-projs/wsd-suite.md) §4.
 
+### MoE-style questions, free MoE artifacts, and the Slicing-and-Dicing codebase
+
+> Then, what would it look like to ask similar styles of questions around MoEs? It seems that
+> MoEs give much richer outcome channels and that their routing decisions could be used to
+> categorize tokens. And the datasets and released models around MoEs provide an additional
+> set of sources of "free" compute artifacts that could likely be combined or compared to
+> some of these dense options?
+>
+> Additionally, if you look at Slicing and Dicing: https://arxiv.org/abs/2605.11689, this is
+> a paper I'm the third author on so we have a robust codebase that enabled us to run the
+> systematic study on our existing hardware + some guidance for hpm choice at the small model
+> sizes. And, as context, the paper is trending towards weak accept/reject at NeurIPS, which
+> is a win in my book and the level that I'd aim for with a full conference submission. But in
+> the future I'd like to do something with more interesting analysis instead of just a large
+> grid sweep.
+
+Response routed to: [topics/moe-analysis-program.md](topics/moe-analysis-program.md);
+project-specific parts to [potential-projs/trajectory-statistics.md](potential-projs/trajectory-statistics.md) §4
+and [potential-projs/token-movement.md](potential-projs/token-movement.md) §4; the
+sweep-reanalysis idea is also noted in [topics/moe-recipe-suite.md](topics/moe-recipe-suite.md).
+

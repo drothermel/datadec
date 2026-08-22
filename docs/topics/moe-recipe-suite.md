@@ -52,3 +52,14 @@ specialization. Together they're a clean factorial story, and the follow-up is t
 analysis-heavy paper you say you actually want — the sweep paper earns you the right to hold
 architecture fixed. I'd now upgrade that direction relative to my earlier reweighting,
 because its main risk (standing up MoE training infra) just evaporated."
+
+---
+
+## 2026-08-21 — Related: the sweep reread as data
+
+A separate response proposes using the Slicing-and-Dicing sweep itself as a matched-loss
+comparison across architectures — "is the token taxonomy a property of the data or of the
+architecture?" via cross-model expert matching — as the first-act "sweep-reanalysis paper,"
+with the balancing-mechanism sweep as the validation that routing-as-measurement is not a
+load-balancing artifact. Recorded in full in
+[moe-analysis-program.md](moe-analysis-program.md).

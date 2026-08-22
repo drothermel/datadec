@@ -241,3 +241,16 @@ decisions. Only notes about this project are kept here.
   checkpoints and known data… enough to ask whether expert-specialization structure tracks
   corpus composition across independent training setups." The artifact survey remains step
   one. (Full discussion in `docs/topics/moe-routing-as-data-instrument.md`.)
+
+### 2026-08-21 — on an MoE dual of the drift/diffusion decomposition
+
+- In an MoE, change between checkpoints "decomposes *architecturally* into two channels:
+  **rerouting** (same experts, different assignments) and **rewriting** (same assignments,
+  different experts). You can compute this decomposition exactly: hold routing fixed at
+  checkpoint t while using checkpoint t+1's experts, and vice versa, and attribute the output
+  delta. That's the MoE dual of your drift/diffusion decomposition, and it's *causal by
+  construction* rather than inferred from time-series statistics." Conjectured phenomenology:
+  early training rerouting-dominated, late training rewriting-dominated, per-layer crossover
+  as a commitment clock. Frozen-router branches as the causal control. TRJ-moe-1's
+  reverting/persistent flip split "slots directly in here." (Full discussion in
+  `docs/topics/moe-analysis-program.md`.)
