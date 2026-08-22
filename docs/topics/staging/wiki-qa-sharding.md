@@ -324,6 +324,21 @@ version like a columnar dataset." First implementation: one collection, one poin
 passage, `dense + bm25`, RRF, article grouping, external cross-encoder, communities as
 payload only — "leaving each additional component independently measurable."
 
+## 2026-08-16 — Workbench vs. engine: DuckDB + LanceDB over one Lance dataset
+
+General comparison recorded in `../reference/retrieval-storage-tooling.md`. Project
+application (near-verbatim, condensed): DuckDB for building, inspecting, partitioning, and
+evaluating the corpus — parse/normalize Parquet shards; join passages with metadata,
+redirects, Wikidata IDs, categories; construct and inspect the link-edge table; degree
+distributions, PageRank inputs, community statistics; materialize train/dev/test slices;
+detect duplicate passages and answer leakage; evaluate runs by joining results to gold
+evidence (recall@k, answer recall, MRR, per-question slices); compare LanceDB/Qdrant/Pyserini
+runs in SQL. LanceDB for the online portion — one row per passage; FTS over title/text; ANN
+over the embedding; scalar indexes on article_id, snapshot, graph community; retrieve, fuse,
+rerank, fetch scattered rows. Canonical corpus as one Lance dataset read by both via DuckDB's
+Lance extension; small Parquet tables for the link graph and evaluations. Don't use DuckDB
+VSS as the sole Wikipedia-scale vector index.
+
 ## Open questions
 
 - What the surrounding MAQA system needs (latency target, shard count, update
@@ -339,7 +354,8 @@ payload only — "leaving each additional component independently measurable."
   `graph_partition` as an indexed filter column; graph features computed offline) → Vespa
   only if concurrency, ranking expressiveness, or HA demand it (Qdrant is the alternative
   serving-first choice: named dense+sparse(+ColBERT) vectors, RRF, article grouping,
-  community as payload not shard key); section-level passages with title/section prefix; RRF first;
+  community as payload not shard key); DuckDB (+ Lance extension) as the analytical
+  workbench over the same Lance dataset; section-level passages with title/section prefix; RRF first;
   article-level diversification for multi-answer readers.
 
 **Waiting on:** further excerpts from the MAQA Next Steps page; a promotion decision.

@@ -1330,3 +1330,13 @@ pros, cons, how far it goes"); index-plan open question revised.
 
 Routed to: [topics/wiki-qa-sharding.md](topics/staging/wiki-qa-sharding.md) ("A Qdrant-based
 solution").
+
+### DuckDB vs. LanceDB — conversation 2026-08-16
+
+> how does duckdb compare to lancedb? for my use case but more generally is the interesting
+> part of the question
+
+Routed to: new reference topic
+[topics/retrieval-storage-tooling.md](topics/reference/retrieval-storage-tooling.md) (the
+general comparison, per Danielle's emphasis); project application in
+[topics/wiki-qa-sharding.md](topics/staging/wiki-qa-sharding.md).
