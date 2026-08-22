@@ -1267,3 +1267,22 @@ Routed to: new reference topic
 (File `~/Desktop/multi_answer_qa_state_of_research_2026.md` attached.) Copied verbatim to
 [refs/multi-answer-qa-state-of-research-2026.md](refs/multi-answer-qa-state-of-research-2026.md);
 distilled into [topics/multi-answer-qa-literature.md](topics/reference/multi-answer-qa-literature.md).
+
+### Multi-answer QA — cleaner datasets — conversation 2026-08-16
+
+> This is very helpful. Another question that I had back then, that I think we're in a much
+> better place to answer now, is how to produce cleaner datasets. Because if we're looking
+> at evaluating a recall measure over hundreds of documents, then it matters less. If we're
+> looking at doing recall over eight, but only six are actually listed in the ground truth
+> for the dataset, then that can dramatically swing the accuracy of the evaluation.
+> Similarly, in the past, part of how you would create gold evidence passages were just to
+> look for examples where a question entity and an answer entity both existed, or examples
+> where you queried with BM25 for the question, and then it contained the answer, which
+> leaves a lot of space for false positives that could definitely be filtered out fairly
+> inexpensively now, given how strong our quote-unquote reader models are. And so, what
+> additional work has been done on improving the quality of these QA datasets so that they
+> are more accurate and provide more precise information about how to differentiate
+> between different methods?
+
+Routed to: [topics/multi-answer-qa-literature.md](topics/reference/multi-answer-qa-literature.md)
+("Cleaner datasets: verification over enumeration").

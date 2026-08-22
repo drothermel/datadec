@@ -132,3 +132,91 @@ three originals + MoNaCo + LIMIT+ (+ TANQ, WideSearch).
 QA, but neither closed-book generation nor naive RAG is a solved system. High-recall
 evidence acquisition, constraint-faithful verification, and completeness-aware evaluation
 remain the critical research problems."
+
+## 2026-08-16 — Cleaner datasets: verification over enumeration
+
+**Danielle's question.** Back then, incomplete gold sets mattered little at hundreds of
+answers but "if we're looking at doing recall over eight, but only six are actually listed in
+the ground truth, then that can dramatically swing the accuracy of the evaluation." Gold
+evidence passages were built by question-entity/answer-entity co-occurrence or BM25 hits
+containing the answer — many false positives "that could definitely be filtered out fairly
+inexpensively now, given how strong our reader models are." What work has improved QA
+dataset quality so evaluations differentiate methods more precisely?
+
+**Response (near-verbatim, condensed; citations unverified).** Core shift: "strong models are
+more useful as pointwise verifiers than as one-shot authors of a supposedly exhaustive gold
+set. Generate candidates broadly; verify each candidate narrowly; escalate disagreements to
+humans."
+
+*The original concern was substantial.* QAMPARI's ExtendedSet study (12 min/question, 200
+questions) added a median 2 / mean 3.13 / up to 16 answers per question; expanded sets
+raised system precision ~5–6 points; rankings stayed stable but the paper acknowledged
+ExtendedSet was still incomplete. Its NLI check removed 70% of co-occurrence false positives
+at the cost of 7.5% of correct alignments.
+
+*What improved (problem → practice → evidence).* Missing answers → pool candidates from
+retrievers/KGs/LMs/submitted systems, adjudicate each (DREAM/BRIDGE). Unsupported answer
+strings → judge (question, answer, passage) entailment/extractability/scope (ObliQA-MP,
+GaRAGe). Alias/paraphrase errors → semantic, question-aware equivalence (Kamalloo et al.,
+PEDANTS, LongRecall). LLM-authored gold lists omit answers → elicit the predicate, check
+membership pointwise (*Judging Is Not Enumerating*). Long answers → atomic nuggets
+(AutoNuggetizer). Coarse diagnosis → annotate answer, evidence, attribution, sufficiency,
+decomposition separately (ExpertQA, GaRAGe, MoNaCo, TANQ).
+
+1. **Pooling and repair — DREAM/BRIDGE (arXiv 2602.06526, ICLR 2026).** Two LLM agents
+   initialized with opposing positions; agreement accepted, persistent disagreement to
+   humans. Reported 95.2% labeling accuracy, 3.5% human review, 29,824 missing relevant
+   chunks recovered (428% of the 6,976 original gold chunks); missing labels changed
+   retriever comparisons. List-QA analog: pool candidates from heterogeneous systems → search
+   for evidence for *and against* each → independent verifiers judge (question, candidate,
+   evidence) → escalate disagreements (not merely low confidence) → re-pool when a novel
+   system family is evaluated. "Modernized TREC pooling, made substantially cheaper by
+   model-based triage."
+2. **Enumeration ≠ verification — *Judging Is Not Enumerating* (arXiv 2608.01000).** On
+   tasks with mechanically complete truth sets, models judged membership far better than they
+   enumerated; asked for the predicate rather than the extension they approached 0.99 F1
+   while enumerations stayed badly incomplete. Bad: "generate every movie … use that as gold."
+   Better: formalize constraints, broad candidate pool, test each. Best: compile the
+   predicate to a KB query, materialize on a dated snapshot, verify each result in text.
+   "Self-verification is not enough if the same model first created an incomplete roster."
+3. **Evidence validation — ObliQA-MP (NLLP 2025).** GPT-4.1 classified pairs as directly
+   answer-bearing / indirectly supportive / not connected: 20.46% of 31,037 previously
+   accepted passages were not connected; only 2,976 of 13,191 candidate multi-passage
+   questions survived. Still an automatic precision filter — audit stratified samples
+   (accepted, rejected, high-confidence, verifier disagreements, both-entities-but-unsupported).
+   GaRAGe (Findings ACL 2025): 2,366 questions, >35k individually annotated grounding passages,
+   includes insufficient-evidence cases for abstention.
+4. **Answer matching.** Kamalloo et al. (ACL 2023): >half of NQ-Open lexical failures were
+   semantically equivalent; manual evaluation raised InstructGPT ~60%. PEDANTS (Findings
+   EMNLP 2024); LongRecall (arXiv 2508.15085). For multi-answer: bipartite matching between
+   predicted and gold entities, canonical IDs where available, semantic verifier otherwise —
+   no alias penalties, no double credit.
+5. **Nuggets.** The Great Nugget Recall (arXiv 2504.15068); a 2026 QAMPARI reproduction (GeM
+   2026) found it ranks systems well but automatic nugget creation omits required entities
+   (recall inflated) and automatic assignment is stricter on aliases (~85% of disagreements
+   were automatic rejections humans accepted). Recommendation: human-curated nuggets,
+   automatic assignment.
+6. **Richer supervision per example.** question; intensional constraints; canonical answer
+   entities; aliases; supporting claims per answer; direct evidence spans; additional
+   reasoning evidence; source and corpus version; ambiguity and temporal scope; known hard
+   negatives. Models: ExpertQA (NAACL 2024; 2,177 expert questions, 32 fields), GaRAGe, TANQ,
+   MoNaCo.
+
+*Recommended construction pipeline for a new Wikipedia list-QA dataset.* (1) Closed world:
+dated snapshot; gold = answers supported by that snapshot. (2) Store the intensional
+specification (type, relation, interval, exclusions, intersections, aggregation). (3)
+Overcomplete candidate pool (Wikidata, tables/categories, BM25, dense, link-graph expansion,
+multiple LMs, several QA systems) — optimize for recall. (4) Pointwise structured verdicts:
+qualifies? canonical identity? direct passage? entailment? temporal qualification? (5)
+Adversarial evidence judgments (co-occurring but wrong relation / historical / negated /
+attributed elsewhere / mere mention). (6) Independent verifier families + human adjudication
+of disagreements and a sample of agreements. (7) Canonicalize by entity ID, redirects,
+aliases, granularity rules. (8) Pool system outputs before freezing; versioned supplemental
+judgment pool afterwards. (9) Measure annotation coverage: unjudged candidates, marginal
+yield per proposal method, capture–recapture estimates of residual incompleteness. (10)
+Evaluate four stages separately: candidate-answer recall; evidence-retrieval recall;
+correctness given gold evidence; final set P/R and complete-set accuracy.
+
+"The remaining hard problem is not the cost of verifying a proposed answer ... It is ensuring
+that the proposal pool is sufficiently diverse that missing answers have an opportunity to
+be verified at all."
