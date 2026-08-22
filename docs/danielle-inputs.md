@@ -2270,3 +2270,7 @@ use and candidate eNTK readouts for GEO and the CNN ladder); cross-linked from
 Routed to: [topics/loss-curve-forecasting.md](topics/reference/loss-curve-forecasting.md)
 (answer 1 condensed; intake note that it argues about smoothness, not linearity, and so
 answers a different question; slot left for answer 2).
+
+> note the hypothesis came from my advisor
+
+Recorded in both the topic entry and the EDP lineage note.

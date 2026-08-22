@@ -57,7 +57,9 @@ are proxy metrics valid' question." See `grokking-and-hidden-progress.md`.
 ## Undated (~2025) — "Do more linear loss curves indicate better training?" — answer 1 of 2 (condensed)
 
 Danielle's question (the motivating question of the CIFAR-10 loss-slope study, EDP's
-lineage — `../../potential-projs/early-dynamics-prediction.md` §4):
+lineage — `../../potential-projs/early-dynamics-prediction.md` §4). The hypothesis being
+checked — that more linear loss curves indicate better training — came from her advisor;
+this query was Danielle testing whether it is an established belief and what it rests on:
 
 > Is there a belief in machine learning research that "more linear loss curves indicate
 > better training"? If so, what is it based on?

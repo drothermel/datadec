@@ -159,7 +159,10 @@ diagnostics." The response's summary of early findings: "validation-loss slope (
 confidence intervals," and "consider mixed-effects model to separate optimiser vs
 augmentation contributions."
 
-Intake note: this is the CNN-sweep precursor of EDP — the same question (early-window
+Intake note (added 2026-08-22): the "loss-curve linearity → better training" hypothesis
+the CIFAR study tested came from Danielle's advisor; her check on whether it is an
+established belief is recorded in `../topics/reference/loss-curve-forecasting.md`. This is
+the CNN-sweep precursor of EDP — the same question (early-window
 curve-shape features → final performance) asked on Danielle's own `dr_exp`/`deconCNN`
 CIFAR-10 runs before the July 2025 DataDecide draft. The "early findings" quoted above are
 the response's paraphrase of notes that no longer exist and are unverified; treat them as
