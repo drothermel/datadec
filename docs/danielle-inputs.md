@@ -1796,3 +1796,14 @@ Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-p
 Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
 ("Responses 19–20"), with intake notes on the feature-masking contradiction, per-τ metric
 computation, and what the real upper bound is.
+
+### Early-dynamics draft review, third distinct review — 2025-07 (intake 2026-08-22)
+
+> ok, now, back to an alternate version of the chat about the feedback on the project
+> report, let me know if this is verbatim the same as a previous answer
+
+Not a duplicate — a third review with different calls (minimal feature slice; one CV axis;
+one LambdaMART head; naive extrapolation baselines; clip before logit; average seeds after
+splitting). Recorded in
+[topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md) ("Third
+distinct review"), with cross-review disagreements listed in the open questions.

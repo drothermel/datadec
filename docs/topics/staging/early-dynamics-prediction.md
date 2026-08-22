@@ -477,6 +477,49 @@ bound in any strict sense — it is a second estimator; the actual upper bound f
 other metrics, which is also the cleaner diagnostic (how much of MMLU is explained by final
 perplexity/correct_prob at all).
 
+## 2025-07 — Third distinct review: "thin vertical slice first"
+
+Another review of the same plan (not a duplicate of the earlier two). Condensed; where it
+contradicts the earlier reviews, the disagreement is noted rather than resolved.
+
+- *Scope.* Full LOOCV over 25 × 14 × 3 "will generate >1,000 folds" — pick **one
+  generalisation axis** for v0 (leave-one-recipe *or* expanding sizes) and one regression
+  target (e.g. Pile-validation perplexity at end of training); add ranking, other metrics,
+  and MMLU later. Minimal feature subset first: initial value, value at 10% tokens,
+  power-law exponent, log(size); expand only if weak. *(Disagrees with the second review's
+  16-point grid + 12 rolling slopes from the start — here those are "reconsider/postpone:
+  high dimensional, may over-fit." Also postpones the recipe-composition features unless
+  already computed.)*
+- *Data checks.* Exclude warm-up artefacts (first ~0.5% of tokens or <10× batch) from curve
+  fits, or model warm-up separately. **Seed leakage if seeds are averaged before the
+  train/val split** — average after splitting. Clip correct_prob to [0.02, 0.98] before
+  logit. Two sanity plots before modelling: early-vs-final scatter with r; per-metric
+  cross-seed variance.
+- *Features to add.* Slope over the last 20% of the early window (plateau detection);
+  relative improvement (value_end − value_start)/value_start.
+- *GBDT details.* `feature_fraction`, `bagging_fraction`, `max_bin=255`;
+  `min_gain_to_split=0.01` against noise splits; LightGBM GPU if tables are large;
+  **consider one LambdaMART model instead of separate regressor + ranker** when ordering is
+  all that is needed *(disagrees with the two-head design)*.
+- *Baselines.* Repeat-last-value extrapolation; two-point linear extrapolation; random
+  ranking (decision accuracy should be 50%). Metrics: normalised RMSE (RMSE/range) for
+  cross-metric comparability; Spearman ρ with bootstrap CIs.
+- *Reproducibility.* Cache the design matrix; fixed LightGBM/numpy seeds logged in the
+  notebook header; target ≤ 30 min per single-fold end-to-end run.
+- *Deliverable.* One page: setup (one CV axis); baseline-vs-GBDT NRMSE and ρ on Pile-val
+  perplexity; predicted-vs-true scatter; top-5 SHAP features.
+- *Risks.* Curve-fit failures on non-monotonic curves (catch warnings, fall back to median
+  early value); memory (native categorical handling for recipe/size rather than one-hot);
+  time-to-first-result (follow the minimal slice; defer ranking and MMLU).
+- *GP look-ahead.* Sparse / multi-output GPs (GPyTorch, GPflow) handle 50–100k rows, not
+  millions; reuse the validated low-dimensional feature subset; GP uncertainty enables an
+  active-learning extension for the conference version.
+
+*Intake note.* The ">1,000 folds" and ">1M rows" / "GB-scale design matrix" framings
+overstate the canonical dataset (≈ 350 rows per metric, 8 family folds + 7 size windows);
+the structural advice (one axis, one target, minimal features, naive baselines, seed
+handling) stands regardless.
+
 ## Open questions
 
 - Is this still live (July 2025 draft; DataDecide scaling-law baselines have since been
@@ -486,6 +529,9 @@ perplexity/correct_prob at all).
   the 2026-08-21 finding of 3 seeds at every size in the aggregate table.
 - Whether the target should be the annealed (`ANN`) readout rather than the raw final
   checkpoint.
+- Unresolved disagreements across reviews: full 16-point + slopes feature set vs. a
+  four-feature minimal slice first; two heads vs. one LambdaMART; which single target and
+  CV axis to lead with.
 - Any-step setting: confirm the feature window stays fixed at S₀ (see intake note); decide
   τ grid (K = 3 {33, 66, 100%} per the first review, or {25, 50, 75, 100%}).
 - Promote, absorb into `TINY` as an option, or archive. If promoted, source the static
