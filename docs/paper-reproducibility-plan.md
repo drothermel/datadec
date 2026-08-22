@@ -1,19 +1,22 @@
 # DataDecide paper finding validation plan
 
-Status: active hard-cutover redesign
+Status: active evidence-boundary correction
 
 Revised: August 21, 2026
 
 ## Goal
 
-Use the postprocessed DataDecide data published as `drotherm/dd_parsed` to make
-our best independent attempt at recomputing every empirical number,
-comparison, trend, and plot reported in the DataDecide paper.
+Use all relevant postprocessed DataDecide data published as
+`drotherm/dd_parsed` to make our best transparent attempt at validating every
+empirical number, comparison, trend, and plot reported in the DataDecide paper.
 
 The paper supplies the target claim and method description. `dd_parsed`
-supplies the analysis evidence. For every assessable finding, report the
+supplies the analysis evidence, including both lower-level evaluation rows and
+provided derived analysis tables. For every assessable finding, report the
 paper's value or relationship beside our computed result, the exact rows and
-operational choices used, and whether the result agrees.
+operational choices used, whether the result agrees, and whether the attempt
+was recomputed from lower-level rows or verified from an author-derived
+aggregate.
 
 This is analytical validation of reported findings. It is not an attempt to
 recreate the historical training environment, prove release completeness, or
@@ -50,18 +53,26 @@ assumed to match the configurations used for the paper. Differences may be
 useful metadata notes, but they do not contradict an empirical finding unless
 the provided analysis data itself directly falsifies that finding.
 
-### Author-produced result tables are targets, not evidence
+### All normalized `dd_parsed` tables are eligible evidence
 
-Files under `published-results/` may help extract a reported target or diagnose
-a mismatch. They must not be used as the computational input for claiming that
-the same result was independently reproduced. Independent computations use the
-lower-level aggregate, scaling-law, task, instance, or choice tables.
+The `published-results/` subtree is a versioned part of the `dd_parsed`
+publication contract. It contains postprocessed Drive artifacts that are the
+only available evidence for some reported findings. Validation may therefore
+use explicitly declared tables from this subtree.
 
-Enforce this separation structurally: static claim-target extraction may read
-paper result tables, but validation modules and run orchestration must not open
-or import them. Computation receives normalized target values through the claim
-contract. Any debugging comparison with `published-results` is a separate
-manual command whose output cannot enter a validation run.
+Evidence strength remains visible and orthogonal to the agreement outcome:
+
+- `lower_level_rows`: we recompute the finding from normalized evaluation,
+  task, instance, choice, loss, or checkpoint rows;
+- `author_derived_aggregate`: we verify selections, aggregations, comparisons,
+  errors, or plot semantics from provided predictions or aggregate results,
+  without claiming to have independently rerun the upstream fit or evaluation.
+
+An attempt using any author-derived aggregate is reported at that level. It may
+still independently recompute downstream arithmetic, such as pairwise decision
+accuracy, error aggregation, compute cost, or comparison with a lower-level
+single-scale frontier. Reports must say exactly which part was supplied and
+which part was recomputed.
 
 ## Canonical analysis inputs
 
@@ -77,10 +88,44 @@ logical tables.
 - `olmes-details/<recipe>/tasks.parquet`: task-level evaluation details.
 - `olmes-details/<recipe>/instances.parquet`: instance-level observations.
 - `olmes-details/<recipe>/choices.parquet`: answer-choice likelihood evidence.
-- `published-results/**`: paper targets and debugging references only.
+- `published-results/cheap_decisions_stacked_rc_pred_all.parquet`: supplied
+  scaling-law predictions and errors across variants, tasks, recipes, metrics,
+  and size subsets.
+- `published-results/new_eval_intermediates/davidh_new_evals_decision_accuracy.parquet`:
+  supplied math/code decision-accuracy aggregates.
+- `published-results/new_eval_intermediates/davidh_new_evals_means_df.parquet`:
+  supplied math/code metric means.
 
 The local processed mirror is sufficient for the first implementation waves.
 Remote access and checkpoint downloads are not initial blockers.
+
+## Newly assessable findings discovered August 21, 2026
+
+The previous run incorrectly classified 32 empirical claims as unassessable.
+They now divide into three executable families:
+
+1. **Twenty scaling-law claims.** The Drive-derived cheap-decisions table has
+   923,942 unique `(task, mix, metric, setup)` rows. Its eight paper setups and
+   all 21 model-size subsets are complete. Averaging the 275 primary-metric
+   task-by-recipe rows for each base setup exactly recovers all eight displayed
+   prediction-error pairs after multiplying by 100 and rounding to one decimal.
+   The supplied predictions also support decision-accuracy curves and
+   comparison with the independently recomputed single-scale frontier. The
+   fits themselves are not independently rerunnable because the available
+   lower-level loss surface is incomplete.
+2. **Eleven math/code claims.** The two new-evaluation tables contain a complete
+   aggregate surface for MBPP, HumanEval, Minerva, and GSM8K at the reported
+   small scales. They support numeric, comparison, and plot checks. They do not
+   contain recipe-level rows, seeds, checkpoints, or instances, so these are
+   aggregate-table verifications rather than independent evaluation
+   recomputations.
+3. **One compute-equivalence claim.** Exact FLOP equality is the wrong
+   operationalization. Compare intermediate and final checkpoints in fixed
+   log-compute buckets, with versioned bucket-width sensitivities. The current
+   data has matched buckets, so disagreement becomes a scientific result rather
+   than an absence result.
+
+These findings require no training and do not justify checkpoint evaluation.
 
 ## Claim taxonomy
 
@@ -116,6 +161,7 @@ only where they affect interpretation or document a useful discrepancy.
 Each empirical claim may have one or more named attempts. An attempt records:
 
 - stable claim ID and paper locator;
+- evidence level (`lower_level_rows` or `author_derived_aggregate`);
 - verbatim or normalized paper target;
 - `dd_parsed` table and columns used;
 - identities of the actual inputs used, recorded as local Parquet hashes and,
@@ -133,6 +179,11 @@ Each empirical claim may have one or more named attempts. An attempt records:
 The default attempt is the best paper-faithful interpretation that can be
 computed from `dd_parsed`. Additional attempts test reasonable alternatives;
 they do not overwrite or hide the default.
+
+Agreement outcome and evidence level are separate persisted fields. For
+example, an exact paper-table number may be `reproduced` from an
+`author_derived_aggregate`; that means the released derived rows regenerate the
+reported number, not that the upstream nonlinear fit was independently rerun.
 
 ## Outcomes
 
@@ -173,6 +224,22 @@ only when the default appears material.
 Never silently replace one model size, task, metric, recipe, or seed group with
 another.
 
+### Compute-equivalent comparisons
+
+Do not require exact floating-point or FLOP equality across differently sized
+models. For DD-0165, normalize each positive compute value by the target-model
+compute and assign it to fixed half-open log10 buckets. The default width is
+`0.10` decade, with `0.05` and `0.20` fixed sensitivities. Bucket edges are
+anchored independently of the observations; lower edges are included and upper
+edges enter the next bucket.
+
+Within each `(bucket, intermediate model size)`, average checkpoint decision
+accuracy without weighting by checkpoint density. Compare that value with each
+different-size final checkpoint in the same bucket. Exclude zero-compute rows
+with an explicit count, reject invalid compute, record contributing steps and
+within-bucket compute ratios, and never interpolate. A result is unassessable
+only when no cross-size bucket match exists.
+
 ### Reported precision
 
 For exact tabulated numbers, compare after applying the paper's displayed
@@ -209,8 +276,8 @@ sensitivity when material.
 
 ### Phase 0: hard-cut the contracts
 
-1. Replace provenance-first evidence-boundary and blocker semantics with the
-   claim taxonomy, attempt contract, and outcomes above.
+1. Replace provenance-first qualification and blocker semantics with the claim
+   taxonomy, two-level evidence contract, attempt contract, and outcomes above.
 2. Remove training-rerun, corpus-reconstruction, release-manifest, clean-tree,
    and exact-checkpoint qualification requirements from the analysis path.
 3. Preserve paper locators, active-source coverage, data schema validation, and
@@ -268,24 +335,47 @@ computed and compared with the paper.
 Exit condition: every single-scale, task, metric, and noise finding has a
 best-attempt outcome.
 
-### Phase 4: reproduce multi-scale and scaling-law findings
+### Phase 4: verify multi-scale and scaling-law findings
 
-1. Implement the paper's eight fit variants from normalized evaluations and
-   checkpoint losses.
-2. Recompute helper-point and early-checkpoint-filtering variants.
-3. Recompute relative and absolute 1B prediction error.
-4. Compare multi-scale and single-scale decision accuracy over compute.
-5. Recreate scaling-law figures and qualitative comparisons with transparent
-   fit settings and sensitivity analyses.
+1. Parse the eight paper setup families and 21 size-subset suffixes from the
+   supplied cheap-decisions table.
+2. Independently recompute prediction-error aggregations from supplied targets
+   and predictions, including both the paper's stated denominator and the
+   denominator actually encoded by the supplied relative-error column.
+3. Recompute pairwise decision accuracy from the supplied per-recipe
+   predictions using one validated common target ranking.
+4. Reconstruct included-size compute from the repository catalog and compare
+   multi-scale points with the independently recomputed single-scale frontier.
+5. Recreate scaling-law figures and qualitative comparisons, including
+   explicit predicted-tie-policy sensitivity.
 
-Use a reasonable repository-owned optimizer configuration when the paper is
-silent. Inspect pinned author source only when it materially clarifies a method;
-record that influence, but do not import or execute author analysis code.
+Every result in this phase is labeled `author_derived_aggregate` because the
+predictions are supplied. The downstream aggregation, comparison, compute, and
+frontier arithmetic remains repository-owned and tested. Do not attempt a
+replacement fit from an incomplete loss surface and do not infer missing fit
+coefficients or optimizer state.
 
-Exit condition: every scaling-law number, comparison, and plot has a computed
-attempt or is genuinely not assessable from `dd_parsed`.
+Exit condition: all 20 scaling-law claims have an outcome and disclose the
+relative-error-definition discrepancy and the non-independent fit boundary.
 
-### Phase 5: targeted checkpoint evaluation, only if earned
+### Phase 5: verify math and code findings
+
+1. Validate the complete `(size, task, target_ranking)` decision-accuracy cube
+   and `(size, task)` means cube.
+2. Verify MBPP and HumanEval threshold, proxy-gain, and plot claims against the
+   supplied aggregates.
+3. Verify Minerva and GSM8K near-random, proxy-comparison, and continuous-target
+   claims with frozen thresholds and size-aggregation sensitivities.
+4. Recreate the math/code paper-analog series using the table's actual metric
+   name, `logits_per_byte_corr`; record that the paper labels this series
+   `Correct Prob` although those are distinct metric definitions elsewhere.
+5. Preserve failed numeric or plot predicates as `not_reproduced`; do not turn
+   aggregate limitations into missing-data outcomes.
+
+Exit condition: all 11 math/code claims have aggregate-verification outcomes,
+with no fabricated empty input selection.
+
+### Phase 6: targeted checkpoint evaluation, only if earned
 
 For a high-value empirical claim still not assessable, determine whether a
 released checkpoint plus a bounded evaluation can clarify the uncertainty.
@@ -301,7 +391,7 @@ a separately labeled checkpoint-evaluation finding.
 Exit condition: checkpoint use is limited to specific unresolved findings and
 contains no training.
 
-### Phase 6: report and review
+### Phase 7: report and review
 
 1. Generate a compact report organized by empirical finding family.
 2. Show paper target, our result, difference, outcome, method, and sensitivity
@@ -309,7 +399,7 @@ contains no training.
 3. Generate small paper-analog plots plus a summary of outcomes.
 4. Keep metadata discrepancies in a separate appendix.
 5. Perform one full adversarial review focused on analytical correctness,
-   selection bias, accidental use of author results, overstatement, and plot
+   selection bias, truthful evidence-level labeling, overstatement, and plot
    semantics.
 6. Remediate confirmed correctness defects once and regenerate outputs.
 
@@ -317,7 +407,7 @@ Exit condition: a reader can tell which paper findings replicate from
 `dd_parsed`, which are only directionally consistent, which do not replicate,
 and which cannot be assessed without leaving scope.
 
-### Phase 7: correct the reusable skill
+### Phase 8: correct the reusable skill
 
 Update `verify-paper-claims` in its existing dotfiles PR only after this revised
 workflow operates end to end. The skill must prioritize analytical replication
@@ -348,9 +438,12 @@ The completed system must prove that:
 - no code path trains or updates model parameters;
 - every attempt records the identities of the `dd_parsed` files it actually
   read without requiring an unavailable historical revision;
-- primary results are computed from lower-level `dd_parsed` tables rather than
-  copied from `published-results`, and computation code cannot access those
-  author-result paths;
+- every attempt persists whether it recomputed from lower-level rows or
+  verified an author-derived aggregate;
+- author-derived inputs are explicitly declared and hashed rather than reached
+  through an unrestricted subtree scan;
+- reports never describe supplied predictions or aggregate results as an
+  independent fit or evaluation rerun;
 - reported row selections and aggregations are deterministic and inspectable;
 - final-checkpoint selection uses one predeclared common complete step across
   the comparison universe and always records fixed preceding-step sensitivity;
