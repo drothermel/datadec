@@ -12,9 +12,9 @@ because iteration is slow; real differences need more seeds; everything is model
 debugging a small-scale issue needs a large sweep; limiting to existing clean pretraining
 sweeps makes family effects near-impossible to test; and the DataDecide models are tiny with
 the "no movement during SFT" issue. But not wanting to abandon the direction. See
-[../danielle-inputs.md](../danielle-inputs.md).
+[../danielle-inputs.md](../../danielle-inputs.md).
 
-Related-work claims below are unverified unless a citation is given (see [README.md](README.md)).
+Related-work claims below are unverified unless a citation is given (see [../README.md](../README.md)).
 
 ---
 
@@ -109,7 +109,7 @@ demo vs. k) on existing checkpoints. Recorded in [icl-as-posttraining.md](icl-as
   diagnostic panel explaining *why* the ceiling was exceeded there."
 - A publishable piece on its own: "a modest meta-analysis of 'how often does the
   incumbent's advantage survive serious re-tuning'" over the field's natural experiments.
-See [../research-hypothesis.md](../research-hypothesis.md).
+See [../research-hypothesis.md](../../research-hypothesis.md).
 
 ---
 

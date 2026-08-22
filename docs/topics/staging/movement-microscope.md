@@ -8,9 +8,9 @@ the post-training experiment-design topic. This is the idea map's P1–P4.
 **Question posed (Danielle, 2026-08-18).** For identifying movement of the pretrained
 DataDecide models at small scale (beyond the proxy metrics they already identified), how
 would a researcher with no external pressure explore the space? See
-[../danielle-inputs.md](../danielle-inputs.md).
+[../danielle-inputs.md](../../danielle-inputs.md).
 
-Related-work claims below are unverified unless a citation is given (see [README.md](README.md)).
+Related-work claims below are unverified unless a citation is given (see [../README.md](../README.md)).
 
 ---
 

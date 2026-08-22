@@ -1,5 +1,7 @@
 # MoE recipe suite — data varied at fixed architecture, routing as the readout
 
+**Program pillars served:** data (treatment variation on the MoE side), how (substrate). (Program: `README.md` → Program.)
+
 > **Draft scaffolding (2026-08-21).** This doc was promoted from a topic. The quoted material in
 > §4 is external text; the core steps, doability notes, impact ratings, and infrastructure
 > sequence in §1–§3 are synthesized scaffolding not yet reviewed by Danielle. Treat them as

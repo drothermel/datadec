@@ -44,7 +44,7 @@ Response routed to: [potential-projs/functional-featurization.md](potential-proj
 > continue pretraining for like 1/16th of the run length or less and then measure a statistic
 > and point at movement. does that exist?
 
-Response routed to: [topics/checkpoint-tomography.md](topics/checkpoint-tomography.md);
+Response routed to: [topics/checkpoint-tomography.md](topics/staging/checkpoint-tomography.md);
 project-specific parts to [potential-projs/annealed-readouts.md](potential-projs/annealed-readouts.md) §4
 and [potential-projs/landscape-geometry.md](potential-projs/landscape-geometry.md) §4.
 
@@ -209,7 +209,7 @@ Drosophila composition point to the potential-projs README program-level notes.
 > subthread that is playing out in many of these model training settings, not just the
 > "continual learning" and "RL" spaces that often discuss them explicitly. thoughts?
 
-Routed to: [topics/nonstationarity-accounting.md](topics/nonstationarity-accounting.md);
+Routed to: [topics/nonstationarity-accounting.md](topics/reference/nonstationarity-accounting.md);
 the frozen-routing experiments also noted in
 [potential-projs/moe-partitions.md](potential-projs/moe-partitions.md); the endogenous
 self-curriculum point to [potential-projs/token-movement.md](potential-projs/token-movement.md) §4;
@@ -265,11 +265,11 @@ starting recommendation to the potential-projs README program-level notes.
 > scale of CIFAR-10) and somehow ended up at llm pretraining and papers like the Multi-Power
 > law paper that predicts test loss from train loss and downstream accuracy from test loss.
 
-Routed to: reference topics [topics/plasticity.md](topics/plasticity.md) and
-[topics/loss-curve-forecasting.md](topics/loss-curve-forecasting.md);
+Routed to: reference topics [topics/plasticity.md](topics/reference/plasticity.md) and
+[topics/loss-curve-forecasting.md](topics/reference/loss-curve-forecasting.md);
 [potential-projs/annealed-readouts.md](potential-projs/annealed-readouts.md) §4 and
 [potential-projs/irt-reanalysis.md](potential-projs/irt-reanalysis.md) §4 (loss→accuracy
-caveat); [topics/nonstationarity-accounting.md](topics/nonstationarity-accounting.md); the
+caveat); [topics/nonstationarity-accounting.md](topics/reference/nonstationarity-accounting.md); the
 potential-projs README program-level notes (unifying question).
 
 ### Toggle 2 — DataDecide + Pretraining → Post-training
@@ -285,7 +285,7 @@ potential-projs README program-level notes (unifying question).
 > also was seen by others. Ultimately we ended that project a bit demoralized.
 
 Routed to: reference topic
-[topics/pretraining-to-posttraining.md](topics/pretraining-to-posttraining.md); §4 notes in
+[topics/pretraining-to-posttraining.md](topics/reference/pretraining-to-posttraining.md); §4 notes in
 [potential-projs/annealed-readouts.md](potential-projs/annealed-readouts.md) (ANN-opt-3),
 [potential-projs/wsd-suite.md](potential-projs/wsd-suite.md) (WSD-opt-2),
 [potential-projs/token-movement.md](potential-projs/token-movement.md) (TOK-opt-4),
@@ -306,8 +306,8 @@ the potential-projs README program-level notes.
 > At the same time, I don't want to fully abandon the whole direction.
 
 Routed to: staging topic
-[topics/posttraining-experiment-design.md](topics/posttraining-experiment-design.md); papers
-to [topics/pretraining-to-posttraining.md](topics/pretraining-to-posttraining.md); §4 notes in
+[topics/posttraining-experiment-design.md](topics/staging/posttraining-experiment-design.md); papers
+to [topics/pretraining-to-posttraining.md](topics/reference/pretraining-to-posttraining.md); §4 notes in
 [potential-projs/tiny-scale-measurement.md](potential-projs/tiny-scale-measurement.md),
 [potential-projs/token-movement.md](potential-projs/token-movement.md),
 [potential-projs/annealed-readouts.md](potential-projs/annealed-readouts.md); the tension and
@@ -325,10 +325,10 @@ Danielle-flagged project seeds (the `→` notes on the toggle title):
 >   of their shared representations, so reconstruction fidelity could itself serve as a
 >   capability probe, one that's graded rather than thresholded, unlike pass@1."
 
-Routed to: staging topic [topics/icl-as-posttraining.md](topics/icl-as-posttraining.md);
-papers to [topics/pretraining-to-posttraining.md](topics/pretraining-to-posttraining.md) and
-[topics/plasticity.md](topics/plasticity.md); cross-note in
-[topics/posttraining-experiment-design.md](topics/posttraining-experiment-design.md);
+Routed to: staging topic [topics/icl-as-posttraining.md](topics/staging/icl-as-posttraining.md);
+papers to [topics/pretraining-to-posttraining.md](topics/reference/pretraining-to-posttraining.md) and
+[topics/plasticity.md](topics/reference/plasticity.md); cross-note in
+[topics/posttraining-experiment-design.md](topics/staging/posttraining-experiment-design.md);
 [potential-projs/tiny-scale-measurement.md](potential-projs/tiny-scale-measurement.md) §4;
 the potential-projs README program-level notes.
 
@@ -341,8 +341,8 @@ the potential-projs README program-level notes.
 > this realm of experiments and combine these two spaces, potentially incorporating vision
 > transformers instead of CNNs for clear comparisons if it would help.
 
-Routed to: [topics/icl-as-posttraining.md](topics/icl-as-posttraining.md) (second entry:
-the two-tier design); new reference topic [topics/icl-literature.md](topics/icl-literature.md)
+Routed to: [topics/icl-as-posttraining.md](topics/staging/icl-as-posttraining.md) (second entry:
+the two-tier design); new reference topic [topics/icl-literature.md](topics/reference/icl-literature.md)
 (Chan et al. 2022; Raventós et al.); the matched-loss two-controls caution to
 [potential-projs/trajectory-statistics.md](potential-projs/trajectory-statistics.md),
 [potential-projs/landscape-geometry.md](potential-projs/landscape-geometry.md),
@@ -362,10 +362,10 @@ potential-projs README program-level notes.
 >   breakdown demonstrating the specific causes.
 
 Routed to: staging topic
-[topics/warmstarting-decomposition.md](topics/warmstarting-decomposition.md); papers and
-hypotheses to [topics/plasticity.md](topics/plasticity.md); stabilizer reading to
-[topics/nonstationarity-accounting.md](topics/nonstationarity-accounting.md); bridge
-experiment cross-note in [topics/icl-as-posttraining.md](topics/icl-as-posttraining.md);
+[topics/warmstarting-decomposition.md](topics/staging/warmstarting-decomposition.md); papers and
+hypotheses to [topics/plasticity.md](topics/reference/plasticity.md); stabilizer reading to
+[topics/nonstationarity-accounting.md](topics/reference/nonstationarity-accounting.md); bridge
+experiment cross-note in [topics/icl-as-posttraining.md](topics/staging/icl-as-posttraining.md);
 retrospective chapter plan to the potential-projs README program-level notes.
 
 ### Toggle 7 — Analyzing ICL
@@ -374,9 +374,9 @@ retrospective chapter plan to the potential-projs README program-level notes.
 > approximations? What types of statistics have people come up with to measure the
 > intermediate impact of ICL?
 
-Routed to: [topics/icl-literature.md](topics/icl-literature.md) (papers, both the
+Routed to: [topics/icl-literature.md](topics/reference/icl-literature.md) (papers, both the
 gradient-approximation arc and the task/function/state-vector family); the ranked
-measurement protocol to [topics/icl-as-posttraining.md](topics/icl-as-posttraining.md); one
+measurement protocol to [topics/icl-as-posttraining.md](topics/staging/icl-as-posttraining.md); one
 line to the potential-projs README program-level notes.
 
 ---
@@ -393,9 +393,9 @@ line to the potential-projs README program-level notes.
 > Task Vectors, Learned Not Extracted (ICLR 2026, arXiv 2509.24169); Task Vector
 > Quantization for Memory-Efficient Model Merging (arXiv 2503.06921).
 
-Routed to: new reference topic [topics/task-vectors.md](topics/task-vectors.md); ICL-side
-papers to [topics/icl-literature.md](topics/icl-literature.md) and protocol refinements to
-[topics/icl-as-posttraining.md](topics/icl-as-posttraining.md);
+Routed to: new reference topic [topics/task-vectors.md](topics/reference/task-vectors.md); ICL-side
+papers to [topics/icl-literature.md](topics/reference/icl-literature.md) and protocol refinements to
+[topics/icl-as-posttraining.md](topics/staging/icl-as-posttraining.md);
 [potential-projs/functional-featurization.md](potential-projs/functional-featurization.md)
 §4 (task arithmetic as readout; first-epoch gradient as surrogate-ladder support;
 quantized deltas for storage);
@@ -420,11 +420,11 @@ Danielle-flagged project seed (the `→` note on the toggle title):
 
 Routed to: [potential-projs/landscape-geometry.md](potential-projs/landscape-geometry.md) §4
 (origin entry with the flagged seed); new reference topic
-[topics/landscape-literature.md](topics/landscape-literature.md);
+[topics/landscape-literature.md](topics/reference/landscape-literature.md);
 [potential-projs/annealed-readouts.md](potential-projs/annealed-readouts.md) §4 (MPL ↔
-river-valley); [topics/warmstarting-decomposition.md](topics/warmstarting-decomposition.md),
-[topics/icl-as-posttraining.md](topics/icl-as-posttraining.md),
-[topics/task-vectors.md](topics/task-vectors.md); the matched-loss rule in the
+river-valley); [topics/warmstarting-decomposition.md](topics/staging/warmstarting-decomposition.md),
+[topics/icl-as-posttraining.md](topics/staging/icl-as-posttraining.md),
+[topics/task-vectors.md](topics/reference/task-vectors.md); the matched-loss rule in the
 potential-projs README.
 
 ### Toggle 9 — WSD and Annealing Effects + Dataset Metrics/Features
@@ -454,9 +454,9 @@ Routed to: origin entries (with the seeds) in
 [potential-projs/wsd-suite.md](potential-projs/wsd-suite.md), and
 [potential-projs/recipe-featurization.md](potential-projs/recipe-featurization.md) §4; new
 reference topics
-[topics/schedules-and-annealing-literature.md](topics/schedules-and-annealing-literature.md)
-and [topics/data-featurization-literature.md](topics/data-featurization-literature.md);
-[topics/landscape-literature.md](topics/landscape-literature.md).
+[topics/schedules-and-annealing-literature.md](topics/reference/schedules-and-annealing-literature.md)
+and [topics/data-featurization-literature.md](topics/reference/data-featurization-literature.md);
+[topics/landscape-literature.md](topics/reference/landscape-literature.md).
 
 ### Toggle 10 — Mapping Dataset Tokens into Deterministic vs Uncertain (river-valley test)
 
@@ -481,8 +481,8 @@ Danielle-flagged project seed (the `→` note on the toggle title):
 
 Routed to: [potential-projs/token-movement.md](potential-projs/token-movement.md) §4 (origin
 of Stage 2, with the seed); new reference topic
-[topics/token-level-literature.md](topics/token-level-literature.md);
-[topics/landscape-literature.md](topics/landscape-literature.md).
+[topics/token-level-literature.md](topics/reference/token-level-literature.md);
+[topics/landscape-literature.md](topics/reference/landscape-literature.md).
 
 ### Toggle 11 — 2026-08-18 17:39 (raw Q&A behind toggle 10)
 
@@ -510,14 +510,14 @@ reorganization stopped at toggle 10.
 
 Routed to: [potential-projs/recipe-featurization.md](potential-projs/recipe-featurization.md)
 §4 (origin of REC-2's design) and
-[topics/data-featurization-literature.md](topics/data-featurization-literature.md); new
-reference topic [topics/critical-periods.md](topics/critical-periods.md); new staging topic
-[topics/critical-period-timing-study.md](topics/critical-period-timing-study.md); notes in
-[topics/warmstarting-decomposition.md](topics/warmstarting-decomposition.md),
-[topics/plasticity.md](topics/plasticity.md),
-[topics/landscape-literature.md](topics/landscape-literature.md),
+[topics/data-featurization-literature.md](topics/reference/data-featurization-literature.md); new
+reference topic [topics/critical-periods.md](topics/reference/critical-periods.md); new staging topic
+[topics/critical-period-timing-study.md](topics/staging/critical-period-timing-study.md); notes in
+[topics/warmstarting-decomposition.md](topics/staging/warmstarting-decomposition.md),
+[topics/plasticity.md](topics/reference/plasticity.md),
+[topics/landscape-literature.md](topics/reference/landscape-literature.md),
 [potential-projs/landscape-geometry.md](potential-projs/landscape-geometry.md) §4,
-[topics/pretraining-to-posttraining.md](topics/pretraining-to-posttraining.md); the
+[topics/pretraining-to-posttraining.md](topics/reference/pretraining-to-posttraining.md); the
 potential-projs README program-level notes.
 
 ### Toggle 13 — 2026-08-18 18:04 (reproducing the critical-periods paper; reconciling the two core papers)
@@ -535,10 +535,10 @@ potential-projs README program-level notes.
 > the different continuation threads tie into one or both, and, really, the whole ultimate
 > goal is to reconcile them in the modern era.
 
-Routed to: [topics/critical-period-timing-study.md](topics/critical-period-timing-study.md)
+Routed to: [topics/critical-period-timing-study.md](topics/staging/critical-period-timing-study.md)
 (reproduction template, deconstruction axes, elicitability column);
-[topics/warmstarting-decomposition.md](topics/warmstarting-decomposition.md) (the unified
-intervention grid and sequencing); [topics/icl-as-posttraining.md](topics/icl-as-posttraining.md)
+[topics/warmstarting-decomposition.md](topics/staging/warmstarting-decomposition.md) (the unified
+intervention grid and sequencing); [topics/icl-as-posttraining.md](topics/staging/icl-as-posttraining.md)
 (the elicitability critical-period prediction); the potential-projs README program-level
 notes (spine and one-sentence pitch).
 
@@ -573,13 +573,13 @@ notes (spine and one-sentence pitch).
 > relevant. can you find that paper and explain the link?
 
 Routed to: new reference topic
-[topics/reinit-and-transfer-literature.md](topics/reinit-and-transfer-literature.md);
-[topics/landscape-literature.md](topics/landscape-literature.md) (basin-preserving vs.
-basin-determining resets); [topics/nonstationarity-accounting.md](topics/nonstationarity-accounting.md)
+[topics/reinit-and-transfer-literature.md](topics/reference/reinit-and-transfer-literature.md);
+[topics/landscape-literature.md](topics/reference/landscape-literature.md) (basin-preserving vs.
+basin-determining resets); [topics/nonstationarity-accounting.md](topics/reference/nonstationarity-accounting.md)
 (ITER as the third founding statement);
-[topics/warmstarting-decomposition.md](topics/warmstarting-decomposition.md) (the
+[topics/warmstarting-decomposition.md](topics/staging/warmstarting-decomposition.md) (the
 distill-into-fresh-network arm and its control);
-[topics/icl-as-posttraining.md](topics/icl-as-posttraining.md) (function-vs-trajectory test
+[topics/icl-as-posttraining.md](topics/staging/icl-as-posttraining.md) (function-vs-trajectory test
 for elicitability); the potential-projs README program-level notes.
 
 ### Interest flag — reinitialization and transfer (2026-08-22)
@@ -588,7 +588,7 @@ for elicitability); the potential-projs README program-level notes.
 > and looking at whether there are places that I could contribute to that direction.
 
 Recorded as an interest flag at the top of
-[topics/reinit-and-transfer-literature.md](topics/reinit-and-transfer-literature.md) and in
+[topics/reinit-and-transfer-literature.md](topics/reference/reinit-and-transfer-literature.md) and in
 the topics index; the flag spells out what acting on it would take (targeted literature
 pass → gap list → staging topic or project doc if warranted).
 
@@ -599,10 +599,10 @@ pass → gap list → staging topic or project doc if warranted).
 > project's conclusions likely biased me towards my current interest and hypotheses around
 > these directions
 
-Routed to: [topics/reinit-and-transfer-literature.md](topics/reinit-and-transfer-literature.md)
+Routed to: [topics/reinit-and-transfer-literature.md](topics/reference/reinit-and-transfer-literature.md)
 (verified entry for the paper and its stance);
-[topics/warmstarting-decomposition.md](topics/warmstarting-decomposition.md) (the fourth
-founding cell — the control); [topics/icl-as-posttraining.md](topics/icl-as-posttraining.md)
+[topics/warmstarting-decomposition.md](topics/staging/warmstarting-decomposition.md) (the fourth
+founding cell — the control); [topics/icl-as-posttraining.md](topics/staging/icl-as-posttraining.md)
 ("quantifying the gap your 2021 paper discovered"); the potential-projs README
 program-level notes (through-line, two priors, the arc framing).
 
@@ -615,12 +615,12 @@ program-level notes (through-line, two priors, the arc framing).
 > narrative?
 
 Routed to: new reference topics
-[topics/grokking-and-hidden-progress.md](topics/grokking-and-hidden-progress.md) and
-[topics/identifiability-literature.md](topics/identifiability-literature.md);
+[topics/grokking-and-hidden-progress.md](topics/reference/grokking-and-hidden-progress.md) and
+[topics/identifiability-literature.md](topics/reference/identifiability-literature.md);
 [potential-projs/annealed-readouts.md](potential-projs/annealed-readouts.md) §4 (decay
 branch as anti-grokking instrument);
-[topics/loss-curve-forecasting.md](topics/loss-curve-forecasting.md) (double descent as
-boundary condition); [topics/landscape-literature.md](topics/landscape-literature.md)
+[topics/loss-curve-forecasting.md](topics/reference/loss-curve-forecasting.md) (double descent as
+boundary condition); [topics/landscape-literature.md](topics/reference/landscape-literature.md)
 (symmetry quotienting);
 [potential-projs/tiny-scale-measurement.md](potential-projs/tiny-scale-measurement.md) §4
 (the ladder as an identifiability-vs-scale instrument); the potential-projs README
@@ -639,17 +639,17 @@ beats tuned elicitation in some setting.
 
 Routed to: [research-hypothesis.md](research-hypothesis.md) (new, top-level); a fourth
 candidate program framing in the potential-projs README; new reference topic
-[topics/evaluation-methodology-literature.md](topics/evaluation-methodology-literature.md);
-notes in [topics/icl-as-posttraining.md](topics/icl-as-posttraining.md) (instrument
-calibration; strong null), [topics/warmstarting-decomposition.md](topics/warmstarting-decomposition.md)
-(optimum displacement), [topics/posttraining-experiment-design.md](topics/posttraining-experiment-design.md)
+[topics/evaluation-methodology-literature.md](topics/reference/evaluation-methodology-literature.md);
+notes in [topics/icl-as-posttraining.md](topics/staging/icl-as-posttraining.md) (instrument
+calibration; strong null), [topics/warmstarting-decomposition.md](topics/staging/warmstarting-decomposition.md)
+(optimum displacement), [topics/posttraining-experiment-design.md](topics/staging/posttraining-experiment-design.md)
 (tuning-response curves; demonstration hygiene; meta-analysis).
 
 ### Literature pass result — reinit and transfer (2026-08-22)
 
 The Opus subagent's report is at
 `~/drotherm/data/.claude/datadec/2026-08-22/0031-reinit-transfer-litpass.md` and is
-summarized in [topics/reinit-and-transfer-literature.md](topics/reinit-and-transfer-literature.md)
+summarized in [topics/reinit-and-transfer-literature.md](topics/reference/reinit-and-transfer-literature.md)
 (verification table, 2023–2026 state, ten ranked gaps). Open decision for Danielle: whether
 G3 ("is an interface reset basin-preserving?") or another gap becomes a staging topic /
 project.
@@ -660,12 +660,12 @@ project.
 > the gaps as possible and then we'll revisit at the end?
 
 Six staging topics created from the ten gaps:
-[topics/reset-recovery-dynamics.md](topics/reset-recovery-dynamics.md) (G1, G2, G10),
-[topics/interface-reset-basin-test.md](topics/interface-reset-basin-test.md) (G3),
-[topics/reset-and-plasticity.md](topics/reset-and-plasticity.md) (G4, G9),
-[topics/frozen-body-transfer-audit.md](topics/frozen-body-transfer-audit.md) (G5, G6),
-[topics/reset-response-stage-probe.md](topics/reset-response-stage-probe.md) (G7),
-[topics/reset-effects-many-seed-lm.md](topics/reset-effects-many-seed-lm.md) (G8).
+[topics/reset-recovery-dynamics.md](topics/staging/reset-recovery-dynamics.md) (G1, G2, G10),
+[topics/interface-reset-basin-test.md](topics/staging/interface-reset-basin-test.md) (G3),
+[topics/reset-and-plasticity.md](topics/staging/reset-and-plasticity.md) (G4, G9),
+[topics/frozen-body-transfer-audit.md](topics/staging/frozen-body-transfer-audit.md) (G5, G6),
+[topics/reset-response-stage-probe.md](topics/staging/reset-response-stage-probe.md) (G7),
+[topics/reset-effects-many-seed-lm.md](topics/staging/reset-effects-many-seed-lm.md) (G8).
 Promotion decisions deferred to the end-of-intake review.
 
 ### Toggle 17, sub-toggles 4–7 — skipped
@@ -690,10 +690,10 @@ Skipped at Danielle's direction (2026-08-22): not relevant to this consolidation
 > indicated as not sufficient (hence the less immediately publishable but more strongly
 > defensible as a foundation plan)
 
-Routed to: [topics/warmstarting-decomposition.md](topics/warmstarting-decomposition.md)
+Routed to: [topics/warmstarting-decomposition.md](topics/staging/warmstarting-decomposition.md)
 (the one-harness plan, money figure, identifiability-as-measurement-layer, staggered
 modalities, six-month checkpoints, two flags);
-[topics/critical-period-timing-study.md](topics/critical-period-timing-study.md) (the
+[topics/critical-period-timing-study.md](topics/staging/critical-period-timing-study.md) (the
 figure spec); the potential-projs README program-level notes (closing loops;
 pre-registration; scope discipline).
 
@@ -712,7 +712,7 @@ routing was revised accordingly); technical content is.
 > im confident that i can have an initial version of the replications + a few variations
 > done with prelim analysis in ~2.5weeks if i focus. thats why this seems plausible to me.
 
-Routed to: [topics/warmstarting-decomposition.md](topics/warmstarting-decomposition.md)
+Routed to: [topics/warmstarting-decomposition.md](topics/staging/warmstarting-decomposition.md)
 (what compresses vs. not; known-answer replication as acceptance test; seeds and panel
 over variations). Adviser remarks disregarded; the agentic-coding verification lecture
 dropped at Danielle's direction (she knows it deeply).
@@ -723,14 +723,14 @@ dropped at Danielle's direction (she knows it deeply).
 > foundation of your proposed approach to tying the 3 foundation paper grid into
 > identifiability?
 
-Routed to: [topics/identifiability-literature.md](topics/identifiability-literature.md)
+Routed to: [topics/identifiability-literature.md](topics/reference/identifiability-literature.md)
 (five-part foundation and the assembled core claim);
-[topics/critical-period-timing-study.md](topics/critical-period-timing-study.md) (the
+[topics/critical-period-timing-study.md](topics/staging/critical-period-timing-study.md) (the
 claim and the four-instrument panel);
 [potential-projs/landscape-geometry.md](potential-projs/landscape-geometry.md) §4 (raw vs.
 aligned barriers; stitching / linear-map residuals; CKA caveat);
-[topics/checkpoint-tomography.md](topics/checkpoint-tomography.md) (LLC as panel member);
-[topics/reinit-and-transfer-literature.md](topics/reinit-and-transfer-literature.md)
+[topics/checkpoint-tomography.md](topics/staging/checkpoint-tomography.md) (LLC as panel member);
+[topics/reinit-and-transfer-literature.md](topics/reference/reinit-and-transfer-literature.md)
 (stitching as the embedding-reset experiment as measurement).
 
 ### Toggle 21 — 2026-08-18 22:32 (how an unpressured researcher would explore DataDecide movement)
@@ -739,12 +739,12 @@ aligned barriers; stitching / linear-map residuals; CKA caveat);
 > scales (beyond the proxy metrics they've already identified), how would you suggest a
 > different researcher with no external pressure might explore the space?
 
-Routed to: new staging topic [topics/movement-microscope.md](topics/movement-microscope.md)
+Routed to: new staging topic [topics/movement-microscope.md](topics/staging/movement-microscope.md)
 (Stages 1–4); [potential-projs/trajectory-statistics.md](potential-projs/trajectory-statistics.md)
 §4 (continued-pretraining control for the noise floor);
 [potential-projs/token-movement.md](potential-projs/token-movement.md) §4 (post-training
 twins of TOK-obs-4 / TOK-4);
-[topics/posttraining-experiment-design.md](topics/posttraining-experiment-design.md); the
+[topics/posttraining-experiment-design.md](topics/staging/posttraining-experiment-design.md); the
 potential-projs README program-level notes.
 
 ### Toggle 22 — 2026-08-18 22:34 (changes between pretraining checkpoints; Signal-vs-Noise)
@@ -756,7 +756,7 @@ Routed to origin entries: [potential-projs/trajectory-statistics.md](potential-p
 §4 (Stage 0; TRJ-5's origin), [potential-projs/token-movement.md](potential-projs/token-movement.md)
 §4 (Stage 1), [potential-projs/annealed-readouts.md](potential-projs/annealed-readouts.md)
 §4 (Stage 2 → ANN-opt-7); the Signal-and-Noise citation to
-[topics/evaluation-methodology-literature.md](topics/evaluation-methodology-literature.md).
+[topics/evaluation-methodology-literature.md](topics/reference/evaluation-methodology-literature.md).
 Standing rule from Danielle (2026-08-22): adviser-management content is always dropped; no
 further reminders about the Notion citation fixes.
 
@@ -765,15 +765,15 @@ further reminders about the Notion citation fixes.
 > You can train moe models that do something at 20-50M active params, so I'm interested in
 > looking all the way down to that scale.
 
-Routed to: new reference topic [topics/moe-literature.md](topics/moe-literature.md); origin
+Routed to: new reference topic [topics/moe-literature.md](topics/reference/moe-literature.md); origin
 entries in [potential-projs/trajectory-statistics.md](potential-projs/trajectory-statistics.md)
 (routing follow-up), [potential-projs/token-movement.md](potential-projs/token-movement.md)
 (TOK-obs-5), [potential-projs/moe-movement.md](potential-projs/moe-movement.md),
 [potential-projs/moe-partitions.md](potential-projs/moe-partitions.md),
 [potential-projs/moe-recipe-suite.md](potential-projs/moe-recipe-suite.md),
 [potential-projs/annealed-readouts.md](potential-projs/annealed-readouts.md) (merging needs
-expert matching); [topics/critical-period-timing-study.md](topics/critical-period-timing-study.md)
-(fourth commitment clock); [topics/identifiability-literature.md](topics/identifiability-literature.md).
+expert matching); [topics/critical-period-timing-study.md](topics/staging/critical-period-timing-study.md)
+(fourth commitment clock); [topics/identifiability-literature.md](topics/reference/identifiability-literature.md).
 
 ### Toggle 24 — 2026-08-18 22:45 (eval seeds at a fixed checkpoint; IRT on the DataDecide matrix)
 
@@ -789,8 +789,8 @@ Danielle-flagged project seeds (the six `→` notes on the toggle title) are rep
 
 Routed to: [potential-projs/irt-reanalysis.md](potential-projs/irt-reanalysis.md) §4;
 [potential-projs/trajectory-statistics.md](potential-projs/trajectory-statistics.md) §4
-(origin of TRJ-6); new reference topic [topics/irt-literature.md](topics/irt-literature.md);
-[topics/evaluation-methodology-literature.md](topics/evaluation-methodology-literature.md)
+(origin of TRJ-6); new reference topic [topics/irt-literature.md](topics/reference/irt-literature.md);
+[topics/evaluation-methodology-literature.md](topics/reference/evaluation-methodology-literature.md)
 and [potential-projs/tiny-scale-measurement.md](potential-projs/tiny-scale-measurement.md)
 §4 (where eval variance lives).
 

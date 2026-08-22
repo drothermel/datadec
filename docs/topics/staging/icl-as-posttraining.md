@@ -16,9 +16,9 @@ considers especially relevant to defining a project):
 
 **Question posed (Danielle, 2026-08-18).** Could in-context learning be treated as the
 post-training stage, and features extracted from it or from elicitation? See
-[../danielle-inputs.md](../danielle-inputs.md).
+[../danielle-inputs.md](../../danielle-inputs.md).
 
-Related-work claims below are unverified unless a citation is given (see [README.md](README.md)).
+Related-work claims below are unverified unless a citation is given (see [../README.md](../README.md)).
 
 ---
 
@@ -78,7 +78,7 @@ transformers instead of CNNs for clean comparisons?
 doesn't require language at all.** ICL is the perfect 'post-training' stand-in because it's
 gradient-free, continuous (per-token loss on the k-th in-context example), and cheap enough
 to run with the many seeds your CNN experience taught you that you need for confidence
-bounds." Prior art (Chan et al. 2022; Raventós et al.) in `icl-literature.md`: "that
+bounds." Prior art (Chan et al. 2022; Raventós et al.) in `../reference/icl-literature.md`: "that
 literature is your hypothesis, already demonstrated in miniature — but it's framed as 'when
 does ICL emerge,' not as 'ICL-ability as a measurable functional of pretraining recipe that
 predicts adaptation at larger scale.' That reframing is your gap."
@@ -143,7 +143,7 @@ chapter of the same question. See [warmstarting-decomposition.md](warmstarting-d
 5. "*ICL–GD similarity*, last, and only with the adversarial controls" (the untrained-model
    control that the founding papers skipped).
 
-Paper references for each in [icl-literature.md](icl-literature.md).
+Paper references for each in [icl-literature.md](../reference/icl-literature.md).
 
 ---
 
@@ -154,7 +154,7 @@ Paper references for each in [icl-literature.md](icl-literature.md).
 - Learned task vectors (Yang et al., ICLR 2026) are more accurate and position/layer
   flexible than extracted ones, and come with a mechanistic account (OV circuits, key
   heads, linear propagation) — a candidate for the "task-vector geometry" measurement that
-  is less extraction-method-dependent. See `task-vectors.md`.
+  is less extraction-method-dependent. See `../reference/task-vectors.md`.
 
 ---
 
@@ -208,4 +208,4 @@ elicitation change.'" The tuned elicitation ceiling becomes "the *strong null mo
 every demonstration [that a weight update exceeds it] is a one-sided test against the
 strongest available null." Both readouts — raw and elicitation-controlled — are reported,
 with their difference as the capability-vs-accessibility decomposition. See
-[../research-hypothesis.md](../research-hypothesis.md).
+[../research-hypothesis.md](../../research-hypothesis.md).

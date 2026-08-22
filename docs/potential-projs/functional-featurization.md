@@ -1,5 +1,7 @@
 # Functional featurization — data types defined by training response
 
+**Program pillars served:** data (types defined by training response), mechanism (stage × type interaction). (Program: `README.md` → Program.)
+
 > **Draft scaffolding (2026-08-21).** This doc was promoted from a topic. The quoted material in
 > §4 is external text; the core steps, doability notes, impact ratings, and infrastructure
 > sequence in §1–§3 are synthesized scaffolding not yet reviewed by Danielle. Treat them as
@@ -429,4 +431,4 @@ the list**… it's the paper the previous nine were quietly building toward."
 - **Storage.** Task vectors "exhibit a narrow weight range, enabling low precision
   quantization" (Kim et al., arXiv 2503.06921) — branch endpoints could be saved as
   quantized deltas from the branch point.
-- Full entries in `docs/topics/task-vectors.md`.
+- Full entries in `docs/topics/reference/task-vectors.md`.

@@ -5,7 +5,7 @@
 Gaps **G5, G6**. Both rest on keyword absence rather than a forward-citation sweep of
 2107.12460 — run that sweep first.
 
-Source: the 2026-08-22 reinit/transfer literature pass (`reinit-and-transfer-literature.md`;
+Source: the 2026-08-22 reinit/transfer literature pass (`../reference/reinit-and-transfer-literature.md`;
 full report at `~/drotherm/data/.claude/datadec/2026-08-22/0031-reinit-transfer-litpass.md`).
 Gap statements are quoted from that report; "closest work" citations were retrieved by the
 subagent (arXiv IDs), but verdicts rest on abstracts and no forward-citation sweep was run.
@@ -33,7 +33,7 @@ reframes the frozen/finetuned gap as an elicitation-ceiling measurement." Closes
 training.
 
 **Relation to the research hypothesis.** G6 is the frozen-interface instance of the
-capability-vs-accessibility decomposition in `../research-hypothesis.md`; G5 is the 2021
+capability-vs-accessibility decomposition in `../../research-hypothesis.md`; G5 is the 2021
 paper's own method applied to its successors ("would the 2021 author be able to kill this
 result by tuning the null harder?").
 

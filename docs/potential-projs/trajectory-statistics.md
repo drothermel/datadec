@@ -1,5 +1,7 @@
 # Trajectory drift/diffusion — in eval trajectories (the Signal-and-Noise dual)
 
+**Program pillars served:** how (the noise floor and movement SNR), mechanism. (Program: `README.md` → Program.)
+
 **One-line pitch.** Signal-and-Noise (Heineman et al.) treats
 checkpoint-to-checkpoint variability as a nuisance term to suppress. Invert
 it: treat inter-checkpoint change as the object and decompose it into
@@ -295,7 +297,7 @@ decisions. Only notes about this project are kept here.
   replicates, item bootstrap) are the between-checkpoint analogue; the token-exposure
   control is the piece to add when the floor is used to judge any intervention that adds
   training. "Movement that doesn't exceed seed-noise-plus-token-exposure isn't movement."
-  See `docs/topics/movement-microscope.md`.
+  See `docs/topics/staging/movement-microscope.md`.
 
 ### 2026-08-18 — origin of this project (from the Research Trajectory page)
 
@@ -338,7 +340,7 @@ referencing the Signal-and-Noise paper.
   cumulative-commitment plots." Router saturation (OLMoE) is the field's existing metric;
   FLAME-MoE's released routing logs across checkpoints mean "your Stage-0 (zero-training
   analysis of public trajectories) extends to MoE immediately." Paper list in
-  `docs/topics/moe-literature.md`.
+  `docs/topics/reference/moe-literature.md`.
 
 ### 2026-08-18 — origin of TRJ-6's three components (from the Research Trajectory page)
 

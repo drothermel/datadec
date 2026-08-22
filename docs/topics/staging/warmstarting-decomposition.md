@@ -12,9 +12,9 @@ started it all: Ash & Adams' warm-starting + shrink-and-perturb paper found trai
 scratch beats warm-starting. Why didn't it work then, and why don't we hit these problems
 now? Confident the plasticity research has the answers, but has not seen a clear
 reproduction of the original data with a breakdown of specific causes. See
-[../danielle-inputs.md](../danielle-inputs.md).
+[../danielle-inputs.md](../../danielle-inputs.md).
 
-Related-work claims below are unverified unless a citation is given (see [README.md](README.md)).
+Related-work claims below are unverified unless a citation is given (see [../README.md](../README.md)).
 
 ---
 
@@ -92,7 +92,7 @@ Adams' gap restated. Shrink-and-perturb, ELR re-warming, and continual backprop 
 this frame, interventions that artificially reopen the period. The literature has noticed
 the adjacency (papers on relearning cite both works side by side) but your factorial
 breakdown would be the first to test whether the Fisher trajectory actually *predicts* which
-fix works." See [critical-periods.md](critical-periods.md).
+fix works." See [critical-periods.md](../reference/critical-periods.md).
 
 ---
 
@@ -162,7 +162,7 @@ which you wrote." Deconstruction axis (a) — "is the period just the LR schedul
 hypothesis]: re-tune the regime-mismatched knobs and watch how much 'impossibility'
 evaporates." Supporting measurement to add: *optimum displacement* — "how far the
 warm-start regime's tuned optimum sits from the from-scratch default in hyperparameter
-space," knob by knob. See [../research-hypothesis.md](../research-hypothesis.md).
+space," knob by knob. See [../research-hypothesis.md](../../research-hypothesis.md).
 
 ---
 

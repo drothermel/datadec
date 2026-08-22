@@ -1,5 +1,7 @@
 # MoE partitions — is the token taxonomy a property of the data or the architecture?
 
+**Program pillars served:** mechanism (identifiability made visible in routing), data (does the data choose the experts). (Program: `README.md` → Program.)
+
 > **Draft scaffolding (2026-08-21).** This doc was promoted from a topic. The quoted material in
 > §4 is external text; the core steps, doability notes, impact ratings, and infrastructure
 > sequence in §1–§3 are synthesized scaffolding not yet reviewed by Danielle. Treat them as
@@ -340,7 +342,7 @@ shows suppressed routing adaptivity costs quality." The recommended day-one acti
   analysis." The same move — define identity functionally on activations, not
   parametrically — is what PART-4's expert matching across expert counts and granularities
   needs; Procrustes alignment of expert output spaces is a concrete starting point. See
-  `docs/topics/task-vectors.md`.
+  `docs/topics/reference/task-vectors.md`.
 
 ### 2026-08-18 — origin: expert assignment as a non-identifiable latent (from the Research Trajectory page)
 
@@ -355,4 +357,4 @@ shows suppressed routing adaptivity costs quality." The recommended day-one acti
   and load-balancing loss provably suppresses shared hidden directions." This is prior art
   for PART-5's invariance question (it predicts non-invariance across independent runs) and
   for the load-balancing caveat; PART-4's expert matching is the needed "quotient MoE
-  symmetries" step. Paper list in `docs/topics/moe-literature.md`.
+  symmetries" step. Paper list in `docs/topics/reference/moe-literature.md`.

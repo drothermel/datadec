@@ -1,5 +1,7 @@
 # MoE movement — reroute vs. rewrite, and whether the stability apparatus freezes the router
 
+**Program pillars served:** mechanism (reroute vs. rewrite; stability apparatus as stabilizer), how. (Program: `README.md` → Program.)
+
 > **Draft scaffolding (2026-08-21).** This doc was promoted from a topic. The quoted material in
 > §4 is external text; the core steps, doability notes, impact ratings, and infrastructure
 > sequence in §1–§3 are synthesized scaffolding not yet reviewed by Danielle. Treat them as
@@ -285,4 +287,4 @@ machinery").
 - Comparability warning that MOVE-1's swap evaluation must respect: "naive interpolation
   barriers, checkpoint merging… and stitching all require an expert-alignment step, and
   re-basin methods for MoE are immature… 'how to quotient MoE symmetries for checkpoint
-  comparison' is an open gap." Paper list in `docs/topics/moe-literature.md`.
+  comparison' is an open gap." Paper list in `docs/topics/reference/moe-literature.md`.

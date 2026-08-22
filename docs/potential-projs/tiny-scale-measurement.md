@@ -1,5 +1,7 @@
 # Tiny-scale measurement — how small can you measure, and what can you do down there?
 
+**Program pillars served:** how (measurement where benchmarks can't see), apex (elicitation and post-training at tiny scale). (Program: `README.md` → Program.)
+
 > **Draft scaffolding (2026-08-21).** This doc was promoted from a topic. The quoted material in
 > §4 is external text; the core steps, doability notes, impact ratings, and infrastructure
 > sequence in §1–§3 are synthesized scaffolding not yet reviewed by Danielle. Treat them as
@@ -248,7 +250,7 @@ program looks like from the inside."
   Valley*, EMNLP 2025). Spurious-reward gains are Qwen-specific (Shao et al., ICML 2026).
   "Small benchmarks produce unstable estimates, making multiple seed runs essential"
   (Hochlehnert et al., COLM 2025) — the replicate-heavy design here is the response. Full
-  list in `docs/topics/pretraining-to-posttraining.md`.
+  list in `docs/topics/reference/pretraining-to-posttraining.md`.
 
 ### 2026-08-18 — design inputs for the post-training / RL options (from the Research Trajectory page)
 
@@ -267,7 +269,7 @@ program looks like from the inside."
   literature clears that bar?" — mostly reanalysis of public results plus modest runs.
 - **Asymmetric design.** Full sweep with seeds only where cheap; expensive budget on "two or
   three confirmation runs testing a *ranking* the cheap tier predicted." Full discussion in
-  `docs/topics/posttraining-experiment-design.md`.
+  `docs/topics/staging/posttraining-experiment-design.md`.
 
 ### 2026-08-18 — a gradient-free proxy candidate (from the Research Trajectory page)
 
@@ -276,7 +278,7 @@ program looks like from the inside."
   averaged over prompt orderings and samples, as a candidate predictor of post-training
   movement; and round-trip reconstruction fidelity through a natural-language bottleneck as
   "a capability probe — one that's graded rather than thresholded, unlike pass@1." Full
-  discussion in `docs/topics/icl-as-posttraining.md`.
+  discussion in `docs/topics/staging/icl-as-posttraining.md`.
 
 ### 2026-08-18 — the scale ladder as an identifiability-vs-scale instrument (from the Research Trajectory page)
 
@@ -288,7 +290,7 @@ program looks like from the inside."
   transformers → DataDecide → sparse large confirmations) is, almost accidentally, the
   right instrument for measuring how fast the underdetermination closes with scale." This
   sharpens the external-validity rule: the ladder is not just a check, it is a measurement.
-  See `docs/topics/identifiability-literature.md`.
+  See `docs/topics/reference/identifiability-literature.md`.
 
 ### 2026-08-22 — substrate and scaling result from the reinit literature pass
 
@@ -298,7 +300,7 @@ program looks like from the inside."
   loss at 5M–314M follows a sublinear scaling law in both continual and stationary
   settings. *The Butterfly Effect* (arXiv 2506.13234): trajectories are highly sensitive to
   initial conditions — a seed-count argument. See
-  `docs/topics/reinit-and-transfer-literature.md`.
+  `docs/topics/reference/reinit-and-transfer-literature.md`.
 
 ### 2026-08-18 — what can and cannot be averaged at a fixed checkpoint (from the Research Trajectory page)
 
@@ -306,4 +308,4 @@ program looks like from the inside."
   configuration variance (demos, order, template) is systematic and should be swept as a
   bias axis. TINY-3's minimum-detectable-effect estimates must therefore come from
   training-side replicates (seeds, trajectory windows) and item bootstraps, not eval
-  reruns. See `docs/topics/evaluation-methodology-literature.md`.
+  reruns. See `docs/topics/reference/evaluation-methodology-literature.md`.

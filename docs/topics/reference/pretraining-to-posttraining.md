@@ -105,7 +105,7 @@ learner' in plasticity terms) predicts post-training outcomes."
   Efficiently* — graph-pathfinding-style synthetic testbed where "a seed costs minutes";
   causal rather than correlational.
 - TinyZero — "RL visibly works at 0.5–3B on countdown and simple arithmetic."
-- The design alternatives themselves are in `posttraining-experiment-design.md`.
+- The design alternatives themselves are in `../staging/posttraining-experiment-design.md`.
 
 ---
 
@@ -116,7 +116,7 @@ learner' in plasticity terms) predicts post-training outcomes."
   in-context learning without parameter updates."
 - Bornschein, Lyle, Pascanu et al., *Fine-Tuned In-Context Learners for Efficient Adaptation*
   — "prompt-based methods excel in few-shot scenarios but their effectiveness plateaus as
-  more data becomes available." Design consequence in `icl-as-posttraining.md`.
+  more data becomes available." Design consequence in `../staging/icl-as-posttraining.md`.
 
 ---
 

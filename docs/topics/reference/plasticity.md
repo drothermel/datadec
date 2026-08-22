@@ -43,8 +43,8 @@ multi-power law.
   still reduce loss on the *next* task? Lyle's work explicitly hunts for cheap-to-compute
   training statistics (curvature, feature rank, dead units, weight norm) that correlate with
   or cause that ability." → Candidate components for a branch response vector or probe
-  battery (see `../potential-projs/functional-featurization.md` FUNC-4,
-  `checkpoint-tomography.md`).
+  battery (see `../../potential-projs/functional-featurization.md` FUNC-4,
+  `../staging/checkpoint-tomography.md`).
 - "The plasticity answer so far [to 'what low-dimensional summary of training dynamics
   forecasts a capability'] is 'no single statistic — curvature comes closest' (Lyle)."
 - Methodological flavor: "plasticity is mechanistic/causal — intervening on curvature,
@@ -60,7 +60,7 @@ multi-power law.
 
 "*Fine-Tuned In-Context Learners for Efficient Adaptation* is by Bornschein, Clare Lyle,
 Razvan Pascanu et al. — the plasticity crowd literally moved into 'ICL vs fine-tuning as
-adaptation' territory." See `icl-as-posttraining.md`.
+adaptation' territory." See `../staging/icl-as-posttraining.md`.
 
 ---
 
@@ -84,7 +84,7 @@ adaptation' territory." See `icl-as-posttraining.md`.
 - Three live hypotheses for the warm-starting gap — noise memorization, effective learning
   rate, classic plasticity mechanisms — plus mundane candidates (optimizer state reset,
   weight decay, warmup, AdamW). "Nobody has run the factorial that adjudicates them on the
-  original benchmark." Design in `warmstarting-decomposition.md`.
+  original benchmark." Design in `../staging/warmstarting-decomposition.md`.
 - The diagnostic panel to log at matched training loss: curvature, feature rank, dead
   units, weight norm, gradient-norm ratio.
 

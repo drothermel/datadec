@@ -17,7 +17,7 @@ Why it matters here: weight-space task vectors are the natural readout of a bran
 direction (functional featurization FUNC-4), the first-epoch-gradient result supports the
 surrogate ladder's cheapest tier (FUNC-5), functional (activation-based) task identity is
 the same move as cross-architecture expert matching (MoE partitions PART-4), and ICL task
-vectors are statistic #4 of the ICL protocol (`icl-as-posttraining.md`).
+vectors are statistic #4 of the ICL protocol (`../staging/icl-as-posttraining.md`).
 
 ---
 

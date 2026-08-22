@@ -1,5 +1,7 @@
 # Annealed readouts — on existing DataDecide checkpoints
 
+**Program pillars served:** how (schedule-neutralized instruments), mechanism (the LR schedule as exogenous non-stationarity). (Program: `README.md` → Program.)
+
 **Working title:** *How much of DataDecide is a schedule artifact? Retrofitting annealed
 evaluations onto cosine-trained checkpoint suites.*
 
@@ -205,7 +207,7 @@ decisions. Only notes about this project are kept here.
   the river-valley theory by branching a constant-LR run and interpolating; their WSD-S
   variant resumes from decayed checkpoints.)
 - Proposed as one of four probes in a "checkpoint tomography" battery; see
-  `docs/topics/checkpoint-tomography.md`.
+  `docs/topics/staging/checkpoint-tomography.md`.
 
 ### 2026-08-21 — positions in three ranked lists (full lists in `docs/portfolio-rankings.md`)
 
@@ -247,7 +249,7 @@ decisions. Only notes about this project are kept here.
   showing no progress above chance until the loss crosses a threshold, which is where the
   loss-to-accuracy mapping gets fragile." Loss→accuracy links in use: exponential (Gadre et
   al. 2024), FLP two-stage (Chen et al., arXiv 2410.08527), model ladders (Bhagia et al.).
-  See `docs/topics/loss-curve-forecasting.md`.
+  See `docs/topics/reference/loss-curve-forecasting.md`.
 
 ### 2026-08-18 — prior art and a retrospective for ANN-opt-3 (from the Research Trajectory page)
 
@@ -260,7 +262,7 @@ decisions. Only notes about this project are kept here.
 - Closest published design: *Similar Models Learn Differently: Final-Window Pretraining
   Shapes Post-Training Beyond SFT* (arXiv 2607.25063) — "models that look similar after SFT
   diverge under identical post-training depending on late-pretraining data interventions."
-  Full list in `docs/topics/pretraining-to-posttraining.md`.
+  Full list in `docs/topics/reference/pretraining-to-posttraining.md`.
 
 ### 2026-08-18 — a late-window cross-family design adjacent to ANN-opt-3 (from the Research Trajectory page)
 
@@ -271,7 +273,7 @@ decisions. Only notes about this project are kept here.
   family-effect question is testable at annealing cost rather than pretraining cost. If the
   claim is false at your scales, that's also a finding." The decay-branch runner is the same
   instrument with the schedule (rather than data) as the late-window intervention. Full
-  discussion in `docs/topics/posttraining-experiment-design.md`.
+  discussion in `docs/topics/staging/posttraining-experiment-design.md`.
 
 ### 2026-08-18 — the river-valley reading of the MPL decay term (from the Research Trajectory page)
 
@@ -283,7 +285,7 @@ decisions. Only notes about this project are kept here.
   components your matched-loss design needs to distinguish. Two recipes matched on loss
   could be matched on totally different mixes of the two." Wen et al. (arXiv 2410.05192) is
   the canonical statement; their interpolation signature is "the closest thing to a 'river
-  test.'" Paper list in `docs/topics/landscape-literature.md`.
+  test.'" Paper list in `docs/topics/reference/landscape-literature.md`.
 
 ### 2026-08-18 — origin of this project (from the Research Trajectory page)
 
@@ -314,7 +316,7 @@ redoing some pretraining with WSD?
   the river — so annealed evals aren't a pure 'reveal' either; branch length becomes a
   parameter to control."
 - Prior art (Hägele 2024; MiniCPM; Llama 3 annealing data valuation; Blakeney; WSM; Nemotron
-  3) in `docs/topics/schedules-and-annealing-literature.md`: "'annealing branches as the
+  3) in `docs/topics/reference/schedules-and-annealing-literature.md`: "'annealing branches as the
   correct eval' is validated practice — but no *open, multi-recipe suite* has it."
 
 ### 2026-08-18 — the decay branch as an "anti-grokking instrument" (from the Research Trajectory page)
@@ -324,7 +326,7 @@ redoing some pretraining with WSD?
   is a probe that *reveals* accumulated-but-hidden river progress, i.e., an operationalized
   anti-grokking instrument." Matched-loss pairs are "a *necessary but provably insufficient*
   control" (two checkpoints at equal loss can differ in hidden circuit maturity). See
-  `docs/topics/grokking-and-hidden-progress.md`.
+  `docs/topics/reference/grokking-and-hidden-progress.md`.
 
 ### 2026-08-18 — origin of ANN-opt-7, the durable-movement operator (from the Research Trajectory page)
 
@@ -343,4 +345,4 @@ redoing some pretraining with WSD?
 - "Checkpoint merging (your annealing-proxy trick) needs expert matching first or it
   averages mismatched experts into mush" — ANN-1 is dense-only as specified; an MoE variant
   requires the expert-alignment step from MoE partitions (PART-4). See
-  `docs/topics/moe-literature.md`.
+  `docs/topics/reference/moe-literature.md`.

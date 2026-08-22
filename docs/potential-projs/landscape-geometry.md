@@ -1,5 +1,7 @@
 # Loss-landscape geometry — and cross-recipe comparability
 
+**Program pillars served:** how (when are comparisons well-defined), apex (identifiability-aware comparison). (Program: `README.md` → Program.)
+
 **Working title:** *When are two pretraining recipes comparable? Basin membership as a covariate
 of proxy-metric validity on DataDecide.*
 
@@ -142,7 +144,7 @@ decisions. Only notes about this project are kept here.
 - Cheap single-checkpoint complements mentioned: a scalable critical-sharpness statistic and
   perturbation-resilience / basin-emergence measures — "useful as covariates."
 - Proposed as one of four probes in a "checkpoint tomography" battery; see
-  `docs/topics/checkpoint-tomography.md`.
+  `docs/topics/staging/checkpoint-tomography.md`.
 
 ### 2026-08-21 — positions in three ranked lists (full lists in `docs/portfolio-rankings.md`)
 
@@ -193,7 +195,7 @@ models share a basin?
 - Caveats inherited from the literature: re-basin "often reduce[s] barriers only marginally
   and work[s] poorly early in training, with no unified theory of when they succeed"; the
   2026 neuron-identifiability line may eventually give a principled comparability
-  criterion. Paper list in `docs/topics/landscape-literature.md`.
+  criterion. Paper list in `docs/topics/reference/landscape-literature.md`.
 
 ### 2026-08-18 — GEO-opt-5 as a critical-period measurement (from the Research Trajectory page)
 
@@ -202,7 +204,7 @@ models share a basin?
   and induction-head / ICL emergence — that "are all claimed to live in the same early
   window — but no one has measured them *together* on one set of runs to check whether
   they're the same event." A timed-deficit sibling-seed study is staged in
-  `docs/topics/critical-period-timing-study.md`; GEO-opt-5 on DataDecide's three seeds is
+  `docs/topics/staging/critical-period-timing-study.md`; GEO-opt-5 on DataDecide's three seeds is
   its free observational version.
 
 ### 2026-08-22 — a ready test from the reinit literature pass
@@ -210,7 +212,7 @@ models share a basin?
 - Layer-wise LMC (arXiv 2307.06966) reports that middle layers own the loss barrier and
   per-layer perturbations are near-barrier-free; nobody has reset an embedding layer and
   measured the barrier back to the pre-reset solution (gap G3 in
-  `docs/topics/reinit-and-transfer-literature.md`). The interpolation tool here is the
+  `docs/topics/reference/reinit-and-transfer-literature.md`). The interpolation tool here is the
   instrument; PolyPythias (arXiv 2503.09543; 50 runs, 14M–410M, ~7k checkpoints) is a
   ready substrate with seeds.
 
@@ -225,4 +227,4 @@ models share a basin?
   Bansal, Nakkiran & Barak 2021) as ground truth, CKA as the scalable proxy (it "can be
   dominated by a few directions and disagree with stitching"). GEO-opt-4's feature-space
   connectivity is the layerwise version of this. See
-  `docs/topics/identifiability-literature.md`.
+  `docs/topics/reference/identifiability-literature.md`.

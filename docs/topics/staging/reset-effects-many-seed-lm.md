@@ -3,7 +3,7 @@
 **Kind:** staging. Candidate exits: a replication-style project on PolyPythias, or a
 cross-cutting requirement folded into every other reset staging topic. Gap **G8**.
 
-Source: the 2026-08-22 reinit/transfer literature pass (`reinit-and-transfer-literature.md`;
+Source: the 2026-08-22 reinit/transfer literature pass (`../reference/reinit-and-transfer-literature.md`;
 full report at `~/drotherm/data/.claude/datadec/2026-08-22/0031-reinit-transfer-litpass.md`).
 Gap statements are quoted from that report; "closest work" citations were retrieved by the
 subagent (arXiv IDs), but verdicts rest on abstracts and no forward-citation sweep was run.

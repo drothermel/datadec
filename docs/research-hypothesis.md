@@ -1,5 +1,20 @@
 # Research hypothesis — Danielle's own statement, and its refinements
 
+## The program's apex question (decided 2026-08-22)
+
+Claimed training-history effects — critical periods, warm-start scars, non-stationarity
+memory, recipe effects on elicitability — are confounded with regime-mismatched defaults and
+uncontrolled elicitation. Build the measurement framework (calibrated elicitation,
+replicated small-scale interventions, identifiability-aware comparisons) that separates
+real path-dependence from measurement artifact, and use it to find where weight updates
+beat tuned elicitation and how the balance shifts with scale.
+
+This merges the hypothesis below (the evaluation-side half) with the retrospective arc from
+the Research Trajectory page (the training-history half). Three pillars — measurement
+science at academic scale (*how*), non-stationarity accounting (*mechanism*), data
+measurement → training dynamics (*independent variable*) — are laid out in
+`potential-projs/README.md` → Program.
+
 This is the organizing claim behind the project portfolio, in Danielle's words, followed by
 the refinements agreed in discussion (dated, quoted close to verbatim, not decisions). The
 potential-project docs are instruments for it; the candidate program framings in

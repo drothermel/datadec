@@ -1,5 +1,7 @@
 # IRT reanalysis — a psychometric reanalysis of DataDecide
 
+**Program pillars served:** how (a calibrated ability instrument), apex (measurement net of elicitation; emergence as measurement). (Program: `README.md` → Program.)
+
 **One-line pitch.** DataDecide's per-instance eval results form a matrix of
 (model × checkpoint) rows by item columns, where the rows are *structured*
 (recipe × scale × seed × step) rather than arbitrary models. Item response
@@ -236,7 +238,7 @@ pitch is rigor and science rather than large-lab adoption?
   metrics can look emergent, showing no progress above chance until the loss crosses a
   threshold, which is where the loss-to-accuracy mapping gets fragile" (contrasting the
   exponential link of Gadre et al. 2024, the FLP pipeline of Chen et al., and Bhagia et al.'s
-  model ladders). See `docs/topics/loss-curve-forecasting.md`.
+  model ladders). See `docs/topics/reference/loss-curve-forecasting.md`.
 
 ### 2026-08-18 — a control for matched-ability comparisons (from the Research Trajectory page)
 
@@ -283,7 +285,7 @@ of corpora.
 - "The setup is ideal: hundreds of model×checkpoint rows, thousands of item columns, binary
   (and margin) outcomes — precisely the data shape item response theory was built for."
   Prior art (Lalor; Rodriguez; tinyBenchmarks; metabench) compressed benchmarks over
-  diverse converged models; see `docs/topics/irt-literature.md`.
+  diverse converged models; see `docs/topics/reference/irt-literature.md`.
 - "Dimensionality is the honest first check, and it's substantive rather than procedural…
   Either outcome is a result."
 - Project shape as first stated: "another all-inference, public-data, weeks-scale artifact:

@@ -163,7 +163,7 @@ stand on their own. This applies equally to every §4 section.
   warmup) actually suppress, and what does suppression cost." Suggested as the thesis-shaped
   question unifying the schedule, data-order, plasticity, and MoE work, with the
   frozen-routing hypothesis as its first case study. Full text in
-  [../topics/nonstationarity-accounting.md](../topics/nonstationarity-accounting.md).
+  [../topics/nonstationarity-accounting.md](../topics/reference/nonstationarity-accounting.md).
 
 ### 2026-08-21 — portfolio-shape observations from the three ranked lists
 
@@ -187,205 +187,26 @@ stand on their own. This applies equally to every §4 section.
   as primary, the data card in the background, and (now done) confirming the MoE sweep
   checkpoints exist.
 
-### Candidate program framings (recorded, not chosen)
+### Program (decided 2026-08-22): one question, three pillars
 
-Three names have been proposed for the program as a whole. Each is a different emphasis over
-the same projects.
+**The question** (apex; canonical text in [../research-hypothesis.md](../research-hypothesis.md)):
+claimed training-history effects — critical periods, warm-start scars, non-stationarity
+memory, recipe effects on elicitability — are confounded with regime-mismatched defaults and
+uncontrolled elicitation. Build the measurement framework (calibrated elicitation,
+replicated small-scale interventions, identifiability-aware comparisons) that separates
+real path-dependence from measurement artifact, and use it to find where weight updates
+beat tuned elicitation and how the balance shifts with scale. Its one-line readout is the
+**capability delta vs. accessibility delta** decomposition.
 
-| Framing | One-line pitch | Naturally wraps |
+**Pillars** (lenses on how to answer it; each project declares which it serves):
+
+| Pillar | Role | Canonical text |
 |---|---|---|
-| **Data measurement → training dynamics** | Featurize data by what it does to training (schedule sensitivity, emergence timing, noise, forgetting), not by endpoint scores; DataDecide is the first instrument-validation study | REC, FUNC, ANN, TOK, PART |
-| **Measurement science of LM training at academic scale** | Cheapness converts into replicates, factorial designs, and confidence intervals; the measurement problem at 10–150M is the research question; tiny models as the program's Drosophila | TRJ, IRT, TINY, ANN, MSUITE, FUNC |
-| **Elicitation-controlled evaluation: capability delta vs. accessibility delta** | Pipeline-stage comparisons are confounded by from-scratch-tuned defaults and uncontrolled elicitation; calibrate elicitation as a strong null, report effects raw and elicitation-controlled, and demonstrate (not compare) where weight updates exceed the tuned elicitation ceiling — Danielle's own statement in [../research-hypothesis.md](../research-hypothesis.md) | IRT, TINY, the ICL / post-training-design / warm-starting topics, ANN-opt-3, WSD-opt-2 |
-| **Non-stationarity accounting** | Every thread is a non-stationarity thread (exogenous: schedule, data order, midtraining; endogenous: routing, gradient-weighted self-curriculum); account for how much each source injects and what each stabilizer suppresses | ANN, REC-9/10, TOK, MOVE, FUNC |
+| **Measurement science at academic scale** (*how*) | Replicates, confidence intervals, calibrated instruments, tiny models as the program's Drosophila, the scale ladder as an identifiability-vs-scale measurement | [../topics/reference/evaluation-methodology-literature.md](../topics/reference/evaluation-methodology-literature.md), [tiny-scale-measurement.md](tiny-scale-measurement.md) §4 |
+| **Non-stationarity accounting** (*mechanism*) | Every scar is a non-stationarity source (exogenous: schedule, data order, midtraining; endogenous: routing, the gradient-weighted self-curriculum); every fix is a stabilizer; account for how much each injects and what each suppresses | [../topics/reference/nonstationarity-accounting.md](../topics/reference/nonstationarity-accounting.md) |
+| **Data measurement → training dynamics** (*independent variable*) | Featurize data by what it does to training, not by endpoint scores; DataDecide is the first instrument-validation suite | [recipe-featurization.md](recipe-featurization.md) §4 (first entry) |
 
-Full text for each: `recipe-featurization.md` §4 (first),
-`tiny-scale-measurement.md` §4 (second),
-`../topics/nonstationarity-accounting.md` (third).
-
-### 2026-08-18 — the unifying question behind the plasticity and scaling-law threads (from the Research Trajectory page)
-
-- "Both are doing the same epistemic move: treating the loss curve (or statistics derivable
-  during training) as a *measurable signal that predicts a latent capability you actually
-  care about*… If you want a 'loss-curve features → success' framing that unifies them, the
-  shared question is: what low-dimensional summary of training dynamics is sufficient to
-  forecast a capability? The plasticity answer so far is 'no single statistic — curvature
-  comes closest' (Lyle), while the pretraining answer is 'a surprisingly simple functional of
-  the LR schedule' (multi-power law) plus a sigmoid/exponential link to accuracy."
-- Core differences worth keeping in view: target of prediction (a property of the *learner*
-  — future adaptability — vs. a property of the *outcome*); methodological flavor
-  (mechanistic/causal interventions with many cheap seeds vs. phenomenological fits where
-  prediction substitutes for experimentation). Reference topics:
-  [../topics/plasticity.md](../topics/plasticity.md),
-  [../topics/loss-curve-forecasting.md](../topics/loss-curve-forecasting.md).
-
-### 2026-08-18 — the original hypothesis and where the field has gone (from the Research Trajectory page)
-
-- "The field is converging on exactly your framing — final pretraining loss is an
-  insufficient statistic for downstream success, and the open question is what *else* about
-  the training trajectory (data order, late-window exposure, the 'state of the learner' in
-  plasticity terms) predicts post-training outcomes." Tension to keep in view: Shen et al.
-  (arXiv 2607.16097) find "lower pretraining loss strongly predicts higher post-RL pass@1 at
-  fixed RL compute… though not all of it."
-- DataDecide's own headline (Magnusson et al., ICML 2025): ranking at 150M predicts the best
-  1B recipe ~80% of the time; continuous likelihood proxies make benchmarks >80% predictable
-  at 0.01% of the compute — "the 'at low scale, accuracy is noise, so find a smoother
-  observable' move" that the measurement projects extend. Reference topic:
-  [../topics/pretraining-to-posttraining.md](../topics/pretraining-to-posttraining.md).
-
-### 2026-08-18 — the seeds × families × iteration tension, and the asymmetric design (from the Research Trajectory page)
-
-- "The noise floor of your measurements scales with the number of seeds you can afford,
-  while the generality of any finding scales with the number of model families you test —
-  and both multiply against slow iteration… a clean single-family result might just be
-  another family artifact, so even a successful sweep has uncertain external validity."
-- "The measurement-and-proxy angle is both the least blocked and, right now, probably the
-  most needed." Validating a proxy "needs far fewer runs than detecting an intervention
-  effect, because you're fitting a correlation across existing variation rather than
-  powering a comparison."
-- Asymmetric design: "Full sweep with seeds only where it's cheap (small models, continuous
-  metrics, easy tasks). Then spend the expensive budget on two or three confirmation runs
-  testing a *ranking* the cheap tier predicted — a much lower-powered, therefore
-  affordable, test than estimating effect sizes." Staging topic:
-  [../topics/posttraining-experiment-design.md](../topics/posttraining-experiment-design.md).
-- Same-date restatement of the recurring question, from the ICL discussion: "Your whole
-  trajectory — loss curves, proxy metrics, elicitation — keeps circling one question: *what
-  cheap continuous observable reveals latent capability?*" Staging topic:
-  [../topics/icl-as-posttraining.md](../topics/icl-as-posttraining.md).
-
-### 2026-08-18 — matched-loss comparisons need two controls; define the invariant measurement, not the invariant model (from the Research Trajectory page)
-
-- "Matched-loss pairs have a hidden confound: equal loss at different token counts vs. equal
-  tokens at different loss are different controls, and you'll want both, since 'recipe A
-  reaches this loss faster' and 'recipe A has better ICL at this loss' are separable
-  claims." Applies to every matched-loss comparison in the portfolio (TRJ-3, IRT-3, GEO pair
-  selection, TOK-4, the sweep reread as data in PART).
-- Fourth control, from the grokking discussion: "two checkpoints matched on both train *and*
-  test loss can sit at radically different points of hidden circuit maturity — pre-grok and
-  mid-grok — and will respond completely differently to further training, fine-tuning, or
-  elicitation." Matched loss is "a *necessary but provably insufficient* control"; the
-  diagnostic panel (ICL curves, Fisher trace, decay-branch response) exists to catch this.
-- Third control, from the loss-basins discussion: matched loss can hide different mixes of
-  along-river progress (durable) and distance-from-river (transient), and different basins
-  altogether — "the basin question is therefore the question of *when your comparisons are
-  well-defined*." Log interpolation barriers between compared checkpoints and report
-  conditional on barrier height (the landscape-geometry project's core).
-- Cross-scale / cross-modality design principle: "Define the invariant measurement, not the
-  invariant model. The bridge between tiers is a protocol… The deliverable of tier 1 is
-  'here is a low-variance elicitability metric and here's how many seeds it needs.'" A
-  confirmation test at the expensive tier "needs far less compute than an exploration
-  sweep." Staging topic: [../topics/icl-as-posttraining.md](../topics/icl-as-posttraining.md).
-
-### 2026-08-18 — a retrospective narrative: the thesis question, eight years early (from the Research Trajectory page)
-
-- Ash & Adams (NeurIPS 2020): warm-started models "led to worse generalization than random
-  re-initialization, even though training losses were similar… That 'similar training loss,
-  different downstream outcome' clause is literally your thesis question, eight years early
-  — which is what makes it the perfect opening chapter."
-- Chapter plan: "**Chapter 1:** Why did the field's oldest 'pretraining hurt downstream
-  performance at matched loss' result happen, and which modern practice fixed it? **Future
-  chapter:** Matched-loss ICL experiments as the same question at the next scale." Staging
-  topic: [../topics/warmstarting-decomposition.md](../topics/warmstarting-decomposition.md).
-- From the ICL-analysis discussion: "the field's best ICL measurement is a loss curve over
-  context position, fit with power laws, complete with emergence thresholds and proxy-metric
-  debates — your pretraining-scale question recapitulated inside a single forward pass."
-  Reference topic: [../topics/icl-literature.md](../topics/icl-literature.md).
-
-### 2026-08-18 — the deepest root: critical learning periods (from the Research Trajectory page)
-
-- Achille, Rovere & Soatto's critical-period / Information-Plasticity line "is arguably the
-  deepest root of your whole tree": it is the origin of the plasticity literature (Fisher
-  trace as diagnostic; Lyle's curvature finding "nearly a rediscovery in different
-  coordinates"), it restates the warm-starting gap (starting past the Fisher peak), it
-  grounds the basin story (the critical period as "the window before the run commits to a
-  basin/valley"), it supplies the featurization tool (Task2Vec is the same Fisher
-  formalism), and the LLM-scale data-placement results are "critical-period phenomenology at
-  scale, mostly published without the connection drawn."
-- Closing loop for the retrospective narrative: "the blurred-kitten paper you started from
-  turns out to contain the earliest version of your plasticity thread, your featurization
-  thread, and your basin thread all at once." Reference topic:
-  [../topics/critical-periods.md](../topics/critical-periods.md); staged study:
-  [../topics/critical-period-timing-study.md](../topics/critical-period-timing-study.md).
-- The retrospective's experimental spine and one-sentence pitch (same date): one
-  early-window intervention grid — intervene(what, when, how long) × recipe × measure — "in
-  which each classic paper is a single cell," with modern fixes as "period-reopening
-  interventions." "Two foundational anomalies from 2019–2020 showed that *when* a network
-  learns something determines *what* it can become, the modern field keeps rediscovering
-  this at LLM scale without the connection, and the thesis builds the measurement framework
-  that reconciles them." Staging topics:
-  [../topics/warmstarting-decomposition.md](../topics/warmstarting-decomposition.md),
-  [../topics/critical-period-timing-study.md](../topics/critical-period-timing-study.md).
-- Third founding cell (same date): Igl et al.'s ITER (ICLR 2021) — "three communities, one
-  claim — *the training path leaves damage that the final loss doesn't show* — none citing
-  the others' framing." Distilling into a fresh network is "your thesis statement in method
-  form: if final behavior were a sufficient statistic, distilling it into a fresh net could
-  never help." Reference topic:
-  [../topics/reinit-and-transfer-literature.md](../topics/reinit-and-transfer-literature.md).
-
-### 2026-08-18 — the methodological through-line, and the arc framing (from the Research Trajectory page)
-
-- Danielle's first paper (*Don't Sweep your Learning Rate under the Rug*, 2021, arXiv
-  2107.12460) "is the ur-example of your recurring finding-shape: 'the headline phenomenon
-  is a hyperparameter artifact.'" Structurally identical to the ELR re-warming result, the
-  critical-period deconstruction axis (a), and the *Sober Look* / *Spurious Rewards*
-  demolition of RLVR gains. "The retrospective's methodological through-line — 'before
-  attributing an effect to training history, exhaust the boring explanations: learning
-  rate, seeds, tuning asymmetry' — isn't something you picked up along the way. It's the
-  thing your first paper *was*."
-- Two load-bearing priors it planted, and their tension: (1) "proper measurement requires
-  sweeps and seeds, and asymmetric tuning between conditions silently manufactures
-  phenomena"; (2) "frozen interfaces lag; the body must be updated; but transfer through the
-  body is real" — with ICL-as-post-training as "you finally switching sides."
-- The arc: "the PhD didn't wander from cross-modal transfer to plasticity to scaling laws to
-  elicitation; it repeatedly asked whether claimed training-history effects survive
-  rigorous measurement, found that some do (critical periods, warm-start scars, ITER's
-  memory effect, data-recipe effects on elicitability) and some don't (FPT, small-scale
-  RLVR gains), and is now building the framework that tells them apart — with the LR sweep
-  as its oldest tool and the ICL curve as its newest." For the adviser: "the *completion of
-  an arc that started with your first publication* — same question, same discipline,
-  instruments upgraded."
-
-### 2026-08-18 — grokking, identifiability, and the final map of the retrospective (from the Research Trajectory page)
-
-- Grokking and double descent "slot into the narrative at exactly the two places where it's
-  currently thinnest: grokking/double descent attacks the *observable* side (when do loss
-  curves lie?), and identifiability attacks the *comparability* side (when do two matched
-  models even admit comparison?)."
-- Path-dependence ⇔ non-identifiability: "Every 'permanent damage' result in your grid is an
-  empirical non-identifiability certificate… your entire methodology is interventional
-  (deficits, decay branches, resets, distillation arms)… citing [identifiability theory]
-  turns your experimental-design chapter from 'a collection of clever probes' into 'an
-  identification strategy.'"
-- The sharpest open conjecture: if the Platonic Representation Hypothesis is right,
-  "identifiability improves with scale" and small-scale path-dependence effects have a
-  scale ceiling; the ladder design measures "how fast the underdetermination closes with
-  scale — which might be the most consequential question the whole arc points at."
-- Final map: "Achille/Ash-Adams/Igl establish that trajectories scar; your 2021 paper
-  establishes that some scars are artifacts; grokking establishes that losses hide
-  progress; identifiability provides the formalism for when solutions are underdetermined
-  enough to scar at all; and the experimental program — matched-loss ladders, interventional
-  probes, symmetry-quotiented comparisons, elicitability outcomes — is the machine that
-  sorts real path-dependence from measurement artifact and measures how the balance shifts
-  with scale." Reference topics:
-  [../topics/grokking-and-hidden-progress.md](../topics/grokking-and-hidden-progress.md),
-  [../topics/identifiability-literature.md](../topics/identifiability-literature.md).
-
-### 2026-08-18 — scope discipline for the intervention-grid harness (from the Research Trajectory page)
-
-- "Build one harness, not three replications"; "design backwards from the one figure";
-  "stagger the modalities; don't parallelize them"; "budget the statistics up front —
-  decide seed counts per cell from a power target at month zero." Plan in
-  [../topics/warmstarting-decomposition.md](../topics/warmstarting-decomposition.md).
-  (The same conversation also contained advice about managing Danielle's adviser; that
-  material is disregarded at her direction and not recorded.)
-
-### 2026-08-18 — sensitivity as the object of study (from the Research Trajectory page)
-
-- "Instead of asking 'did our intervention work?' (a hypothesis test), ask 'what does
-  movement even look like in these models?' (an instrument-building question)… the
-  unpressured version treats sensitivity itself as the object of study, so every null is a
-  data point on a detection-limit curve… Stages 1–3 produce publishable artifacts (a
-  noise-floor atlas, a metric dose-response benchmark, a movement decomposition) regardless
-  of what Stage 4 finds." Staging topic:
-  [../topics/movement-microscope.md](../topics/movement-microscope.md).
-
+The four framings previously listed here as candidates (data measurement → dynamics;
+measurement science at academic scale; non-stationarity accounting; elicitation-controlled
+evaluation) are not discarded: the fourth is the apex question and the other three are the
+pillars above.

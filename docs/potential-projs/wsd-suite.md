@@ -1,5 +1,7 @@
 # WSD retrain suite — stable-phase pretraining with decay branches for DataDecide recipes
 
+**Program pillars served:** how (a clean-schedule substrate), mechanism. (Program: `README.md` → Program.)
+
 **Working title:** *DataDecide-WSD: stable-phase pretraining with dense decay branches across
 data recipes.*
 
@@ -178,7 +180,7 @@ decisions. Only notes about this project are kept here.
   "argues that controlled small-model proxies can yield real insight into RL behavior" —
   the nearest existing design to post-training from this suite's branch endpoints. *Similar
   Models Learn Differently* (arXiv 2607.25063) is the late-pretraining-intervention
-  version. Full list in `docs/topics/pretraining-to-posttraining.md`.
+  version. Full list in `docs/topics/reference/pretraining-to-posttraining.md`.
 
 ### 2026-08-18 — origin of this project (from the Research Trajectory page)
 
@@ -187,6 +189,6 @@ decisions. Only notes about this project are kept here.
   methodology papers say should exist." Methodology lineage: Hägele et al. 2024 (stable
   phase + cheap decay branches instead of per-budget cosine runs); MiniCPM's template (~10%
   decay completes convergence; new data mixed in strictly during decay — the basis of
-  WSD-opt-4). Paper list in `docs/topics/schedules-and-annealing-literature.md`.
+  WSD-opt-4). Paper list in `docs/topics/reference/schedules-and-annealing-literature.md`.
 - The cancellation question this suite settles: "testing when [the annealing confound]
   cancels vs. doesn't is exactly what your WSD branches would settle."

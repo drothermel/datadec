@@ -3,7 +3,7 @@
 **Kind:** reference (standing accumulator of paper references and thoughts). Entries are dated
 and quoted close to verbatim; related-work claims are unverified unless a citation is given.
 
-Why it matters here: the research hypothesis (`../research-hypothesis.md`) rests on the
+Why it matters here: the research hypothesis (`../../research-hypothesis.md`) rests on the
 claim that pipeline-stage comparisons are confounded by unequal tuning history and by
 uncontrolled elicitation; these are the precedents for that claim and for the
 existence-proof alternative.

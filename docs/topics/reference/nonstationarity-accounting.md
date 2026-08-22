@@ -1,9 +1,8 @@
 # Non-stationarity accounting — the hidden variable across schedule, data-order, plasticity, and MoE routing
 
-**Status:** topic (staging) — the program-level framing only. The frozen-routing case study
-and its experiments now live in `../potential-projs/moe-movement.md`. Candidate exit: a
-thesis-level framing ("which non-stationarities does training secretly depend on") recorded
-in the potential-projs README's candidate program framings.
+**Kind:** reference — the canonical text of the program's *mechanism* pillar (non-stationarity
+accounting; see `../../potential-projs/README.md` → Program). The frozen-routing case study and
+its experiments live in `../../potential-projs/moe-movement.md`.
 
 **Question posed (Danielle, 2026-08-21).** On non-stationarity in MoE training: if
 token-to-expert assignments are decided early and stay fixed (as reported for OpenMoE —
@@ -13,9 +12,9 @@ removing the ability or incentive for routing to update over training? Not confi
 in that specific hypothesis to build a program around it, but non-stationarity seems like a
 large subthread playing out across many training settings, not just the continual-learning
 and RL spaces that discuss it explicitly. See
-[../danielle-inputs.md](../danielle-inputs.md).
+[../danielle-inputs.md](../../danielle-inputs.md).
 
-Related-work claims below are unverified (see [README.md](README.md)).
+Related-work claims below are unverified (see [../README.md](../README.md)).
 
 ---
 
@@ -26,7 +25,7 @@ and more testable than you're giving it credit for."
 
 ### The mechanism and the four discriminating experiments
 
-Moved to the MoE movement project, `../potential-projs/moe-movement.md` (§1 Stage 2 and §4).
+Moved to the MoE movement project, `../../potential-projs/moe-movement.md` (§1 Stage 2 and §4).
 
 ### The broader thesis: non-stationarity as the hidden variable
 

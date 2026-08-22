@@ -112,7 +112,7 @@ linearly connected only after early training stabilizes, and 'critical period' b
 *the window before the run commits to a basin/valley*. The river is chosen early, while
 Fisher information is high; after commitment, you travel it. Deficits during the window
 change which river you're in — permanently, because post-commitment plasticity won't take
-you over the walls." See `critical-periods.md` and `critical-period-timing-study.md`.
+you over the walls." See `critical-periods.md` and `../staging/critical-period-timing-study.md`.
 
 ---
 

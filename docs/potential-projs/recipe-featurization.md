@@ -1,5 +1,7 @@
 # Recipe featurization — what is actually in the DataDecide recipes
 
+**Program pillars served:** data (what is actually in the recipes; features → dynamics). (Program: `README.md` → Program.)
+
 Status: proposal, 2026-08-21. Derived from [../dataset-analysis-idea-map.md](../dataset-analysis-idea-map.md) (idea-map ideas L0, F1, F2, F3) and the recipe ground-truth dig in
 `~/drotherm/data/.claude/datadec/2026-08-19/2013-dclm25-dolma75-training-data.md`.
 
@@ -305,7 +307,7 @@ be things we can do for datasets as well.
   RegMix, DoReMi, mixing laws: "don't tell you *what property* of the data mattered"),
   similarity embeddings (Task2Vec alignment, diversity coefficient; "data similarity alone
   is not enough"), intrinsic statistics (WIMBD, compression, Zipf/burstiness: "closest to
-  your instinct, least developed") — in `docs/topics/data-featurization-literature.md`.
+  your instinct, least developed") — in `docs/topics/reference/data-featurization-literature.md`.
 - The causal anchor for intrinsic features: Zipf/burstiness/type-token statistics "are
   exactly the properties Chan et al. showed *cause* ICL emergence in small transformers…
   the one place intrinsic data statistics have been causally tied to a capability."

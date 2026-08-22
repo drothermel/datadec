@@ -7,9 +7,9 @@ absorption of individual probes into those projects' §4s.
 **Question posed (Danielle, 2026-08-21).** Something in direct relation to river-valley / loss
 landscape / same-vs-different-basin ideas: take an intermediate checkpoint, continue
 pretraining for ~1/16 of the run length or less, then measure a statistic that points at
-movement. Does that exist? See [../danielle-inputs.md](../danielle-inputs.md).
+movement. Does that exist? See [../danielle-inputs.md](../../danielle-inputs.md).
 
-Related-work claims below are unverified (see [README.md](README.md)).
+Related-work claims below are unverified (see [../README.md](../README.md)).
 
 ---
 

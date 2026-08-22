@@ -71,4 +71,4 @@ measurements used for domain weighting and token selection respectively); compre
 statistics as the crude aggregate version; Task2Vec (Achille et al.) as the Fisher-embedding
 formalism that the alignment and diversity coefficients build on. Design cautions (relative
 to reference model and context length → curves; pre/post dedup) recorded in
-`../potential-projs/recipe-featurization.md` §4.
+`../../potential-projs/recipe-featurization.md` §4.

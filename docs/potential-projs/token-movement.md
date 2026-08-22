@@ -1,5 +1,7 @@
 # Token-level movement — observational (existing checkpoints) → causal (under LR decay)
 
+**Program pillars served:** mechanism (where movement lives; the endogenous self-curriculum), data (recipes compared on the same tokens). (Program: `README.md` → Program.)
+
 **Working title:** *Which tokens does the cooldown fix? A causal per-token measurement of
 river-valley dynamics across pretraining recipes.*
 
@@ -294,7 +296,7 @@ decisions. Only notes about this project are kept here.
   Rho-1-style loss-trajectory taxonomy [TOK-opt-2] and the river/wall token migration
   [TOK-4] are measurements of exactly this. Loss-of-plasticity in 'stationary' pretraining
   stops being paradoxical under this lens: from the gradient's perspective, pretraining was
-  never stationary." (Full discussion in `docs/topics/nonstationarity-accounting.md`.)
+  never stationary." (Full discussion in `docs/topics/reference/nonstationarity-accounting.md`.)
 
 ### 2026-08-21 — positions in three ranked lists (full lists in `docs/portfolio-rankings.md`)
 
@@ -322,7 +324,7 @@ decisions. Only notes about this project are kept here.
   fail[s] to expand the base model's reasoning boundary at large k" (Yue et al., NeurIPS
   2025), with counterpoints (*The Invisible Leash*, arXiv 2507.14843; arXiv 2506.14245).
   These are the post-training token regimes the wall bucket would be compared against.
-  Full list in `docs/topics/pretraining-to-posttraining.md`.
+  Full list in `docs/topics/reference/pretraining-to-posttraining.md`.
 
 ### 2026-08-18 — "did the model move in distribution space?" (from the Research Trajectory page)
 
@@ -334,7 +336,7 @@ decisions. Only notes about this project are kept here.
   move and pretraining recipes differ in *how much*." The Stage 1 instruments (per-token
   KL, item flips) are the same measurements applied between pretraining checkpoints; the
   post-training version is the earlier project's data reread through them. Full discussion
-  in `docs/topics/posttraining-experiment-design.md`.
+  in `docs/topics/staging/posttraining-experiment-design.md`.
 
 ### 2026-08-18 — origin of Stage 2 (from the Research Trajectory page)
 
@@ -369,7 +371,7 @@ effect buckets, or watching that mapping change over training?
 - What the design delivers at once: "the missing token-level validation of the river-valley
   mechanism, a dataset-featurization result (the 'determinism profile'… now measured
   causally), and a candidate explanation for *when* annealed vs. unannealed evals disagree."
-  Paper list in `docs/topics/token-level-literature.md`.
+  Paper list in `docs/topics/reference/token-level-literature.md`.
 
 ### 2026-08-18 — the post-training twins of TOK-obs-4 and TOK-4 (from the Research Trajectory page)
 
@@ -381,7 +383,7 @@ effect buckets, or watching that mapping change over training?
 - Stage 4: "post-train all 25 recipes identically and compare *movement profiles* — not
   outcomes… Recipe-dependent movement profiles at matched final loss would be your original
   thesis, demonstrated below the elicitation threshold." The post-training counterpart of
-  TOK-4's cross-recipe migration. See `docs/topics/movement-microscope.md`.
+  TOK-4's cross-recipe migration. See `docs/topics/staging/movement-microscope.md`.
 
 ### 2026-08-18 — origin of Stage 1 (from the Research Trajectory page)
 
@@ -402,4 +404,4 @@ effect buckets, or watching that mapping change over training?
 
 - "Slice [routing flips] by your token-entropy buckets and you get a sharp question nobody
   has asked: do hillside tokens keep flipping experts long after river tokens' routes have
-  frozen?" See `docs/topics/moe-literature.md`.
+  frozen?" See `docs/topics/reference/moe-literature.md`.
