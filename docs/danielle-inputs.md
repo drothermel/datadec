@@ -2400,3 +2400,19 @@ pilot's 93.9% @ 25 epochs placed against a ~95% 200-epoch reference).
 Routed to: the same staging section as a compact unvetted source list (arXiv IDs and
 GitHub repos only); noted that the only original-author source is `KaimingHe/resnet-1k-layers`
 and the rest are secondary or off-topic.
+
+Her structured search query (verbatim):
+
+> CIFAR-10 "baseline" OR "vanilla" accuracy
+> model:(resnet OR wrn OR vgg OR denseNet OR convnext)
+> report:(test accuracy OR error rate)
+> site:arxiv.org OR site:github.com
+> AND title:"ResNet-18"
+> AND year:2020..2025
+> AND ("under 100 epochs" OR "fast training")
+>
+> Show the raw list of source links only (no summary)
+
+Routed to: the same staging section (links listed unvetted; intake note that the
+short-budget references actually comparable to 25-epoch runs are the DAWNBench ResNet-9 /
+hlb-CIFAR10 / airbench speed-run lineage, which the search missed).
