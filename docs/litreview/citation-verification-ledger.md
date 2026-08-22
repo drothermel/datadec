@@ -241,6 +241,31 @@ Context column = the ~80 characters preceding the ID in the topic, as a memory a
 | 2412.02595 | Nemotron-CC — ensemble classifiers, synthetic rephrasing (annealing report 2) | `schedules-and-annealing-literature` | agent-supplied | ANN, WSD | |
 | 2412.17743 | YuLan-Mini — context extension during annealing (annealing report 2) | `schedules-and-annealing-literature` | agent-supplied | ANN, WSD | |
 | 2503.17793 | benchmark contamination survey, 1–45% rates (annealing report 2) | `schedules-and-annealing-literature` | agent-supplied | ANN, WSD | |
+| 2508.01483 | second LR-annealing scaling-law citation paired with Tissue 2408.11029 — unknown, possibly mis-ID | `schedules-and-annealing-literature` | agent-supplied | ANN | |
+| 2505.02881 | SwallowCode / SwallowMath — rewriting pretraining code/math data | `schedules-and-annealing-literature` | agent-supplied | ANN | |
+| 2409.17115 | ProX — programming every example, small-model data refinement | `schedules-and-annealing-literature` | agent-supplied | ANN | |
+| 2501.07314 | FinerWeb-10BT — LLM line-level filtering | `schedules-and-annealing-literature` | agent-supplied | ANN | |
+| 2410.04579 | temperature sampling vs. scalarization; mixture cooldown | `schedules-and-annealing-literature` | agent-supplied | ANN | |
+| 2407.08699 | Branch-and-Merge — merge subset-finetuned models, less forgetting | `schedules-and-annealing-literature` | agent-supplied | ANN | |
+| 2411.11266 | VersaTune — dynamic domain weighting in fine-tuning (drift) | `schedules-and-annealing-literature` | agent-supplied | ANN | |
+| 2405.07490 | curriculum learning, easy-to-hard (drift) | `schedules-and-annealing-literature` | agent-supplied | ANN | |
+| 2406.19853 | curriculum learning (drift) | `schedules-and-annealing-literature` | agent-supplied | ANN | |
+| 2411.02337 | curriculum learning (drift) | `schedules-and-annealing-literature` | agent-supplied | ANN | |
+| 2505.08364 | ADCL adaptive difficulty curriculum, "difficulty shift" (drift) | `schedules-and-annealing-literature` | agent-supplied | ANN | |
+| 2004.13833 | "data annealing" for informal language, 2020 — unrelated prior use of the term | `schedules-and-annealing-literature` | agent-supplied | ANN | |
+| 2501.00237 | domain shifts can reduce forgetting (drift) | `schedules-and-annealing-literature` | agent-supplied | ANN | |
+| 2405.17830 | catastrophic forgetting in LLM fine-tuning (drift) | `schedules-and-annealing-literature` | agent-supplied | ANN | |
+| 2308.08747 | forgetting scales with model size up to 7B (drift) | `schedules-and-annealing-literature` | agent-supplied | ANN | |
+| 2403.01244 | Self-Synthesized Rehearsal (drift) | `schedules-and-annealing-literature` | agent-supplied | ANN | |
+| 2310.05492 | instruction data mixing (drift) | `schedules-and-annealing-literature` | agent-supplied | ANN | |
+| 2406.08811 | Mixture-of-Skills (drift) | `schedules-and-annealing-literature` | agent-supplied | ANN | |
+| 2312.10793 | instruction data composition (drift) | `schedules-and-annealing-literature` | agent-supplied | ANN | |
+| 2410.10210 | quality over diversity in final-stage data (drift) | `schedules-and-annealing-literature` | agent-supplied | ANN | |
+| 2312.11508 | LIFT — instruction quality over quantity (drift) | `schedules-and-annealing-literature` | agent-supplied | ANN | |
+| 2508.03571 | KILO continual adaptation (drift) | `schedules-and-annealing-literature` | agent-supplied | ANN | |
+| 2505.05427 | quality-over-quantity claim support (unexamined) | `schedules-and-annealing-literature` | agent-supplied | ANN | |
+| 2412.06724 | LLM-as-judge quality assessment (unexamined) | `schedules-and-annealing-literature` | agent-supplied | ANN | |
+| 2509.23629 | Annealed-RLVR — SFT heating inside RLVR; term collision | `schedules-and-annealing-literature` | agent-supplied | ANN | |
 
 Rows: 208 (181 agent-supplied, 27 Claude-added, 5 named without ID).
 

@@ -3159,3 +3159,15 @@ Nemotron-CC, YuLan-Mini); the interactive app it mentions was not passed. Routed
 (new entry, condensed to what the Oct-2025 survey entry lacks; PDPC misattribution and
 unsourced editorial numbers flagged); short ANN §4 note on decay-phase gradient statistics as
 a decay-branch instrument; seven IDs added to the citation ledger.
+
+### Undated (~2025; intake 2026-08-22) — annealing data quality, third answer (two versions)
+
+> I want to better understand the recent research around data quality as it affects LLM
+> annealing, especially changing data from pre-training to the annealing stage.
+
+Version 1 drifts into instruction tuning / continual learning; version 2 is mostly term
+collisions (Annealed-RLVR, simulated annealing for RLHF scheduling, newsletter posts).
+Routed: [topics/reference/schedules-and-annealing-literature.md](topics/reference/schedules-and-annealing-literature.md)
+(third entry; keeps the data-rewriting cluster, 2508.01483 as an ID to check, mixture-level
+cooldown, Branch-and-Merge; drift and collisions listed); 25 IDs added to the citation
+ledger, most tagged drift. No project-doc change.

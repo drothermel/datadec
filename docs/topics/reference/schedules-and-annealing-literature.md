@@ -213,3 +213,51 @@ statistics (norm falls, consecutive-update cosine turns positive) are a concrete
 measurement the decay-branch runner can reproduce at DataDecide scale — a candidate ANN
 instrument, noted in `../../potential-projs/annealed-readouts.md` §4. Both unverified
 against the papers.
+
+## Undated (~2025; intake 2026-08-22) — Annealing-data question, third answer (two versions)
+
+**Danielle's prompt (verbatim).** "I want to better understand the recent research around
+data quality as it affects LLM annealing, especially changing data from pre-training to the
+annealing stage."
+
+**Version 1.** A citation-dense browsing answer that drifts from annealing-data into
+instruction tuning, continual learning and forgetting mitigation (VersaTune 2411.11266,
+O-LoRA, Self-Synthesized Rehearsal 2403.01244, KILO 2508.03571, LIFT, Mixture-of-Skills
+2406.08811, instruction-mix studies 2310.05492 / 2312.10793) — none of which is the
+pretraining→annealing transition. Kept as leads, all unverified:
+- A second LR-annealing scaling-law citation, **arXiv 2508.01483**, paired everywhere with
+  Tissue et al. 2408.11029 ("forward area" vs. "annealing area"; annealing "momentum" —
+  LR changes reflected in loss with a delay that grows with annealing slope; 10–20%
+  annealing ratio). Unknown paper; check whether it is a follow-up or a mis-ID.
+- **Rewriting rather than filtering**: SwallowCode / SwallowMath (2505.02881; refined
+  Python +17.0 HumanEval, math +12.4 GSM8K, "transform-and-retain"); ProX "programming
+  every example" (2409.17115; a 0.3B model emits per-document refinement programs);
+  FinerWeb-10BT line-level filtering (2501.07314; GPT-4o-mini labels → DeBERTa; "25%
+  faster to target"). Relevant to what an annealing slice *is* — upgraded data, not just
+  selected data.
+- Temperature sampling vs. scalarization on imbalanced mixtures (2410.04579): temperature
+  sampling has lower gradient variance, converges faster, overfits more; proposed
+  "cooldown" = heavy upsampling early, reduce later. Mixture-level cooldown, distinct
+  from LR cooldown.
+- Branch-and-Merge (2407.08699): merge models fine-tuned on data subsets; smaller but
+  higher-quality weight changes, less forgetting — adjacent to ANN-opt-7's merging angle.
+- Curriculum cluster (2405.07490, 2406.19853, 2411.02337, ADCL 2505.08364 "difficulty
+  shift"), largely post-training; and the 2020 "data annealing" paper for informal
+  language (2004.13833 / Findings EMNLP 2020) — an earlier, unrelated use of the term
+  (formal→informal gradual mixing for BERT), worth knowing exists for terminology.
+- Claim to watch: "educational filtering becomes particularly effective when applied
+  during the annealing phase rather than throughout pre-training" is asserted with a
+  FineWeb citation; FineWeb-Edu did not test that. Respondent's inference.
+
+**Version 2.** Short and almost entirely term collisions: Annealed-RLVR (2509.23629; an SFT
+"heating" phase inserted into RL with verifiable rewards — post-training, not LR/data
+annealing), RLHFuse (NSDI '25; *simulated annealing* for RLHF pipeline scheduling —
+unrelated), cosine-to-zero over the full duration (cited to 2408.11029), re-warm/re-decay
+for continued pretraining and "stricter filtering / upsampling of core sources in the
+final phase" cited to two Raschka newsletter posts. Nothing to keep beyond the collision
+list.
+
+**Intake note.** Three answers to this question are now on file (Oct-2025 survey; the
+interactive-app report; this pair). The survey entry remains the usable one; this pair adds
+only the rewriting cluster, 2508.01483, and the mixture-cooldown idea. Search drift into
+fine-tuning is the dominant failure here, as with the SciSpace batch.
