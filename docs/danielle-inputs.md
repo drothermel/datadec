@@ -1875,4 +1875,5 @@ transfer to features compared across rows — Danielle's intuition holds there.
 > Is this correct?
 
 Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
-("Pruned feature set and Danielle's normalisation plan"); answer to follow.
+("Pruned feature set and Danielle's normalisation plan"), with the answer (signed-log for
+diffs; slopes/R² untransformed; optional log10 of learning rates) and intake notes.

@@ -667,7 +667,7 @@ row-wise functions of (slope, std_err, n) with n fixed per window — and `std_e
 *are* redundant across rows only if Σ(xᵢ − x̄)² is constant per window, which it is for a
 fixed sampling grid.
 
-### 2025-07 — Pruned feature set and Danielle's normalisation plan (her statement; answer pending)
+### 2025-07 — Pruned feature set and Danielle's normalisation plan
 
 **Pruned set (67 columns).** Per window (`warmup_`, `early_lr_decay_`, `full_early_`):
 `num_steps`, `first_val`, `last_val`, `val_first_last_diff`, `val_first_last_slope`, and for
@@ -699,6 +699,23 @@ The perplexity-vs-`log1p` slip from the previous answer has propagated: for perp
 levels (`first_val`, `last_val`, `window_mean`) plain `log` is the natural transform;
 `log1p` is harmless for ppl ≫ 1 but muddles the log-log slope semantics if applied before
 fitting.
+
+**Answer (condensed).** "Almost perfect" with two tweaks. (1) `is_mixed_dataset` as 0/1
+numeric. (2) Leave the listed hyper-parameters and percentages as is; optionally `log10`
+the learning rates if they span >1 order of magnitude. (3) `log1p` the nine count-like
+columns. (4) Perplexity-scale statistics: raw levels (`*_first_val`, `*_last_val`,
+`*_window_mean`) → `log1p` → bucket z-score; `*_val_first_last_diff` → **signed log**
+`sign(x)·log1p(|x|)` → bucket z-score; `*_slope` → no transform, bucket z-score; `*_r_squared`
+→ nothing; `*_window_std` → `log1p` → bucket z-score. Checklist: no inf/NaN beyond allowed;
+≤ 5% of off-diagonal |corr| > 0.95; roughly bell-shaped transformed columns; only
+`is_mixed_dataset` in `categorical_feature` if marked.
+
+*Intake notes on the answer.* It resolves three of the four items flagged above (slopes
+untransformed; R² untouched; signed diff) but still does not assign `warmup_perc`,
+`quality_filter_strength`, `num_sources_mixed`, `educational_content_score`, nor drop the
+duplicate `total_tokens_billions`; and it keeps `log1p` for perplexity levels (harmless
+for ppl ≫ 1, but then the `xlogylog` slopes — fit on `log` — and the `log1p`-transformed
+levels are on slightly different transforms; unify to plain `log` for perplexity).
 
 ## Open questions
 
