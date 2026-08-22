@@ -1655,3 +1655,21 @@ recipe-family scheme for leave-family-out CV"), with a correction to its family-
 
 Applied: DataDecide link and pillar relevance added to the early-dynamics staging header;
 index row updated.
+
+### Early-dynamics draft review, fourth and fifth responses — 2025-07 (intake 2026-08-22)
+
+> Interesting, it seems that Dolma1.6++, C4, and the Falcon base fold only have a single
+> model. Additionally, I would expect that the hold-out ablations of Dolma1.7 would look
+> different than the base. Considering these would you still argue for the 8 fold approach?
+> Why or why not? I've included the data table screenshot here to make your job searching
+> for reference info easier.
+
+> Perfect, then, considering the model sizes are "4M, 6M, 8M, 10M, 14M, 16M, 20M, 60M, 90M,
+> 150M, 300M, 530M, 750M, 1B" but for all but 1B 2 seeds are only run until 25% whereas
+> only 1 seed makes the full run, how would you recommend I do the expanding window of
+> model sizes?
+
+(Screenshot of the DataDecide recipe table attached.) Routed to:
+[topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
+("Fourth and fifth responses"), with an intake note that the seed-truncation premise
+conflicts with the 2026-08-21 coverage check in open-questions-answered.md.

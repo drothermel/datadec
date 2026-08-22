@@ -175,11 +175,59 @@ wrong as written: three families are single recipes (Dolma 1.6++, C4, Falcon bas
 42 runs each). Test folds that small are fine for a held-out domain but their ranking
 metrics will be noisy — pair with the bootstrap CIs from the first review.
 
+## 2025-07 — Fourth and fifth responses: singleton folds; expanding-window over sizes
+
+**Danielle's pushback on the family scheme.** Dolma 1.6++, C4, and Falcon base folds hold a
+single recipe; and the Dolma 1.7 ablations would plausibly look different from the base —
+"would you still argue for the 8-fold approach?"
+
+**Response (near-verbatim, condensed).** Keeps 8 folds for the first pass: every held-out
+fold is "a recognisably different data-provenance shift" and still yields ≈ 42 evaluation
+runs (14 sizes × 3 seeds), "enough to compute rank-correlation or decision-accuracy with low
+variance" (claims NDCG std ≈ 0.01 on pilot runs — unverified). Singletons test distinct
+shifts: Dolma 1.6++ = same lineage, more sources (positive heterogeneity shift); C4 =
+older, lightly filtered crawl; Falcon = strict dedup/filter (implicit data-quality prior).
+Grouping the Dolma 1.7 ablations with the base is "fine for v0": they differ by *removing*
+one slice over an identical crawl/dedup/topic mix, so the shift is "missing a modality"
+rather than an unseen pipeline; promote an ablation to its own fold later if the model
+struggles on it. Collapse to 6 folds (C4 + Dolma 1.6++; Falcon + Falcon-CC) only if
+wall-time matters or singleton-fold metrics are unstable (e.g. Spearman ρ ±0.15). Split to
+10 folds (base + each ablation) if the question is which missing slice hurts predictability
+most. Staged plan: run 8, inspect per-fold variance, then decide.
+
+**Danielle's second question.** Given sizes 4M–1B and — as she understood it then — "for all
+but 1B, 2 seeds are only run until 25% whereas only 1 seed makes the full run," how to do
+the expanding window over model sizes?
+
+**Response (near-verbatim, condensed).** Treat truncated seeds as right-censored. (1) Build a
+*canonical-seed* dataset: one row per (recipe, size) using only the seed that ran to 100% →
+25 × 14 = 350 rows per metric; early-window features averaged across all seeds where they
+exist; target = the canonical seed's true final metric. (2) Expanding windows: size ladder
+[4, 6, 8, 10, 14, 16, 20, 60, 90, 150, 300, 530, 750, 1000]M; S_max ∈ {20, 60, 90, 150, 300,
+530, 750}; train = all rows with size ≤ S_max across all recipes; test = size > S_max,
+**reported per test size** to draw "performance vs. held-out size." Start at 20M because
+sub-10M models rarely expose sharp optimisation issues and mainly inflate the train set.
+(3) 1B's three full seeds: treat as independent test rows (v0) or average. (4) Truncated
+seeds: reuse as features, skip as labels until a "predict 25% → 25%" or censored-regression
+phase. (5) Sketch: mark `full_run = tokens_trained ≥ max_tokens`; pick the canonical row per
+group; loop over windows; per-size metrics. Headline shape: "with only models up to 20M we
+already predict the 300M model within ±Z%, and adding 60M cuts that error in half."
+
+*Intake note (2026-08-22).* The seed-truncation premise should be re-checked before reuse:
+`../../open-questions-answered.md` (2026-08-21) records the aggregate OLMES table as 25
+recipes × **3 seeds at every size**, and instance-level tables with 3 seeds at 150M–1B and 1
+seed below 150M (and 750M's aggregate table truncated at step 26,250 while its instance
+table runs to 63,599). If the three-seeds-to-completion reading holds, the canonical-seed
+construction is unnecessary and the expanding window can use all seeds as rows — with the
+(recipe, size, seed) split rule from the second review.
+
 ## Open questions
 
 - Is this still live (July 2025 draft; DataDecide scaling-law baselines have since been
   published by the DataDecide team — the "does early dynamics beat scaling-law
   extrapolation" comparison may now have a published answer to position against).
+- Seed coverage: reconcile the July-2025 "only one seed runs to completion" premise with
+  the 2026-08-21 finding of 3 seeds at every size in the aggregate table.
 - Whether the target should be the annealed (`ANN`) readout rather than the raw final
   checkpoint.
 - Promote, absorb into `TINY` as an option, or archive.
