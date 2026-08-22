@@ -2877,6 +2877,20 @@ Applied: demoted in [topics/reference/code-compression-literature.md](topics/ref
 the topics README row, and the bundle's `INDEX.md`; recorded as checked-and-unrelated so
 it is not re-flagged.
 
+### 2026-08-22 — SciSpace paper summary: Mixture of Parrots
+
+> I want you to summarize this paper's key findings.
+> https://proceedings.iclr.cc/paper_files/paper/2025/file/5bc3356e0fa1753fff7e8d6628e71b22-Paper-Conference.pdf
+
+Applied: `INDEX.md` in `~/drotherm/data/convo-artifacts/2026/scispace-summarize-mixture-of-parrots/` (full-text markdown of the paper + the agent summary,
+noted as truncated at its start).
+
+Routed to: [topics/reference/moe-literature.md](topics/reference/moe-literature.md)
+(dated entry: claims, why it matters for PART/MSUITE) and a dated note in
+[potential-projs/moe-partitions.md](potential-projs/moe-partitions.md) §4 (the citation
+behind the "mixture of parrots" line; mechanism for the reasoning null; the
+knowledge-vs-reasoning decomposition as the comparison to reproduce on the sweep).
+
 ### Post-intake decisions — 2026-08-22 (data-layer conversation)
 
 > 1. I think data-card/ validation work should be its own project doc, so b as you say.

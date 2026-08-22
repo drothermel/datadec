@@ -10,6 +10,47 @@ the textbook non-identifiable latent for the identifiability framing.
 
 ---
 
+## 2026-08-22 — Mixture of Parrots (Jelassi et al., ICLR 2025): experts buy memorization, not reasoning
+
+**Danielle's prompt (verbatim):**
+
+> I want you to summarize this paper's key findings.
+> https://proceedings.iclr.cc/paper_files/paper/2025/file/5bc3356e0fa1753fff7e8d6628e71b22-Paper-Conference.pdf
+
+Artifacts: `~/drotherm/data/convo-artifacts/2026/scispace-summarize-mixture-of-parrots/` — the paper's full text as markdown and the agent summary (truncated at
+its start); `INDEX.md` inside.
+
+**Claims (from the agent summary and the paper abstract in the bundle):**
+
+- *Theory:* there exist graph problems (e.g. path connectivity) that no number of
+  experts of a given width can solve, while a dense model of slightly larger width
+  solves them easily; conversely, for memorization, total parameter count (not active)
+  determines storage capacity, so a sparse model memorizes N sequences with fewer active
+  parameters by spreading storage across experts.
+- *Synthetic:* on graph problems more experts do not help but wider dense models do; on
+  closed-book retrieval (memorizing associations) MoEs beat dense models at equal active
+  parameters and improve with expert count.
+- *Pretrained (65B tokens, FineWeb-edu / Cosmopedia / Wikipedia):* on world-knowledge
+  benchmarks (TriviaQA, Natural Questions) MoEs with ~18M active parameters nearly match
+  much larger dense models and scale with expert count; on GSM8K / MATH / ARC, adding
+  experts gives no consistent gain while adding active parameters does.
+- The title references the "stochastic parrots" critique: expert scaling makes better
+  parrots, not better thinkers.
+
+**Why it is here.** This is the concrete citation for "the 'mixture of parrots' line"
+already invoked in `../../potential-projs/moe-partitions.md` §4 (the "why does total
+capacity keep helping at extreme sparsity?" analysis): decompose total-parameter gains
+by eval type (memorization-heavy vs. reasoning-heavy; per-token by frequency band). The
+paper's own dense-vs-MoE pretraining series at fixed active parameters is the template
+for that decomposition, and its theorem gives the reasoning-side null a mechanism
+(width-bounded expert circuits) rather than just an empirical pattern. Also relevant to
+MSUITE's "does the data choose the experts" question: if experts are storage, recipe
+differences should show up as *what* gets stored, which is the routing-taxonomy reading.
+
+**Intake notes.** Summary figures as the agent reported; the full text is on disk for
+verification. The pasted summary is missing its first two sections (truncated at
+source, not in transcription).
+
 ## 2026-08-18 — MoE as a new observable channel at 20–50M active (from the Research Trajectory page)
 
 Prompt context (Danielle): MoE models do something at 20–50M active parameters, so the

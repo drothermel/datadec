@@ -117,6 +117,20 @@ Dated, attributed-by-date notes from external review conversations, recorded for
 consolidation — not decisions. Only notes about this project are kept here. Related-work
 claims in quoted text are unverified.
 
+### 2026-08-22 — the "mixture of parrots" line, now with its citation
+
+The hypothesis named below ("expert capacity buys memorization more than reasoning") is
+Jelassi et al., *Mixture of Parrots: Experts Improve Memorization More Than Reasoning*,
+ICLR 2025 (record and full text pointer in `../topics/reference/moe-literature.md`).
+Two things it adds to the "why" analysis on the Slicing-and-Dicing grid: (1) a
+mechanism for the reasoning-side null — width-bounded experts provably cannot solve
+certain graph problems that a slightly wider dense model can — so the eval-type
+decomposition has a prediction, not just a pattern to look for; (2) a template: their
+fixed-active-parameter MoE-vs-dense pretraining series scored on knowledge (TriviaQA,
+NQ) vs. reasoning (GSM8K, MATH, ARC) benchmarks is the comparison to reproduce on the
+sweep's checkpoints, with the sweep's 128× total/active ratio extending their expert
+axis. Unverified beyond the agent summary and abstract.
+
 ### 2026-08-21 — origin: the sweep reread as data, and the routing-as-taxonomy argument
 
 ### The core conceptual gift: MoEs make the featurization bidirectional and nearly free
