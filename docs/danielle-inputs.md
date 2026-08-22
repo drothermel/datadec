@@ -830,3 +830,46 @@ Routed to: new staging topic
 Standing rules recorded in the potential-projs and topics READMEs: the project collection is
 wide; non-DataDecide ideas are first-class; the apex + pillars is one thesis-topic proposal,
 with alternatives created for projects outside it.
+
+### Text-latent code autoencoder, Point 1 (degenerate solution) — conversation 2026-07-11, intake 2026-08-22
+
+Claude presented its pushback points one at a time so Danielle could respond to each.
+
+> Yes. So I guess I have two thoughts on this. The first is that I'm not sure what it means in
+> this case to be a degenerate solution or, like, clearly directly copying the text of the
+> code sample as the output of the encoder and then directly copying it from the output of
+> the encoder to the output of the decoder is a degenerate solution. But from initial
+> experiments and from the way that I've seen LLMs work in general, I don't think that
+> actually will happen. I do think that a lot of the code will end up in the intermediate,
+> like, the output of the encoder, which I'm gonna call the representation. But I think that
+> that's not necessarily a problem depending on what the goal is, um, because I think that,
+> like, yes, you could decide to create a bottleneck by compressing, um, by, like, requiring a
+> minimum, um, or, like, a maximum length for the representation. But, actually, the reason
+> that we introduced bottlenecks originally was because There was nothing to bias the systems
+> towards any solution other than just the degenerate solution. But if you're using LMS as
+> the encoder and the decoder, they're actually incredibly strongly biased away from just
+> copying the input as the output. And so I think that we might not need that and instead
+> could optimize for pass rate, but then also, like, so for maintaining the core
+> functionality information, but then also add other optimization targets, um, for other
+> types of things that we would want. And, like, that could, for example, take… be taking two
+> functions that… I don't know. Like, um, it could be really trying to set up an optimization
+> problem that would make functionally equivalent, but surface form distinct code samples
+> match to the same thing with some type of contrast or learning type of setup, etcetera.
+> So… but I think that, like, in standard machine learning problems, then, yes, you have to
+> worry about the degenerate solution. But I think that assuming that this would behave the
+> same way as the previous version of encoders, auto encoders, is actually a really large
+> assumption.
+
+> Yeah. And I definitely think that, ultimately, it wouldn't make sense. Like, there are
+> practical reasons why you would want to have a smaller representation than the initial
+> code size. So I completely agree that the ultimate solution probably involves some type of
+> actual bottleneck for… if for no other reason than it's, like, storing less data, using
+> less resources, whatever. Um, but I just don't want to over optimize the plan or worry
+> about like, designing around this type of problem if there's no reason to believe that it
+> necessarily will actually be the biggest blocker because this domain, while structurally
+> similar to the domain that we're used to, isn't actually the same. And I think that
+> exploring how same or different it is is actually a big part of why this would be an
+> interesting question. Does that make sense?
+
+Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-code-autoencoder.md)
+("Point 1" section and revised open questions).

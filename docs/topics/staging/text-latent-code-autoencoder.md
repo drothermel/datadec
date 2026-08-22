@@ -4,13 +4,13 @@
 program synthesis; program pillars served: none), or a parked idea. Gate: pin down the bottleneck constraint on the latent (see
 "The open question" below) before any promotion decision.
 
-Source: an external conversation excerpt, 2026-08-22. Danielle's original prompt was not
-pasted; the setup below is the respondent's playback of it. Related-work claims in the quoted
+Source: an external conversation dated 2026-07-11 (intake 2026-08-22). Danielle's opening
+prompt was not pasted; the setup below is the respondent's playback of it. Related-work claims in the quoted
 material (round-trip correctness, DSPy, OPRO, TextGrad, LLMLingua, gist tokens) are
 **unverified** — treat as leads, not facts.
 ---
 
-## 2026-08-22 — the idea as played back
+## 2026-07-11 — the idea as played back
 
 > You want representation-space benefits (latent dynamics, style manipulation) without weight
 > updates, so you'd build an autoencoder where encoder and decoder are both frozen frontier
@@ -61,12 +61,64 @@ DeepMind, ICML 2024); LLM-as-optimizer frameworks (DSPy, OPRO, TextGrad); prompt
 (LLMLingua); gist tokens (skipped as it involves training). Claimed novelty: "treating the
 optimized intermediate representation itself as a learned latent space."
 
-## The open question
+## 2026-07-11 — Point 1, the degenerate solution (discussed point by point)
 
-What form does the bottleneck take — token budget, fixed schema, syntax restriction — and is
-it verifiable? Everything downstream (whether geometric structure is needed at all, whether
-this is more than a compression trick, whether style survives) depends on it. Secondary:
-single monolithic latent vs. factored schema; how the style and function objectives are
-balanced.
+**Danielle's position.** Pure copy-through is not what frozen LLMs do: "if you're using LMs as
+the encoder and the decoder, they're actually incredibly strongly biased away from just
+copying the input as the output." Much of the code will land in the representation, and
+"that's not necessarily a problem depending on what the goal is." Bottlenecks were
+introduced classically because nothing else biased the system away from identity; here one
+could instead "optimize for pass rate ... but then also add other optimization targets" —
+e.g. a contrastive setup making "functionally equivalent, but surface form distinct code
+samples match to the same thing." "Assuming that this would behave the same way as the
+previous version of ... autoencoders is actually a really large assumption." A smaller
+representation is ultimately desirable for practical reasons (storage, cost), but she does
+not want to design around a failure mode before there is evidence it is the biggest blocker:
+"this domain, while structurally similar to the domain that we're used to, isn't actually the
+same. And I think that exploring how same or different it is is actually a big part of why
+this would be an interesting question."
 
-**Waiting on:** Danielle's answer on the bottleneck; a promotion decision.
+**Response — pushback, then concession (near-verbatim).** "The bias away from copying is a
+default, not a constraint, and the encoder LLM isn't the optimizer — the outer loop is. LLMs
+follow 'transcribe the source verbatim in a fenced block' extremely well, that prompt is
+simple and discoverable, and under pure pass-rate it's the global optimum." Predicted
+equilibrium is not full copying but "the sneakier version: the optimizer converges on 'write a
+spec, plus include the tricky lines verbatim,' and you get pass rate from the smuggled
+fragments while the rest provides the appearance of abstraction. Your unoptimized
+observations don't tell you much about the optimized equilibrium."
+
+On the contrastive idea: "it's not just 'another target,' it's the anti-degeneracy
+mechanism. A verbatim copy is maximally surface-sensitive, so an objective demanding that
+surface-distinct, functionally equivalent programs map to the same representation
+structurally rules out copying rather than merely discouraging it. ... a bottleneck says
+'discard some bits, I don't care which,' while your invariance term says 'discard these
+bits.' The two losses brace each other — pass rate prevents collapse-to-generic, invariance
+prevents copying. Tests even give you a cheap equivalence oracle for generating pairs."
+Operational cost noted: text latents need a similarity metric (LLM judge or embedding
+distance) for the invariance term. Revised claim: "you don't need a bottleneck, you need at
+least one objective that makes copying non-optimal — and you've named one."
+
+**Sharpened research question.** "What you're really asking is whether prompt-space
+optimization is even powerful enough to reach the pathological optima that gradient descent
+reliably finds. The classical degeneracy results implicitly assume an optimizer that can
+realize nearly any function. Yours is an LLM proposing discrete prompt edits — a weak,
+heavily biased search over a tiny subspace. Whether the smuggling equilibrium is reachable
+under that optimizer within a realistic budget is genuinely open, and either answer is a
+finding ... Designing the constraint in from day one forecloses exactly that experiment."
+
+**Instrument, don't design.** "Log a copy-detection signal (n-gram overlap or
+longest-common-substring between input and representation) as the optimizer runs. It costs
+nothing, doesn't shape the solution, and converts 'worry about degeneracy' into 'watch a
+number.'"
+
+## Open questions
+
+- Bottleneck: now framed as *optional* and itself an experimental variable — does
+  prompt-space optimization reach the smuggling equilibrium at all? Track with a
+  copy-detection metric rather than preventing by construction.
+- Contrastive / invariance objective: how to generate surface-distinct functionally
+  equivalent pairs (LLM rewrites + test oracle), and what similarity metric on text latents.
+- Single monolithic latent vs. factored schema; how the style and function objectives are
+  balanced (Points 2+ of the point-by-point discussion pending).
+
+**Waiting on:** the remaining points of the point-by-point discussion; a promotion decision.
