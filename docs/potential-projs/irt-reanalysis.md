@@ -139,6 +139,21 @@ other and can be picked by impact.
 Dated, attributed notes from external review conversations, recorded for consolidation — not
 decisions. Only notes about this project are kept here.
 
+### 2026-08-22 — a staged difficulty recipe from a small-respondent setting, and what transfers
+
+From a conversation about a 4-model × 8-prompt evaluation (record in
+`../topics/reference/estimation-and-calibration-methods.md`, third entry). The staged
+recipe — smoothed pass rate → Rasch → many-facet logistic mixed model with separate
+respondent facets → only then 2PL — is the right order for any first fit here too, with
+DataDecide's facets being recipe, size, seed, and step instead of model and prompt. Two
+transfers worth keeping: (1) the **per-item diagnostic split** — overall difficulty,
+discrimination, facet sensitivity, and "random-looking" items — is the table IRT-8's BoolQ
+autopsy should produce for every task, not just BoolQ; (2) **leave-one-facet-out
+validation** (fit difficulty without one recipe or one size, test whether it predicts the
+held-out facet) is the cheap generalization check for IRT-3's recipe-DIF claims. The
+respondent-count caveat (2PL noisy at 32 respondents) does not bind here — the checkpoint
+pool is thousands — but the same caution applies to any per-recipe or per-size subfit.
+
 ### 2026-08-22 — scoring item embeddings against IRT difficulty without a trained predictor
 
 Danielle's framing (from a separate conversation; record in

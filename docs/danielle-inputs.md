@@ -3246,3 +3246,18 @@ three IDs to the ledger.
 Spearman; two intake caveats on the null); IRT §4 note framing it as a generalization of
 IRT-7 — candidate direction, no ID yet. No ledger rows (only a Columbia IRT web page was
 cited).
+
+### Undated (intake 2026-08-22) — first-pass difficulty estimation from 4 models × 8 prompts
+
+> I want to evaluate the task samples in a data set to get a measure of difficulty. In order
+> to do this I have taken the data samples and evaluated the performance of four different
+> language models with eight different prompts each on the samples. It seems like this
+> should be enough to do at least a first stab at IRT or some form of difficulty estimates
+> on this data. How could I go about doing this?
+
+Routed: third entry in
+[topics/reference/estimation-and-calibration-methods.md](topics/reference/estimation-and-calibration-methods.md)
+(staged recipe: smoothed pass rate → Rasch → many-facet mixed model → 2PL later; per-item
+diagnostic split; leave-one-facet-out validation); IRT §4 note on what transfers to the
+DataDecide fit (facets, the diagnostic table for IRT-8, validation for IRT-3); TLC §4
+pointer since the 4 × 8 shape matches the census. Dataset not named.

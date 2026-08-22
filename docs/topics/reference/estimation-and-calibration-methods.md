@@ -195,3 +195,39 @@ embedding geometry without supervised training."
   explains it; extends IRT-7's clustering of DIF items); `FUNC` / `REC` (the same
   training-free stack scores a *recipe* or *chunk* featurization against a target without
   a learned predictor).
+
+## Undated (intake 2026-08-22) — first-pass item difficulty from a small respondent pool (4 models × 8 prompts)
+
+**Danielle's setup.** A dataset of task samples, each evaluated by four language models
+under eight prompts (32 responses per item); wants a first stab at IRT-style difficulty.
+
+**Response (condensed).** Items = task samples; respondents = model–prompt combinations;
+response = correctness.
+1. *Baseline:* smoothed pass rate p̂_i = (s_i + α)/(n_i + 2α), α = 0.5, difficulty
+   d_i = −logit(p̂_i); bootstrap over model–prompt combinations for intervals.
+2. *Rasch / 1PL:* P(y_ij = 1) = σ(θ_j − b_i); corrects pass rate for respondent strength.
+3. *Many-facet Rasch / logistic mixed model* — the recommended "serious first stab":
+   logit P = μ + α_model + β_prompt + γ_model:prompt − b_sample, or
+   `correct ~ 1 + (1|sample) + (1|model) + (1|prompt) + (1|model:prompt)`; difficulty =
+   −(sample effect). A Bayesian fit gives posterior intervals per item.
+4. *Hold off on 2PL/3PL*: with 32 respondents, item discrimination is noisy without
+   regularization; 3PL only with a reason to model guessing.
+5. *Difficulty is not one thing* — track per item: overall difficulty, discrimination
+   (separates strong from weak systems), prompt sensitivity, model-family sensitivity
+   (DIF), and "random-looking" (noisy/ambiguous). "Hard for everyone" ≠ "prompt-fragile".
+6. *Validation:* leave-one-model-out and leave-one-prompt-out (does estimated difficulty
+   predict the held-out system's outcomes?); bootstrap over respondents; monotonicity of
+   ability vs. items solved; 0/32 and 32/32 items are only "very hard/easy relative to
+   this pool".
+7. Report per item: pass rate, difficulty, interval width, prompt sensitivity, model
+   sensitivity, a note.
+
+**Intake notes.**
+- The respondent pool is the binding constraint here; DataDecide's IRT (`IRT`) has the
+  opposite shape — thousands of checkpoint-respondents, so 2PL is affordable there and the
+  many-facet decomposition becomes recipe × size × seed × step facets rather than
+  model × prompt.
+- The prompt facet is the item-format intervention of IRT-10 seen from the other side:
+  prompt sensitivity per item is a direct estimate of "format-limited" vs. "hard".
+- Which dataset this is was not stated; 4 models × 8 prompts matches the TLC/ELI census
+  shape (`TLC`).

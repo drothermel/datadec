@@ -448,6 +448,15 @@ tokens-per-solved-problem metric — the published analog of this project's opti
 accounting). The SciSpace search CSVs on disk are a seeded candidate list for the full
 prior-art pass (still parked).
 
+### 2026-08-22 — item difficulty from the census matrix (pointer)
+
+If the census is run as several models × several prompts per problem, the matrix supports a
+first-pass item-difficulty fit (smoothed pass rate → Rasch → many-facet mixed model with
+model, prompt, and model:prompt effects; per-item prompt-sensitivity vs. hard-for-everyone
+split; leave-one-model/prompt-out validation). Recipe and caveats in
+`../topics/reference/estimation-and-calibration-methods.md` (third entry). This is the
+"stratified training subset" step of the large-n phase (§4 2026-07-11) made formal.
+
 ### 2026-08-22 — estimation design for the census and optimizer loop (from a per-docstring estimation conversation)
 
 A four-turn conversation on estimating a (model, docstring) pass fraction at fixed samples
