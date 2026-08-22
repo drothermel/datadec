@@ -217,3 +217,17 @@ Full text for each: `recipe-featurization.md` §4 (first),
   [../topics/plasticity.md](../topics/plasticity.md),
   [../topics/loss-curve-forecasting.md](../topics/loss-curve-forecasting.md).
 
+### 2026-08-18 — the original hypothesis and where the field has gone (from the Research Trajectory page)
+
+- "The field is converging on exactly your framing — final pretraining loss is an
+  insufficient statistic for downstream success, and the open question is what *else* about
+  the training trajectory (data order, late-window exposure, the 'state of the learner' in
+  plasticity terms) predicts post-training outcomes." Tension to keep in view: Shen et al.
+  (arXiv 2607.16097) find "lower pretraining loss strongly predicts higher post-RL pass@1 at
+  fixed RL compute… though not all of it."
+- DataDecide's own headline (Magnusson et al., ICML 2025): ranking at 150M predicts the best
+  1B recipe ~80% of the time; continuous likelihood proxies make benchmarks >80% predictable
+  at 0.01% of the compute — "the 'at low scale, accuracy is noise, so find a smoother
+  observable' move" that the measurement projects extend. Reference topic:
+  [../topics/pretraining-to-posttraining.md](../topics/pretraining-to-posttraining.md).
+

@@ -239,3 +239,13 @@ program looks like from the inside."
 
 - The decision-reliability frontier is sub B of **P1** and the realized-exposure audit is sub
   B of **P2** in the "four main-conference projects" list (`../portfolio-rankings.md`).
+
+### 2026-08-18 — prior art for the post-training / RL options (from the Research Trajectory page)
+
+- Small-model post-training can regress: "small-scale SFT on Qwen2.5-1.5B can reduce MATH-500
+  accuracy from 23.8% to 18.4% even while eliciting reasoning-style behaviors" (Chen et al.,
+  arXiv 2505.17988); Long-CoT degradation attributed to error accumulation (*Through the
+  Valley*, EMNLP 2025). Spurious-reward gains are Qwen-specific (Shao et al., ICML 2026).
+  "Small benchmarks produce unstable estimates, making multiple seed runs essential"
+  (Hochlehnert et al., COLM 2025) — the replicate-heavy design here is the response. Full
+  list in `docs/topics/pretraining-to-posttraining.md`.

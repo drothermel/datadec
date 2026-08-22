@@ -170,3 +170,12 @@ decisions. Only notes about this project are kept here.
   as the "safer enabler" alternative to the multi-recipe MoE mini-suite for the
   background-cluster track.
 - **Workshop-sized list** and **full-conference list:** not included.
+
+### 2026-08-18 — prior art for WSD-opt-2 (from the Research Trajectory page)
+
+- *Echo Chamber* (Zhao, Meterez et al., COLM 2025) "trains models from scratch on controlled
+  pretraining mixtures, then compares PPO, GRPO, and Expert Iteration across scales" and
+  "argues that controlled small-model proxies can yield real insight into RL behavior" —
+  the nearest existing design to post-training from this suite's branch endpoints. *Similar
+  Models Learn Differently* (arXiv 2607.25063) is the late-pretraining-intervention
+  version. Full list in `docs/topics/pretraining-to-posttraining.md`.

@@ -45,4 +45,4 @@ Absorbed on 2026-08-21 into project docs: `moe-analysis-program` and
 |---|---|
 | [plasticity.md](plasticity.md) | Continual-learning plasticity: papers, cheap training statistics, links to response vectors, modular plasticity, critical periods |
 | [loss-curve-forecasting.md](loss-curve-forecasting.md) | Multi-power law, loss→downstream-accuracy mappings, emergence-as-threshold caveat |
-
+| [pretraining-to-posttraining.md](pretraining-to-posttraining.md) | DataDecide; pretraining choices → post-training outcomes at matched loss; the "post-training did nothing" literature; retrospective on the earlier project |

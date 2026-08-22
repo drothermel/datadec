@@ -314,3 +314,12 @@ decisions. Only notes about this project are kept here.
   iteration before the signal is trusted. Pivot exists (descriptive taxonomy + partial
   decomposition) but is a step down. **Expected impact: high**… **Ceiling: very high** —
   clean signal here is main-venue-strong and the mechanistic anchor for the whole program."
+
+### 2026-08-18 — prior art for TOK-opt-4 (from the Research Trajectory page)
+
+- RLVR characterized as "predominantly support-preserving, entropy-reducing reweighting" (Wu
+  & Choi, ICML 2025 AI-for-Math workshop) that "often improve[s] pass@k at small k but
+  fail[s] to expand the base model's reasoning boundary at large k" (Yue et al., NeurIPS
+  2025), with counterpoints (*The Invisible Leash*, arXiv 2507.14843; arXiv 2506.14245).
+  These are the post-training token regimes the wall bucket would be compared against.
+  Full list in `docs/topics/pretraining-to-posttraining.md`.

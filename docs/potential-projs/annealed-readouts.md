@@ -248,3 +248,16 @@ decisions. Only notes about this project are kept here.
   loss-to-accuracy mapping gets fragile." Loss→accuracy links in use: exponential (Gadre et
   al. 2024), FLP two-stage (Chen et al., arXiv 2410.08527), model ladders (Bhagia et al.).
   See `docs/topics/loss-curve-forecasting.md`.
+
+### 2026-08-18 — prior art and a retrospective for ANN-opt-3 (from the Research Trajectory page)
+
+- The earlier "post-training did nothing" result, read in hindsight: tested at scales where
+  "(a) post-training gains are largely elicitation of capabilities your models didn't yet
+  have, (b) the Qwen confound was silently inflating the literature's baseline
+  expectations, and (c) benchmark noise swamps effect sizes without multi-seed evaluation."
+  Any rerun from annealed endpoints needs multi-seed evaluation and a capability-floor
+  check before the "wall artifact" reading can be tested.
+- Closest published design: *Similar Models Learn Differently: Final-Window Pretraining
+  Shapes Post-Training Beyond SFT* (arXiv 2607.25063) — "models that look similar after SFT
+  diverge under identical post-training depending on late-pretraining data interventions."
+  Full list in `docs/topics/pretraining-to-posttraining.md`.

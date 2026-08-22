@@ -272,3 +272,23 @@ Routed to: reference topics [topics/plasticity.md](topics/plasticity.md) and
 caveat); [topics/nonstationarity-accounting.md](topics/nonstationarity-accounting.md); the
 potential-projs README program-level notes (unifying question).
 
+### Toggle 2 — DataDecide + Pretraining → Post-training
+
+> Then I got sidetracked towards the DataDecide dataset, which seemed like an awesome source
+> of variance which could make trying to predict behavior interesting. Also, the search for
+> useful proxy metrics when trying to evaluate progress at such low scales seemed related.
+> This became a project asking whether pretraining choices impact post-training success,
+> even when pretrained final perf is held constant.
+> The direction hit a wall when our post-training seemingly had no effect despite using
+> standard procedures and datasets. Digging in further, and talking to others, we learned
+> that this wasn't easy to figure out from the way people presented their results, but it
+> also was seen by others. Ultimately we ended that project a bit demoralized.
+
+Routed to: reference topic
+[topics/pretraining-to-posttraining.md](topics/pretraining-to-posttraining.md); §4 notes in
+[potential-projs/annealed-readouts.md](potential-projs/annealed-readouts.md) (ANN-opt-3),
+[potential-projs/wsd-suite.md](potential-projs/wsd-suite.md) (WSD-opt-2),
+[potential-projs/token-movement.md](potential-projs/token-movement.md) (TOK-opt-4),
+[potential-projs/tiny-scale-measurement.md](potential-projs/tiny-scale-measurement.md);
+the potential-projs README program-level notes.
+
