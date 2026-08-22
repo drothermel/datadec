@@ -344,6 +344,27 @@ Dated notes from the external conversation this doc was promoted from, recorded 
 consolidation — not decisions. Related-work claims in quoted text are unverified unless a
 citation is given; Danielle's prompts are logged verbatim in `../danielle-inputs.md`.
 
+### 2026-08-22 — prior-art verdicts and the ICBINB grounding bundle
+
+Danielle ran a SciSpace prior-art search on this project's mechanism (brief, verdicts,
+and artifacts recorded in `../topics/reference/nl-bottleneck-prior-art.md`; the 100-file
+bundle with its own `INDEX.md` at
+`~/drotherm/data/convo-artifacts/2026/scispace-nl-latents-rw-agent-artifacts-zip_cc4d31ce-8970-4a5a-9cd1-248b327a0b06_1787423020/`). Dec 2025 verdict over 378 papers: "no publication matches — appears novel", best
+partials Nano-Capsulator (4/6: no program encoding, no reconstruction), EPiC (3.5/6),
+RLPrompt, Latent Programmer (discrete trained latents), Sentence Bottleneck AE (vector
+bottleneck + frozen decoder), ICAE; Jan 2026 update over 36 new papers: unchanged. A
+third pass grounded each stage of the ICBINB draft in citations and baseline prompts:
+AlphaCodium / AceCoder / Structured CoT (direct generation), Nano-Capsulator + Midolo
+guidelines (compression), Misu et al. Dafny prompt styles + SelfEvolve (reconstruction),
+Prochemy / EPiC / RL4QE / MCTS-OPS (LLM-as-optimizer), plus a meta-prompt with
+JSON execution feedback and T/top-p starting points. For the prior-art gate this
+supersedes the earlier stub list (LLMLingua, gist tokens, DSPy/OPRO/TextGrad remain
+valid adds). Two gate items the bundle does not settle: **GenDLN** (ACL SRW 2025;
+evolutionary joint prompt optimization over stacked frozen LLMs — dismissed by the agent
+in one line, structurally the closest thing to the encoder+decoder harness search) needs
+Danielle's own read; and the agent's bibliography has identifier slips to fix before
+citing. Her ICBINB draft PDF is in the bundle.
+
 ### 2026-08-22 — HumanEvalExplain is a ready-made TLC-1 task set
 
 From a SciSpace search Danielle ran for "all papers that report performance results on

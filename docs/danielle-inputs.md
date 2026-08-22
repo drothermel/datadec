@@ -2750,6 +2750,32 @@ the transcription-shift error flagged, editorializing dropped) and a dated note 
 §4 (HumanEvalExplain as a ready-made TLC-1 task set; the plot must be generated, not
 found).
 
+### 2026-08-22 — SciSpace prior-art search for the NL-bottleneck code autoencoder (three agent sessions)
+
+> this artifact bundle has some of the most important citations, etc for my future work,
+> can you look through the files there and index them clearly so that we can find what
+> we're looking for in the future?
+
+Her search brief (the "exhaustive conceptual and literature-level search" prompt with
+the four-component match criteria and four output requirements) and her scope answers
+("1. Prioritize the exact mechanism … 4. include all optimization methods even if they
+aren't explicitly framed that way as long as they don't involve updating LLM weights")
+are recorded in full in the reference topic. Pasted: the Dec-2025 FINAL VERDICT, the
+Dec/Jan comparison, the Jan-2026 summary, and the ICBINB literature-grounded
+recommendations.
+
+Applied: `INDEX.md` written inside the bundle
+(`~/drotherm/data/convo-artifacts/2026/scispace-nl-latents-rw-agent-artifacts-zip_cc4d31ce-8970-4a5a-9cd1-248b327a0b06_1787423020/`) — six sections: verdict docs in reading order, ICBINB grounding docs, her own
+ICLR-2026 ICBINB draft PDF + the agent's read, deep dives on the three closest papers,
+candidate JSONs, and the ~60 search CSVs grouped by query family; caveats on confidence
+figures and identifier slips.
+
+Routed to: [topics/reference/nl-bottleneck-prior-art.md](topics/reference/nl-bottleneck-prior-art.md)
+(new reference topic) and a dated note in
+[potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+§4 (verdicts; ICBINB grounding supersedes the prior-art stub list; GenDLN flagged for
+her own read; identifier slips).
+
 ### Post-intake decisions — 2026-08-22 (data-layer conversation)
 
 > 1. I think data-card/ validation work should be its own project doc, so b as you say.
