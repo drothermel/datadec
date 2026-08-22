@@ -1643,3 +1643,10 @@ copied to [refs/](refs/README.md).
 Same prompt as the entry above (Danielle asked several similar questions); response
 recorded in [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
 ("Second review: GBDT v0 design details").
+
+### Early-dynamics draft review, third response (recipe families) — 2025-07 (intake 2026-08-22)
+
+Follow-up in the same review sequence (prompt not provided; Danielle notes the Gemini notes
+file cannot be recovered). Recorded in
+[topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md) ("a
+recipe-family scheme for leave-family-out CV"), with a correction to its family-size claim.

@@ -135,6 +135,39 @@ log-time per metric. Fit visualisation: one subplot per fit type overlaid.
 *Timeline claim.* With cached fits, full LOOCV over 25 recipes ≈ 3 CPU-hours; expanding
 window (≤60M → rest) ≈ 2 more. Everything is post-processing — no extra GPU jobs.
 
+## 2025-07 — Third response: a recipe-family scheme for leave-family-out CV
+
+Reusable beyond this proposal (any DataDecide leave-recipe-family-out design: `REC`, `IRT`,
+`ANN`). Verify membership against the repo's authoritative recipe list
+(`named_data_mixes.py`) before use.
+
+**Eight folds by shared provenance** (hold out the family, train on the rest):
+1. Dolma 1.7 family — original + the four ablations (no code, no math/code, no Reddit, no
+   Flan);
+2. Dolma 1.6++;
+3. C4;
+4. FineWeb — Pro + Edu;
+5. Falcon base (RefinedWeb only);
+6. Falcon + CC quality-filtered variants (QC 10%, QC 20%, QC Orig 10%, QC Tulu 10%);
+7. DCLM-Baseline + QC variants (QC 7% FW2, QC 7% FW3, QC FW 3%, QC FW 10%, QC 10%, QC 20%);
+8. λ-mixtures of DCLM and Dolma (25 / 50 / 75%).
+
+Rationale: each family shares crawl / curation pipeline, so "the generalisation gap you
+measure [is] meaningful rather than arbitrary"; the structure also suits a later GP
+comparison (kernels benefit from knowing test points are an unseen domain). Implementation:
+a `family_map` dict; per fold, train = runs whose recipe ∉ family, test = runs ∈ family; the
+rest of the LOOCV loop unchanged.
+
+Variants: **6 folds** — merge Dolma 1.6++ into Dolma; merge FineWeb into Falcon+CC (all
+quality-filtered CC). **4 coarse folds** — (Dolma 1.7 + 1.6++), (CC-derived: C4 + Falcon +
+Falcon-CC), (FineWeb), (DCLM + mixes); "use the coarse scheme only if runtime becomes a
+bottleneck; it hides interesting variation."
+
+*Intake note.* The response's size claim ("the smallest family … FineWeb … ≥ 84 runs") is
+wrong as written: three families are single recipes (Dolma 1.6++, C4, Falcon base → 14 × 3 =
+42 runs each). Test folds that small are fine for a held-out domain but their ranking
+metrics will be noisy — pair with the bootstrap CIs from the first review.
+
 ## Open questions
 
 - Is this still live (July 2025 draft; DataDecide scaling-law baselines have since been
