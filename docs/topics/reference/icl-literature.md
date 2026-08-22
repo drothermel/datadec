@@ -167,3 +167,33 @@ lit-pass leads (mine, unverified): many-shot ICL scaling studies (hundreds to th
 demonstrations in long contexts); n-shot curves in the original GPT-3 evaluations; work
 fitting power laws to ICL accuracy vs. number of shots; ICL-vs-fine-tuning matched-budget
 comparisons; demonstration-ordering and calibration effects on the curve.
+
+**Follow-up — is there an ICL analogue of the "fundamental x-axes" of training?** Danielle's
+framing: scaling laws across tasks or LR schedules are often better computed against
+*cumulative learning rate* than raw tokens — "there's some concept of step size of
+learning" — and other indicators such as weight-norm movement serve as fundamental axes
+of the learning process. "Is there an equivalent set of values within the space of
+in-context learning?" Response (content-free; condensed): number/complexity of examples
+as a "learning rate" analogue; example-to-task distance; response consistency across
+repeated prompts as a "convergence" proxy — **no references**.
+
+Danielle's pushback and proposal: the number of examples "is more similar to either a
+compute metric or a number-of-tokens metric" — she would *not* expect things to scale with
+example count the way they scale with learning-rate changes. Candidate analogy: let n be
+the number of *unique* examples (the data axis) and **how often each example is repeated
+in the prompt** be the step size / learning rate — "you're taking a bigger step on each
+example." Response (content-free; agrees, cites unnamed "early findings" that repetition
+helps models "lock in" patterns) — **no references**.
+
+*Danielle-flagged lead — and a concrete protocol element for ICL-elicitability.* The
+(unique examples) × (repetitions per example) factorial is a cheap, well-defined way to
+ask whether ICL has a separable "data" axis and "step-size" axis like weight-space
+training does: if repeating demonstrations shifts the per-token curve the way a larger LR
+shifts a training curve (faster initial movement, different plateau / instability), the
+analogy has content; if repetition only adds tokens, it doesn't. Other candidate ICL
+x-axes worth recording alongside cumulative LR / weight-norm movement: cumulative
+demonstration tokens; per-token loss movement on the query as the "trajectory"; attention
+mass on demonstrations vs. query; task-vector norm growth across demonstrations
+(`task-vectors.md`); prompt-order entropy. Related empirical literature (mine, unverified):
+ICL as implicit gradient descent / meta-optimisation analyses; demonstration repetition
+and duplication studies; many-shot ICL with repeated vs. unique examples.

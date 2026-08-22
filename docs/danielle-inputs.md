@@ -1936,3 +1936,31 @@ lit pass).
 
 Routed to: [topics/icl-literature.md](topics/reference/icl-literature.md) (follow-up;
 response content-free; Danielle's framing cross-referenced to the ICL-elicitability core).
+
+> Is there an equivalent, like so I guess my understanding of the current research in
+> scaling laws in like fine-tuning and post-training, I guess and pre-training, is that
+> generally you can compute the scaling laws especially between different types of tasks
+> or different types of learning rate schedules based on like the cumulative learning rate
+> over time as opposed to just based on the number of tokens and that makes sense because
+> there's some concept of like step size of learning and there are a few other metrics
+> like the movement of the weight norm or things like this that are identified as like
+> kind of x-axes or indicators of the learning process in some type of like fundamental
+> way. Is there an equivalent set of values within the space of in-context learning?
+
+> Interesting. So is there, I guess, I hear what you're saying that the number of examples
+> could be thought of as like a step size, but I guess I see the number of examples in
+> context learning as being more similar to either a compute metric or a number of tokens
+> metric, like number of examples, and I'm not necessarily sure that I would expect things
+> to scale with the number of examples in the same way that I would expect things to scale
+> with like learning rate changes, and so then I'm trying to think about what would be a
+> good, what would be some other potential analogies, and I guess one of them might be,
+> for example, how often you repeat examples in your prompt, in that like if you
+> considered n to be the number of unique examples, and then your step size or your
+> learning rate or whatever was like how often each of the examples was repeated, then
+> you're arguing maybe you're taking a bigger step on each example. What do you think
+> about that idea, and how does that fall into the current like view of how to think about
+> in context learning?
+
+Routed to: [topics/icl-literature.md](topics/reference/icl-literature.md) (follow-up;
+responses content-free; the unique-examples × repetitions factorial recorded as a
+Danielle-flagged protocol lead for ICL-elicitability).
