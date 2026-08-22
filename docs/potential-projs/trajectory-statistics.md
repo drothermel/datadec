@@ -297,7 +297,7 @@ decisions. Only notes about this project are kept here.
   replicates, item bootstrap) are the between-checkpoint analogue; the token-exposure
   control is the piece to add when the floor is used to judge any intervention that adds
   training. "Movement that doesn't exceed seed-noise-plus-token-exposure isn't movement."
-  See `docs/topics/staging/movement-microscope.md`.
+  See `docs/potential-projs/movement-microscope.md`.
 
 ### 2026-08-18 — origin of this project (from the Research Trajectory page)
 

@@ -60,7 +60,7 @@ multi-power law.
 
 "*Fine-Tuned In-Context Learners for Efficient Adaptation* is by Bornschein, Clare Lyle,
 Razvan Pascanu et al. — the plasticity crowd literally moved into 'ICL vs fine-tuning as
-adaptation' territory." See `../staging/icl-as-posttraining.md`.
+adaptation' territory." See `../../potential-projs/icl-elicitability.md`.
 
 ---
 
@@ -84,7 +84,7 @@ adaptation' territory." See `../staging/icl-as-posttraining.md`.
 - Three live hypotheses for the warm-starting gap — noise memorization, effective learning
   rate, classic plasticity mechanisms — plus mundane candidates (optimizer state reset,
   weight decay, warmup, AdamW). "Nobody has run the factorial that adjudicates them on the
-  original benchmark." Design in `../staging/warmstarting-decomposition.md`.
+  original benchmark." Design in `../../potential-projs/intervention-grid.md`.
 - The diagnostic panel to log at matched training loss: curvature, feature rank, dead
   units, weight norm, gradient-norm ratio.
 

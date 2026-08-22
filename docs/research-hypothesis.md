@@ -9,7 +9,7 @@ replicated small-scale interventions, identifiability-aware comparisons) that se
 real path-dependence from measurement artifact, and use it to find where weight updates
 beat tuned elicitation and how the balance shifts with scale.
 
-This merges the hypothesis below (the evaluation-side half) with the retrospective arc from
+This merges the hypothesis below (the evaluation-side half) with the thesis arc from
 the Research Trajectory page (the training-history half). Three pillars — measurement
 science at academic scale (*how*), non-stationarity accounting (*mechanism*), data
 measurement → training dynamics (*independent variable*) — are laid out in
@@ -141,8 +141,7 @@ marginal effort*, which is comparable regardless of unequal pasts."
 - *Historical base rates*: "a modest meta-analysis of 'how often does the incumbent's
   advantage survive serious re-tuning'" over the field's natural experiments (Rothermel
   2021; Melis 2018; ELR/warm-starting; the Qwen-RLVR corrections) vs. cases where communal
-  investment still failed — "a legitimately publishable piece of the retrospective on its
-  own."
+  investment still failed — "a legitimately publishable piece… on its own" (a workshop-sized paper).
 
 "Budget *reporting* stays (so readers can interpret), while the decision-relevant
 quantities become tuning-response slopes and optimum displacements rather than

@@ -251,7 +251,7 @@ decisions. Only notes about this project are kept here.
   al. 2024), FLP two-stage (Chen et al., arXiv 2410.08527), model ladders (Bhagia et al.).
   See `docs/topics/reference/loss-curve-forecasting.md`.
 
-### 2026-08-18 — prior art and a retrospective for ANN-opt-3 (from the Research Trajectory page)
+### 2026-08-18 — prior art and a hindsight reading for ANN-opt-3 (from the Research Trajectory page)
 
 - The earlier "post-training did nothing" result, read in hindsight: tested at scales where
   "(a) post-training gains are largely elicitation of capabilities your models didn't yet
@@ -273,7 +273,7 @@ decisions. Only notes about this project are kept here.
   family-effect question is testable at annealing cost rather than pretraining cost. If the
   claim is false at your scales, that's also a finding." The decay-branch runner is the same
   instrument with the schedule (rather than data) as the late-window intervention. Full
-  discussion in `docs/topics/staging/posttraining-experiment-design.md`.
+  discussion in `docs/potential-projs/movement-microscope.md`.
 
 ### 2026-08-18 — the river-valley reading of the MPL decay term (from the Research Trajectory page)
 
@@ -346,3 +346,12 @@ redoing some pretraining with WSD?
   averages mismatched experts into mush" — ANN-1 is dense-only as specified; an MoE variant
   requires the expert-alignment step from MoE partitions (PART-4). See
   `docs/topics/reference/moe-literature.md`.
+
+### 2026-08-22 — absorbed from the post-training experiment-design topic: ANN-opt-8
+
+- **ANN-opt-8: Late-window cross-family intervention.** Take OLMo, Pythia, SmolLM, Llama,
+  and Qwen checkpoints and apply controlled late-window continued pretraining — same
+  intervention, same tokens, different lineages — with the decay-branch runner as the
+  instrument. If the final window disproportionately shapes post-training behavior
+  (*Similar Models Learn Differently*), most of the family-effect question is testable at
+  annealing cost; if not at these scales, that is also a finding.

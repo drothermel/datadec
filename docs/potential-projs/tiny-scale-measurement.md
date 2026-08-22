@@ -269,7 +269,7 @@ program looks like from the inside."
   literature clears that bar?" — mostly reanalysis of public results plus modest runs.
 - **Asymmetric design.** Full sweep with seeds only where cheap; expensive budget on "two or
   three confirmation runs testing a *ranking* the cheap tier predicted." Full discussion in
-  `docs/topics/staging/posttraining-experiment-design.md`.
+  `docs/potential-projs/movement-microscope.md`.
 
 ### 2026-08-18 — a gradient-free proxy candidate (from the Research Trajectory page)
 
@@ -278,7 +278,7 @@ program looks like from the inside."
   averaged over prompt orderings and samples, as a candidate predictor of post-training
   movement; and round-trip reconstruction fidelity through a natural-language bottleneck as
   "a capability probe — one that's graded rather than thresholded, unlike pass@1." Full
-  discussion in `docs/topics/staging/icl-as-posttraining.md`.
+  discussion in `docs/potential-projs/icl-elicitability.md`.
 
 ### 2026-08-18 — the scale ladder as an identifiability-vs-scale instrument (from the Research Trajectory page)
 
@@ -309,3 +309,16 @@ program looks like from the inside."
   bias axis. TINY-3's minimum-detectable-effect estimates must therefore come from
   training-side replicates (seeds, trajectory windows) and item bootstraps, not eval
   reruns. See `docs/topics/reference/evaluation-methodology-literature.md`.
+
+### 2026-08-22 — absorbed from the post-training experiment-design topic (now deleted)
+
+Optional directions added to this project: a continuous, low-variance predictor of
+"RL-ability" measured on the base model (NLL on gold reasoning traces, pass@k at large k,
+entropy at decision points, plasticity-style statistics) — "validating a proxy needs far
+fewer runs than detecting an intervention effect"; a power analysis for post-training
+experiments (how many seeds a claimed RLVR delta requires at 150M vs. 1B); tuning-response
+curves (performance vs. search budget per paradigm) as the falsifiable replacement for
+matched-budget comparisons; fully synthetic testbeds where a seed costs minutes. The
+"asymmetric design": full sweep with seeds only where cheap, then two or three confirmation
+runs testing a *ranking* the cheap tier predicted. Original text preserved in
+`potential-projs/movement-microscope.md` §4.

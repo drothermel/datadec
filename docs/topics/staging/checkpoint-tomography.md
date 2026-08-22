@@ -98,7 +98,7 @@ themselves the results."
 
 A reset branch (reset an interface or block, continue briefly, measure recovery cost and the
 barrier to the pre-reset model) has the same shape as the four probes above and shares the
-runner. Staged in [reset-response-stage-probe.md](reset-response-stage-probe.md).
+runner. Staged in [reset-response-stage-probe.md](checkpoint-tomography.md).
 
 ---
 
@@ -110,3 +110,26 @@ estimator; developmental-interpretability work) is "a per-checkpoint scalar meas
 transitions in training" — "degeneracy is the local face of non-identifiability." It is the
 same SGLD-style probe listed under instrument 3 above, now with a stated role: sit
 alongside Fisher trace and barrier onset in the money figure.
+
+---
+
+## 2026-08-22 — absorbed: the reset-response probe (former staging topic)
+
+## 2026-08-22 — the gap
+
+**G7 — Reset-response as a measurement instrument for critical periods** *(medium
+confidence)*. "Critical-period work (TACL, doi:10.1162/tacl_a_00725) intervenes on *data*;
+reset work intervenes on *weights*. Nobody uses 'how fast does the model recover from an
+interface reset at step t' as a scalar probe of where the model is in its training life.
+If recovery cost is stage-dependent it would be a cheap, seed-robust critical-period
+readout." Closest: TACL a_00725; PolyPythias (arXiv 2503.09543). Cost: small training runs
+on PolyPythias checkpoints.
+
+**Why it fits tomography.** The battery already has decay, hot, twin, and data-shifted
+branches; a reset branch (reset an interface or a block, continue briefly, measure recovery
+cost and barrier to the pre-reset model) is the same shape — a short continuation from a
+checkpoint yielding a stage-dependent scalar — and shares the runner. It also gives the
+critical-period timing study a weight-side intervention to set against its data-side
+deficits.
+
+**Waiting on:** whether tomography is promoted; whether to include this as its fifth probe.

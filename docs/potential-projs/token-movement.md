@@ -336,7 +336,7 @@ decisions. Only notes about this project are kept here.
   move and pretraining recipes differ in *how much*." The Stage 1 instruments (per-token
   KL, item flips) are the same measurements applied between pretraining checkpoints; the
   post-training version is the earlier project's data reread through them. Full discussion
-  in `docs/topics/staging/posttraining-experiment-design.md`.
+  in `docs/potential-projs/movement-microscope.md`.
 
 ### 2026-08-18 — origin of Stage 2 (from the Research Trajectory page)
 
@@ -383,7 +383,7 @@ effect buckets, or watching that mapping change over training?
 - Stage 4: "post-train all 25 recipes identically and compare *movement profiles* — not
   outcomes… Recipe-dependent movement profiles at matched final loss would be your original
   thesis, demonstrated below the elicitation threshold." The post-training counterpart of
-  TOK-4's cross-recipe migration. See `docs/topics/staging/movement-microscope.md`.
+  TOK-4's cross-recipe migration. See `docs/potential-projs/movement-microscope.md`.
 
 ### 2026-08-18 — origin of Stage 1 (from the Research Trajectory page)
 

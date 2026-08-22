@@ -42,26 +42,17 @@ directory only holds live, unresolved material.
 
 | Staging topic | What it is waiting on |
 |---|---|
-| [checkpoint-tomography.md](staging/checkpoint-tomography.md) | A prior-art pass (devinterp / WSD follow-up literature) and a decision on whether the four-probe battery becomes the flagship instrument framing wrapping annealed readouts, landscape geometry, token-level movement, and functional featurization |
-| [posttraining-experiment-design.md](staging/posttraining-experiment-design.md) | Whether any of its designs (post-training power analysis / RL-ability proxy; "did SFT move the model in distribution space"; within-reach-task post-training; late-window cross-family intervention) becomes a project or is absorbed into TINY / ANN / TOK |
-| [icl-as-posttraining.md](staging/icl-as-posttraining.md) | Whether ICL curves on existing checkpoints (plus the code-autoencoder reconstruction probe) become a proxy-metric project, or fold into TINY / the post-training design topic |
-| [warmstarting-decomposition.md](staging/warmstarting-decomposition.md) | Whether the Ash & Adams reproduction + factorial becomes a project, now framed as one cell of a unified early-window intervention grid shared with the critical-period reproduction — "Chapter 1" and the retrospective's experimental spine; now carries a six-month one-harness plan with month-2/4/6 checkpoints |
-| [critical-period-timing-study.md](staging/critical-period-timing-study.md) | Whether the sibling-seeds-with-timed-deficits study (Fisher trace + barriers + ICL curves measured together) becomes a project or folds into GEO-opt-5 / warm-starting / ICL |
-| [reset-recovery-dynamics.md](staging/reset-recovery-dynamics.md) | Promotion decision (gaps G1/G2/G10): embedding-reset recovery curve vs. scale/stage/seed; input-vs-output asymmetry; init-in-the-limit |
-| [interface-reset-basin-test.md](staging/interface-reset-basin-test.md) | Promotion decision (gap G3): reset an interface, measure the barrier to the pre-reset solution — or add as GEO-opt-6 |
-| [reset-and-plasticity.md](staging/reset-and-plasticity.md) | Promotion decision (gaps G4/G9): does an interface reset restore plasticity; which layers need resetting; plasticity-injection diagnostic |
-| [frozen-body-transfer-audit.md](staging/frozen-body-transfer-audit.md) | A forward-citation sweep of arXiv 2107.12460, then a promotion decision (gaps G5/G6): LR-tuning re-audit with the reservoir null; elicitation-ceiling measurement of what a frozen interface can reach |
-| [reset-response-stage-probe.md](staging/reset-response-stage-probe.md) | Whether checkpoint tomography is promoted and adds this as its fifth probe (gap G7) |
-| [reset-effects-many-seed-lm.md](staging/reset-effects-many-seed-lm.md) | Whether the Zaidi-style many-seed / tuned-regularization replication stands alone or becomes a requirement in the other reset topics (gap G8) |
-| [movement-microscope.md](staging/movement-microscope.md) | Whether the four-stage post-training movement study (noise floor → calibrated sensitivity → decomposition → recipe movement profiles) becomes a project or folds into token-level movement / post-training design |
+| [checkpoint-tomography.md](staging/checkpoint-tomography.md) | A prior-art pass (devinterp / WSD follow-up literature); then a decision on whether the five-probe battery (decay, hot, twin, data-shifted, reset) becomes the flagship instrument framing or is absorbed into annealed readouts, landscape geometry, token-level movement, functional featurization, and embedding-reset dynamics |
+| [frozen-body-transfer-audit.md](staging/frozen-body-transfer-audit.md) | A forward-citation sweep of arXiv 2107.12460; then a promotion decision (gaps G5/G6). G6 is cross-listed as ICL-opt-5 in ICL elicitability |
 
-Absorbed on 2026-08-21 into project docs: `moe-analysis-program` and
-`moe-routing-as-data-instrument` → `moe-partitions.md` / `moe-movement.md`;
-`moe-recipe-suite` → `moe-recipe-suite.md`; `small-scale-measurement-science` →
-`tiny-scale-measurement.md`; `functional-featurization` → `functional-featurization.md`;
-`beyond-datadecide-data-measurement` → `recipe-featurization.md` §4 and REC-11.
-
-
+Promoted on 2026-08-22 (text moved into the new project docs' §4): `icl-as-posttraining` →
+`../potential-projs/icl-elicitability.md`; `warmstarting-decomposition` +
+`critical-period-timing-study` → `../potential-projs/intervention-grid.md`;
+`movement-microscope` + `posttraining-experiment-design` →
+`../potential-projs/movement-microscope.md` (with items also absorbed into tiny-scale
+measurement and annealed readouts); the four reset topics →
+`../potential-projs/embedding-reset-dynamics.md`; `reset-response-stage-probe` →
+`checkpoint-tomography.md`.
 
 ## Reference (informational accumulators)
 
@@ -69,7 +60,7 @@ Absorbed on 2026-08-21 into project docs: `moe-analysis-program` and
 |---|---|
 | [plasticity.md](reference/plasticity.md) | Continual-learning plasticity: papers, cheap training statistics, links to response vectors, modular plasticity, critical periods |
 | [loss-curve-forecasting.md](reference/loss-curve-forecasting.md) | Multi-power law, loss→downstream-accuracy mappings, emergence-as-threshold caveat |
-| [pretraining-to-posttraining.md](reference/pretraining-to-posttraining.md) | DataDecide; pretraining choices → post-training outcomes at matched loss; the "post-training did nothing" literature; retrospective on the earlier project |
+| [pretraining-to-posttraining.md](reference/pretraining-to-posttraining.md) | DataDecide; pretraining choices → post-training outcomes at matched loss; the "post-training did nothing" literature; hindsight reading of the earlier project |
 | [icl-literature.md](reference/icl-literature.md) | Emergence of in-context learning as a function of pretraining data properties; ICL mechanism assumptions |
 | [task-vectors.md](reference/task-vectors.md) | Weight-space task vectors / task arithmetic / merging (Ilharco; Zhou; Theseus; quantization) and activation-space ICL task vectors (Dong; Yang); the two senses and their gradient link |
 | [landscape-literature.md](reference/landscape-literature.md) | River-valley picture and its measurements; linear mode connectivity, re-basin, feature connectivity, cross-task linearity, neuron identifiability; the comparability-across-basins precedent |

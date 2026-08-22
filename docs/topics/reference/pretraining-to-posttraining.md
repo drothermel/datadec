@@ -85,7 +85,7 @@ observable' move."
   Small Language Models* (EMNLP 2025; arXiv 2506.07712) — "Long CoT Degradation… attributed
   to error accumulation."
 
-**Retrospective reading of the earlier project.** "You were testing 'pretraining shapes
+**Reading the earlier project in hindsight.** "You were testing 'pretraining shapes
 post-training beyond final loss' at scales where (a) post-training gains are largely
 elicitation of capabilities your models didn't yet have, (b) the Qwen confound was silently
 inflating the literature's baseline expectations, and (c) benchmark noise swamps effect
@@ -105,7 +105,7 @@ learner' in plasticity terms) predicts post-training outcomes."
   Efficiently* — graph-pathfinding-style synthetic testbed where "a seed costs minutes";
   causal rather than correlational.
 - TinyZero — "RL visibly works at 0.5–3B on countdown and simple arithmetic."
-- The design alternatives themselves are in `../staging/posttraining-experiment-design.md`.
+- The design alternatives themselves are in `../../potential-projs/movement-microscope.md`.
 
 ---
 
@@ -116,7 +116,7 @@ learner' in plasticity terms) predicts post-training outcomes."
   in-context learning without parameter updates."
 - Bornschein, Lyle, Pascanu et al., *Fine-Tuned In-Context Learners for Efficient Adaptation*
   — "prompt-based methods excel in few-shot scenarios but their effectiveness plateaus as
-  more data becomes available." Design consequence in `../staging/icl-as-posttraining.md`.
+  more data becomes available." Design consequence in `../../potential-projs/icl-elicitability.md`.
 
 ---
 

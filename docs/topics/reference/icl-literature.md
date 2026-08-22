@@ -4,7 +4,7 @@
 and quoted close to verbatim; related-work claims are unverified unless a citation is given.
 
 Why it matters here: ICL is the candidate gradient-free "post-training" stage
-(`../staging/icl-as-posttraining.md`), and the emergence-of-ICL literature already contains the
+(`../../potential-projs/icl-elicitability.md`), and the emergence-of-ICL literature already contains the
 portfolio's thesis in miniature — pretraining data properties change what a model can do
 in context even at similar training loss.
 

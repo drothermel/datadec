@@ -1,26 +1,125 @@
-# ICL as the post-training stage — gradient-free elicitation probes across recipes
+# ICL elicitability — in-context learning as the calibrated post-training stage
 
-**Kind:** staging. Candidate exits: a project doc ("ICL-ability as a cheap predictor of
-finetunability across pretraining recipes": in-context learning curves on existing DataDecide
-checkpoints, validated against post-training movement at larger scale), possibly joined with
-the code-autoencoder reconstruction-fidelity probe; or absorption into tiny-scale measurement
-(proxy metrics) and the post-training experiment-design topic.
+> **Draft scaffolding (2026-08-22).** Promoted from a staging topic. The quoted material in §4
+> is external text; §1–§3 are synthesized scaffolding not yet reviewed by Danielle. Treat them as
+> provisional until this note is removed.
 
-**Danielle-flagged project seeds** (the `→` notes on the Notion toggle; these mark what she
-considers especially relevant to defining a project):
+**Program pillars served:** how (elicitation as a calibrated instrument and strong null), apex
+(the capability-vs-accessibility decomposition; "how much of what the body carries can the
+interface reach"). (Program: `README.md` → Program.)
 
-1. "ICL-ability as a cheap predictor of finetunability across pretraining recipes."
-2. "How compressible code is into natural language *for a given model pair* is a property of
-   their shared representations, so reconstruction fidelity could itself serve as a
-   capability probe, one that's graded rather than thresholded, unlike pass@1."
+**One-line pitch.** Treat in-context learning as a gradient-free post-training stage: an ICL
+"training run" costs one forward pass, so seeds (prompt orderings, samples) are cheap, and
+the outcome is a continuous per-token curve with no benchmark thresholds. Measure ICL
+curves on existing checkpoints at matched loss across recipes, validate the protocol's
+statistics, and use the tuned elicitation ceiling as the null that any weight-update claim
+must beat.
 
-**Question posed (Danielle, 2026-08-18).** Could in-context learning be treated as the
-post-training stage, and features extracted from it or from elicitation? See
-[../danielle-inputs.md](../../danielle-inputs.md).
+IDs: ICL-1–ICL-5, ICL-opt-1–ICL-opt-6.
 
-Related-work claims below are unverified unless a citation is given (see [../README.md](../README.md)).
+**Paper goal.** Workshop-sized first paper from ICL-1–ICL-3 on DataDecide checkpoints
+(recipe differences in ICL-ability at matched loss, either way); a main-conference version
+adds the two-tier vision/LM design and the protocol-validation study.
+
+Compute tiers: **T0** = analysis of published tables only; **T1** = forward passes with
+existing checkpoints; **T1+** = checkpoint merging plus re-running evals; **T2** = short
+continued-training branches or fine-tunes; **T3** = new pretraining runs.
 
 ---
+
+## 1. What the project involves
+
+### Core experiment
+
+1. **ICL curves on existing checkpoints (ICL-1, T1).** For recipes × sizes × checkpoints:
+   per-token loss on the k-th in-context demonstration as a function of k, on held-out task
+   families; averaged over prompt orderings and samples. Report slope and asymptote with
+   confidence bands.
+2. **Matched-loss recipe comparison (ICL-2).** Pair checkpoints across recipes at equal
+   pretraining loss *and* at equal tokens (both controls), and compare ICL curves. Report
+   comparisons conditional on interpolation-barrier height between the paired checkpoints.
+3. **Protocol validation (ICL-3).** Statistics in order of robustness: in-context loss
+   curves; induction-head strength (prefix-matching / copying scores) per checkpoint;
+   task-recognition vs. task-learning decomposition (shuffled-label and format-only
+   controls); task-vector geometry (norm, direction stability across orderings,
+   transferability); ICL–GD similarity only with the untrained-model control. Decide how
+   many orderings/samples a stable estimate needs.
+4. **Elicitation ceiling (ICL-4).** For each model–task, the tuned elicitation ceiling
+   (prompt/format/demo search under a reported budget) as the strong null model; report
+   capability estimates both raw and elicitation-controlled, with the difference as the
+   accessibility delta.
+5. **Transfer test (ICL-5).** Does ICL slope/asymptote at 150M–1B predict post-training
+   movement at larger scale (the proxy claim)?
+
+### Optional directions
+
+- **ICL-opt-1: Two-tier design.** Tiny ViT / sequence-transformer ICL tier (Omniglot/CIFAR
+  style) with many seeds and matched-loss checkpoint pairs to define the protocol; one
+  DataDecide confirmation tier.
+- **ICL-opt-2: Code-autoencoder probe.** Round-trip reconstruction fidelity through a
+  natural-language bottleneck as a graded capability probe.
+- **ICL-opt-3: Critical period for elicitability.** Deficit windows spanning the
+  induction-head transition should damage ICL disproportionately; run on the intervention
+  grid's small transformers.
+- **ICL-opt-4: Function vs. trajectory.** Does an ICL-flattened model's distilled student
+  recover its ICL?
+- **ICL-opt-5: How much of the body can a frozen interface reach?** Reframe the
+  frozen/finetuned gap (Rothermel et al. 2021) as an elicitation-ceiling measurement with
+  modern probes (cross-listed from the frozen-body audit topic, gap G6).
+- **ICL-opt-6: Learned task vectors** instead of extracted ones for the geometry statistic;
+  tasks chosen within the rank limitation.
+
+---
+
+## 2. Doability and impact
+
+### Overall doability: **high** for the core (inference only), **medium** for validation
+
+- Inputs exist (DataDecide checkpoints; held-out task families to build). Each cell is
+  forward passes; the cost driver is orderings × samples × checkpoints.
+- Risks: ICL at 150M may be weak on natural tasks (use synthetic/structured task families
+  with an ability-matched ladder); the ICL-mechanism assumption (induction heads) must be
+  stated; matched-loss pairs need both controls and basin conditioning.
+- Either-way outcomes: recipe differences at matched loss support the apex claim; none is
+  a deflation at this scale, still reportable.
+
+### Per-direction workshop-paper impact
+
+| Direction | Impact | Rationale |
+|-----------|--------|-----------|
+| ICL-1 + ICL-2 | **High** | "Pretraining shapes the *learner*, not just the *snapshot* — demonstrated without a single gradient update." |
+| ICL-3 validation | Medium-high | The measurement theory every later elicitation-controlled claim needs. |
+| ICL-4 ceiling | **High (apex)** | Turns elicitation from confound into control condition. |
+| ICL-5 transfer | High if positive | The proxy metric the field is missing. |
+| ICL-opt-1 two-tier | Medium-high | Full statistical rigor at the cheap tier; a transfer negative is also publishable. |
+| ICL-opt-3 / opt-4 | High, conditional | Connect to the intervention grid's critical-period and distillation arms. |
+| ICL-opt-5 | Medium-high | Directly downstream of Danielle's 2021 paper. |
+
+---
+
+## 3. Infrastructure build sequence
+
+1. **Task-family bank** for ICL (structured/synthetic families with difficulty ladders;
+   held-out splits), versioned.
+2. **ICL-curve runner**: per-token loss over demonstration position for any checkpoint;
+   orderings and sampling controls; cached per (checkpoint, family, ordering seed).
+3. **Protocol statistics**: induction-head scores; task-recognition/learning controls;
+   task-vector extraction/learning; ICL–GD similarity with the untrained control.
+4. **Matched-loss pairing utility** (equal-loss and equal-token pairs; barrier logging).
+5. **Elicitation-ceiling search** with budget accounting.
+6. *(Optional)* Tiny-transformer ICL tier on the intervention-grid harness; code-autoencoder
+   probe; distillation arm hookup.
+
+
+---
+
+## 4. External assessments and origin notes
+
+Dated notes from external conversations and the staging topic this doc was promoted from,
+recorded for consolidation — not decisions. Related-work claims in quoted text are
+unverified unless a citation is given.
+
+### Origin notes — moved from `topics/staging/icl-as-posttraining.md`
 
 ## 2026-08-18 — Response (from the Research Trajectory page)
 
@@ -78,7 +177,7 @@ transformers instead of CNNs for clean comparisons?
 doesn't require language at all.** ICL is the perfect 'post-training' stand-in because it's
 gradient-free, continuous (per-token loss on the k-th in-context example), and cheap enough
 to run with the many seeds your CNN experience taught you that you need for confidence
-bounds." Prior art (Chan et al. 2022; Raventós et al.) in `../reference/icl-literature.md`: "that
+bounds." Prior art (Chan et al. 2022; Raventós et al.) in `../topics/reference/icl-literature.md`: "that
 literature is your hypothesis, already demonstrated in miniature — but it's framed as 'when
 does ICL emerge,' not as 'ICL-ability as a measurable functional of pretraining recipe that
 predicts adaptation at larger scale.' That reframing is your gap."
@@ -114,12 +213,12 @@ predicts adaptation at larger scale.' That reframing is your gap."
 
 ---
 
-## 2026-08-18 — bridge from the warm-starting retrospective
+## 2026-08-18 — bridge from the warm-starting decomposition (intervention grid)
 
 The warm-starting decomposition's final experiment — "a tiny transformer in the same chunked
 protocol" — asks whether "warm-starting damage[s] *elicitability* too, or only accuracy,"
 which "is unasked in all of this literature." Matched-loss ICL is proposed as the next
-chapter of the same question. See [warmstarting-decomposition.md](warmstarting-decomposition.md).
+chapter of the same question. See [warmstarting-decomposition.md](intervention-grid.md).
 
 ---
 
@@ -143,7 +242,7 @@ chapter of the same question. See [warmstarting-decomposition.md](warmstarting-d
 5. "*ICL–GD similarity*, last, and only with the adversarial controls" (the untrained-model
    control that the founding papers skipped).
 
-Paper references for each in [icl-literature.md](../reference/icl-literature.md).
+Paper references for each in [icl-literature.md](../topics/reference/icl-literature.md).
 
 ---
 
@@ -154,7 +253,7 @@ Paper references for each in [icl-literature.md](../reference/icl-literature.md)
 - Learned task vectors (Yang et al., ICLR 2026) are more accurate and position/layer
   flexible than extracted ones, and come with a mechanistic account (OV circuits, key
   heads, linear propagation) — a candidate for the "task-vector geometry" measurement that
-  is less extraction-method-dependent. See `../reference/task-vectors.md`.
+  is less extraction-method-dependent. See `../topics/reference/task-vectors.md`.
 
 ---
 
@@ -178,7 +277,7 @@ the in-context learning curve? Given that induction-head formation is a known sh
 transition early in training, there's a specific, falsifiable prediction: deficits spanning
 that transition should damage ICL disproportionately." Protocol statistics 1–2 (ICL loss
 curves, induction-head strength) are the outcome columns. See
-[critical-period-timing-study.md](critical-period-timing-study.md).
+[critical-period-timing-study.md](intervention-grid.md).
 
 ---
 
@@ -186,7 +285,7 @@ curves, induction-head strength) are the outcome columns. See
 
 "Whether an ICL-flattened model's distilled student recovers its ICL is exactly the test of
 whether elicitability lives in the function or in the trajectory." The distill-into-fresh-
-network arm is specified in [warmstarting-decomposition.md](warmstarting-decomposition.md).
+network arm is specified in [warmstarting-decomposition.md](intervention-grid.md).
 
 ---
 
@@ -208,4 +307,4 @@ elicitation change.'" The tuned elicitation ceiling becomes "the *strong null mo
 every demonstration [that a weight update exceeds it] is a one-sided test against the
 strongest available null." Both readouts — raw and elicitation-controlled — are reported,
 with their difference as the capability-vs-accessibility decomposition. See
-[../research-hypothesis.md](../../research-hypothesis.md).
+[../research-hypothesis.md](../research-hypothesis.md).

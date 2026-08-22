@@ -204,7 +204,7 @@ models share a basin?
   and induction-head / ICL emergence — that "are all claimed to live in the same early
   window — but no one has measured them *together* on one set of runs to check whether
   they're the same event." A timed-deficit sibling-seed study is staged in
-  `docs/topics/staging/critical-period-timing-study.md`; GEO-opt-5 on DataDecide's three seeds is
+  `docs/potential-projs/intervention-grid.md`; GEO-opt-5 on DataDecide's three seeds is
   its free observational version.
 
 ### 2026-08-22 — a ready test from the reinit literature pass
@@ -228,3 +228,12 @@ models share a basin?
   dominated by a few directions and disagree with stitching"). GEO-opt-4's feature-space
   connectivity is the layerwise version of this. See
   `docs/topics/reference/identifiability-literature.md`.
+
+### 2026-08-22 — GEO-opt-6 (cross-listed from embedding-reset dynamics)
+
+- **GEO-opt-6: Is an interface reset basin-preserving?** Reset a model's input embeddings,
+  recover briefly, and measure the barrier (raw and permutation-aligned) and stitching
+  residual back to the pre-reset model; body reset of matched parameter count as the
+  contrast. Layer-wise LMC (arXiv 2307.06966) predicts interface resets are
+  near-barrier-free. PolyPythias as substrate. Primary home: `embedding-reset-dynamics.md`
+  RESET-opt-1.
