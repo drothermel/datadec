@@ -35,7 +35,10 @@ series), mixed prose+code handling (Report 1), neural code embeddings as represe
    — resolved 2026-08-22 from Danielle's memory of the paper: prior work and the nearest
    named framework, but a non-verifiable grading target and only ~3 prompts, no
    optimization loop → cite in §2, not a baseline/method/comparison. Confirm the prompt
-   count against the PDF when writing.
+   count against the PDF when writing. **ShortenDoc** (added 2026-08-22; no identifier
+   yet — docstring compression on HumanEval/EvoEval, ~30% compression keeps or improves
+   pass@1) is the closest existing work to the compression project's NL-side question:
+   locate it, then decide prior art vs. related work the same way.
 2. **Fix the identifier slips** in the ICBINB bibliography (EPiC 2408.11198 not
    2410.14321; AlphaCodium 2401.08500 not 2401.19489; Midolo "2024" carries a 2601
    arXiv number; Nano-Capsulator first author Chuang); locate or discard OverLang. Ledger:
