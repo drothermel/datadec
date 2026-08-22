@@ -2299,3 +2299,19 @@ the response's reading is wrong (negative train−val gap is the stated augmente
 artifact, not leakage; "every removal improves" is the short-budget confound, not a flawed
 baseline), with the design consequence that budget is a hidden axis of the ladder and a
 redo list for when the dataset is found. Gate updated to include locating the dataset.
+
+> it continues:
+
+> These are the results from training CNN vision models on cifar data while removing major
+> advancements from the last many years. The hpms are not well tuned, and the training
+> loss / acc are evaluated on the augemented data.
+>
+> I'm interested in the linearity of the loss curves when you plot them in linear(y) vs
+> log(x) space. Specifically, if you fit a regression line to the full curve, to just the
+> first half too the very beginning, how does the linearity of the loss curve relate to the
+> final validation accruacy? how does it relate to how well tuned the setting and hpms are?
+
+Routed to: the same staging section (her spec recorded as the canonical feature definition
+— linear-y vs. log-x fits on full / first-half / beginning windows, targets final val
+accuracy *and* tuning quality; the response admitted it had no curves, fabricated
+final-value proxies, and concluded anyway — zero evidential weight).
