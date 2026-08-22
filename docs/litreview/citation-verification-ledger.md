@@ -328,3 +328,24 @@ small-scale-metrics v2 bib is The Pile, not lm-eval-harness; `luo2025scaling` th
 WizardCoder; `chang2024effective` there is 2402.04177 (different paper) and
 `bhagia2024scaling` there is 2410.08527 (the FLP paper; model ladders is 2412.04403);
 "The Shannon Paradox … 0.36 BPC" (Zenodo) is not a credible source.
+| 2203.05482 | Model soups (Wortsman … Schmidt) — weight-space ensemble bridge | `moe-literature` (design space) | agent-supplied | MOVE/PART/MSUITE | |
+| 2406.18665 | RouteLLM (Ong … Stoica) — query routing between deployed LLMs | `moe-literature` (design space) | agent-supplied | MOVE/PART/MSUITE | |
+| 2312.02829 | MIMONets (Menet … Rahimi) — packed ensemble via superposition | `moe-literature` (design space) | agent-supplied | MOVE/PART/MSUITE | |
+| 2310.07707 | MatFormer (Devvrit … Jain) — nested Transformer, elastic inference | `moe-literature` (design space) | agent-supplied | MOVE/PART/MSUITE | |
+| 2402.00433 | Weight-Ensembling MoE for multi-task merging (Tang … Tao) | `moe-literature` (design space) | agent-supplied | MOVE/PART/MSUITE | |
+| 2402.08562 | Higher Layers Need More LoRA Experts (Gao … Subrahmanian) | `moe-literature` (design space) | agent-supplied | MOVE/PART/MSUITE | |
+| 2404.15159 | MixLoRA (Li … Tang) — LoRA experts with sparse routing in FFN | `moe-literature` (design space) | agent-supplied | MOVE/PART/MSUITE | |
+| 2312.07987 | SwitchHead (Csordás … Schmidhuber) — MoE attention | `moe-literature` (design space) | agent-supplied | MOVE/PART/MSUITE | |
+| 2404.02258 | Mixture-of-Depths (Raposo … Santoro) | `moe-literature` (design space) | agent-supplied | MOVE/PART/MSUITE | |
+| 2308.00951 | From Sparse to Soft Mixtures of Experts (Puigcerver … Houlsby) | `moe-literature` (design space) | agent-supplied | MOVE/PART/MSUITE | |
+| 2401.06066 | DeepSeekMoE (Dai … Liang) — shared + routed experts | `moe-literature` (design space) | agent-supplied | MOVE/PART/MSUITE | |
+| 2401.04088 | Mixtral of Experts (Jiang … El Sayed) | `moe-literature` (design space) | agent-supplied | MOVE/PART/MSUITE | |
+| 2402.07871 | Scaling Laws for Fine-Grained MoE (Krajewski … Jaszczur) | `moe-literature` (design space) | agent-supplied | MOVE/PART/MSUITE | |
+| 2002.06715 | BatchEnsemble (Wen et al.) — response 1 citation | `moe-literature` (design space) | agent-supplied | MOVE/PART/MSUITE | |
+| 2005.00247 | AdapterFusion (Pfeiffer et al.) — response 1 citation | `moe-literature` (design space) | agent-supplied | MOVE/PART/MSUITE | |
+| 2404.13628 | Mixture of LoRA Experts — response 1 citation | `moe-literature` (design space) | agent-supplied | MOVE/PART/MSUITE | |
+| 2210.05144 | Mixture of Attention Heads — response 1 citation | `moe-literature` (design space) | agent-supplied | MOVE/PART/MSUITE | |
+| 2208.03306 | Branch-Train-Merge (Li et al.) — response 1 citation | `moe-literature` (design space) | agent-supplied | MOVE/PART/MSUITE | |
+| 1701.06538 | Sparsely-Gated MoE (Shazeer et al.) — response 1 citation | `moe-literature` (design space) | agent-supplied | MOVE/PART/MSUITE | |
+| 2209.14375 | "hydra"/shared-trunk citation in response 1 — paper identity unchecked | `moe-literature` (design space) | agent-supplied | MOVE/PART/MSUITE | |
+| 2403.07816 | Branch-Train-MiX — named in response 1, dropped from the list; closer fit for the gated-whole-model cell | `moe-literature` (design space) | Claude-added | MOVE/PART/MSUITE | |

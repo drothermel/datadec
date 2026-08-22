@@ -124,7 +124,7 @@ Grouped by theme (2026-08-22); each topic sits in one group even when several pr
 
 | Reference topic | Theme |
 |---|---|
-| [moe-literature.md](reference/moe-literature.md) | FLAME-MoE, OLMoE router saturation, three phases of load balance, router robustness under continual pretraining, the Myth of Expert Specialization; expert permutation as a non-identifiable latent; MoE comparability warning |
+| [moe-literature.md](reference/moe-literature.md) | Ensemble→MoE design space (routing unit / sharing / selection; placement table; 13-paper 2022+ reading list); FLAME-MoE, OLMoE router saturation, three phases of load balance, router robustness under continual pretraining, the Myth of Expert Specialization; expert permutation as a non-identifiable latent; MoE comparability warning |
 | [layer-looping-literature.md](reference/layer-looping-literature.md) | Layer looping / recursive depth / cross-layer weight tying (Universal Transformers, ALBERT → Relaxed Recursive Transformers, Sparse UT, MoEUT, dynamic layer tying, retrofitted recurrence, recurrent-depth latent reasoning; programmable-computer and in-context-GD theory; adaptive halting); no bundle; intake note on broken citation numbering and the missing 2025 LLM-scale canon (Mixture-of-Recursions, Saunshi et al., Ouro) |
 | [nas-literature.md](reference/nas-literature.md) | NAS state-of-field survey (search space / strategy / performance estimation; training-free and zero-shot proxies; benchmarks NAS-Bench-360, NATS-Bench; LLM-driven and carbon-efficient NAS). Kept for the performance-estimation half: zero-cost proxies (TE-NAS via NTK condition number, NASWOT, Abdelfattah et al.) and learning-curve extrapolation (Domhan; Baker) are the prior-art line EDP must position against; unverified |
 

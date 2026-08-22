@@ -3584,3 +3584,26 @@ Routed to [topics/reference/experiment-tooling.md](topics/reference/experiment-t
 under the OLMES metric entry. No project ID — infrastructure for DCARD/IRT/TINY per-item
 work.
 
+### The design space between dense ensembles and sparse MoE (three turns)
+
+> So on the one hand, there are mixture of experts models, which allow for really, really
+> large numbers of combinations of paths through a model as compared to dense. On the
+> other hand, you have the idea of ensembling the output of multiple completely different
+> dense models as a way to try to combine information. And I'm assuming that there are a
+> bunch of things that fall in between these two approaches of having a token go through
+> all of a few different dense models versus being routed to a subset of the feedforward
+> layers within all the other parts of a model. And so what are the things that lie in
+> between these two settings?
+
+> So for each of those you listed, can you describe where they belong on the 3 axes you
+> described?
+
+> great! now, can you give me a 10-15 paper reading list that covers at least one
+> representative work from each of the cells in this space (since say 2022 at the
+> earliest)?  Give me the paper title, first and last author, and then link to arxiv pdf
+
+Routed to [topics/reference/moe-literature.md](topics/reference/moe-literature.md) (new
+entry: three-axis frame, placement table, 13-paper list, cell-coverage gaps noted) with
+20 agent-supplied + 1 Claude-added ledger rows. No project ID; vocabulary for
+MOVE/PART/MSUITE and the pending "tiny LLMs as components" thread.
+
