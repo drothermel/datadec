@@ -1599,3 +1599,24 @@ Applied: `maqa-oracle-ladder` → [potential-projs/maqa-brute-force-baseline.md]
 (`SHARD`, flagged post-PhD / engineering break). Alternative topic proposals for non-pillar
 projects deferred; `project-approach-principles` stays a reference topic; literature gates
 and the draft-scaffolding review remain parked.
+
+## Mixed topics — intake from 2026-08-22
+
+### Annealing-data literature — undated conversation (response scoped to Oct 2025)
+
+> I really want to better understand the recent research around data quality as it affects
+> LLM annealing, especially changing data from pre-training to the annealing stage.
+> Specifically I'm a 5th year phd student in LLM training, focusing on pretraining and the
+> impact of design choices on post training outcomes. I'm interested in how the order and
+> stage of introducing data impacts how well the model fits it, with an understanding that
+> different labs use their highest quality data during the annealing phase because this
+> somehow improves the overall results.
+> Please do a really extensive and deep exploration of the recent work, eg the last year of
+> research papers, related to the impact of annealing data and protocols on training
+> outcomes. Please focus on academic sources like arxiv and be careful to clearly represent
+> the contents of the papers precisely in your response. After covering the major recent
+> work please provide a high level summary of the recent directions in the field and the
+> direcions that you think will be really actively pursued in the near future.
+
+Routed to: [topics/schedules-and-annealing-literature.md](topics/reference/schedules-and-annealing-literature.md)
+(dated survey section with a relevance note for ANN / WSD / FUNC).
