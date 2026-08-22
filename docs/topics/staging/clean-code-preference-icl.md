@@ -3,7 +3,8 @@
 **Kind:** staging. Candidate exits: a small standalone project doc (practical tooling with a
 measurement angle; program pillars served: none directly — though it is a hands-on instance
 of the elicitation-vs-weight-update question), or absorption into ICL elicitability as an
-applied probe. Gate: Danielle actually running the v0.
+applied probe. Gate: Danielle actually running the v0; a prior-art pass on code-style preference
+datasets before any paper framing.
 
 Source: an external conversation (undated; intake 2026-08-22) following the ICL scaling
 thread in `../reference/icl-literature.md`. The responses were thin; Danielle's statements
@@ -57,6 +58,25 @@ reward-free preference objective).
   a sample, or a judge model calibrated against her labels); consistency across
   rephrasings.
 
+## Undated — Paper potential and prior-art check (same conversation)
+
+**Danielle.** Realised the setup "is something that I could see doing as a preparation for a
+workshop paper as well"; asked whether this specific approach — creating small,
+high-quality coding datasets of good-vs-bad practice — has been done and published
+recently.
+
+**Response (thin; condensed; unverified).** Named **AgentPack** (arXiv 2509.21891): a
+dataset of code changes co-authored by AI agents (Claude Code, Codex) aimed at code-editing
+models; and **KODCODE**: a synthetic dataset of coding questions, solutions, and test cases
+validated by self-verification. Claimed: a small, carefully labelled style/best-practice
+dataset "hasn't been overdone" and could anchor a workshop paper. No search for
+code-style / readability preference datasets specifically was evidenced.
+
+*Intake note.* The two named datasets are about correctness and agent edits, not style
+preference; the prior-art question that actually matters — code *readability/quality*
+preference pairs, LLM-as-judge for code style, clean-code rubrics, code-review datasets —
+was not searched. Add to the gate: a real literature check before any paper framing.
+
 ## Open questions
 
 - Whether to treat the rubric ("clean") as a learned judge or keep it manual.
@@ -64,4 +84,5 @@ reward-free preference objective).
 - Relation to the text-latent code autoencoder (`../../potential-projs/text-latent-code-autoencoder.md`):
   the style field there is exactly what this rubric measures.
 
-**Waiting on:** Danielle running or refining the v0.
+**Waiting on:** Danielle running or refining the v0; a prior-art pass on code-style
+preference datasets if the workshop-paper framing is pursued.

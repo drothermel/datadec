@@ -2026,3 +2026,12 @@ titles + one arXiv ID kept as leads; author/lab attributions flagged as unreliab
 Routed to: new staging topic
 [topics/clean-code-preference-icl.md](topics/staging/clean-code-preference-icl.md);
 closing note in [topics/icl-literature.md](topics/reference/icl-literature.md).
+
+> Interesting. So based on our previous conversation, I guess I'm now realizing that what
+> I'm describing is something that I could see doing as a preparation for a workshop paper
+> as well, which makes me wonder, specifically in the realm of creating small, high-quality
+> coding datasets, whether this specific approach has been done recently and published on.
+
+Routed to: [topics/clean-code-preference-icl.md](topics/staging/clean-code-preference-icl.md)
+("Paper potential and prior-art check"); AgentPack / KODCODE kept as leads, with a note that
+the style-preference prior art was not actually searched.
