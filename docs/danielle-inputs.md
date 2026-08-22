@@ -1184,3 +1184,13 @@ dropped; the baseline constraint is recorded as a project fact.
 
 Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-code-autoencoder.md)
 ("Recap of conclusions; what the large-n phase must output").
+
+### Text-latent code autoencoder — fractional test pass rate — conversation 2026-07-11, intake 2026-08-22
+
+> Interesting, for binary pass rate that makes a lot of sense. And the fact I didn't realize
+> that points to the fact that I also have access to test pass percentage. I feel like
+> binary pass rate is the relevant top line metric but it feels like test pass rate is
+> useful signal too? And that had variance right?
+
+Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-code-autoencoder.md)
+("Fractional test pass rate as a second signal").

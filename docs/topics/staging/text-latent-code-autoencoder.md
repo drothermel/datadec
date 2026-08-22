@@ -532,6 +532,43 @@ that design the diagnosis arm. Nothing there is throwaway."
 Danielle's interests, the lab's compression interest, and the plan for pursuing the
 compression goal first — the natural seed for this topic's project doc if promoted.
 
+## 2026-07-11 — Fractional test pass rate as a second signal
+
+**Danielle's observation.** The binary argument made her realize she also has per-test pass
+percentage: "binary pass rate is the relevant top-line metric but it feels like test pass rate
+is useful signal too? And that had variance right?"
+
+**Response (near-verbatim).**
+
+*Its variance is a real free parameter.* "A fraction on [0,1] isn't mean-determined the way a
+Bernoulli is: at the same mean, its variance can be anything from 0 up to the Bernoulli
+bound p(1−p). Two useful corollaries: your binary power table is the conservative envelope
+(the fractional metric can only be cheaper to estimate at a given mean), and the fractional
+variance becomes one more census output — with the shape mattering more than the number."
+
+*Signal density where binary is flat.* "This directly patches the hole ... at the aggressive
+tier — a flat-zero incumbent giving the optimizer no differential signal. Binary can't
+distinguish 'preserves 80% of behavior' from 'gibberish'; the fraction can. So it's the
+natural screening metric for racing ... and much richer optimizer feedback — 'passes 70% of
+tests, failing empty-input cases' is actionable where '0%' isn't."
+
+*Shaping, not the objective.* "The claim is functional equivalence, which is all-tests.
+Optimizing the fraction directly Goodharts toward representations that nail the main path
+and systematically drop edge cases — high partial credit, zero binary. Also watch the cheap
+floor: a stub with the right signature passes the odd test by luck. Standard reward-shaping
+discipline: guide and screen with the fraction, confirm and report on binary."
+
+*Expect zero-inflated bimodality.* "Refusals, extraction failures, and signature errors all
+land at 0; working code lands near 1. Whether the middle is populated is empirical — the
+census answers it free if you log per-test outcomes (which tests, not just how many) ...
+decompose into P(runnable) × E[fraction | runnable] so compliance failures don't pollute the
+quality signal."
+
+*Harness check first.* "Stock HumanEval `check()` is sequential asserts that abort on first
+failure — if your fraction comes from that, it's 'position of first failing assert'
+(censored), not independent per-test outcomes. Verify the asserts run individually before
+trusting the metric."
+
 ## Open questions
 
 - Bottleneck: now framed as *optional* and itself an experimental variable — does
@@ -568,5 +605,8 @@ compression goal first — the natural seed for this topic's project doc if prom
 - Large-n phase deliverables (six, above): power table; encoder/decoder variance
   decomposition; stratified train subset + frozen held-out; failure-taxonomy base rates;
   baseline Pareto curve with bands; OpenRouter provider stationarity check.
+- Fractional test pass rate: screening/shaping signal only (binary remains the reported
+  objective); log per-test outcomes; decompose P(runnable) × E[fraction | runnable]; verify
+  asserts run independently rather than first-failure-censored.
 
 **Waiting on:** the remaining points of the point-by-point discussion; a promotion decision.
