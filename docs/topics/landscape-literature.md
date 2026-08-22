@@ -113,3 +113,13 @@ linearly connected only after early training stabilizes, and 'critical period' b
 Fisher information is high; after commitment, you travel it. Deficits during the window
 change which river you're in — permanently, because post-commitment plasticity won't take
 you over the walls." See `critical-periods.md` and `critical-period-timing-study.md`.
+
+---
+
+## 2026-08-18 — basin-preserving vs. basin-determining resets
+
+"Resetting the embedding layer is a large jump in parameter space that *doesn't leave the
+basin*, because the body — where the basin identity lives — is untouched… Interface resets
+are basin-preserving; early-training deficits are basin-*determining*. Same operation,
+opposite regimes." Distillation into a fresh network (ITER) is the one reset that leaves the
+basin by construction. See `reinit-and-transfer-literature.md`.

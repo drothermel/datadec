@@ -118,3 +118,25 @@ interpolation-barrier tooling), and its factorial results tell you which axes ar
 before you commit the critical-period grid, which is the bigger design." The critical-period
 half (reproduction template, deconstruction axes, elicitability column) is in
 [critical-period-timing-study.md](critical-period-timing-study.md).
+
+---
+
+## 2026-08-18 — the third founding cell, and a distill-into-fresh-network arm (from the Research Trajectory page)
+
+- ITER (Igl et al., ICLR 2021) gives the intervention grid "its third founding cell": RL's
+  transient policy non-stationarity permanently scarring the representation, alongside
+  Achille's deficits and Ash & Adams' data poverty.
+- "It hands your experiment grid its sharpest diagnostic arm. Across the deficit/warm-start
+  factorial, add a distill-into-fresh-network condition alongside the weight-perturbation
+  fixes. The readout: for each intervention and each outcome (accuracy, ICL curves, the
+  diagnostic panel), does distillation erase the damage? Where it does, the scar was
+  trajectory-borne and basin-bound — and your interpolation-barrier measurements should show
+  the student in a different, cleaner basin. Where it doesn't — where even a fresh student
+  inherits the impairment through the teacher's *outputs* — the deficit corrupted the
+  function itself, not just the weights. That single contrast cleanly splits every
+  permanence result in the grid into 'geometry damage' vs. 'knowledge damage,' which none
+  of the three founding papers could distinguish."
+- Control: "distillation quality is a confound (an imperfect student underperforms for
+  boring reasons), so the ITER arm needs the control the original paper used — distill an
+  *undamaged* teacher too, and measure damage relative to that baseline rather than to the
+  teacher."

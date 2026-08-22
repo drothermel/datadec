@@ -308,4 +308,10 @@ Full text for each: `recipe-featurization.md` §4 (first),
   that reconciles them." Staging topics:
   [../topics/warmstarting-decomposition.md](../topics/warmstarting-decomposition.md),
   [../topics/critical-period-timing-study.md](../topics/critical-period-timing-study.md).
+- Third founding cell (same date): Igl et al.'s ITER (ICLR 2021) — "three communities, one
+  claim — *the training path leaves damage that the final loss doesn't show* — none citing
+  the others' framing." Distilling into a fresh network is "your thesis statement in method
+  form: if final behavior were a sufficient statistic, distilling it into a fresh net could
+  never help." Reference topic:
+  [../topics/reinit-and-transfer-literature.md](../topics/reinit-and-transfer-literature.md).
 

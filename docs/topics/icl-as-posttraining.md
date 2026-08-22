@@ -179,3 +179,11 @@ transition early in training, there's a specific, falsifiable prediction: defici
 that transition should damage ICL disproportionately." Protocol statistics 1–2 (ICL loss
 curves, induction-head strength) are the outcome columns. See
 [critical-period-timing-study.md](critical-period-timing-study.md).
+
+---
+
+## 2026-08-18 — does elicitability live in the function or the trajectory? (from the ITER discussion)
+
+"Whether an ICL-flattened model's distilled student recovers its ICL is exactly the test of
+whether elicitability lives in the function or in the trajectory." The distill-into-fresh-
+network arm is specified in [warmstarting-decomposition.md](warmstarting-decomposition.md).

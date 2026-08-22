@@ -108,3 +108,19 @@ training are stabilizers whose effect on a once-famous gap has never been decomp
 claim that non-stationarity-motivated plasticity fixes are ineffective in the *stationary*
 incremental setting is a reminder that the exogenous/endogenous split matters for which
 fixes apply.
+
+---
+
+## 2026-08-18 — ITER: transient non-stationarity permanently scars the representation (from the Research Trajectory page)
+
+Igl et al. (ICLR 2021): "neural networks exhibit a memory effect where transient
+non-stationarities permanently impact the latent representation and adversely affect
+generalisation" — fixed by periodically distilling into a freshly initialised network. "The
+'memory effect' sentence is the third statement of your thesis phenomenon, from the third
+subfield, in the same two-year window: Achille 2019 (vision: early deficits permanently
+impair), Ash & Adams 2020 (supervised: early data poverty permanently impairs), Igl 2021
+(RL: transient policy non-stationarity permanently scars the representation). Three
+communities, one claim — *the training path leaves damage that the final loss doesn't show*
+— none citing the others' framing." In accounting terms, ITER is a stabilizer that removes
+the non-stationarity's *history* rather than suppressing the non-stationarity itself. See
+`reinit-and-transfer-literature.md`.

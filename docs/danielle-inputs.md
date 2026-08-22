@@ -542,3 +542,43 @@ intervention grid and sequencing); [topics/icl-as-posttraining.md](topics/icl-as
 (the elicitability critical-period prediction); the potential-projs README program-level
 notes (spine and one-sentence pitch).
 
+### Toggle 14 — 2026-08-18 18:12 (embedding-reset hypothesis lineage; ITER)
+
+> Amazing. And then if we go back even further in my research trajectory, then something I
+> was looking at before getting into, like, before knowing about these papers and getting
+> into this line of work that probably motivated it was the idea of whether it was possible
+> to take a pretrained language model and then transfer it to nonlanguage tasks, um, but
+> specifically looking at the fact that back then, this was before that was obviously, yes,
+> possible, um, specifically looking at the fact that back then if you wanted to even, um,
+> change tokenizations or change vocabulary or things like this, then you would generally
+> just train from scratch, or you would do some, like, complex vocabulary merging
+> techniques. And I guess our hypothesis was basically that you could just reset the input
+> layer and maybe the output layer, um, and then just, like, continue training on the same
+> dataset that it was originally trained on, um, to do that swap, um, just with a different
+> structure. So, like, a different embedding layer, etcetera. And very preliminary results
+> demonstrated this was true, that it took a tiny fraction of the full training length to
+> meet or exceed previous perf with the new tokenization or divtionary. though they were
+> definitely not strong enough to, like, believe it. But I think that a lot of the work
+> around random reinitialization suggests that there is something to that and I guess I'm
+> curious what the, like, lineage of that work is. I think it's obviously very tied into the
+> rest of the things we've been talking about because random reinitialization or different
+> types of reinitialization are clearly ways to, like, jump to different spots in the loss
+> landscape. Um, but I'm curious how people handle that now and whether there are still all
+> of these works around increasing vocabulary by doing strange manipulations as opposed to
+> just, like, reinitialization of a subset and continued training.
+>
+> there was also a paper that introduced a method called ITER that handled nonstationarity
+> by doing a re-init and distill phase periodically and the conclusion was basically that
+> this worked great because the learned reps stayed really clean. this too seems quite
+> relevant. can you find that paper and explain the link?
+
+Routed to: new reference topic
+[topics/reinit-and-transfer-literature.md](topics/reinit-and-transfer-literature.md);
+[topics/landscape-literature.md](topics/landscape-literature.md) (basin-preserving vs.
+basin-determining resets); [topics/nonstationarity-accounting.md](topics/nonstationarity-accounting.md)
+(ITER as the third founding statement);
+[topics/warmstarting-decomposition.md](topics/warmstarting-decomposition.md) (the
+distill-into-fresh-network arm and its control);
+[topics/icl-as-posttraining.md](topics/icl-as-posttraining.md) (function-vs-trajectory test
+for elicitability); the potential-projs README program-level notes.
+
