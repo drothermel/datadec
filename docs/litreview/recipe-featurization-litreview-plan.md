@@ -1,6 +1,6 @@
 # Literature review plan: recipe featurization
 
-Status: approved design, 2026-08-21. Companion to [recipe-featurization.md](recipe-featurization.md).
+Status: approved design, 2026-08-21. Companion to [recipe-featurization.md](../potential-projs/recipe-featurization.md).
 
 Goal: a comprehensive, quality-annotated review of the research subdomains behind the recipe-featurization project — foundational papers plus late-2025/2026 work — with every paper verified, cataloged in the local paper corpus, and tiered by relevance, reception, and rigor. No cap on paper count; the set is bounded only by relevance and by search exhaustion.
 

@@ -56,4 +56,6 @@ passes with existing checkpoints; **T1+** = checkpoint merging plus re-running
 evals. Nothing here trains a model.
 
 Resolved gate checks and open questions (with the code used to answer them)
-are logged in [open-questions-answered.md](open-questions-answered.md).
+are logged in [../open-questions-answered.md](../open-questions-answered.md). The
+recipe-featurization literature review (plan and process) lives in
+[../litreview/](../litreview/).

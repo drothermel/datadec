@@ -44,7 +44,7 @@ river-valley mechanism in one figure and yields a principled recipe for low-nois
   pair the fraction of items whose correctness flips, split into up-flips and down-flips;
   compare to the net accuracy change. Quantifies how much flat accuracy hides item-level
   churn, per task, scale, and recipe. Per-instance tables exist for all 25 recipes and 66
-  tasks at 150M–1B with 3 seeds (1 seed below 150M; see `open-questions-answered.md`).
+  tasks at 150M–1B with 3 seeds (1 seed below 150M; see `docs/open-questions-answered.md`).
 - **E1 — Per-token KL between adjacent checkpoints (T1).** Fixed probe corpus (held-out
   slices matching the PPL eval corpora are a natural choice); compute KL(p_t ‖ p_{t+1}) per
   token; summarize distribution and its evolution over training and with `lr_at_step`.
