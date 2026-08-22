@@ -3419,3 +3419,50 @@ addendum (harness shape: `code_to_test` vs. `payload`, result-row schema, per-re
 dictionaries, fixed filenames for external tools, oracle labels, implementation order);
 pointer in the code-compression reference; the agent-written skeleton archived with an
 `INDEX.md` at `~/drotherm/data/convo-artifacts/2026/2026-08-22-lossless-baseline-harness/`.
+
+### Undated (intake 2026-08-22) — compression taxonomy → code correctness ladder → Pro-mode related-work search (four turns)
+
+> Please give me an in depth overview of general lossless and lossy compression algorithms
+> along with a clustering of the different types and purposes and assumptions they
+> leverage. Any that are specially targeted at a specific application
+> (vision/text/code/audio) should be included
+
+> ok, so, lets say that I want to understand the available compression versus correctness
+> tradeoffs for compressing code (eg python). I know that lossless compression should be
+> defacto 100% correctness so then the question is just how far you can push the
+> compression with a lossless algorithm. and then, I would assume lossy approaches that
+> aren't specifically designed for code would have terrible performance if we were
+> measuring something like test case pass rate?
+> And I'm guessing that if I'm fine with any amount of time/compute spent on compression
+> then I can get a much better compression ratio than if I want a fast lossless algorithm?
+
+> Ok, please describe the categories of papers or available libraries you would look for to
+> address this question:
+> I need academic papers to cite related to methods which take in an initial code sample,
+> produce a representation, and then generate code that either (1) exactly program flow of
+> the original code, ignoring any variable/method naming, docstrings, etc or more
+> permissively (2) will pass the same test cases as the original code (functional
+> equivalence).
+> I'm interested in the strongest lossless compressing method (even the very slow ones) and
+> in any standard code compression libraries for something like python. but I'm also very
+> interested in either lossless or lossy code compression approaches that have shown up in
+> academic papers, either using machine learning or otherwise.
+> I've done extensive searching and have mainly found papers around learned embeddings (so
+> no reconstruction performance) or prompt compression (so no code-> prompt part) but I
+> have found very little about code compression specifically that has a reconstruction
+> component and a measure of the compressed intermediate representation.
+> so describe to me how you would perform this search in Pro mode (before I kick you off in
+> pro mode to do so)
+
+> Amazing, please execute that plan, focusing ruthlessly around your identified question:
+> "Does this method actually produce a smaller representation from code and reconstruct
+> code/behavior with a measured correctness criterion?"
+> However, there is no need to run a small empirical baseline suite.
+
+Routed: [topics/reference/code-compression-literature.md](topics/reference/code-compression-literature.md)
+(taxonomy summary; the five-level correctness ladder; the search plan's inclusion rules,
+ten categories, evidence-table schema, per-level leaderboards; the results map — classical
+syntax-directed / AST / bytecode compression, Boffa 2025, program reduction,
+superoptimization, library learning, background-only clusters, Python tooling; the gap
+statement); TLC §4 note (ladder, lossless competitors on the rate axis, TLC as a reducer
+with an NL representation); litreview plan subdomain C seeds; eight ledger rows.

@@ -130,3 +130,135 @@ is archived, never run, at
 `INDEX.md` for caveats. Named packages: `zstandard`, `brotli` (vs. `brotlipy` for custom
 dictionaries — both import as `brotli`), `pyppmd`, `python-minifier`, `bsdiff4`, `xdelta3`;
 Python 3.14's stdlib `compression.zstd` noted.
+
+## 2026-08-22 — General compression taxonomy, the code-correctness ladder, and a Pro-mode related-work search (four turns)
+
+Danielle's four prompts: (1) an in-depth overview of lossless and lossy compression
+families clustered by type, purpose, and assumption, including application-specific
+codecs; (2) her reading of the code case — lossless is de facto 100% correct so the
+question is how far ratio can be pushed; non-code lossy methods should be terrible under
+test-pass; unlimited compression time should buy ratio; (3) describe how a Pro-mode search
+would find papers with *code → representation → regenerated code* and a measured
+correctness criterion (exact program flow modulo names/docstrings, or test equivalence),
+since her own searching found only embeddings and prompt compression; (4) execute it,
+"focusing ruthlessly" on "does this method actually produce a smaller representation from
+code and reconstruct code/behavior with a measured correctness criterion?", no empirical
+suite. All attributions are the respondent's; nothing verified here.
+
+**Turn 1 — taxonomy (kept as a two-line summary).** Compression = model/transform + coder.
+Clusters by exploited assumption: entropy coding (Huffman, arithmetic/range, ANS
+1311.2540); dictionary/LZ (DEFLATE RFC 1951, LZ4/Snappy, zstd RFC 8878 incl. trained
+dictionaries, Brotli RFC 7932, LZMA); decorrelation (delta, PNG filters, BWT);
+context modeling (PPM, PAQ/cmix, LM + arithmetic coding); delta/dedup (VCDIFF RFC 3284,
+rsync, Git packfiles, content-defined chunking); schema-aware (minifiers, AST, columnar);
+transform + quantization (JPEG, AAC, AV1/HEVC/VVC); predictive/residual (DPCM, LPC/CELP,
+motion compensation); perceptual; learned (JPEG AI, neural audio codecs SoundStream
+2107.03312 / EnCodec, video coding for machines); scientific error-bounded (zfp, SZ). Ten
+assumptions that make compression work, ending with "learned prior" — the one TLC's
+decoder supplies.
+
+**Turn 2 — the correctness ladder for code** (the useful artefact of this conversation):
+
+| Level | What must survive | Typical method | Risk |
+|---|---|---|---|
+| byte-exact | the `.py` bytes | gzip/zstd/xz/Brotli | none |
+| source-equivalent | tokens/AST, not formatting/comments | AST/token serialization | tools expecting exact text |
+| runtime-equivalent | behaviour under intended use | strip comments/docstrings, bytecode | Python reflection (`inspect`, `getattr`, `-O`/`-OO` semantics) |
+| test-equivalent | the test suite | test-guided minimization / regeneration | overfits tests |
+| intent-equivalent | "roughly the same task" | LLM regeneration from a spec | unreliable without validation |
+
+Confirmations with caveats: non-code lossy compression is "the wrong mental model" — code
+is a brittle symbolic object, one character flips `authorized`; code-aware losses
+(comments, formatting, local renaming, dead code, AST/bytecode, test-guided regeneration)
+are the real spectrum, each with Python-specific observability traps. Slower lossless does
+buy ratio with diminishing returns; unlimited compute does not beat the information
+content; model/dictionary cost must be accounted; corpus-level beats file-level.
+
+**Turn 3 — the search plan.** Inclusion: code → compact representation → reconstructed
+code; code → smaller equivalent code; code → AST/IR/bytecode → regenerated; code → latent →
+decoded; code → library + residuals; code → reduced program preserving tests. Exclusion:
+embeddings without decoders, prompt compression, summarization, model compression,
+retrieval, embedded instruction-cache compression. Ten search categories (A strong
+lossless baselines; B syntax-directed compression; C tree/grammar compression; D
+α-equivalent representations; E minification/obfuscation; F program reduction; G
+superoptimization/equality saturation; H library learning/MDL; I neural code autoencoders;
+J LLM semantic compression), five passes, an evidence-table schema (input language,
+representation, decoder?, reconstruction target, correctness metric, compression metric,
+does the model count, times, artifact, Python relevance), and **separate leaderboards per
+correctness class** rather than one.
+
+**Turn 4 — results, by cluster (the related-work map).**
+
+*Direct hits: code → compressed representation → reconstruct code/execution.*
+- Katajainen, Penttonen & Teuhola 1986, "Syntax-directed Compression of Program Files" —
+  parse tree + symbol table; 50–60% gain.
+- Evans, "Compression via Guided Parsing" — parser-action stream under CFG predictions;
+  functionally equivalent reconstruction.
+- **JSZap** (Burtscher, Livshits, Sinha, Zorn; MSR) — JavaScript AST as three streams
+  (productions, identifiers, literals); ~10% smaller than gzip; reconstructs code, not
+  formatting. *Nearest modern source-language precedent.*
+- Stork, Haldar & Franz, "Generic Adaptive Syntax-Directed Compression for Mobile Code" —
+  grammar-parameterized AST compression with PPM-style modeling + arithmetic coding;
+  5–50% smaller than the best Java-specific scheme.
+- Franz & Kistler, Slim Binaries / adaptive syntax-tree compression — >2× denser than Java
+  bytecode.
+- Ernst, Evans, Fraser, Lucco & Proebsting 1997, "Code Compression" (PLDI) — wire
+  representation ~21% of SPARC code for gcc.
+- Evans & Fraser, "Bytecode Compression via Profiled Grammar Rewriting" — lcc bytecode
+  199 KB → 58 KB (+11 KB interpreter).
+- Pugh, "Compressing Java Class Files" — 17–41% of gzipped class files; drops debug
+  attributes (lossy w.r.t. metadata, semantics-preserving w.r.t. execution); Pack200 as the
+  deployed, since-removed standard.
+
+*Exact lossless baseline.* Boffa et al. 2025, "On the compressibility of large-scale
+source code datasets" (JSS) — C/C++/Java/JS/**Python** from Software Heritage; 78 TiB → ~3
+TiB (~4%) with context-aware corpus compression; the citation for "exact source
+compression is not gzip".
+
+*Test-/property-preserving reduction (the "passes the same tests" match).* C-Reduce
+(Regehr et al. PLDI 2012; outputs >25× smaller than prior reducers), Hierarchical Delta
+Debugging (Misherghi & Su), Picireny (Python HDD over ANTLR grammars), Perses (syntax-
+guided, ICSE 2018), C-Vise (Python port of C-Reduce), J-Reduce (Java bytecode). Framing:
+"lossy program minimizers whose correctness is an oracle" — no decoder, the reduced
+program *is* the representation.
+
+*Semantics-preserving smaller code at IR/assembly level.* Massalin 1987 superoptimizer;
+STOKE 1211.0557 (stochastic search, test + formal verification); Souper 1711.04422 (SMT-
+backed LLVM IR; 4.4% smaller Clang); egg / equality saturation (e-graphs + extraction).
+Maps to Python only on restricted subsets.
+
+*Library learning / abstraction invention (the ML-adjacent cluster).* DreamCoder
+2006.08381 (background); **Stitch** (Bowers et al.; compressivity metric, e.g. 806 → 604);
+**BABBLE** 2212.04596 (e-graphs + anti-unification); **LILO** 2310.19791 (LLM synthesis +
+Stitch + documentation); **Leroy** 2410.06438 (imperative / Python subset; ~1.04×, slight
+expansion including the library — already on file as TLC's contrast case).
+
+*Background only.* Embedded instruction-stream compression (Lekatsas & Wolf; Lin, Xie &
+Wolf LZW for VLIW) — why "code compression" searches are dominated by it. LLM cluster:
+KoLMogorov Test 2503.13992 (shortest program that outputs a sequence — compression as
+code generation); "Semantic Compression with LLMs" (Gilbert et al., on file); LLMZip and
+LM-as-compressor as probability models, not code reconstruction.
+
+*Python tooling, not citations.* stdlib compression modules; `python-minifier`;
+`pyminifier`/`pyminifier3`; `ast`; **LibCST** (lossless CST — the exact-source
+serialization option); `compileall` / `.pyc`; `zipapp`.
+
+**The gap the search claims (near-verbatim):** no obvious standard Python-specific system
+takes arbitrary Python source, produces a measured compact semantic representation, and
+regenerates α-equivalent or test-equivalent Python with a reconstruction metric; closest
+precedents are syntax-directed/AST compression, JSZap, property-preserving program
+reduction, and learned library abstraction over DSLs or Python subsets.
+
+**Intake notes.**
+- This is the first search in the record that found the *classical* precedents
+  (1986–2010 syntax-directed compression, JSZap, Pack200). The SciSpace passes did not.
+  They belong in TLC §2 beside Leroy: TLC's intermediate is natural language rather than
+  a production stream, and its decoder is stochastic, but the "AST as three entropy-coded
+  streams" design is the strongest *lossless* competitor on the rate axis.
+- Program reduction is the right citation family for TLC's test-relative guarantee — the
+  honest sentence is that TLC is a reducer whose "reduced program" is NL and whose oracle
+  is the same test suite, plus a regeneration step.
+- The evidence-table schema from turn 3 is the one the TLC litreview plan should adopt
+  for subdomain C.
+- Eight new arXiv IDs to the ledger; the 1980s–2000s items have no arXiv IDs and need DOI
+  or venue checks instead.

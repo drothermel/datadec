@@ -346,6 +346,36 @@ Dated notes from the external conversation this doc was promoted from, recorded 
 consolidation — not decisions. Related-work claims in quoted text are unverified unless a
 citation is given; Danielle's prompts are logged verbatim in `../danielle-inputs.md`.
 
+### 2026-08-22 — the correctness ladder and the classical code-compression precedents (Pro-mode search)
+
+A four-turn conversation (record in `../topics/reference/code-compression-literature.md`,
+2026-08-22 taxonomy/search entry; attributions unverified) did what the SciSpace passes
+did not: it found the classical *code → representation → regenerated code* literature.
+Three things to carry into this doc.
+
+1. **A five-level correctness ladder** — byte-exact → source-equivalent (tokens/AST) →
+   runtime-equivalent → test-equivalent → intent-equivalent — with Python's reflective
+   features (`inspect`, `getattr`, `-O`/`-OO`) as the reason "runtime-equivalent" is not
+   safely reachable by transformation alone. TLC's guarantee sits at *test-equivalent*;
+   the plot should label every baseline by its ladder level, and leaderboards are per
+   level, not pooled.
+2. **Lossless competitors on the rate axis**: syntax-directed compression (Katajainen et
+   al. 1986; Evans, guided parsing), **JSZap** (JavaScript AST as production / identifier /
+   literal streams, ~10% under gzip), Stork–Haldar–Franz adaptive AST compression, Pugh's
+   class-file compression, and Boffa et al. 2025 for corpus-scale Python. These are the
+   strongest *lossless* baselines on the rate axis and belong in the suite (§4 baseline
+   note) at Layer 4 — a production-stream AST codec is what "AST compact" should become.
+3. **The honest framing of the lossy side**: program reducers (C-Reduce, HDD/Picireny,
+   Perses) are "lossy program minimizers whose correctness is an oracle"; TLC is the same
+   object with an NL representation, a stochastic regeneration step, and the same test
+   oracle — which is the sentence for §2 that neither "autoencoder" nor "compressor"
+   gets right on its own. Library learning (Stitch, BABBLE, LILO, Leroy) is the
+   abstraction-invention reading of the same rate–distortion plane.
+
+The search's gap statement matches §1's: no Python-specific system produces a measured
+compact semantic representation and regenerates α- or test-equivalent Python with a
+reconstruction metric. Seeds added to the litreview plan, subdomain C.
+
 ### 2026-08-22 — the lossless-baseline suite for the compression-vs-correctness plot (three turns)
 
 Danielle's framing, verbatim in part: she wants to test "standard lossless compression

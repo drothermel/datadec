@@ -285,6 +285,14 @@ Context column = the ~80 characters preceding the ID in the topic, as a memory a
 | 2510.07248 | PA-Tool — adapting tool/schema names to small models | `structured-output-literature` | agent-supplied | ELI, IRT | |
 | 2504.11393 | DataDecide (Magnusson et al. 2025) — metric definitions cited from the HTML version | `datadecide-data-pipeline` | agent-supplied | DCARD, TINY | |
 | 2407.21072 | length-normalization / multiple-choice scoring paper cited for acc_raw vs. per-length accuracies — title unknown | `datadecide-data-pipeline` | agent-supplied | DCARD | |
+| 1311.2540 | Duda — Asymmetric Numeral Systems | `code-compression-literature` | agent-supplied | TLC | |
+| 2107.03312 | SoundStream — neural audio codec | `code-compression-literature` | agent-supplied | TLC | |
+| 1211.0557 | STOKE — stochastic superoptimization | `code-compression-literature` | agent-supplied | TLC | |
+| 1711.04422 | Souper — synthesizing superoptimizer for LLVM IR | `code-compression-literature` | agent-supplied | TLC | |
+| 2006.08381 | DreamCoder | `code-compression-literature` | agent-supplied | TLC | |
+| 2310.19791 | LILO — learning interpretable libraries by compressing and documenting code | `code-compression-literature` | agent-supplied | TLC | |
+| 2212.04596 | babble — library learning with e-graphs and anti-unification | `code-compression-literature` | agent-supplied | TLC | |
+| 2503.13992 | The KoLMogorov Test — compression by code generation | `code-compression-literature` | agent-supplied | TLC | |
 
 Rows: 208 (181 agent-supplied, 27 Claude-added, 5 named without ID).
 
