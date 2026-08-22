@@ -252,3 +252,23 @@ to the IRT, recipe-featurization, and annealed-readouts §4s; P4 to
 [potential-projs/moe-partitions.md](potential-projs/moe-partitions.md); the shared-foundation
 starting recommendation to the potential-projs README program-level notes.
 
+---
+
+## 2026-08-18 — Research Trajectory Notion page (intake by dropdown, started 2026-08-21)
+
+### Toggle 1 — Continual Learning: Plasticity + Multi-Power Laws
+
+> During a previous research project i was interested in the continual learning space and
+> specifically in whether features of a loss curve could be used to estimate or predict
+> certain properties relevant to "success" however that was defined. I started out with the
+> work by Sutton's student and Clare Lyle about plasticity (considering experiments on the
+> scale of CIFAR-10) and somehow ended up at llm pretraining and papers like the Multi-Power
+> law paper that predicts test loss from train loss and downstream accuracy from test loss.
+
+Routed to: reference topics [topics/plasticity.md](topics/plasticity.md) and
+[topics/loss-curve-forecasting.md](topics/loss-curve-forecasting.md);
+[potential-projs/annealed-readouts.md](potential-projs/annealed-readouts.md) §4 and
+[potential-projs/irt-reanalysis.md](potential-projs/irt-reanalysis.md) §4 (loss→accuracy
+caveat); [topics/nonstationarity-accounting.md](topics/nonstationarity-accounting.md); the
+potential-projs README program-level notes (unifying question).
+

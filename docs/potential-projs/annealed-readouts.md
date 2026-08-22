@@ -236,3 +236,15 @@ decisions. Only notes about this project are kept here.
   it's the most obvious-in-retrospect question about DataDecide, WSM/merging papers are
   circling it, and the Ai2 authors could run it internally with better access. Sub A should
   ship early partly as a flag-plant. **Expected impact: high. Ceiling: high.**"
+
+### 2026-08-18 — prior art for ANN-5 and a caveat for ANN-6 (from the Research Trajectory page)
+
+- The multi-power law is Kairong Luo et al., arXiv 2503.12811 (ICLR 2025): "a power law on
+  the sum of learning rates plus extra power-law terms for the decay-induced loss drop;
+  fitted on a few runs, it extrapolates to unseen schedules and even discovers a schedule
+  beating cosine (resembling WSD)."
+- Caveat for flips measured on task metrics: "hard accuracy metrics can look emergent,
+  showing no progress above chance until the loss crosses a threshold, which is where the
+  loss-to-accuracy mapping gets fragile." Loss→accuracy links in use: exponential (Gadre et
+  al. 2024), FLP two-stage (Chen et al., arXiv 2410.08527), model ladders (Bhagia et al.).
+  See `docs/topics/loss-curve-forecasting.md`.

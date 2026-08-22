@@ -229,3 +229,11 @@ pitch is rigor and science rather than large-lab adoption?
   [the data/order project's] intervention analysis and [the schedule audit's]
   flip-significance testing, and shipping it first blunts the scoop exposure where the race
   is tightest."
+
+### 2026-08-18 — prior art for the emergence-as-measurement claim (from the Research Trajectory page)
+
+- The loss→accuracy literature already notes the fragility IRT would formalize: "hard accuracy
+  metrics can look emergent, showing no progress above chance until the loss crosses a
+  threshold, which is where the loss-to-accuracy mapping gets fragile" (contrasting the
+  exponential link of Gadre et al. 2024, the FLP pipeline of Chen et al., and Bhagia et al.'s
+  model ladders). See `docs/topics/loss-curve-forecasting.md`.

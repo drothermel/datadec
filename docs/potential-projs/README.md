@@ -201,3 +201,19 @@ Full text for each: `recipe-featurization.md` §4 (first),
 `tiny-scale-measurement.md` §4 (second),
 `../topics/nonstationarity-accounting.md` (third).
 
+### 2026-08-18 — the unifying question behind the plasticity and scaling-law threads (from the Research Trajectory page)
+
+- "Both are doing the same epistemic move: treating the loss curve (or statistics derivable
+  during training) as a *measurable signal that predicts a latent capability you actually
+  care about*… If you want a 'loss-curve features → success' framing that unifies them, the
+  shared question is: what low-dimensional summary of training dynamics is sufficient to
+  forecast a capability? The plasticity answer so far is 'no single statistic — curvature
+  comes closest' (Lyle), while the pretraining answer is 'a surprisingly simple functional of
+  the LR schedule' (multi-power law) plus a sigmoid/exponential link to accuracy."
+- Core differences worth keeping in view: target of prediction (a property of the *learner*
+  — future adaptability — vs. a property of the *outcome*); methodological flavor
+  (mechanistic/causal interventions with many cheap seeds vs. phenomenological fits where
+  prediction substitutes for experimentation). Reference topics:
+  [../topics/plasticity.md](../topics/plasticity.md),
+  [../topics/loss-curve-forecasting.md](../topics/loss-curve-forecasting.md).
+

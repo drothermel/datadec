@@ -82,3 +82,15 @@ is the least likely one… **Expected impact: medium-high.** **Ceiling: very hig
 suppressed routing adaptivity measurably costs quality, this changes how people train MoEs,
 full stop"). Overlaps with the reroute-vs-rewrite paper ("#8 genuinely needs #7's
 machinery").
+
+---
+
+## 2026-08-18 — LR decay as controlled non-stationarity (from the Research Trajectory page)
+
+"Both [the plasticity and scaling-law communities] are fundamentally about *optimization
+dynamics under non-stationarity*: LR decay in pretraining is itself a controlled
+non-stationarity, and the multi-power law's decay term is essentially modeling how the
+optimizer's response to the schedule shapes the curve — a dynamics question the plasticity
+people would recognize." Regime contrast: "plasticity work assumes an explicitly
+non-stationary data stream (task sequences, RL bootstrapping); scaling-law work assumes a
+single stationary distribution where the only 'non-stationarity' is the LR schedule."
