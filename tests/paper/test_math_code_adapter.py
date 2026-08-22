@@ -193,6 +193,14 @@ def _by_id(results):
     return {result.attempt_id: result for result in results}
 
 
+def _dimension(point, name: str):
+    return next(item.value for item in point.dimensions if item.name == name)
+
+
+def _measure(point, name: str) -> float:
+    return next(item.value for item in point.measures if item.name == name)
+
+
 def test_math_code_default_predicates_and_sensitivities(tmp_path: Path) -> None:
     _write_inputs(tmp_path)
 
@@ -271,7 +279,10 @@ def test_math_code_default_predicates_and_sensitivities(tmp_path: Path) -> None:
     ] == pytest.approx(0.233333)
     assert by_id["dd-0224-default"].computed_value["task_components"][0][
         "decision_accuracy_mean"
-    ] == pytest.approx((0.84 + 0.856667 + 0.843333) / 3)
+    ] == pytest.approx((0.84 + 0.856667) / 2)
+    assert by_id["dd-0226-default"].computed_value["comparisons"][0][
+        "difference"
+    ] == pytest.approx(0.2616665)
     assert by_id["dd-0227-default"].computed_value["task_components"][1][
         "maximum_decision_accuracy"
     ] == pytest.approx(0.773333)
@@ -279,6 +290,128 @@ def test_math_code_default_predicates_and_sensitivities(tmp_path: Path) -> None:
         by_id["dd-0414-default"].computed_value["all_four_bars_near_baseline"] is False
     )
     assert len(series) == 7
+
+
+def test_math_code_row_selections_match_declared_calculation_scope(
+    tmp_path: Path,
+) -> None:
+    _write_inputs(tmp_path)
+    results, _ = _run(tmp_path)
+    by_id = _by_id(results)
+    expected_decision_selections = {
+        "dd-0017-default": (
+            1,
+            ("4M",),
+            ("mbpp",),
+            "primary_score",
+            "e26fb55e177f8536ee07d8a3171d9669b3f50b91bafa08621babe0d5d8cadd71",
+        ),
+        "dd-0018-default": (
+            1,
+            ("4M",),
+            ("codex_humaneval",),
+            "primary_score",
+            "6d55bebee2888498e084084f56690109084c269c1e725092cd3bf1f2202af773",
+        ),
+        "dd-0213-default": (
+            4,
+            ("4M", "60M"),
+            ("mbpp", "codex_humaneval"),
+            "primary_score",
+            "1d623a5a6839f139dfa20ff0bcf5cf645ba29873b312b5096430022052c69e87",
+        ),
+        "dd-0221-default": (
+            4,
+            ("4M", "60M"),
+            ("mbpp", "codex_humaneval"),
+            "primary_score",
+            "1d623a5a6839f139dfa20ff0bcf5cf645ba29873b312b5096430022052c69e87",
+        ),
+        "dd-0222-default": (
+            4,
+            ("4M", "60M"),
+            ("minerva", "gsm8k"),
+            "primary_score",
+            "c3e5af7a03190016a3d4a28ae88f91f9ab9e4e0db847e635f0a14767326a2786",
+        ),
+        "dd-0224-default": (
+            4,
+            ("4M", "60M"),
+            ("mbpp", "codex_humaneval"),
+            "primary_score",
+            "1d623a5a6839f139dfa20ff0bcf5cf645ba29873b312b5096430022052c69e87",
+        ),
+        "dd-0225-default": (
+            4,
+            ("4M", "60M"),
+            ("mbpp", "codex_humaneval"),
+            "primary_score",
+            "1d623a5a6839f139dfa20ff0bcf5cf645ba29873b312b5096430022052c69e87",
+        ),
+        "dd-0226-default": (
+            8,
+            ("4M", "60M"),
+            ("mbpp", "codex_humaneval", "minerva", "gsm8k"),
+            "primary_score",
+            "948a0621fe0e8a1df87e235390688dcdf38299c9a28fda256c10f091b33f980e",
+        ),
+        "dd-0227-default": (
+            4,
+            ("4M", "60M"),
+            ("minerva", "gsm8k"),
+            "logits_per_byte_corr",
+            "ad54018c98320cba3a15b8e30c70d8a2baacd44e56525b4e6dd92f40eceb5a8b",
+        ),
+        "dd-0413-default": (
+            4,
+            ("4M", "60M"),
+            ("mbpp", "codex_humaneval"),
+            "primary_score",
+            "1d623a5a6839f139dfa20ff0bcf5cf645ba29873b312b5096430022052c69e87",
+        ),
+        "dd-0414-default": (
+            4,
+            ("4M", "60M"),
+            ("minerva", "gsm8k"),
+            "primary_score",
+            "c3e5af7a03190016a3d4a28ae88f91f9ab9e4e0db847e635f0a14767326a2786",
+        ),
+    }
+
+    for attempt_id, (
+        count,
+        sizes,
+        tasks,
+        target,
+        key_hash,
+    ) in expected_decision_selections.items():
+        selection = next(
+            item
+            for item in by_id[attempt_id].row_selections
+            if item.logical_table_id == _DECISION_ID
+        )
+        predicates = {item.column: item for item in selection.predicates}
+        assert selection.selected_row_count == count
+        assert predicates["size"].value == sizes
+        assert predicates["task"].value == tasks
+        assert predicates["target_ranking"].value == target
+        assert selection.selected_key_sha256 == key_hash
+        assert "150M" not in json.dumps(by_id[attempt_id].computed_value)
+
+    for attempt_id in ("dd-0213-default", "dd-0225-default"):
+        selection = next(
+            item
+            for item in by_id[attempt_id].row_selections
+            if item.logical_table_id == _MEANS_ID
+        )
+        predicates = {item.column: item for item in selection.predicates}
+        assert selection.selected_row_count == 4
+        assert predicates["size"].value == ("4M", "60M")
+        assert predicates["task"].value == ("mbpp", "codex_humaneval")
+        assert (
+            selection.selected_key_sha256
+            == "76493306f2749d6db194f168133b67411a2b5807877884a2072d53a2157ff881"
+        )
 
 
 def test_math_code_plot_semantics_order_alias_and_limitation(tmp_path: Path) -> None:
@@ -296,27 +429,85 @@ def test_math_code_plot_semantics_order_alias_and_limitation(tmp_path: Path) -> 
         "dd-0414-paper-analog",
     }
     assert {item.id for item in series} == expected_series_ids
-    expected_dimensions = [
-        (task, size, metric, "primary_score")
-        for task in ("minerva", "gsm8k", "mbpp", "codex_humaneval")
-        for size in ("4M", "60M")
-        for metric in ("primary_score", "logits_per_byte_corr")
-    ]
+    expected_scopes = {
+        "dd-0221-paper-analog": (
+            ("mbpp", "codex_humaneval"),
+            ("primary_score", "logits_per_byte_corr"),
+            8,
+        ),
+        "dd-0222-paper-analog": (
+            ("minerva", "gsm8k"),
+            ("primary_score", "logits_per_byte_corr"),
+            8,
+        ),
+        "dd-0224-paper-analog": (
+            ("mbpp", "codex_humaneval"),
+            ("primary_score", "logits_per_byte_corr"),
+            8,
+        ),
+        "dd-0225-paper-analog": (
+            ("mbpp", "codex_humaneval"),
+            ("primary_score", "logits_per_byte_corr"),
+            8,
+        ),
+        "dd-0226-paper-analog": (
+            ("minerva", "gsm8k", "mbpp", "codex_humaneval"),
+            ("primary_score", "logits_per_byte_corr"),
+            16,
+        ),
+        "dd-0413-paper-analog": (
+            ("mbpp", "codex_humaneval"),
+            ("logits_per_byte_corr",),
+            4,
+        ),
+        "dd-0414-paper-analog": (
+            ("minerva", "gsm8k"),
+            ("logits_per_byte_corr",),
+            4,
+        ),
+    }
+    task_indices = {"minerva": 0.0, "gsm8k": 1.0, "mbpp": 2.0, "codex_humaneval": 3.0}
     for item in series:
+        tasks, metrics, point_count = expected_scopes[item.id]
         assert item.dimensions == (
             "task",
             "size",
             "predictor_metric",
             "target_metric",
         )
-        assert item.measures == ("decision_accuracy",)
-        assert len(item.points) == 16
-        assert [
-            tuple(value.value for value in point.dimensions) for point in item.points
-        ] == (expected_dimensions)
+        assert item.measures == ("task_index", "decision_accuracy")
+        assert item.x_axis.measure == "task_index"
+        assert item.y_axis.measure == "decision_accuracy"
+        assert len(item.points) == point_count
+        assert {_dimension(point, "task") for point in item.points} == set(tasks)
+        assert {_dimension(point, "size") for point in item.points} == {"4M", "60M"}
+        assert {_dimension(point, "predictor_metric") for point in item.points} == set(
+            metrics
+        )
+        assert {_dimension(point, "target_metric") for point in item.points} == {
+            "primary_score"
+        }
+        assert all(
+            _measure(point, "task_index") == task_indices[_dimension(point, "task")]
+            for point in item.points
+        )
+        assert {count.name: count.value for count in item.counts} == {
+            "source_rows": len(tasks) * 2,
+            "points": point_count,
+            "tasks": len(tasks),
+            "sizes": 2,
+            "predictor_metrics": len(metrics),
+        }
         assert "Correct Prob unresolved" in item.semantic_kind
-    first_measures = [point.measures[0].value for point in series[0].points[:4]]
-    assert first_measures == pytest.approx([0.356667, 0.526667, 0.563333, 0.533333])
+    assert [
+        _measure(point, "decision_accuracy") for point in series[0].points[:4]
+    ] == pytest.approx([0.406667, 0.84, 0.556667, 0.856667])
+    full_task_surfaces = [
+        item.id
+        for item in series
+        if {_dimension(point, "task") for point in item.points} == set(task_indices)
+    ]
+    assert full_task_surfaces == ["dd-0226-paper-analog"]
     assert "logits_per_byte_corr" in json.dumps(by_id["dd-0225-default"].computed_value)
     assert any(
         "cannot establish recipe separation or a noise floor" in limitation
@@ -414,7 +605,11 @@ def test_math_code_selection_hash_is_order_independent(tmp_path: Path) -> None:
     second_results, _ = _run(tmp_path)
     second = _by_id(second_results)["dd-0221-default"].row_selections[0]
 
-    assert first.selected_row_count == second.selected_row_count == 12
+    assert first.selected_row_count == second.selected_row_count == 4
+    assert (
+        first.selected_key_sha256
+        == "1d623a5a6839f139dfa20ff0bcf5cf645ba29873b312b5096430022052c69e87"
+    )
     assert first.selected_key_sha256 == second.selected_key_sha256
     assert first.local_parquet_sha256 != "0" * 64
     assert len(first.local_parquet_sha256) == 64
@@ -431,8 +626,25 @@ def test_math_code_real_data_smoke_has_all_defaults() -> None:
     defaults = tuple(result for result in results if result.role is AttemptRole.DEFAULT)
     assert len(defaults) == 11
     assert {result.claim_id for result in defaults} == _MATH_CODE_CLAIMS
-    assert all(
-        result.outcome is not ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED
-        for result in defaults
-    )
-    assert len(series) == 7
+    assert {result.claim_id: result.outcome for result in defaults} == {
+        "DD-0017": ValidationOutcome.REPRODUCED,
+        "DD-0018": ValidationOutcome.REPRODUCED,
+        "DD-0213": ValidationOutcome.REPRODUCED,
+        "DD-0221": ValidationOutcome.REPRODUCED,
+        "DD-0222": ValidationOutcome.REPRODUCED,
+        "DD-0224": ValidationOutcome.APPROXIMATELY_REPRODUCED,
+        "DD-0225": ValidationOutcome.DIRECTIONALLY_CONSISTENT,
+        "DD-0226": ValidationOutcome.REPRODUCED,
+        "DD-0227": ValidationOutcome.NOT_REPRODUCED,
+        "DD-0413": ValidationOutcome.REPRODUCED,
+        "DD-0414": ValidationOutcome.NOT_REPRODUCED,
+    }
+    assert {item.id: len(item.points) for item in series} == {
+        "dd-0221-paper-analog": 8,
+        "dd-0222-paper-analog": 8,
+        "dd-0224-paper-analog": 8,
+        "dd-0225-paper-analog": 8,
+        "dd-0226-paper-analog": 16,
+        "dd-0413-paper-analog": 4,
+        "dd-0414-paper-analog": 4,
+    }

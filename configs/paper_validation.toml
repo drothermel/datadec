@@ -1722,7 +1722,7 @@ analysis_id = "math_code"
 inputs = [{ table_id = "new_eval_decision_accuracy", columns = ["size", "task", "target_ranking", "logits_per_byte_corr", "primary_score"] }]
 task_ids = ["mbpp", "codex_humaneval"]
 metric_ids = ["primary_score", "logits_per_byte_corr"]
-model_sizes = ["4M", "60M", "150M"]
+model_sizes = ["4M", "60M"]
 sensitivity_ids = ["dd-0221-size-pointwise"]
 transformation_ids = ["math-code-complete-cube-v1", "math-code-claim-comparison-v1", "math-code-paper-series-v1"]
 comparison_rule_id = "dd-0221-code-proxy-shift-v1"
@@ -1737,7 +1737,7 @@ analysis_id = "math_code"
 inputs = [{ table_id = "new_eval_decision_accuracy", columns = ["size", "task", "target_ranking", "logits_per_byte_corr", "primary_score"] }]
 task_ids = ["minerva", "gsm8k"]
 metric_ids = ["primary_score", "logits_per_byte_corr"]
-model_sizes = ["4M", "60M", "150M"]
+model_sizes = ["4M", "60M"]
 sensitivity_ids = ["dd-0222-size-pointwise"]
 transformation_ids = ["math-code-complete-cube-v1", "math-code-claim-comparison-v1", "math-code-paper-series-v1"]
 comparison_rule_id = "dd-0222-math-near-random-v1"
@@ -1752,7 +1752,7 @@ analysis_id = "math_code"
 inputs = [{ table_id = "new_eval_decision_accuracy", columns = ["size", "task", "target_ranking", "logits_per_byte_corr", "primary_score"] }]
 task_ids = ["mbpp", "codex_humaneval"]
 metric_ids = ["primary_score", "logits_per_byte_corr"]
-model_sizes = ["4M", "60M", "150M"]
+model_sizes = ["4M", "60M"]
 sensitivity_ids = ["dd-0224-comparison-absolute-tolerance-grid-1", "dd-0224-comparison-absolute-tolerance-grid-3"]
 transformation_ids = ["math-code-complete-cube-v1", "math-code-claim-comparison-v1", "math-code-paper-series-v1"]
 comparison_rule_id = "dd-0224-code-approximately-eighty-v1"
@@ -1770,7 +1770,7 @@ inputs = [
 ]
 task_ids = ["mbpp", "codex_humaneval"]
 metric_ids = ["primary_score", "logits_per_byte_corr"]
-model_sizes = ["4M", "60M", "150M"]
+model_sizes = ["4M", "60M"]
 transformation_ids = ["math-code-complete-cube-v1", "math-code-claim-comparison-v1", "math-code-paper-series-v1"]
 comparison_rule_id = "dd-0225-code-continuous-proxy-v1"
 plot_series_ids = ["dd-0225-paper-analog"]
@@ -1782,9 +1782,9 @@ default = true
 evidence_level = "author_derived_aggregate"
 analysis_id = "math_code"
 inputs = [{ table_id = "new_eval_decision_accuracy", columns = ["size", "task", "target_ranking", "logits_per_byte_corr", "primary_score"] }]
-task_ids = ["minerva", "gsm8k"]
+task_ids = ["mbpp", "codex_humaneval", "minerva", "gsm8k"]
 metric_ids = ["primary_score", "logits_per_byte_corr"]
-model_sizes = ["4M", "60M", "150M"]
+model_sizes = ["4M", "60M"]
 sensitivity_ids = ["dd-0226-size-pointwise"]
 transformation_ids = ["math-code-complete-cube-v1", "math-code-claim-comparison-v1", "math-code-paper-series-v1"]
 comparison_rule_id = "dd-0226-code-gain-exceeds-math-v1"
@@ -1799,7 +1799,7 @@ analysis_id = "math_code"
 inputs = [{ table_id = "new_eval_decision_accuracy", columns = ["size", "task", "target_ranking", "logits_per_byte_corr"] }]
 task_ids = ["minerva", "gsm8k"]
 metric_ids = ["logits_per_byte_corr"]
-model_sizes = ["4M", "60M", "150M"]
+model_sizes = ["4M", "60M"]
 sensitivity_ids = ["dd-0227-comparison-accuracy-threshold-grid-1", "dd-0227-comparison-accuracy-threshold-grid-3"]
 transformation_ids = ["math-code-complete-cube-v1", "math-code-claim-comparison-v1"]
 comparison_rule_id = "dd-0227-math-same-metric-predictable-v1"
@@ -1813,7 +1813,7 @@ analysis_id = "math_code"
 inputs = [{ table_id = "new_eval_decision_accuracy", columns = ["size", "task", "target_ranking", "logits_per_byte_corr"] }]
 task_ids = ["mbpp", "codex_humaneval"]
 metric_ids = ["logits_per_byte_corr"]
-model_sizes = ["4M", "60M", "150M"]
+model_sizes = ["4M", "60M"]
 transformation_ids = ["math-code-complete-cube-v1", "math-code-claim-comparison-v1", "math-code-paper-series-v1"]
 comparison_rule_id = "dd-0413-code-continuous-bars-v1"
 plot_series_ids = ["dd-0413-paper-analog"]
@@ -1827,7 +1827,7 @@ analysis_id = "math_code"
 inputs = [{ table_id = "new_eval_decision_accuracy", columns = ["size", "task", "target_ranking", "logits_per_byte_corr"] }]
 task_ids = ["minerva", "gsm8k"]
 metric_ids = ["logits_per_byte_corr"]
-model_sizes = ["4M", "60M", "150M"]
+model_sizes = ["4M", "60M"]
 sensitivity_ids = ["dd-0414-comparison-trivial-tolerance-grid-2"]
 transformation_ids = ["math-code-complete-cube-v1", "math-code-claim-comparison-v1", "math-code-paper-series-v1"]
 comparison_rule_id = "dd-0414-math-continuous-bars-v1"

@@ -444,6 +444,73 @@ def test_new_scaling_and_math_code_rules_freeze_audited_thresholds() -> None:
     ).sensitivity_grid == (0.05, 0.1)
 
 
+def test_math_code_attempts_freeze_claim_scopes() -> None:
+    contract = load_paper_validation_contract()
+    attempts = {attempt.claim_id: attempt for attempt in contract.attempts}
+    expected_scopes = {
+        "DD-0017": (("mbpp",), ("4M",), ("logits_per_byte_corr",)),
+        "DD-0018": (
+            ("codex_humaneval",),
+            ("4M",),
+            ("logits_per_byte_corr",),
+        ),
+        "DD-0213": (
+            ("mbpp", "codex_humaneval"),
+            ("4M", "60M"),
+            ("primary_score", "logits_per_byte_corr"),
+        ),
+        "DD-0221": (
+            ("mbpp", "codex_humaneval"),
+            ("4M", "60M"),
+            ("primary_score", "logits_per_byte_corr"),
+        ),
+        "DD-0222": (
+            ("minerva", "gsm8k"),
+            ("4M", "60M"),
+            ("primary_score", "logits_per_byte_corr"),
+        ),
+        "DD-0224": (
+            ("mbpp", "codex_humaneval"),
+            ("4M", "60M"),
+            ("primary_score", "logits_per_byte_corr"),
+        ),
+        "DD-0225": (
+            ("mbpp", "codex_humaneval"),
+            ("4M", "60M"),
+            ("primary_score", "logits_per_byte_corr"),
+        ),
+        "DD-0226": (
+            ("mbpp", "codex_humaneval", "minerva", "gsm8k"),
+            ("4M", "60M"),
+            ("primary_score", "logits_per_byte_corr"),
+        ),
+        "DD-0227": (
+            ("minerva", "gsm8k"),
+            ("4M", "60M"),
+            ("logits_per_byte_corr",),
+        ),
+        "DD-0413": (
+            ("mbpp", "codex_humaneval"),
+            ("4M", "60M"),
+            ("logits_per_byte_corr",),
+        ),
+        "DD-0414": (
+            ("minerva", "gsm8k"),
+            ("4M", "60M"),
+            ("logits_per_byte_corr",),
+        ),
+    }
+
+    assert {
+        claim_id: (
+            attempts[claim_id].task_ids,
+            attempts[claim_id].model_sizes,
+            attempts[claim_id].metric_ids,
+        )
+        for claim_id in expected_scopes
+    } == expected_scopes
+
+
 def test_contract_rejects_attempt_evidence_that_differs_from_its_inputs() -> None:
     contract = load_paper_validation_contract()
     payload = contract.model_dump(mode="python")

@@ -81,6 +81,7 @@ _MATH_TASKS = ("minerva", "gsm8k")
 _PLOT_TASKS = (*_MATH_TASKS, *_CODE_TASKS)
 _PLOT_SIZES = ("4M", "60M")
 _PLOT_METRICS = (_TARGET_METRIC, _CONTINUOUS_METRIC)
+_TASK_INDICES = {task: index for index, task in enumerate(_PLOT_TASKS)}
 _SUPPORTED_CLAIMS = frozenset(
     {
         "DD-0017",
@@ -424,6 +425,13 @@ def _mean(values: Iterable[float]) -> float:
     return math.fsum(ordered) / len(ordered)
 
 
+def _within_absolute_tolerance(value: float, target: float, tolerance: float) -> bool:
+    difference = abs(value - target)
+    return difference <= tolerance or math.isclose(
+        difference, tolerance, rel_tol=1e-12, abs_tol=1e-12
+    )
+
+
 def _component(
     *, task: str, size: str, predictor_metric: str, decision_accuracy: float
 ) -> dict[str, object]:
@@ -492,10 +500,13 @@ def _evaluate(
         "paper_legend_alias_status=unresolved",
     ]
     if claim_id in {"DD-0017", "DD-0018"}:
-        task = _CODE_TASKS[claim_id == "DD-0018"]
+        if len(attempt.task_ids) != 1 or len(attempt.model_sizes) != 1:
+            raise ValueError(f"{attempt.id} requires exactly one task and model size")
+        task = attempt.task_ids[0]
+        size = attempt.model_sizes[0]
         accuracy = _decision_value(
             decision,
-            size="4M",
+            size=size,
             task=task,
             target_metric=_TARGET_METRIC,
             predictor_metric=_CONTINUOUS_METRIC,
@@ -515,7 +526,7 @@ def _evaluate(
         holds = accuracy_holds and compute_holds
         computed = {
             "task": task,
-            "size": "4M",
+            "size": size,
             "target_size": "1B",
             "target_metric": _TARGET_METRIC,
             "predictor_metric": _CONTINUOUS_METRIC,
@@ -549,7 +560,7 @@ def _evaluate(
         )
 
     if claim_id == "DD-0213":
-        components = _gain_components(decision, _CODE_TASKS, _PLOT_SIZES)
+        components = _gain_components(decision, attempt.task_ids, attempt.model_sizes)
         threshold = _parameter(rule, ComparisonParameterName.MARKED_GAP_MINIMUM)
         minimum_gain = min(float(item["proxy_gain"]) for item in components)
         means_components = [
@@ -559,8 +570,8 @@ def _evaluate(
                 "metric": _TARGET_METRIC,
                 "mean": _mean_value(means, size=size, task=task, metric=_TARGET_METRIC),
             }
-            for task in _CODE_TASKS
-            for size in _PLOT_SIZES
+            for task in attempt.task_ids
+            for size in attempt.model_sizes
         ]
         holds = all(float(item["proxy_gain"]) > threshold for item in components)
         return _Evaluation(
@@ -584,9 +595,10 @@ def _evaluate(
         )
 
     if claim_id in {"DD-0221", "DD-0222"}:
-        tasks = _CODE_TASKS if claim_id == "DD-0221" else _MATH_TASKS
+        tasks = attempt.task_ids
+        sizes = attempt.model_sizes
         baseline = _parameter(rule, ComparisonParameterName.CHANCE_BASELINE)
-        tolerance = _parameter(rule, ComparisonParameterName.TRIVIAL_TOLERANCE)
+        shift_tolerance = _parameter(rule, ComparisonParameterName.TRIVIAL_TOLERANCE)
         strong_threshold = (
             _parameter(rule, ComparisonParameterName.STRONG_BASELINE_THRESHOLD)
             if claim_id == "DD-0221"
@@ -603,7 +615,7 @@ def _evaluate(
                     target_metric=_TARGET_METRIC,
                     predictor_metric=_TARGET_METRIC,
                 )
-                for size in _DECISION_SIZES
+                for size in sizes
             )
             continuous_values = tuple(
                 _decision_value(
@@ -613,7 +625,7 @@ def _evaluate(
                     target_metric=_TARGET_METRIC,
                     predictor_metric=_CONTINUOUS_METRIC,
                 )
-                for size in _DECISION_SIZES
+                for size in sizes
             )
             task_components.append(
                 {
@@ -632,7 +644,7 @@ def _evaluate(
                     _CONTINUOUS_METRIC: continuous,
                 }
                 for size, primary, continuous in zip(
-                    _DECISION_SIZES,
+                    sizes,
                     primary_values,
                     continuous_values,
                     strict=True,
@@ -640,9 +652,13 @@ def _evaluate(
             )
 
         def satisfies(primary: float, continuous: float) -> bool:
-            primary_near = abs(primary - baseline) <= tolerance
+            primary_near = _within_absolute_tolerance(
+                primary, baseline, shift_tolerance
+            )
             if strong_threshold is None:
-                return primary_near and abs(continuous - baseline) <= tolerance
+                return primary_near and _within_absolute_tolerance(
+                    continuous, baseline, shift_tolerance
+                )
             return primary_near and continuous >= strong_threshold
 
         values_to_check = (
@@ -667,7 +683,7 @@ def _evaluate(
             "task_components": task_components,
             "size_components": point_components,
             "chance_baseline": baseline,
-            "trivial_tolerance": tolerance,
+            "trivial_tolerance": shift_tolerance,
             "satisfied": holds,
             "paper_legend_alias": _alias_payload(),
         }
@@ -685,8 +701,8 @@ def _evaluate(
         )
 
     if claim_id == "DD-0224":
-        tolerance = rule.absolute_tolerance
-        if tolerance is None:
+        approximate_tolerance = rule.absolute_tolerance
+        if approximate_tolerance is None:
             raise ValueError("DD-0224 requires an absolute-tolerance rule")
         task_means = [
             {
@@ -701,20 +717,22 @@ def _evaluate(
                         target_metric=_TARGET_METRIC,
                         predictor_metric=_CONTINUOUS_METRIC,
                     )
-                    for size in _DECISION_SIZES
+                    for size in attempt.model_sizes
                 ),
             }
-            for task in _CODE_TASKS
+            for task in attempt.task_ids
         ]
         holds = all(
-            abs(float(item["decision_accuracy_mean"]) - 0.8) <= tolerance
+            _within_absolute_tolerance(
+                float(item["decision_accuracy_mean"]), 0.8, approximate_tolerance
+            )
             for item in task_means
         )
         return _Evaluation(
             computed_value={
                 "task_components": task_means,
                 "approximate_target": 0.8,
-                "absolute_tolerance": tolerance,
+                "absolute_tolerance": approximate_tolerance,
                 "satisfied": holds,
                 "paper_legend_alias": _alias_payload(),
             },
@@ -723,7 +741,9 @@ def _evaluate(
                 if holds
                 else ValidationOutcome.NOT_REPRODUCED
             ),
-            diagnostics=tuple((*diagnostics, f"absolute_tolerance={tolerance:.17g}")),
+            diagnostics=tuple(
+                (*diagnostics, f"absolute_tolerance={approximate_tolerance:.17g}")
+            ),
             denominator=len(task_means),
         )
 
@@ -742,8 +762,8 @@ def _evaluate(
                     predictor_metric=_CONTINUOUS_METRIC,
                 ),
             )
-            for task in _CODE_TASKS
-            for size in _DECISION_SIZES
+            for task in attempt.task_ids
+            for size in attempt.model_sizes
         ]
         target_means = [
             {
@@ -752,8 +772,8 @@ def _evaluate(
                 "metric": metric,
                 "mean": _mean_value(means, size=size, task=task, metric=metric),
             }
-            for task in _CODE_TASKS
-            for size in _DECISION_SIZES
+            for task in attempt.task_ids
+            for size in attempt.model_sizes
             for metric in (_TARGET_METRIC, _CONTINUOUS_METRIC)
         ]
         holds = all(
@@ -778,12 +798,10 @@ def _evaluate(
 
     if claim_id == "DD-0226":
         threshold = _parameter(rule, ComparisonParameterName.MARKED_GAP_MINIMUM)
-        components = _gain_components(
-            decision, (*_CODE_TASKS, *_MATH_TASKS), _DECISION_SIZES
-        )
+        components = _gain_components(decision, attempt.task_ids, attempt.model_sizes)
         if pointwise:
             comparisons = []
-            for size in _DECISION_SIZES:
+            for size in attempt.model_sizes:
                 code = tuple(
                     float(item["proxy_gain"])
                     for item in components
@@ -851,7 +869,7 @@ def _evaluate(
     if claim_id == "DD-0227":
         threshold = _parameter(rule, ComparisonParameterName.ACCURACY_THRESHOLD)
         task_components = []
-        for task in _MATH_TASKS:
+        for task in attempt.task_ids:
             values = [
                 {
                     "size": size,
@@ -863,7 +881,7 @@ def _evaluate(
                         predictor_metric=_CONTINUOUS_METRIC,
                     ),
                 }
-                for size in _DECISION_SIZES
+                for size in attempt.model_sizes
             ]
             task_components.append(
                 {
@@ -914,8 +932,8 @@ def _evaluate(
                     predictor_metric=_CONTINUOUS_METRIC,
                 ),
             )
-            for task in _CODE_TASKS
-            for size in _PLOT_SIZES
+            for task in attempt.task_ids
+            for size in attempt.model_sizes
         ]
         holds = all(
             float(item["decision_accuracy"]) > nontrivial
@@ -941,7 +959,7 @@ def _evaluate(
 
     if claim_id == "DD-0414":
         baseline = _parameter(rule, ComparisonParameterName.CHANCE_BASELINE)
-        tolerance = _parameter(rule, ComparisonParameterName.TRIVIAL_TOLERANCE)
+        bar_tolerance = _parameter(rule, ComparisonParameterName.TRIVIAL_TOLERANCE)
         components = [
             _component(
                 task=task,
@@ -955,18 +973,20 @@ def _evaluate(
                     predictor_metric=_CONTINUOUS_METRIC,
                 ),
             )
-            for task in _MATH_TASKS
-            for size in _PLOT_SIZES
+            for task in attempt.task_ids
+            for size in attempt.model_sizes
         ]
         holds = all(
-            abs(float(item["decision_accuracy"]) - baseline) <= tolerance
+            _within_absolute_tolerance(
+                float(item["decision_accuracy"]), baseline, bar_tolerance
+            )
             for item in components
         )
         return _Evaluation(
             computed_value={
                 "components": components,
                 "chance_baseline": baseline,
-                "trivial_tolerance": tolerance,
+                "trivial_tolerance": bar_tolerance,
                 "all_four_bars_near_baseline": holds,
                 "paper_legend_alias": _alias_payload(),
             },
@@ -975,7 +995,9 @@ def _evaluate(
                 if holds
                 else ValidationOutcome.NOT_REPRODUCED
             ),
-            diagnostics=tuple((*diagnostics, f"trivial_tolerance={tolerance:.17g}")),
+            diagnostics=tuple(
+                (*diagnostics, f"trivial_tolerance={bar_tolerance:.17g}")
+            ),
             denominator=len(components),
         )
     raise ValueError(f"no math/code implementation for {attempt.id}")
@@ -984,15 +1006,10 @@ def _evaluate(
 def _selection_scope(
     attempt: AttemptSpec,
 ) -> tuple[tuple[str, ...], tuple[str, ...], str]:
-    if attempt.claim_id in {"DD-0017", "DD-0018"}:
-        return attempt.task_ids, ("4M",), _TARGET_METRIC
-    if attempt.claim_id == "DD-0213":
-        return _CODE_TASKS, _PLOT_SIZES, _TARGET_METRIC
-    if attempt.claim_id == "DD-0227":
-        return _MATH_TASKS, _DECISION_SIZES, _CONTINUOUS_METRIC
-    if attempt.claim_id in {"DD-0413", "DD-0414"}:
-        return _PLOT_TASKS, _PLOT_SIZES, _TARGET_METRIC
-    return _PLOT_TASKS, _DECISION_SIZES, _TARGET_METRIC
+    target_metric = (
+        _CONTINUOUS_METRIC if attempt.claim_id == "DD-0227" else _TARGET_METRIC
+    )
+    return attempt.task_ids, attempt.model_sizes, target_metric
 
 
 def _decision_selection(
@@ -1025,8 +1042,8 @@ def _decision_selection(
 def _means_selection(
     table: _LoadedTable, attempt: AttemptSpec, columns: tuple[str, ...]
 ) -> RowSelection:
-    tasks = _CODE_TASKS
-    sizes = _PLOT_SIZES if attempt.claim_id == "DD-0213" else _DECISION_SIZES
+    tasks = attempt.task_ids
+    sizes = attempt.model_sizes
     selected = table.frame.loc[
         table.frame["task"].isin(tasks) & table.frame["size"].isin(sizes)
     ]
@@ -1107,6 +1124,16 @@ def _row_selections(
 def _plot_series(attempt: AttemptSpec, decision: pd.DataFrame) -> PlotSeries:
     if len(attempt.plot_series_ids) != 1:
         raise ValueError(f"{attempt.id} must declare exactly one plot-series ID")
+    tasks = tuple(task for task in _PLOT_TASKS if task in attempt.task_ids)
+    if len(tasks) != len(attempt.task_ids):
+        raise ValueError(f"{attempt.id} declares an unsupported plot task")
+    if attempt.model_sizes != _PLOT_SIZES:
+        raise ValueError(f"{attempt.id} must use the paper figure's model sizes")
+    predictor_metrics = attempt.metric_ids
+    if not predictor_metrics or any(
+        metric not in _PLOT_METRICS for metric in predictor_metrics
+    ):
+        raise ValueError(f"{attempt.id} declares an unsupported predictor metric")
     points = tuple(
         PlotPoint(
             dimensions=(
@@ -1116,6 +1143,7 @@ def _plot_series(attempt: AttemptSpec, decision: pd.DataFrame) -> PlotSeries:
                 DimensionValue(name="target_metric", value=_TARGET_METRIC),
             ),
             measures=(
+                MeasureValue(name="task_index", value=_TASK_INDICES[task]),
                 MeasureValue(
                     name="decision_accuracy",
                     value=_decision_value(
@@ -1128,10 +1156,11 @@ def _plot_series(attempt: AttemptSpec, decision: pd.DataFrame) -> PlotSeries:
                 ),
             ),
         )
-        for task in _PLOT_TASKS
-        for size in _PLOT_SIZES
-        for metric in _PLOT_METRICS
+        for task in tasks
+        for size in attempt.model_sizes
+        for metric in predictor_metrics
     )
+    source_row_count = len(tasks) * len(attempt.model_sizes)
     return PlotSeries(
         id=attempt.plot_series_ids[0],
         figure="fig:math_and_code",
@@ -1141,20 +1170,20 @@ def _plot_series(attempt: AttemptSpec, decision: pd.DataFrame) -> PlotSeries:
             "alias Correct Prob unresolved"
         ),
         x_axis=AxisSpec(
-            measure="decision_accuracy", scale=AxisScale.LINEAR, unit="proportion"
+            measure="task_index", scale=AxisScale.LINEAR, unit="paper order index"
         ),
         y_axis=AxisSpec(
             measure="decision_accuracy", scale=AxisScale.LINEAR, unit="proportion"
         ),
         dimensions=("task", "size", "predictor_metric", "target_metric"),
-        measures=("decision_accuracy",),
+        measures=("task_index", "decision_accuracy"),
         attempt_id=attempt.id,
         counts=(
-            NamedCount(name="source_rows", value=8),
-            NamedCount(name="points", value=16),
-            NamedCount(name="tasks", value=4),
-            NamedCount(name="sizes", value=2),
-            NamedCount(name="predictor_metrics", value=2),
+            NamedCount(name="source_rows", value=source_row_count),
+            NamedCount(name="points", value=len(points)),
+            NamedCount(name="tasks", value=len(tasks)),
+            NamedCount(name="sizes", value=len(attempt.model_sizes)),
+            NamedCount(name="predictor_metrics", value=len(predictor_metrics)),
         ),
         points=points,
     )
