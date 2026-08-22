@@ -325,3 +325,15 @@ redoing some pretraining with WSD?
   anti-grokking instrument." Matched-loss pairs are "a *necessary but provably insufficient*
   control" (two checkpoints at equal loss can differ in hidden circuit maturity). See
   `docs/topics/grokking-and-hidden-progress.md`.
+
+### 2026-08-18 — origin of ANN-opt-7, the durable-movement operator (from the Research Trajectory page)
+
+- "Compare KL(t, t+k) as a function of k (transient movement cancels; durable movement
+  accumulates), and — the stronger instrument — apply checkpoint merging or a short decay
+  branch at t and t+k and compare the *annealed* models: movement that survives annealing
+  is river movement by construction. That gives you an operational definition the field
+  currently lacks: **durable movement = change that persists under the
+  schedule-neutralizing transform**, with the Signal-and-Noise 'noise' then decomposing
+  into (measurement noise) + (wall oscillation) + (drift you're too coarse to see), each
+  separately estimated… the durable-movement operator is the instrument your matched-loss
+  comparisons have needed all along."

@@ -296,3 +296,35 @@ decisions. Only notes about this project are kept here.
   control is the piece to add when the floor is used to judge any intervention that adds
   training. "Movement that doesn't exceed seed-noise-plus-token-exposure isn't movement."
   See `docs/topics/movement-microscope.md`.
+
+### 2026-08-18 — origin of this project (from the Research Trajectory page)
+
+Question posed: start by looking for changes between the provided pretraining checkpoints,
+referencing the Signal-and-Noise paper.
+
+- "Your proposed project is literally its dual. Heineman et al. define signal as a
+  benchmark's ability to separate better models from worse models, and noise as a
+  benchmark's sensitivity to random variability between training steps — i.e., in their
+  framework, *checkpoint-to-checkpoint movement is the nuisance term*… Your project inverts
+  the roles: treat inter-checkpoint change as the *object*, and ask what structure lives
+  inside what they averaged away as noise. Same data, opposite marginal." Their release:
+  "900K evaluation results on 465 open-weight models, including evaluations across
+  intermediate checkpoints of OLMo, the DataDecide suite, and the ladder models."
+- Stage 0 as first stated (TRJ-1, TRJ-4, TRJ-2, TRJ-3): "'Variability between training
+  steps' conflates two processes with opposite meanings: stochastic jitter (the checkpoint
+  oscillating on the valley walls — order-free, mean-reverting) and genuine learning
+  (progress along the river — directional, cumulative). These are separable from a
+  trajectory alone: autocorrelation structure, sign-consistency of increments, variance
+  growth with lag (diffusion grows linearly in lag; drift grows quadratically)… you'd
+  predict continuous metrics have high drift-to-diffusion ratio, accuracy metrics low — and
+  any benchmark where *recipes differ in drift/diffusion signature at matched loss* is your
+  thesis phenomenon appearing in data someone else already published… diffusion magnitude
+  should scale with the current LR (walls), drift should not (river), and the cosine
+  schedule's gradual decay gives you a natural LR sweep *within* each trajectory."
+- Origin of TRJ-5: "DataDecide checkpoints are relatively sparse, so adjacent-pair
+  statistics at small k may be dominated by drift… the OLMo trajectories in the same
+  release are denser and better for the diffusion estimates, then transfer the fitted
+  decomposition." (Spacing since measured: ~1,000–1,300 steps at 8M–530M; see
+  `docs/open-questions-answered.md`.)
+- Role in the program: "the drift/diffusion fits are the noise floor for any future
+  post-training movement claim."

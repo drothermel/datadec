@@ -382,3 +382,18 @@ effect buckets, or watching that mapping change over training?
   outcomes… Recipe-dependent movement profiles at matched final loss would be your original
   thesis, demonstrated below the elicitation threshold." The post-training counterpart of
   TOK-4's cross-recipe migration. See `docs/topics/movement-microscope.md`.
+
+### 2026-08-18 — origin of Stage 1 (from the Research Trajectory page)
+
+- Stage 1 as first stated (TOK-obs-1/2/3/4): "per-token KL(checkpoint_t ‖ checkpoint_t+1)
+  on a fixed probe corpus, prediction-flip rates on benchmark items (the churn literature's
+  measure — what fraction of 'noise' is the same marginal accuracy hiding large item-level
+  exchange), and layerwise representation drift (CKA / linear-map residual per layer). Then
+  slice per-token KL by the entropy buckets: the concrete hypothesis is that
+  adjacent-checkpoint movement concentrates on high-entropy (hillside) tokens mid-schedule
+  — i.e., their 'noise' is not uniformly distributed over the data distribution but is *the
+  walls, localized to the stochastic tokens*, while low-entropy tokens carry the drift. If
+  that holds, you've connected the Signal-and-Noise engineering framework to the landscape
+  mechanism in one figure, and you get a practical dividend they'd care about: a principled
+  recipe for constructing low-noise evals (weight items by token-determinism) rather than
+  their empirical subtask filtering."

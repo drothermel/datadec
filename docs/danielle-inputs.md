@@ -747,3 +747,16 @@ twins of TOK-obs-4 / TOK-4);
 [topics/posttraining-experiment-design.md](topics/posttraining-experiment-design.md); the
 potential-projs README program-level notes.
 
+### Toggle 22 — 2026-08-18 22:34 (changes between pretraining checkpoints; Signal-vs-Noise)
+
+> I'm actually interested in starting with looking for changes between the provided
+> pretrain checkpoints. and please reference the signal vs noise paper when answering.
+
+Routed to origin entries: [potential-projs/trajectory-statistics.md](potential-projs/trajectory-statistics.md)
+§4 (Stage 0; TRJ-5's origin), [potential-projs/token-movement.md](potential-projs/token-movement.md)
+§4 (Stage 1), [potential-projs/annealed-readouts.md](potential-projs/annealed-readouts.md)
+§4 (Stage 2 → ANN-opt-7); the Signal-and-Noise citation to
+[topics/evaluation-methodology-literature.md](topics/evaluation-methodology-literature.md).
+Standing rule from Danielle (2026-08-22): adviser-management content is always dropped; no
+further reminders about the Notion citation fixes.
+
