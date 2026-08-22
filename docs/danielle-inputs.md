@@ -697,3 +697,39 @@ modalities, six-month checkpoints, two flags);
 figure spec); the potential-projs README program-level notes (closing loops;
 pre-registration; scope discipline).
 
+### Caveat for toggles 18–20 (Danielle, 2026-08-22)
+
+> the agent starts to push back based on its suggested approach to managing my phd advisor.
+> please disregard everything there, it was misinformed but I think enough useful things
+> came up later in the convo that we should still continue processing.
+
+Applied: adviser-management content from these toggles is not recorded (the toggle-18
+routing was revised accordingly); technical content is.
+
+### Toggle 19 — 2026-08-18 20:02 (harness already implemented; ~2.5 weeks to initial replications)
+
+> A key piece that I already have the harness implemented and with my agentic coding setup
+> im confident that i can have an initial version of the replications + a few variations
+> done with prelim analysis in ~2.5weeks if i focus. thats why this seems plausible to me.
+
+Routed to: [topics/warmstarting-decomposition.md](topics/warmstarting-decomposition.md)
+(what compresses vs. not; known-answer replication as acceptance test; sanity battery and
+run manifest; seeds and panel over variations); the potential-projs README (verification
+discipline for agent-written science code). Adviser remarks disregarded.
+
+### Toggle 20 — 2026-08-18 20:12 (CRL foundations for the identifiability tie-in)
+
+> ok, can you lay out the Causal Rep Learning related work and concepts that form the
+> foundation of your proposed approach to tying the 3 foundation paper grid into
+> identifiability?
+
+Routed to: [topics/identifiability-literature.md](topics/identifiability-literature.md)
+(five-part foundation and the assembled core claim);
+[topics/critical-period-timing-study.md](topics/critical-period-timing-study.md) (the
+claim and the four-instrument panel);
+[potential-projs/landscape-geometry.md](potential-projs/landscape-geometry.md) §4 (raw vs.
+aligned barriers; stitching / linear-map residuals; CKA caveat);
+[topics/checkpoint-tomography.md](topics/checkpoint-tomography.md) (LLC as panel member);
+[topics/reinit-and-transfer-literature.md](topics/reinit-and-transfer-literature.md)
+(stitching as the embedding-reset experiment as measurement).
+

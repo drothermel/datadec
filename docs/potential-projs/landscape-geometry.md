@@ -213,3 +213,16 @@ models share a basin?
   `docs/topics/reinit-and-transfer-literature.md`). The interpolation tool here is the
   instrument; PolyPythias (arXiv 2503.09543; 50 runs, 14M–410M, ~7k checkpoints) is a
   ready substrate with seeds.
+
+### 2026-08-18 — raw vs. aligned barriers, and functional identifiability tests (from the Research Trajectory page)
+
+- Interpret the *difference* between raw and permutation-aligned barriers: "raw-barrier-
+  high/aligned-barrier-low means 'same solution class, different parameterization'
+  (benign), while aligned-barrier-high means genuine solution-class divergence (the real
+  scar)." Report both and their gap, not just one.
+- Weight-free complements to the interpolation tool: linear-map residuals between
+  representations (Roeder, Metz & Kingma 2021) and model stitching (Lenc & Vedaldi 2015;
+  Bansal, Nakkiran & Barak 2021) as ground truth, CKA as the scalable proxy (it "can be
+  dominated by a few directions and disagree with stitching"). GEO-opt-4's feature-space
+  connectivity is the layerwise version of this. See
+  `docs/topics/identifiability-literature.md`.

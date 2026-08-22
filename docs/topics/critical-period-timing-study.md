@@ -110,3 +110,18 @@ vocabulary would otherwise merge." The identifiability layer is the same runs re
 "interventions inside the sensitive window change *which solution class* you land in…
 interventions after it change only parameters within the class." Full plan in
 [warmstarting-decomposition.md](warmstarting-decomposition.md).
+
+---
+
+## 2026-08-18 — the falsifiable core claim and the four-instrument panel (from the CRL-foundations discussion)
+
+"The critical period is an *identifiability phase transition*": before commitment,
+interventions select among solution classes (sibling divergence under *aligned* barriers,
+high local learning coefficient, failed stitching to controls, permanent damage); after
+commitment, interventions perturb within a class (alignment and stitching recover, damage
+is transient and retunable away). Panel additions: the local learning coefficient
+(degeneracy), model stitching / linear-map residuals (functional identifiability), and
+barriers in both raw and permutation-aligned flavors — "whether LLC drops, Fisher peaks, LMC
+onset, and deficit-window closure coincide is exactly your money figure, now with four
+independently-motivated instruments instead of two." Per-paper sub-claims in
+[identifiability-literature.md](identifiability-literature.md).

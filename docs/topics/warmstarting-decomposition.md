@@ -173,21 +173,18 @@ Adams; Igl et al.) and break each into the grid to form a shared vocabulary and 
 space; extend toward identifiability (the CRL direction); run both CNN vision models as in
 the originals and small LMs on language tasks, in parallel, to see where they diverge and to
 keep flexibility for scaling. How might it look under the goal of convincing results
-rapidly, given an adviser who wants evidence of independent-researcher ability rather than
-small publishable bundles?
+rapidly? (The response also contained adviser-management advice; disregarded at Danielle's
+direction and not recorded here.)
 
 "The idea is right — this is the correct foundation, and the CNN+LM parallelism is what
-gives it legs. But as specified it's a 3-papers × full-factorial × 2-modalities object,
-which is the scope-explosion reflex again… the unification itself, taken seriously, is what
-compresses the work."
+gives it legs. But as specified it's a 3-papers × full-factorial × 2-modalities object…
+the unification itself, taken seriously, is what compresses the work."
 
 **Build one harness, not three replications.** "All three papers are the same experiment:
 apply an *intervention schedule* to training (data poverty for Ash & Adams, input
 corruption for Achille, distribution drift for Igl), vary onset/duration, measure permanent
 damage, log a diagnostic panel. So the deliverable is a single framework where each paper
-is a config file… three replications demonstrate diligence; one framework that *subsumes*
-three literatures demonstrates exactly the taste and abstraction ability your adviser is
-asking for evidence of. Conveniently, Igl's repo already contains supervised CIFAR variants
+is a config file… Conveniently, Igl's repo already contains supervised CIFAR variants
 of their claim (label noise, dataset-size interventions) — so you can drop the RL machinery
 entirely and keep all three phenomena in the supervised setting, same backbone, same data.
 That's a 3× cost reduction with no loss of the vocabulary claim." (Unverified: that Igl's
@@ -221,13 +218,36 @@ with ICL curves added as the LM-only outcome column. And pre-register the diverg
 hypotheses before the LM runs… Note the LM data-poverty cell is *literally your DataDecide
 question* at miniature scale."
 
-**Six-month structure (pre-committed falsifiable checkpoints).** "Month 2 — harness
-validated by replicating the warm-start gap with CIs (a known answer, so it's a pure
-execution test); month 4 — the alignment figure, with your written predictions from month 1
-graded against it; month 6 — the LM diagonal and the identifiability layer, plus the
-long-form manuscript that unifies it (TMLR-shaped…)."
-
 **Two flags.** "Pin the replication targets narrowly (Ash & Adams' chunked-CIFAR ResNet cell
 and Achille's blur-deficit cell — not their full papers)… and budget the statistics up front
 — decide seed counts per cell from a power target at month zero rather than discovering
 mid-grid that the interesting effects need n=15."
+
+---
+
+## 2026-08-18 — with the harness already implemented: what compresses and what doesn't (from the Research Trajectory page)
+
+Context (Danielle): the harness is already implemented, and with her agentic coding setup
+an initial version of the replications plus a few variations with preliminary analysis is
+plausible in ~2.5 weeks of focus. (The response's adviser-related remarks are disregarded
+at her direction.)
+
+- "What compresses: code, configs, plumbing, first plots. What doesn't: wall-clock GPU time
+  for seeds (the CIs are the product, and n=10 seeds per cell takes the same hours
+  regardless of how fast the code was written), and *verification*."
+- "Agentic coding shifts the risk profile in a way that's specifically dangerous for
+  science code: agents produce plausible-looking experiments whose bugs are silent — a
+  normalization applied twice, a deficit window off by one epoch, eval on the wrong
+  checkpoint — and unlike product code, nothing crashes; you just get clean-looking wrong
+  curves… So the known-answer replication… is the *acceptance test that gates everything*,
+  week one: the harness must reproduce Ash & Adams' published gap magnitude and Achille's
+  sensitivity-window shape before any variation runs. Have the agent write the sanity
+  battery too — loss-curve invariants, intervention-timing assertions, a seed-determinism
+  check — and keep a run manifest so every figure traces to a config hash."
+- "Spend the speed dividend on *seeds and the panel, not on variations*… the money figure
+  needs depth: many seeds per cell so the window boundaries and panel-event timestamps have
+  error bars, because 'the Fisher peak aligns with basin commitment' is only a claim if both
+  events have confidence intervals. A tight grid with n=10 beats a sprawling grid with
+  n=3."
+- Define "done" per milestone in writing: "replication matches published effect within CI;
+  figure has error bands; predictions graded."

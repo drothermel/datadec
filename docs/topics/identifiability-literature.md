@@ -58,3 +58,85 @@ with scale.
    design (tiny transformers → DataDecide → sparse large confirmations) is, almost
    accidentally, the right instrument for measuring how fast the underdetermination closes
    with scale."
+
+---
+
+## 2026-08-18 — the CRL foundations, formalism to operational measurements (from the Research Trajectory page)
+
+Prompt context (Danielle): lay out the causal-representation-learning related work and
+concepts that form the foundation of tying the three-paper grid to identifiability.
+"Organized from formalism to operational measurements — with honest notes on which links
+are established and which are the analogical leaps your project would be making explicit."
+
+**1. Identifiability as "unique up to a symmetry group."**
+- Hyvärinen & Pajunen (1999), *Nonlinear ICA: Existence and Uniqueness Results* — latents
+  are "*fundamentally non-identifiable* from observational i.i.d. data alone."
+- Hyvärinen's time-contrastive learning and auxiliary-variable nonlinear ICA; Khemakhem et
+  al., iVAE (2020) — identifiability "*restored* by additional structure: auxiliary
+  variables, non-stationarity, or multiple environments, with recovery guaranteed only up
+  to a residual group (permutations, elementwise transforms)."
+- Grammar: "a learning problem's solution set is characterized by (data, objective,
+  function class) up to a group G; anything not pinned down by those is available for the
+  *trajectory* to select. 'Path dependence exists' = 'the residual underdetermination beyond
+  G is nonempty and SGD's selection within it is history-sensitive.'"
+
+**2. Interventions buy identifiability.**
+- Schölkopf et al. 2021, *Toward Causal Representation Learning*; Brehmer et al. 2022,
+  *Weakly Supervised Causal Representation Learning* (identifiability from paired
+  pre/post-intervention observations); Ahuja et al., *Interventional Causal Representation
+  Learning*; von Kügelgen et al. 2021, *Self-Supervised Learning with Data Augmentations
+  Provably Isolates Content from Style*; the sparse-mechanism-shift principle.
+- The honesty note: "CRL identifies latent factors *in data* from interventions *on data*;
+  you're identifying latent structure *in training dynamics* from interventions *on
+  training*. Same epistemic logic, different object — your contribution is
+  operationalizing the logic at the new level, not applying an existing theorem."
+
+**3. The known symmetry group of networks — what must be quotiented.**
+- Sussmann 1992 (single-hidden-layer uniqueness up to permutation/sign); ReLU positive
+  rescalings; attention-head permutations. Entezari et al. (LMC modulo permutation); Git
+  Re-Basin (weight matching); REPAIR (activation renormalization); the 2026
+  neuron-identifiability framework.
+- "Barrier measurements come in two flavors, raw and permutation-aligned, and the
+  *difference* between them is informative — raw-barrier-high/aligned-barrier-low means
+  'same solution class, different parameterization' (benign), while aligned-barrier-high
+  means genuine solution-class divergence (the real scar)."
+
+**4. Functional identifiability tests — comparison without touching weights.**
+- Roeder, Metz & Kingma 2021, *On Linear Identifiability of Learned Representations* —
+  "fit the optimal linear map between two models' representations; the residual is the
+  identifiability gap."
+- Model stitching: Lenc & Vedaldi 2015; Bansal, Nakkiran & Barak 2021 — "if a trained
+  adapter layer lets model A's bottom half drive model B's top half at low penalty, they're
+  functionally interchangeable at that depth — and note this is *literally your
+  embedding-reset experiment* as a measurement rather than a method."
+- CKA (Kornblith et al.) — cheap and scalable, but "can be dominated by a few directions
+  and disagree with stitching — so use stitching/linear-map residuals as ground truth and
+  CKA as the scalable proxy."
+- Platonic Representation Hypothesis (Huh et al. 2024) — "identifiability improves with
+  scale" as the conjecture the ladder design can put error bars on.
+
+**5. The selection principle and the timing question.**
+- Implicit-bias / simplicity-bias literatures (SGD selects non-uniformly; shortcut learning
+  as selection pathology); Juneja et al. as "the NLP existence proof that the classes are
+  real and behaviorally distinct." "What's missing from all of it is *when* selection
+  happens and what moves it — and that's precisely what your grid measures."
+- Commitment-event precedents: Frankle et al. (sibling runs become linearly connected only
+  after a critical number of steps); Fort et al., *Deep Learning vs. Kernel Learning* (NTK
+  rapid early rotation then stabilization).
+- Singular learning theory: the local learning coefficient (Watanabe; Lau, Murfet et al.'s
+  estimator), developmental interpretability (*Differentiation and Specialization of
+  Attention Heads via the Refined LLC*; *Loss Landscape Degeneracy and Stagewise
+  Development in Transformers*) — "a per-checkpoint scalar measuring the *degeneracy* of the
+  current solution neighborhood… Degeneracy is the local face of non-identifiability."
+
+**Assembled core claim.** "The critical period is an *identifiability phase transition* —
+before commitment, the solution class is underdetermined given data-so-far and
+interventions select among classes (measured: sibling divergence under aligned barriers,
+high LLC, failed stitching to controls, permanent damage); after commitment, interventions
+perturb within a class (measured: alignment and stitching recover, damage is transient,
+retunable away à la ELR). Each foundational paper then makes a specific sub-claim — Achille:
+input-statistics deficits during the window select a class with permanently different
+low-level features; Ash & Adams: data poverty during the window selects a class ill-suited
+to the full distribution, and shrink-perturb works by partially re-opening selection; Igl:
+non-stationarity drift accumulates class-selection scars, and distillation escapes them
+because a fresh student re-runs selection under better data."

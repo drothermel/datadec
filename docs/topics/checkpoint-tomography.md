@@ -100,3 +100,13 @@ A reset branch (reset an interface or block, continue briefly, measure recovery 
 barrier to the pre-reset model) has the same shape as the four probes above and shares the
 runner. Staged in [reset-response-stage-probe.md](reset-response-stage-probe.md).
 
+---
+
+## 2026-08-18 — the local learning coefficient as a panel member
+
+From the CRL-foundations discussion: the local learning coefficient (Lau, Murfet et al.'s
+estimator; developmental-interpretability work) is "a per-checkpoint scalar measuring the
+*degeneracy* of the current solution neighborhood, whose jumps empirically track phase
+transitions in training" — "degeneracy is the local face of non-identifiability." It is the
+same SGLD-style probe listed under instrument 3 above, now with a stated role: sit
+alongside Fisher trace and barrier onset in the money figure.

@@ -222,3 +222,13 @@ exist but have not been pointed at resets."**
 the weakest "nobody followed up" claims — run the 2107.12460 forward graph before building
 on them); search skewed to recent arXiv HTML, so 2021–2022 workshop work is
 under-represented; several 2026 IDs have had little scrutiny.
+
+---
+
+## 2026-08-18 — model stitching as the measurement form of the embedding-reset experiment
+
+"Model stitching (Lenc & Vedaldi 2015; Bansal, Nakkiran & Barak 2021) is the behavioral
+version [of functional identifiability]: if a trained adapter layer lets model A's bottom
+half drive model B's top half at low penalty, they're functionally interchangeable at that
+depth — and note this is *literally your embedding-reset experiment* as a measurement
+rather than a method." Relevant to the interface-reset staging topics.
