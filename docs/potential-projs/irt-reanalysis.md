@@ -109,3 +109,26 @@ reported honestly in either direction.
 
 Steps 1–3 are the minimum for the core paper; 4–6 are independent of each
 other and can be picked by impact.
+
+---
+
+## 4. External assessments
+
+Dated, attributed notes from external review conversations, recorded for consolidation — not
+decisions. Only notes about this project are kept here.
+
+### 2026-08-21 — two "top-N by workshop-paper likelihood × speed" rankings
+
+- **Reviewer 1, ranked #2 of 3.** "Also pure T0, and IRT-1 (dimensionality) is the rare
+  design where both outcomes are headline claims: 'one axis suffices' deflates the
+  beyond-final-performance thesis; 'multiple axes needed' is the thesis. IRT-5 gives you a
+  guaranteed medium-strength methodological result as a floor. The methods are mature and the
+  engineering risk (matrix size, near-chance items) is well-understood. Main caveat: verify
+  per-instance coverage across all cells before starting."
+- **Reviewer 2, ranked #1 of 5.** "IRT-1 + IRT-5, IRT-2 optional. Pure T0, data already parsed,
+  mature methods, and — critically — IRT-1 is a headline in either direction ('recipes are
+  one-dimensional at these scales' is as publishable as 'here's the factor structure'). Fastest
+  path to a paper with no outcome risk. Main real work is the response-matrix builder and a VI
+  2PL fit."
+- Per-instance coverage gate: resolved — all 25 recipes × 66 tasks, 3 seeds at 150M–1B, 1 seed
+  below 150M (see `docs/open-questions-answered.md`).

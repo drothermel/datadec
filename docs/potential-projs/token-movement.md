@@ -238,3 +238,21 @@ project and the T1 harness is reused by Stage 2.
 
 Steps 0–4c (Stage 1) have no dependency on branches and should be done early; steps 5–7
 (Stage 2) are analysis over artifacts produced by the branch runner (4d).
+
+---
+
+## 4. External assessments
+
+Dated, attributed notes from external review conversations, recorded for consolidation — not
+decisions. Only notes about this project are kept here.
+
+### 2026-08-21 — two "top-N by workshop-paper likelihood × speed" rankings
+
+- **Reviewer 2, ranked #5 of 5 (Stage 1 only).** "The TOK-obs-2 → TOK-obs-4 ladder. TOK-obs-2
+  (item flips) is a groupby on existing tables and slots into [the IRT or trajectory papers] as
+  a figure. TOK-obs-4 (KL concentrated in high-entropy tokens) is the highest-impact single
+  figure available at T1-light cost — one forward-pass campaign, no training. It's the only
+  entry here with real null risk, which is why it's fifth, but the harness it builds
+  (checkpoint loader, probe corpus, reference scorer) is exactly what [annealed readouts,
+  landscape geometry, and Stage 2 here] need next."
+- Reviewer 1 did not rank Stage 1 or Stage 2 in its top 3.

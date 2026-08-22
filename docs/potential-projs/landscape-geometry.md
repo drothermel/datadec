@@ -108,3 +108,17 @@ annealed variants exist by then, which would likely raise it to the strongest ve
    first, in parallel with steps 1–2, as it needs no checkpoints.
 7. *(Optional)* **Variant support**: accept `merged:*` / `branch:*` checkpoints as
    interpolation endpoints (GEO-opt-3) — free given the `variant` convention in step 1.
+
+---
+
+## 4. External assessments
+
+Dated, attributed notes from external review conversations, recorded for consolidation — not
+decisions. Only notes about this project are kept here.
+
+### 2026-08-21 — two "top-N by workshop-paper likelihood × speed" rankings
+
+- **Reviewer 2: alternate #5 of 5.** "If you want a lower-variance fifth slot, [the]
+  raw-barrier core is the alternate — evals-only, but your own risk analysis (all
+  cross-recipe barriers high → degenerate stratification) is real."
+- Reviewer 1 did not rank this project in its top 3.

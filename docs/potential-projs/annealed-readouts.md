@@ -164,3 +164,27 @@ Steps 1, 2, and 4 can proceed in parallel; 3 should be finished before 5 starts;
 incremental as data arrives. Step 1 plus the T0 half of step 6 (flip analysis on corrected
 loss) are cheap and should be done regardless of whether the branch/merge half is pursued;
 they also tell you whether that half is worth it.
+
+---
+
+## 4. External assessments
+
+Dated, attributed notes from external review conversations, recorded for consolidation — not
+decisions. Only notes about this project are kept here.
+
+### 2026-08-21 — two "top-N by workshop-paper likelihood × speed" rankings
+
+- **Reviewer 1: deliberately not in the top 3.** "It has the highest ceiling of the
+  eval-adjacent work, but its paper-worthy version requires the branch runs, an eval harness,
+  and a checkpoint loader — real infrastructure and real wall-clock. It's the right second
+  wave project, and [trajectory drift/diffusion and IRT] results will tell you which recipes
+  and steps are most schedule-sensitive, making the branch grid smaller and better targeted."
+- **Reviewer 2, ranked #4 of 5 (T0 half only).** "MPL correction + 'which rankings flip' is
+  cheap, and 'how much should anyone trust intermediate-checkpoint rankings' is the question
+  every DataDecide user has. Your own doc rightly says [the T0 half] alone is a section, not a
+  paper — so either pair it with [the trajectory drift/diffusion paper] (they share the
+  trajectory accessor and the noise floor) or treat it as the mandatory prelude to the branch
+  grid."
+- **Grid targeting (both reviewers).** Use the T0 results from the trajectory and IRT projects
+  to choose schedule-sensitive recipes and steps before branching, in addition to the MPL-fit
+  selection in ANN-5.
