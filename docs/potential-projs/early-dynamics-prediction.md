@@ -161,7 +161,10 @@ augmentation contributions."
 
 Intake note (added 2026-08-22): the "loss-curve linearity → better training" hypothesis
 the CIFAR study tested came from Danielle's advisor; her check on whether it is an
-established belief is recorded in `../topics/reference/loss-curve-forecasting.md`. This is
+established belief is recorded in `../topics/reference/loss-curve-forecasting.md` —
+**neither search found literature support for it**, so the linearity/R² features in EDP
+inherit an untested premise and must be framed as a hypothesis under test, not a
+consensus. This is
 the CNN-sweep precursor of EDP — the same question (early-window
 curve-shape features → final performance) asked on Danielle's own `dr_exp`/`deconCNN`
 CIFAR-10 runs before the July 2025 DataDecide draft. The "early findings" quoted above are

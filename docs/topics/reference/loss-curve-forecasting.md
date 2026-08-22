@@ -129,9 +129,12 @@ loss curves indicate better training, and the conclusion quietly concedes the po
 basis for the linearity hypothesis, and both defaulted to the smoothness heuristic. The
 honest summary for the project is: **no established belief about linearity exists in the
 literature; the well-documented shape priors are power-law / multi-power-law decay, with
-smoothness as a separate stability heuristic.** That is itself a useful result for the
-loss-slope study's framing — the linearity feature was a hypothesis to test, not a
-consensus to lean on. The only citations worth following for EDP are arXiv 2410.11451
+smoothness as a separate stability heuristic.** **Flag:** the loss-slope study's premise — the advisor-supplied hypothesis that more
+linear loss curves indicate better training — has no literature support that either search
+could find. Any write-up of that study (or of EDP's linearity/R² features) must present
+linearity as a hypothesis the study tests, not an accepted belief it builds on, and should
+say so explicitly in the motivation rather than citing smoothness folklore as if it were
+evidence for linearity. The only citations worth following for EDP are arXiv 2410.11451
 (early stabilization of larger models — relevant to "how early is early enough") and AdaGC
 2502.11034 (loss-spike handling, relevant to cleaning early-window features); both
 unverified.
