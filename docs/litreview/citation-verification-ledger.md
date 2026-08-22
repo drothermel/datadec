@@ -270,6 +270,19 @@ Context column = the ~80 characters preceding the ID in the topic, as a memory a
 | 2208.02814 | Angelopoulos et al. — Conformal Risk Control | `estimation-and-calibration-methods` | agent-supplied | TLC, ELI, EDP | |
 | 2107.03374 | Codex / HumanEval — unbiased pass@k estimator | `estimation-and-calibration-methods` | agent-supplied | TLC, ELI, EDP | |
 | 2507.19457 | GEPA — Reflective Prompt Evolution Can Outperform Reinforcement Learning | `prompt-optimization-landscape` | agent-supplied | TLC | |
+| 2604.25359 | The Structured Output Benchmark — schema compliance vs. value accuracy | `structured-output-literature` | agent-supplied | ELI, IRT | |
+| 2602.12247 | ExtractBench — enterprise-document extraction; schema breadth failures | `structured-output-literature` | agent-supplied | ELI, IRT | |
+| 2501.10868 | JSONSchemaBench — constrained decoding frameworks | `structured-output-literature` | agent-supplied | ELI, IRT | |
+| 2605.02363 | "When Correct Isn't Usable" — 7–9B models solve but can't emit usable JSON | `structured-output-literature` | agent-supplied | ELI, IRT | |
+| 2602.14743 | LLMStructBench — 22 models; validity vs. wrong values | `structured-output-literature` | agent-supplied | ELI, IRT | |
+| 2507.01810 | clinical SLM extraction; JSON/YAML/XML parseability | `structured-output-literature` | agent-supplied | ELI, IRT | |
+| 2507.18546 | GLiNER2 — unified NER/classification/structured extraction | `structured-output-literature` | agent-supplied | ELI, IRT | |
+| 2602.15189 | ScrapeGraphAI-100k — schema-constrained web extraction dataset; 1.7B fine-tune | `structured-output-literature` | agent-supplied | ELI, IRT | |
+| 2603.15118 | VAREX — document-extraction benchmark; sub-4B compliance vs. extraction | `structured-output-literature` | agent-supplied | ELI, IRT | |
+| 2502.18878 | Schema Reinforcement Learning | `structured-output-literature` | agent-supplied | ELI, IRT | |
+| 2512.00319 | RL-Struct — dense schema-derived rewards | `structured-output-literature` | agent-supplied | ELI, IRT | |
+| 2604.14862 | Schema key wording as an instruction channel | `structured-output-literature` | agent-supplied | ELI, IRT | |
+| 2510.07248 | PA-Tool — adapting tool/schema names to small models | `structured-output-literature` | agent-supplied | ELI, IRT | |
 
 Rows: 208 (181 agent-supplied, 27 Claude-added, 5 named without ID).
 

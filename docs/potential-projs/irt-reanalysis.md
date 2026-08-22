@@ -139,6 +139,16 @@ other and can be picked by impact.
 Dated, attributed notes from external review conversations, recorded for consolidation — not
 decisions. Only notes about this project are kept here.
 
+### 2026-08-22 — prior art for IRT-10's format intervention (pointer)
+
+A structured-output literature pass (record in
+`../topics/reference/structured-output-literature.md`; unverified) reports that enforcing
+output structure helps base models and hurts instruction-tuned models on generation
+("The Hidden Cost of Structure", RANLP 2025) and that the sign of the effect depends on
+model, task, schema, and prompt (EACL Findings 2026). IRT-10 is the same intervention on
+DataDecide base checkpoints with a binary task; cite these as the expected-direction
+prior and as the reason to report the intervention per checkpoint rather than pooled.
+
 ### 2026-08-22 — a staged difficulty recipe from a small-respondent setting, and what transfers
 
 From a conversation about a 4-model × 8-prompt evaluation (record in

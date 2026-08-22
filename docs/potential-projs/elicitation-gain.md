@@ -141,6 +141,24 @@ The TLC draft PDF the conversation was conducted against is not on file; its int
 surfaced are recorded in `text-latent-code-autoencoder.md` §4. Related-work claims in the
 responses are unverified.
 
+### 2026-08-22 — structured-output literature as external evidence for the wrapper-vs-skill split
+
+Danielle, in a separate conversation (record in
+`../topics/reference/structured-output-literature.md`): "I suspect that the skill of
+adhering to a very specific output format is a different skill than solving many specific
+tasks and that it might be unnecessarily limiting to require that the same LLM does both."
+That is this project's premise stated for a systems audience. Findings there that bear on
+ELI (all unverified): "The Hidden Cost of Structure" (RANLP 2025) reports base models
+often *benefit* from constrained decoding while instruction-tuned models degrade on
+generation — a direct prediction for the pre/post-training axis (ELI-2), and DataDecide
+checkpoints are base models; several 2026 benchmarks separate schema validity from value
+accuracy, which is the feasibility waterfall (format-only → parses → runs → passes) with
+off-the-shelf instruments; SLOT (EMNLP Industry 2025) shows a 1B fine-tuned
+post-processing structurer, i.e. the wrapper can itself be a tiny model rather than a
+prompt — a candidate wrapper class for ELI-1 beyond templates and decoders. The "valid
+JSON but wrong value" failure is what the waterfall's "parses" gate must not be confused
+with success.
+
 ### 2026-08-22 — the system-level prompt-optimization cluster is the outer loop's positioning set
 
 From Danielle's SciSpace deep review of prompt optimization (record in

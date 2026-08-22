@@ -3293,3 +3293,25 @@ clustering by pass/fail vector when no requirement labels exist); GEPA entry in
 [topics/reference/prompt-optimization-landscape.md](topics/reference/prompt-optimization-landscape.md)
 (first missing anchor with an ID; plan gate 3 annotated); second continuation in the
 estimation topic; ledger row.
+
+### Undated (~mid-2026; intake 2026-08-22) — structured output as a separate skill; tiny structurer models
+
+> I'm interested in using really small LLMs as tiny focused components of larger systems.
+> And one core question in that type of system design is the question of structured output.
+> Intuitively I suspect that the skill of adhering to a very specific output format is a
+> different skill than solving many specific tasks and that it might be unnecessarily
+> limiting to require that the same LLM does both task solving and output structuring.
+> Then, I'm curious about the research findings around (1) how enforcing structured output
+> impacts task performance especially for older/smaller models and (2) how small/optimized
+> can we make a model whose sole goal is to structure information extracted from an
+> unstructured text blob (assuming that the info is in the text blob in an easily
+> extractable way, no reasoning required). What are the approaches to (2)?
+>
+> I'm looking for research in 2025 and 2026, with a strong preference for more recent papers
+> since the landscape of LLM capabilities is evolving so quickly.
+
+Routed: new [topics/reference/structured-output-literature.md](topics/reference/structured-output-literature.md)
+(full condensed record; README row under the TLC/ELI group); ELI §4 note (her premise
+restated; base-vs-instruction-tuned prediction for ELI-2; SLOT as a tiny-model wrapper
+class); IRT §4 pointer for IRT-10's expected direction; thirteen IDs to the ledger. The
+tiny-components systems interest has no project doc — left in the reference topic.
