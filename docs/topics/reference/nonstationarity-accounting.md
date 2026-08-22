@@ -70,7 +70,7 @@ just be the name of the thing you've been circling."
 
 ---
 
-## 2026-08-21 — Position in the ranked lists (full lists in `../portfolio-rankings.md`)
+## 2026-08-21 — Position in the ranked lists (full lists in `../../portfolio-rankings.md`)
 
 The frozen-routing case study is **workshop-sized #10** ("Last only because every experiment
 is a new training intervention… the most sequential of the ten. If the reset test lands on
