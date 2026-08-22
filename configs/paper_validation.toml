@@ -1669,7 +1669,10 @@ claim_id = "DD-0017"
 default = true
 evidence_level = "author_derived_aggregate"
 analysis_id = "math_code"
-inputs = [{ table_id = "new_eval_decision_accuracy", columns = ["size", "task", "target_ranking", "logits_per_byte_corr"] }]
+inputs = [
+  { table_id = "new_eval_decision_accuracy", columns = ["size", "task", "target_ranking", "logits_per_byte_corr"] },
+  { table_id = "olmes_aggregate", columns = ["data", "params", "step", "compute"] },
+]
 task_ids = ["mbpp"]
 metric_ids = ["logits_per_byte_corr"]
 model_sizes = ["4M"]
@@ -1683,7 +1686,10 @@ claim_id = "DD-0018"
 default = true
 evidence_level = "author_derived_aggregate"
 analysis_id = "math_code"
-inputs = [{ table_id = "new_eval_decision_accuracy", columns = ["size", "task", "target_ranking", "logits_per_byte_corr"] }]
+inputs = [
+  { table_id = "new_eval_decision_accuracy", columns = ["size", "task", "target_ranking", "logits_per_byte_corr"] },
+  { table_id = "olmes_aggregate", columns = ["data", "params", "step", "compute"] },
+]
 task_ids = ["codex_humaneval"]
 metric_ids = ["logits_per_byte_corr"]
 model_sizes = ["4M"]

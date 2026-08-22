@@ -394,6 +394,10 @@ def test_new_scaling_and_math_code_rules_freeze_audited_thresholds() -> None:
         "DD-0369", ComparisonParameterName.PREDICTED_TIE_CREDIT
     ).sensitivity_grid == (0.0, 0.5)
     for claim_id in {"DD-0017", "DD-0018"}:
+        assert {item.table_id for item in attempts[claim_id].inputs} == {
+            "new_eval_decision_accuracy",
+            "olmes_aggregate",
+        }
         assert parameter(
             claim_id, ComparisonParameterName.ACCURACY_THRESHOLD
         ).sensitivity_grid == (0.75, 0.8, 0.85)
