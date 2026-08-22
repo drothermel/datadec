@@ -236,6 +236,65 @@ explain-then-translate with extra steps), and that one representation serves mul
 downstream uses (otherwise it's scaffolding, not a representation). Those two comparisons
 are the entire defense of the gap."
 
+## 2026-07-11 — Two interest categories: representation exploration vs. beating lossless compression
+
+**Danielle's framing.** Her own interest: "exploring what types of representations you can
+make and what you can do with them, and how you can control them." Left alone she would
+study whether a representation can be *broadly effective* — robustness across task types
+with code input, and across models: "could you actually optimize the encoder prompt such
+that you get a representation that you could pass into any level of model and get high
+quality output from it, or even could you hyper-optimize for a specific model? ... the
+smallest representation that would give a high pass rate on a very specific model." The
+lab's chosen direction instead: **can lossy functional compression beat lossless
+compression** — this approach as the lossy stage, existing lossless algorithms applied to the
+intermediate, exploiting that for code "we care about preserving functionality not surface
+form," so the lossy portion only needs to reconstruct functionality. "It uses the same
+structure, and it does give us a very crisp optimization metric, but it also feels kind of
+qualitatively different ... at the same time, I think that by pursuing [that] goal, I can
+learn things about my goal."
+
+**Response (near-verbatim).**
+
+*What the compression framing buys.* "A brutal scalar with unambiguous baselines — you
+either beat zstd (and the stronger baseline, LLM-plus-arithmetic-coding à la 'Language
+Modeling Is Compression') or you don't. It's also theoretically clean: lossless is bounded by
+the entropy of the surface string, while [this] scheme targets the entropy of the functional
+equivalence class, and the gap between those bounds is a real quantity." Callback to Point 1:
+"under a bits objective, verbatim smuggling stops being a cheat and becomes a priced
+tradeoff — copying the tricky lines now costs bits. Compression is the one objective that
+contains its own anti-degeneracy term; the bottleneck you resisted designing in by hand
+becomes the research question itself." Application: semantic compression of code where only
+behavior matters (fitting more code into a context window).
+
+*What it costs.* "The objective is actively hostile to everything you personally find
+interesting — readability, editability, factored structure, cross-model portability are all
+bits, and bits are the enemy, so the optimal artifact is dense, cryptic, and
+decoder-specific." Guarantee semantics differ: "gzip never lies, while lossy-functional
+compression is test-relative (silent behavior change outside the suite) and stochastic and
+expensive at decompression time." Headline risk: "equivalence classes are so large that 'beat
+gzip' may read as unsurprising, with the real interest buried in the details."
+
+*Why they are the same project.* "It's one rate–distortion plane viewed from two axes: [one]
+pins the distortion criterion (pass tests) and minimizes rate; you want to roughly fix rate
+and explore the distortion axis — which properties survive, which can be steered. And you've
+already converged more than your framing suggests: your 'smallest representation with high
+pass rate on one specific model' is [the compression] question, verbatim. [The compression]
+metric doubles as your instrument, too — bits saved relative to lossless is exactly the
+information content of surface-given-function, i.e., a measurement of how much of code is
+style, the very quantity your factored-representation ideas would manipulate."
+
+*Where they diverge.* "The artifact. [The compression-optimal] representation and yours are
+different objects, so qualitative findings about [one] (what it looks like, whether it's
+readable or structured) won't transfer. What transfers ~100% is the machinery — harness,
+optimizer loop, test-based evaluation, equivalence-pair generation — plus positioning shifts
+from the NL-intermediates literature to the LLM-compression one." Sequencing: the compression
+project builds all the infrastructure and earns credibility on a crisp claim; its natural
+ablations — bits vs. readability, model-specific vs. portable — are the representation
+research agenda.
+
+Baseline note (unverified): "beat lossless" should be defined against LLM arithmetic coding
+(Delétang et al., "Language Modeling Is Compression"; LLMZip), not only gzip/zstd.
+
 ## Open questions
 
 - Bottleneck: now framed as *optional* and itself an experimental variable — does
@@ -251,6 +310,11 @@ are the entire defense of the gap."
 - Prior-art map needs a real literature pass: resolve the NL-for-code-translation papers,
   the LDB-like debugging paper, the NL-bottleneck-for-grading paper, round-trip correctness,
   concept bottleneck models. Differentiating claims: optimized > hand-prompted baseline;
-  one representation serves multiple downstream uses. Points 5+ pending.
+  one representation serves multiple downstream uses.
+- Two framings on one rate–distortion plane: compression (fix distortion = tests, minimize
+  bits; baseline = LLM arithmetic coding) vs. representation exploration (fix rate, explore
+  controllable distortion; cross-model portability vs. per-model hyper-optimization). Decide
+  how the compression project's ablations are designed to also answer the representation
+  questions. Next excerpt: how to move the compression goal forward.
 
 **Waiting on:** the remaining points of the point-by-point discussion; a promotion decision.

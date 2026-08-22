@@ -969,3 +969,40 @@ Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-c
 
 Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-code-autoencoder.md)
 ("Point 4" section; prior-art map flagged as needing a literature pass).
+
+### Text-latent code autoencoder — two interest categories — conversation 2026-07-11, intake 2026-08-22
+
+> Perfect. Okay. So I guess then the next branching point is that I would say I'm more
+> interested in kind of exploring what types of representations that you can make and,
+> like, what you can do with them, basically, and how you can control them, um, stuff like
+> that. And I think I would probably left on my own, choose to look at whether you could
+> learn a representation that would be broadly, um, effective. Um, so probably looking at
+> robustness for representation across different types of tasks that have code input and
+> then also looking at robustness across different models. So, basically, like, could you
+> actually optimize the encoder prompt such that you get a representation that you could
+> pass it into any level of model and get high quality output from it, um, or even could
+> you hyper optimize for a specific model? So let's say you wanted the smallest
+> representation that would give a high pass rate on a very specific model, um, separately
+> from the others. I think those are the types of things that I would investigate if I was
+> just doing what I thought was interesting. But my adviser has decided that we are
+> investigating whether we can beat lossless compression, um, by combining this approach to
+> do lossy compression and then existing lossless compression algorithms on the
+> intermediate representation, um, with the idea that because, like, because we're working
+> with code, then we care about preserving functionality not surface form, and so that
+> gives us the ability to tune the lossy compression portion, um, where we just need to
+> reconstruct the functionality, not the surface form. And therefore, we should be able to
+> do better than pure general case losses compression, um, which is fundamentally a
+> different… like, I mean, it uses the same structure, and it does give us a very crisp
+> optimization metric, um, but it also, I guess, feels kind of qualitatively different than
+> the types of things that I was interested in. Um, but at the same time, I think that by
+> pursuing his goal, I can learn things about my goal. Um, so the next thing that I'm gonna
+> wanna talk about is kind of how to move his goal forward. But before I do that, I would
+> like to pause and get your thoughts again at a high level, not at a, like, details
+> implementation level about the two different interest categories and kind of the pros
+> and cons of those different types of hypotheses, but also how they might be similar or
+> different.
+
+Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-code-autoencoder.md)
+("Two interest categories" section). The lab's compression goal is recorded as a project
+framing; the response's "research agenda smuggled in as analysis" phrasing was rewritten as
+a plain sequencing point.
