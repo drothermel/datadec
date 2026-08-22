@@ -220,3 +220,44 @@ correctness given gold evidence; final set P/R and complete-set accuracy.
 "The remaining hard problem is not the cost of verifying a proposed answer ... It is ensuring
 that the proposal pool is sufficiently diverse that missing answers have an opportunity to
 be verified at all."
+
+## 2026-08-17 — Second validation pass on the state of the field
+
+A second deep-search response to Danielle's restated goals (three-paper arc recorded in
+`../staging/maqa-oracle-ladder.md`). Near-verbatim, condensed; claims unverified.
+
+- **"F1 is still surprisingly low" — confirmed.** MoNaCo: frontier LLMs at most 61.2% F1,
+  "hampered by low recall and hallucinations"; across 15 frontier LLMs (GPT-5, o3, Claude Opus
+  4, Gemini 2.5 Pro, DeepSeek-R1, …) the top performer (o3) answered only 38.7% perfectly.
+  QAMPARI 2026 retrieval: off-the-shelf retrievers Recall@100 52–62%, MRecall@100 17–26;
+  in-domain fine-tuning only to the mid-60s. Set-based retrieval: best average nDCG@10 of
+  0.346 on complex-retrieval benchmarks; dense retrievers still fail to represent logical
+  relations.
+- **Date correction.** MoNaCo is arXiv 2025 / TACL 2026 — not contemporaneous with QAMPARI
+  (2022), RoMQA (2022), QUEST (2023); possibly conflated with Break/QDMR (2020). It "is now
+  arguably the flagship benchmark for exactly your setting."
+- **Tracks.** "Exhaustive / set-based / fan-out" is roughly right but not the field's labels:
+  fan-out from FanOutQA (ACL 2024); set operations descend from QUEST (SetBERT and
+  follow-ups); exhaustive/complete-recall from QAMPARI. Add a fourth: **agentic /
+  deep-research search** — RVR benchmarks against agentic search (LLM alternating reasoning
+  and tool calls) and beats it by 10% relative in complete recall on QAMPARI. Newer datasets:
+  DeepAmbigQA (2025; answer completeness under ambiguity); conflict-aware MAQA benchmarks
+  (all valid answers plus detection of conflicting pairs); RI2VER evaluating on RoMQA and
+  QAMPARI.
+- **Dataset-quality complaints remain live and mostly unfixed for these datasets.** QUEST's
+  authors acknowledge Wikipedia categories have imperfect recall, so false positives may be
+  wrongly penalized; RoMQA gold evidence has known coverage gaps. The general problem is
+  documented (lexical-matching failures largely from incomplete gold lists; generative
+  outputs harder to match); the field's response is LLM-as-judge, which fixes the
+  formatting-over-correctness complaint but adds a failure mode: when the gold reference
+  conflicts with the judge's parametric knowledge, reference adherence degrades and prompt
+  mitigations don't fix it. **No published cleaned QAMPARI/QUEST/RoMQA was found.**
+- **The entity-graph approach "held up" — it is now GraphRAG.** Microsoft GraphRAG (LLM-
+  induced graph + community summaries); HippoRAG (KG + personalized PageRank from query
+  seeds); LightRAG (dual-level graph index); GFM-RAG, HopRAG, RAPTOR, Think-on-Graph. These
+  build schemaless graphs by LLM or OpenIE extraction, so LLM extraction has largely replaced
+  string matching and surface-form resolution (co-occurrence graphs still noted as noisy).
+  Caveat: most GraphRAG work evaluates on 2–4-hop single-answer benchmarks (HotpotQA,
+  MuSiQue, 2Wiki), not exhaustive multi-answer sets; graph-based exhaustive retrieval on
+  QAMPARI/QUEST/RoMQA/MoNaCo "appears genuinely underexplored" — RVR is retriever-side
+  verification, not traversal.

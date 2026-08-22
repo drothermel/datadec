@@ -1412,3 +1412,52 @@ added in [topics/wiki-qa-sharding.md](topics/staging/wiki-qa-sharding.md).
 
 Routed to: new staging topic [topics/maqa-oracle-ladder.md](topics/staging/maqa-oracle-ladder.md)
 (Danielle's goal recorded as the seed).
+
+### MAQA goals restated (second model) — conversation 2026-08-17
+
+> About four years ago I worked on a multi-answer question answering research project. You
+> have a single question that has a full list of answers that you assume is correct. So,
+> what movies did Joachim Trier direct? And the questions could be simple, they could be
+> complex where you need to do set operations or multi-hop evidence retrieval to produce the
+> final answer set. I was specifically interested in the setting where you have access to a
+> knowledge corpus like raw wikipedia (not parsed or linked or annotated).
+> There were a few different datasets that we looked at back then: QAMPARI, QUEST, RomQA
+> and Monaco. I know existing research has continued, split into three core tracks:
+> Exhaustive QA, Set based QA, and wide fan out QA. And of course LLMs have gotten much
+> stronger, but my understanding is the F1 metrics on datasets like these are still
+> surprisingly low.
+> One thing that really bothered me before was that the dataset ground truth was not clean:
+> you might be missing answers in the exhaustive test, the evidence passages were selected
+> heuristically and were often incorrect, the scoring penalized formatting of answers more
+> that correct vs incorrect, etc. And I believe many of these things have been investigated
+> and improved, though maybe not for these datasets specifically. I would also assume more
+> datasets in the space have been released.
+> Another big issue for me before was the approach we attempted was very brute force:
+> identify all enitiy mentions in the questions amd the wikipedia passages. Split wikipedia
+> into 100 word chunks and then make a graph using the entity mentions as edges. Traverse
+> the graph for candidate fetch. Cluster evidence by entity and rerank per entity for a
+> subset to use for reading per-entity. I think ironically that building a knowledgebase
+> like that from wikipedia and doing more exhaustive retrieval has actually held up in the
+> era where LLMs are super strong but correctness is the issue. But the strung based
+> matching, entity resolution across different surface forms, dealing with long tails, etc
+> was frustrating and introduced infra constraints.
+> Then I'm now interested in picking this project up to:
+>    1. do a retrospective, taking the shape of the approach we considered then with the
+>       datasets from then but applying what ive learned since then to make faster/better
+>       progress.
+>    2. then update to a variation that fits the current landscape, still sticking
+>       moderately close to tye brute force design as a target first paper (workshop
+>       likely) and sort of a heuristic baseline from someone who doesnt care about people
+>       thinking the approach is cool and just wants to see how far we can get with simple
+>       clean approaches.
+>    3. then likely try to do a paper or two on more interesting approaches targetting
+>       specific failure points
+> does this overall intro to my goals make sense? please dont recommend approaches to me
+> yet, but do perform some research to validate my assimptions about the current state of
+> the field and provide me a foundation to work from + provide any feedback to my thoughts
+> that you have.
+
+Routed to: [topics/maqa-oracle-ladder.md](topics/staging/maqa-oracle-ladder.md) (three-paper
+arc as program framing + plan feedback) and
+[topics/multi-answer-qa-literature.md](topics/reference/multi-answer-qa-literature.md)
+(second validation pass).

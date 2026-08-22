@@ -143,12 +143,51 @@ evaluator-recognized recall and precision — "whether the next unit of complexi
 into entity linking, retrieval breadth, diversity, iterative search, reading, or simply
 fixing the evaluator."
 
+## 2026-08-17 — Danielle's three-paper arc (program framing for MAQA)
+
+Her own statement of the project, paraphrased from the prompt (verbatim in
+`../../danielle-inputs.md`):
+
+1. **Revisit the original approach** — same shape, same-era datasets (QAMPARI, QUEST, RoMQA;
+   MoNaCo named too), applying what she has learned since to make faster/better progress.
+2. **A variant that fits the current landscape**, staying moderately close to the brute-force
+   design, as the target first paper (workshop likely) — "a heuristic baseline from someone
+   who doesn't care about people thinking the approach is cool and just wants to see how far
+   we can get with simple clean approaches."
+3. **One or two papers on more interesting approaches targeting specific failure points.**
+
+The original brute-force design she describes: identify all entity mentions in questions and
+Wikipedia passages; split Wikipedia into 100-word chunks; build a graph with entity mentions
+as edges; traverse for candidate fetch; cluster evidence by entity; rerank per entity for a
+subset to read per entity. Her view: "building a knowledge base like that from Wikipedia and
+doing more exhaustive retrieval has actually held up in the era where LLMs are super strong
+but correctness is the issue," while string matching, surface-form entity resolution, long
+tails, and the infra constraints they imposed were the frustrating part. Her standing
+dataset-quality complaints: missing answers in exhaustive gold sets; heuristically selected,
+often incorrect evidence passages; scoring that penalized answer formatting more than
+correctness.
+
+**Feedback received (near-verbatim).** "The overall arc — [revisit], then an
+unglamorous-but-clean brute-force baseline, then targeted failure-point papers — is coherent
+and well-timed. The 'simple exhaustive baseline that nobody bothered to run properly' niche
+is exactly the kind of thing workshop reviewers tend to appreciate right now, especially
+given how much of the GraphRAG literature avoids multi-answer benchmarks." Two plan notes:
+(1) contamination — include a closed-book baseline to separate "retrieval helped" from "the
+model already knew" (MoNaCo evaluates closed-book as a separate setting); (2) the datasets are
+frozen against specific Wikipedia dumps — pin the corpus version and decide whether to report
+on original dumps vs. current Wikipedia, for comparability and for the eval-cleanliness
+story. Also: a re-annotation / eval audit of QAMPARI/QUEST/RoMQA with modern tooling "could
+itself be a credible workshop contribution folded into" paper 1; graph-based exhaustive
+retrieval evaluated on QAMPARI/QUEST/RoMQA/MoNaCo "appears genuinely underexplored" — a
+favorable gap for paper 2. Date correction: MoNaCo is 2025 (TACL 2026), not from the original
+era.
+
 ## Open questions
 
 - Confirm QAMPARI artifacts: released dump + chunked corpus, construction metadata (source
   entities/relations), the 200-question enriched subset, official metric scripts.
-- Whether this becomes the first MAQA paper on its own (a diagnostic/funnel paper) or the
-  measurement layer under a system paper.
+- Where the oracle ladder sits in the three-paper arc: it is the natural spine of paper 1
+  (revisit + eval audit) and the measurement layer for paper 2 (clean brute-force baseline).
 - Relationship to the cleaner-dataset pipeline in the literature topic (verification-first
   gold sets) — same project or a follow-on.
 
