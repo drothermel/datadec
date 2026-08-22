@@ -242,6 +242,53 @@ headline plot, and the anchor-link vs. string-match graph ablation. The earlier 
 more complete on the experiment matrix, the N/K/L value grids, output-budget and
 gold-incompleteness protocols, and persisted intermediates.
 
+## 2026-08-17 — Problem definition, solution shape, impact hypotheses (Danielle)
+
+Applying principle 1 of `../reference/project-approach-principles.md`:
+
+**Problem.** Exhaustive QA for QAMPARI-style questions — entity-centric, few hops max, some
+simple set operations, generally 4–10 answers — over an unannotated knowledge corpus;
+success = F1 on the cleanest possible dataset.
+
+**Solution space.** (1) prepare the corpus; (2) get evidence from it; (3) choose which
+evidence to use; (4) use the evidence to answer — entity-centric: form an entity set and
+answer from it.
+
+**What will impact outcomes most (hypothesis list).**
+- a complete but precise entity set to select answers from;
+- evidence chunks small enough that all chunks needed for multi-hop questions fit usefully in
+  the answering mechanism's input;
+- diversity of retrieved evidence for long-tail answers;
+- normalization of entity mentions so they are linkable and match the expected answer form;
+- an answering mechanism that is accurate given clear, correct evidence;
+- some way to limit evidence explosion under time and infra constraints.
+
+**Plan under principles 3 and 4.** Investigate the scale of QAMPARI's issues beyond the
+original paper's own investigation (entity string matching, evidence representativeness,
+answer-set completeness), then quickly use modern tools to improve the dev set and the
+evaluation metric in a best-effort way. Start with QAMPARI for historical reasons.
+
+**Feedback specific to this plan (near-verbatim).** Each hypothesis maps to a ceiling
+measurement — entity-set completeness → answer-vocabulary ceiling; chunk size/budget →
+set-cover distribution; normalization → metric self-test; answering given clean evidence →
+gold-context reading ceiling — annotate them as such. The list is recall-heavy: "F1 on
+exhaustive QA punishes overgeneration hard, and with modern LLMs the highest-risk component
+has arguably shifted from 'can it extract answers from clean evidence' (mostly solved) to
+'does it know when to stop' — inclusion thresholding and abstention calibration"; QAMPARI's
+paper found over-prediction was a real failure mode — **add precision control as a
+first-class impact axis**, and promote eval fidelity into the list. The entity-set
+commitment makes non-entity answers (dates, quantities, works without pages) structurally
+impossible — state it as "the entity-set assumption caps recall at X%, we accept that."
+Three early distribution plots: answers per question; minimum passages per question (set
+cover); entity-mention frequency. Clean-set hygiene: time-box, version (e.g.
+`qampari-dev-clean-v1`), deterministic and publishable pipeline, official and cleaned
+numbers side by side; the noise-vs-difficulty audit is "plausibly the most citable single
+result." Keep a small frozen QUEST or RoMQA slice as a transfer smoke test — QAMPARI is
+Wikidata/table-derived (relation-composition heavy, uniform answer style), unlike QUEST's
+category intersections and RoMQA's constraint clusters. Decide kill criteria for the
+entity-centric shape up front; put cost on every plot — "the F1-vs-compute curve is the
+contribution."
+
 ## Open questions
 
 - Confirm QAMPARI artifacts: released dump + chunked corpus, construction metadata (source
@@ -252,5 +299,8 @@ gold-incompleteness protocols, and persisted intermediates.
   mentions vs. the ReLiK-style linker from `../reference/entity-linking-at-scale.md`.
 - Relationship to the cleaner-dataset pipeline in the literature topic (verification-first
   gold sets) — same project or a follow-on.
+
+- Kill criteria for the entity-centric shape (undecided); precision-control / stopping
+  mechanism as an explicit impact axis.
 
 **Waiting on:** further excerpts; a promotion decision.

@@ -1469,3 +1469,61 @@ QAMPARI); not repeated.
 
 Routed to: [topics/maqa-oracle-ladder.md](topics/staging/maqa-oracle-ladder.md) ("A second,
 leaner version of the ladder", with a cross-reference to the first).
+
+### Project-approach principles and MAQA problem definition — conversation 2026-08-17
+
+> Okay. So I spent some time thinking about what some good general takeaways are in terms
+> of how to approach new projects, um, from looking back at my approach to this project and
+> also looking at my approach to other projects. And I guess I wanna list some out to get
+> your opinion on them, um, and then show how I've been thinking about doing some of the
+> steps for this project.
+>    1. start by being clear about the problem def, shape of solution space youre
+>       considering, and then what things are likely to have a large impact on success in
+>       that solution shape
+> Choose your problem
+>       * exhaustive QA for questions like those in the QAMPARI dataset (entity centric, few
+>         hop max, some simple set ops, 4-10 answers generally)
+>       * using a knowledge corpa that is unannotated
+>       * success measured as F1 on the cleanest possible dataset
+> Choose your solution space
+>       1. prepare corpa for use
+>       2. get evidence from corpa
+>       3. choose what evidence to use for answering
+>       4. use evidence to answer
+> → entity centric, form an entity set and answer from it.
+> What will impact outcomes the most
+>       * having a complete but previse entity set to select answers from
+>       * being able to select small enough evidwnce chunks that all chunks needed for
+>         multihop qs fit in the input usefully to the answering mechanism.
+>       * diversity of evidence retrieved to allow for long tail answers
+>       * normalization of entity mentiobs such that they are linkable and the result
+>         matches the expected answer form
+>       * an answer mechanism that is able to give accurate answers when given clear and
+>         correct evidence
+>       * some way to limit explosion of evidence according to time and infra constraints
+>    2. its worthwhile to start by getting an intuition for the problem, especially for the
+>       datasets + the high leverage axes from your solution shape
+>       * especially for something so heuristic: how do super simple baselines perform and
+>         why is an essential question
+>       * you should understand the distribution of the important types of objects youre
+>         working with along the major axes that impact solution cost, performance or both.
+>         long tails can tank a bad design, and naive truncation can tank performance.
+>    3. if you know your dataset is noisy in a way that might impact your solution, spend
+>       just a little time (a) scoping the damage and potentially (b) making a clean set to
+>       iterate against.
+> -> i want to investigate the scale of the qampari issues in addition to the investigation
+> they did (including entity string matching, evidence representativeness, etc), answer set
+> completeness, amd then quickly use modern tools to improve the dev set + evaluation
+> metric in a best effort type of way.
+>    4. its often easirr to start working against a single dataset, and as long as (a) your
+>       systems are reproducible and (b) each experiment tells you something about what
+>       does or doesnt work and why on the one dataset, tou shoild have what you need to
+>       redesign/extend your solution to more similar datasets fairly directly.
+> -> start with qampari for historical reasons
+> thoughts?
+
+Routed to: new reference topic
+[topics/project-approach-principles.md](topics/reference/project-approach-principles.md)
+(the four general principles + feedback) and
+[topics/maqa-oracle-ladder.md](topics/staging/maqa-oracle-ladder.md) (problem definition,
+solution shape, impact hypotheses, plan-specific feedback).
