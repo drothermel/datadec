@@ -331,3 +331,21 @@ papers to [topics/pretraining-to-posttraining.md](topics/pretraining-to-posttrai
 [topics/posttraining-experiment-design.md](topics/posttraining-experiment-design.md);
 [potential-projs/tiny-scale-measurement.md](potential-projs/tiny-scale-measurement.md) §4;
 the potential-projs README program-level notes.
+
+### Toggle 5 — How to Combine Vision and Language for the ICL/Post-training Experiments
+
+> I started out looking at plasticity in earlier CNN stuff, and then looking at what results
+> I could get confidence bounds for and which I couldn't. Despite not finishing that
+> direction, I think there's value to having both CNN experiments at a small scale in vision
+> and LLM experiments in the larger scale for NLP. I'm wondering if there's a way to stay in
+> this realm of experiments and combine these two spaces, potentially incorporating vision
+> transformers instead of CNNs for clear comparisons if it would help.
+
+Routed to: [topics/icl-as-posttraining.md](topics/icl-as-posttraining.md) (second entry:
+the two-tier design); new reference topic [topics/icl-literature.md](topics/icl-literature.md)
+(Chan et al. 2022; Raventós et al.); the matched-loss two-controls caution to
+[potential-projs/trajectory-statistics.md](potential-projs/trajectory-statistics.md),
+[potential-projs/landscape-geometry.md](potential-projs/landscape-geometry.md),
+[potential-projs/irt-reanalysis.md](potential-projs/irt-reanalysis.md) §4 and the
+potential-projs README program-level notes.
+

@@ -251,3 +251,16 @@ Full text for each: `recipe-featurization.md` §4 (first),
   cheap continuous observable reveals latent capability?*" Staging topic:
   [../topics/icl-as-posttraining.md](../topics/icl-as-posttraining.md).
 
+### 2026-08-18 — matched-loss comparisons need two controls; define the invariant measurement, not the invariant model (from the Research Trajectory page)
+
+- "Matched-loss pairs have a hidden confound: equal loss at different token counts vs. equal
+  tokens at different loss are different controls, and you'll want both, since 'recipe A
+  reaches this loss faster' and 'recipe A has better ICL at this loss' are separable
+  claims." Applies to every matched-loss comparison in the portfolio (TRJ-3, IRT-3, GEO pair
+  selection, TOK-4, the sweep reread as data in PART).
+- Cross-scale / cross-modality design principle: "Define the invariant measurement, not the
+  invariant model. The bridge between tiers is a protocol… The deliverable of tier 1 is
+  'here is a low-variance elicitability metric and here's how many seeds it needs.'" A
+  confirmation test at the expensive tier "needs far less compute than an exploration
+  sweep." Staging topic: [../topics/icl-as-posttraining.md](../topics/icl-as-posttraining.md).
+

@@ -279,3 +279,10 @@ decisions. Only notes about this project are kept here.
   medium-high.** **Ceiling: high** — a clean zero-training confirmation of river-valley
   structure in public data is a widely quotable figure." Overlap warning with the IRT paper;
   a scoop race.
+
+### 2026-08-18 — a control to add to TRJ-3's matched-loss pairing (from the Research Trajectory page)
+
+- "Matched-loss pairs have a hidden confound: equal loss at different token counts vs. equal
+  tokens at different loss are different controls, and you'll want both, since 'recipe A
+  reaches this loss faster' and 'recipe A has better [signature] at this loss' are separable
+  claims." The pairing utility should emit both pair types.

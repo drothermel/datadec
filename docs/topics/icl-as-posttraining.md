@@ -64,3 +64,50 @@ pretraining recipes.**
 living in text space, so you're doing gradient-free adaptation where a 'seed' is a sampling
 temperature draw. Your whole trajectory — loss curves, proxy metrics, elicitation — keeps
 circling one question: *what cheap continuous observable reveals latent capability?*"
+
+---
+
+## 2026-08-18 — Combining vision and language: a two-tier design (from the Research Trajectory page)
+
+**Question posed (Danielle).** Earlier work looked at plasticity in CNNs and at which results
+could and could not get confidence bounds. Is there a way to keep both small-scale vision
+experiments and larger-scale LLM experiments, combining the two spaces — possibly with vision
+transformers instead of CNNs for clean comparisons?
+
+**"Pretraining choices shape elicitability, holding final performance constant — this
+doesn't require language at all.** ICL is the perfect 'post-training' stand-in because it's
+gradient-free, continuous (per-token loss on the k-th in-context example), and cheap enough
+to run with the many seeds your CNN experience taught you that you need for confidence
+bounds." Prior art (Chan et al. 2022; Raventós et al.) in `icl-literature.md`: "that
+literature is your hypothesis, already demonstrated in miniature — but it's framed as 'when
+does ICL emerge,' not as 'ICL-ability as a measurable functional of pretraining recipe that
+predicts adaptation at larger scale.' That reframing is your gap."
+
+**Proposed sequence**
+1. "**Tiny-transformer vision/synthetic tier (weeks, full statistical rigor).** Adapt your
+   CNN pipeline to small ViTs or sequence-transformers on Omniglot/CIFAR-style ICL tasks à la
+   Chan. Vary pretraining recipe (data distribution properties, ordering, mixture), train
+   many seeds, and — critically — construct **matched-loss checkpoint pairs**: select
+   checkpoints across recipes at equal pretraining loss, then measure ICL curves. This is
+   the clean version of your dead project: same question, but the outcome variable moves,
+   and you can afford the seeds."
+2. "**Define the invariant measurement, not the invariant model.** The bridge between tiers
+   is a protocol: ICL curve slope/asymptote at matched loss, with a power analysis (your old
+   confidence-bound work is directly reusable here — it becomes methodology, not a detour).
+   The deliverable of tier 1 is 'here is a low-variance elicitability metric and here's how
+   many seeds it needs.'"
+3. "**DataDecide tier (one replication, not a sweep).** Reproduce your pipeline on a handful
+   of DataDecide recipes and measure the *same* protocol — ICL loss curves on held-out tasks,
+   matched-loss comparisons. You're not powering a new discovery here; you're testing
+   whether the mapping found in tier 1 transfers. A confirmation test needs far less compute
+   than an exploration sweep."
+
+**Two cautions**
+- "ViT-ICL and LLM-ICL plausibly share mechanism (induction-head-like circuits) but that's
+  an assumption of the design — worth stating as such, and honestly, finding that the
+  mapping *doesn't* transfer would also be a publishable answer to 'can small vision
+  experiments inform LLM decisions.'"
+- "Matched-loss pairs have a hidden confound: equal loss at different token counts vs. equal
+  tokens at different loss are different controls, and you'll want both, since 'recipe A
+  reaches this loss faster' and 'recipe A has better ICL at this loss' are separable
+  claims."

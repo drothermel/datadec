@@ -152,3 +152,10 @@ decisions. Only notes about this project are kept here.
   flagship], with a causal knob."
 - **Workshop-sized list:** not included. **Full-conference list:** not included as a
   standalone.
+
+### 2026-08-18 — a control to add to pair selection (from the Research Trajectory page)
+
+- For recipe–recipe pairs: "equal loss at different token counts vs. equal tokens at
+  different loss are different controls, and you'll want both." The core already
+  distinguishes matched-compute from matched-loss pairs; keep both in every stratified
+  analysis rather than collapsing to one.

@@ -237,3 +237,9 @@ pitch is rigor and science rather than large-lab adoption?
   threshold, which is where the loss-to-accuracy mapping gets fragile" (contrasting the
   exponential link of Gadre et al. 2024, the FLP pipeline of Chen et al., and Bhagia et al.'s
   model ladders). See `docs/topics/loss-curve-forecasting.md`.
+
+### 2026-08-18 — a control for matched-ability comparisons (from the Research Trajectory page)
+
+- The matched-loss caution applies to matched-θ recipe comparisons (IRT-3) too: "equal loss
+  at different token counts vs. equal tokens at different loss are different controls" —
+  report DIF at matched θ both with and without conditioning on compute.
