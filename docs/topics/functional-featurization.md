@@ -226,3 +226,12 @@ learn the effect size before committing to the full tensor."
   is specifically recipe × stage × response-profile on an open suite.
 - The surrogate ladder is core, not a mitigation — it is the only way the full tensor is
   affordable.
+
+---
+
+## 2026-08-21 — Confound to check first
+
+If DataDecide's realized per-window source mixture drifts from nominal (small sampling
+fractions, no per-window stratification), "every run has an implicit, unintended curriculum"
+— which "confounds every timing/curriculum claim built on these suites including your own
+U_c(t) program." Open gate in [../open-questions-answered.md](../open-questions-answered.md).

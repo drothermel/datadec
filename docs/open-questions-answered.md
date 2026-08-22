@@ -148,4 +148,12 @@ experiments will log intermediates.
 - **FLAME-MoE routing-log contents.** Which checkpoints, how many tokens, whether token
   identities are recoverable. Gates the routing follow-up (TRJ-moe-1/3) and TOK-obs-5
   entirely; decides T0 vs. T1 for them.
+- **Per-window realized mixture in DataDecide runs (nonstationarity).** Does the realized
+  source mixture in each training window drift from the nominal recipe proportions, given
+  small per-corpus sampling fractions and no per-window stratification? Checkable by
+  reconstructing data order from the OLMo training configuration (deterministic ordering)
+  and summing per-source tokens per window for every run. Gates every timing/curriculum
+  claim built on DataDecide (including the stage-dependent data-value ideas in
+  `docs/topics/functional-featurization.md`) and is itself a candidate audit paper — the
+  time-resolved extension of REC-a.
 

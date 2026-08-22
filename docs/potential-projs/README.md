@@ -110,3 +110,20 @@ stand on their own. This applies equally to every §4 section.
   follow-up; if it doesn't, you saved yourself the branch compute. That's the cleanest
   dependency chain in the set, and worth preserving explicitly."
 
+### 2026-08-21 — "one lab thesis": measurement science of LM training at academic scale
+
+- "The advantage [of small scale] is that cheapness converts into statistical practices the
+  field otherwise never gets: 20+ seeds, factorial designs, power analysis, preregistered
+  comparisons, real confidence intervals. Nearly every big-lab training paper is n=1 per
+  configuration. A lab whose identity is 'we run LM training experiments to wet-lab
+  evidentiary standards' is differentiated, and the measurement problem… — how do you even
+  detect a training or HP-fitting signal at 150M — is the research question, not the
+  obstacle."
+- "The small-scale platform generates the model populations that IRT requires as respondents;
+  the MoE repo is a validated apparatus already sitting in that scale range with a
+  categorical observable dense models lack; and the probe battery + noise-floor work is the
+  shared instrument suite. 'Measurement science of language-model training at academic
+  scale' is a coherent identity that big labs structurally won't compete with — not because
+  they can't, but because n=20-seed experiments on 150M models will never be their
+  incentive." Full text in [../topics/small-scale-measurement-science.md](../topics/small-scale-measurement-science.md).
+

@@ -162,3 +162,17 @@ decisions. Only notes about this project are kept here.
   "strengthens the case for building [the] reference-model scorer and corpus-feature
   extractors first (they're what routing gets joined *to*)." (Full discussion in
   `docs/topics/moe-routing-as-data-instrument.md`.)
+
+### 2026-08-21 — on a time-resolved REC-a (per-window realized mixture)
+
+- Question raised: DataDecide uses a small fraction of each recipe's corpora, so "unless they
+  use stratified sampling throughout training they are likely getting real nonstationarity
+  or not really hitting the percentages that they expect."
+- Response: "This is the time-resolved extension of [REC-a] (labels ≠ realized token shares,
+  now per-window rather than in aggregate). It's checkable: OLMo-style training logs data
+  order deterministically, so you can reconstruct the realized mixture per window for every
+  DataDecide run and measure the nonstationarity directly. If it's substantial, it (a) is a
+  standalone audit paper in the same vein as [REC-a] but with dynamics implications, (b)
+  confounds every timing/curriculum claim built on these suites… and (c) motivates a concrete
+  artifact: a stratified-sampling data loader as the fix." Listed as an open gate in
+  `docs/open-questions-answered.md`.

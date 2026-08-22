@@ -141,3 +141,24 @@ Recorded in: [open-questions-answered.md](open-questions-answered.md) (as a reso
 Item 1 of a three-item response. Routed to:
 [potential-projs/irt-reanalysis.md](potential-projs/irt-reanalysis.md) §4.
 
+### Small-scale science, measurement signal, and sampling nonstationarity
+
+> finally, very unsexy, but im interested in how far we can push models at really small
+> scales, like 150M and below in datadecide for example. and how to even measure a training
+> or hpm fitting signal is a big part of the problem there i think. also, theyre using such a
+> small % of the data recipes that unless they use stratfied sampling throughout training
+> they are likely getting real nonstationarity or not really hitting the percentages that
+> they expect. so i feel like this is a space that would let academic labs, sciency
+> questions that are about dynamics, local model runners, etc benefit even if the big labs
+> wouldnt care. and at that scale i suspect you coukd do really cool things with
+> elicitation, rl, multicomponent systems, exps with confidence intervals, etc because the
+> models run so fast. thoughts?
+
+Item 3 of the same three-item response (items: IRT full-conference path; Slicing-and-Dicing
+repo; this). Routed to:
+[topics/small-scale-measurement-science.md](topics/small-scale-measurement-science.md);
+the sampling-nonstationarity point to
+[potential-projs/recipe-featurization.md](potential-projs/recipe-featurization.md) §4 and an
+open gate in [open-questions-answered.md](open-questions-answered.md); the synthesis to the
+potential-projs README program-level notes.
+
