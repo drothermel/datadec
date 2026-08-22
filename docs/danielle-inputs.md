@@ -1620,3 +1620,20 @@ and the draft-scaffolding review remain parked.
 
 Routed to: [topics/schedules-and-annealing-literature.md](topics/reference/schedules-and-annealing-literature.md)
 (dated survey section with a relevance note for ANN / WSD / FUNC).
+
+### Early-dynamics prediction draft review — 2025-07 (intake 2026-08-22)
+
+> I'm a 3rd year PhD student in Machine Learning and I'm trying to design an investigation
+> that is fast to execute on, that could serve as the core of a workshop paper at a top ML
+> conference, and that could then be extended to a strong submission to a top ML
+> conference. I created a latex document (attached as a pdf) with my initial thoughts and
+> then aggregated notes (attached as a markdown file) from discussing my plans and refining
+> design details with Gemini. Please consider the full plan and provide any feedback or
+> suggestions for changes that would make this first round stronger or more likely to
+> succeed without increasing the timeline or difficulty for me. Additionally, surface any
+> concerns that you identify with recommendations for how I could mitigate them. Explain
+> your reasoning for each suggestion.
+
+(PDF attached; the Gemini notes markdown was not provided.) Routed to: new staging topic
+[topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md); PDF
+copied to [refs/](refs/README.md).

@@ -45,6 +45,7 @@ directory only holds live, unresolved material.
 |---|---|
 | [checkpoint-tomography.md](staging/checkpoint-tomography.md) | A prior-art pass (devinterp / WSD follow-up literature); then a decision on whether the five-probe battery (decay, hot, twin, data-shifted, reset) becomes the flagship instrument framing or is absorbed into annealed readouts, landscape geometry, token-level movement, functional featurization, and embedding-reset dynamics |
 | [frozen-body-transfer-audit.md](staging/frozen-body-transfer-audit.md) | A forward-citation sweep of arXiv 2107.12460; then a promotion decision (gaps G5/G6). G6 is cross-listed as ICL-opt-5 in ICL elicitability |
+| [early-dynamics-prediction.md](staging/early-dynamics-prediction.md) | Danielle's July 2025 proposal: predict DataDecide final rankings / CORRECT PROB from the first 10% of training (LORO and expanding-scale CV; GBDT/GP), plus an external review. Gate: is it still live; overlap with published scaling-law baselines; promote vs. absorb into TINY |
 
 Promoted on 2026-08-22 (text moved into the new project docs' §4): `icl-as-posttraining` →
 `../potential-projs/icl-elicitability.md`; `warmstarting-decomposition` +
