@@ -1214,3 +1214,24 @@ first"). Applied: staging topic promoted to
 [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
 (`TLC`); the write-up forms §1 and §3, the dated discussion moved to §4, §2 synthesized and
 marked draft scaffolding. One sentence of adviser-communication advice was dropped.
+
+## MAQA Next Steps (Notion page) — intake from 2026-08-22
+
+Source page: "MAQA Next Steps" (app.notion.com/p/...3c1de135cd1f815ea18ad1c9776077ca). Excerpts
+pasted one at a time.
+
+### Turn wiki corpus into shards — conversation 2026-08-16
+
+> I'm trying to think through how best to store a full Wikipedia corpus in a way that
+> sharded, but where the shards co-locate things that are likely to be accessed together
+> when doing question-answer tasks. And so some of the things that first come to mind are
+> using the links between pages to form a graph, and then doing a, like, graph processing
+> algorithm to find the, like, I don't know, is it min-cut algorithm? There are all kinds of
+> different graph processing algorithms, so I'm sure there is some that exist to try to
+> figure out how you can parse the graph into subsets with the goal of cutting the fewest
+> branches, edges. But yes, so I guess I'm curious both about, for me, like, foundational
+> idea, like graph algorithms and how people would approach this type of problem, what the
+> options are, but then also how people have applied this type of thing to something like
+> Wikipedia or some other large corpus for QA purposes in the literature.
+
+Routed to: new staging topic [topics/wiki-qa-sharding.md](topics/staging/wiki-qa-sharding.md).
