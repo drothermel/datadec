@@ -2730,6 +2730,26 @@ dropped) and dated notes in
 [potential-projs/elicitation-gain.md](potential-projs/elicitation-gain.md) §4 (EPiC /
 ATSP as the nearest budgeted outer optimizer; positioning sentence).
 
+### 2026-08-22 — SciSpace search: HumanEvalExplain results
+
+> I wish to find all papers that report performance results on the HumanEvalExplain
+> subtask of the HumanEvalPack as introduced by "OctoPack: Instruction Tuning Code Large
+> Language Models" 2023 from Muennighoff et al.
+
+> I'm interested in all models, all language covered, and any papers since the release of
+> OctoPack. I want to build a comparison plot of correctness versus explanation length
+> based on different forms of applying models (eg different prompt formats, etc) and
+> different models used.
+
+(artifacts at `~/drotherm/data/convo-artifacts/2026/scispace-humanevalexplain-results-agent-artifacts-zip_6e33d176-efc7-49db-8322-a5b1604bfd20_1787422834/`)
+
+Routed to: [topics/reference/humanevalexplain-results.md](topics/reference/humanevalexplain-results.md)
+(new reference topic: the consolidated results table, protocol, the three source papers,
+the transcription-shift error flagged, editorializing dropped) and a dated note in
+[potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+§4 (HumanEvalExplain as a ready-made TLC-1 task set; the plot must be generated, not
+found).
+
 ### Post-intake decisions — 2026-08-22 (data-layer conversation)
 
 > 1. I think data-card/ validation work should be its own project doc, so b as you say.

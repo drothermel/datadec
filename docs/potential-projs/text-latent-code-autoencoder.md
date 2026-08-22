@@ -344,6 +344,25 @@ Dated notes from the external conversation this doc was promoted from, recorded 
 consolidation — not decisions. Related-work claims in quoted text are unverified unless a
 citation is given; Danielle's prompts are logged verbatim in `../danielle-inputs.md`.
 
+### 2026-08-22 — HumanEvalExplain is a ready-made TLC-1 task set
+
+From a SciSpace search Danielle ran for "all papers that report performance results on
+the HumanEvalExplain subtask of the HumanEvalPack" with the goal of "a comparison plot of
+correctness versus explanation length based on different forms of applying models (eg
+different prompt formats, etc) and different models used" (record and artifacts in
+`../topics/reference/humanevalexplain-results.md`). HumanEvalExplain (OctoPack, arXiv
+2308.07124) is exactly this project's reconstruction loop: explain a function in natural
+language, regenerate it from the explanation alone, score pass@1 — 164 problems × 6
+languages, standardized harness. Three facts for the plan: (1) only three papers report
+it, none reports explanation length or varies prompt format, so the published numbers
+(GPT-4 52.1 avg / 64.6 Python; best open 6.7B models 46–51; base models 0) are the
+*no-length-pressure endpoint* of the rate–distortion curve and nothing more; (2) the
+correctness-vs-length plot therefore has to be generated — run the harness with logged
+explanations under a length sweep, which is TLC-1's census on a free task set; (3) the
+0% base-model result is a clean prior for ELI-style questions (the explain→regenerate
+loop is unavailable without instruction tuning under direct prompting). Prior-art gate:
+cite OctoPack as the benchmark precedent for reconstruct-from-text evaluation of code.
+
 ### 2026-08-22 — prior-art additions for the gate: PCRL, Nano-Capsulator, EPiC
 
 From a SciSpace paper summary (record and on-disk PDFs/search archives in
