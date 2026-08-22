@@ -13,7 +13,7 @@ Related-work claims below are unverified (see [README.md](README.md)).
 
 ---
 
-## 2026-08-21 — Conversation 1's answer
+## 2026-08-21 — Round 1c response
 
 "Yes — this exact paradigm ('cheap continuation from a checkpoint, then a statistic that
 localizes you in the landscape') exists, but as three or four separate instruments in

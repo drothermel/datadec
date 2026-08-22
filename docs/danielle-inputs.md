@@ -13,7 +13,7 @@ add them here if recovered.
 
 ## 2026-08-21
 
-### Beyond DataDecide — generalizing dataset featurization
+### Round 1a — Beyond DataDecide: generalizing dataset featurization
 
 > ok, so I think if we move out of the datadecide specifically world, there's space for
 > dataset featurization/analysis on these super large pretrain (or midtrain/posttrain, etc)
@@ -22,7 +22,7 @@ add them here if recovered.
 Response routed to: [topics/beyond-datadecide-data-measurement.md](topics/beyond-datadecide-data-measurement.md);
 project-specific parts to [potential-projs/recipe-featurization.md](potential-projs/recipe-featurization.md) §4.
 
-### Chunked datasets, contribution types, and stage-dependent effects
+### Round 1b — Chunked datasets, contribution types, and stage-dependent effects
 
 > Separate question. Going back to the investigation of datasets more broadly and their
 > features. So I think that I was less interested in, like, these high level fairly ambiguous
@@ -34,11 +34,11 @@ project-specific parts to [potential-projs/recipe-featurization.md](potential-pr
 > that's more what I was imagining. is that a thing?
 
 Response routed to: [topics/functional-featurization.md](topics/functional-featurization.md)
-(as its origin entry); project-specific parts to
+(the "Round 1b" origin entry); project-specific parts to
 [potential-projs/wsd-suite.md](potential-projs/wsd-suite.md) §4 and
 [potential-projs/landscape-geometry.md](potential-projs/landscape-geometry.md) §4.
 
-### Short continuation from a checkpoint as a landscape probe
+### Round 1c — Short continuation from a checkpoint as a landscape probe
 
 > perhaps even directly in relation to ideas like river valley or the loss landscape or same
 > vs different basin models, something where we could take an intermediate checkpoint and
@@ -53,7 +53,7 @@ Standing note (Danielle, same date): claims about related work in these response
 be taken as true — the agent did no extensive searches and has no innate knowledge of the
 current landscape; the ideas are useful nonetheless.
 
-### Combined prompt (conversation 2) — beyond DataDecide + chunk types + short-branch probes
+### Round 2 — Combined prompt: beyond DataDecide + chunk types + short-branch probes
 
 > Lets think more generally than DataDecide specifically: where is the space for dataset
 > featurization/analysis on these super large pretrain/midtrain/posttrain datasets and their
@@ -72,8 +72,8 @@ current landscape; the ideas are useful nonetheless.
 > direction movements or something. What do you think of this direction in relation or in
 > contrast to some of the existing ideas?
 
-This is the single-prompt refinement of the three conversation-1 prompts above. Response
-routed to: [topics/functional-featurization.md](topics/functional-featurization.md) — it is
-the entry labelled "conversation 2" there (identical to the "functional featurization" report
-captured at the start of consolidation).
+This is the single-prompt refinement of Rounds 1a–1c above, from the same conversation.
+Response routed to: [topics/functional-featurization.md](topics/functional-featurization.md)
+— the "Round 2" entry there (identical to the second report captured at the start of
+consolidation).
 
