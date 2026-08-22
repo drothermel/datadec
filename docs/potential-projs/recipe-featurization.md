@@ -346,6 +346,20 @@ deterministic tokens)? Has it been done?
   deterministic, so you'd want the profile computed before and after dedup to separate
   'structured domain' from 'duplicated corpus.'"
 
+### 2026-08-22 — syntheticity and rephrasing as a recipe axis; collapse as the failure mode
+
+From Danielle's SciSpace review of synthetic data for LM training (record in
+`../topics/reference/synthetic-data-literature.md`). Two things for REC: (1) the
+"effective tokens = diversity × syntheticity, measured by a teacher model" line
+(2410.03083, already in the small-scale-metrics topic) and the synthetic-data diversity
+study (2410.15226) give REC-1 a concrete *syntheticity / rephrasing* feature to add to
+the intrinsic family — DataDecide's 25 recipes are all natural-web mixtures, so this
+feature is near-constant on the suite and only matters if REC-11 ingests a suite with
+rephrased corpora (BeyondWeb / Nemotron-CC-style); (2) model collapse as a change of
+scaling laws (2402.07043) and the verification remedy (2406.07515) are the
+overfitting-side references if any REC-10 retrain arm uses generated text. No action
+now; related-work pointers only.
+
 ### 2026-08-22 — data-card material moved to its own project
 
 The data-card / validation-report / provenance-ledger notes recorded here on 2026-08-22

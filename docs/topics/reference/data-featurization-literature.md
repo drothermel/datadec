@@ -9,6 +9,13 @@ featurization (FUNC) is the proposed fourth family.
 
 ---
 
+## 2026-08-22 — pointer: syntheticity as a feature
+
+Synthetic / rephrased-data literature (scaling, rewriting, collapse) is accumulated in
+`synthetic-data-literature.md`; the feature-relevant pieces are the teacher-measured
+syntheticity × diversity "effective tokens" construct (2410.03083) and the synthetic-data
+diversity study (2410.15226).
+
 ## 2026-08-18 — how the field quantifies differences between datasets (from the Research Trajectory page)
 
 Prompt context (Danielle): datasets become approximately black boxes because they are so

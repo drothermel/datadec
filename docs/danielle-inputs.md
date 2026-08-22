@@ -2942,6 +2942,28 @@ Routed to: [topics/reference/targeted-pretraining-midtraining-literature.md](top
 and [topics/reference/pretraining-to-posttraining.md](topics/reference/pretraining-to-posttraining.md)
 (pointer).
 
+### 2026-08-22 — SciSpace literature review: synthetic data for LM training
+
+> I would like you to review the literature on Synthetic data for language model
+> pretraining and finetuning. Specifically, please focus on works related to scaling of
+> models and/or data, methods such as rewriting, and how to avoid overfitting. After you're
+> done, compile all of the results into a LaTeX pdf, and include figures from the papers as
+> appropriate.
+
+(pasted: the agent's `final_synthesis.md` — four per-paper summaries — not the LaTeX
+review, which is the deliverable in the bundle.)
+
+Applied: `INDEX.md` in `~/drotherm/data/convo-artifacts/2026/scispace-synthetic-lm-training-agent-artifacts-zip_888d8c4b-0b22-4403-8619-693d35468c3e_1787424684/` (LaTeX/PDF review structure, arXiv→title map for the 14 key
+PDFs and their per-paper summaries, figures, peripheral PDFs, CSVs; two unidentified PDFs
+flagged).
+
+Routed to: [topics/reference/synthetic-data-literature.md](topics/reference/synthetic-data-literature.md)
+(new reference topic: paper set by theme from the PDF's structure; the four summaries
+condensed) and a dated note in
+[potential-projs/recipe-featurization.md](potential-projs/recipe-featurization.md) §4
+(syntheticity/rephrasing feature; collapse references), with a pointer in
+[topics/reference/data-featurization-literature.md](topics/reference/data-featurization-literature.md).
+
 ### Post-intake decisions — 2026-08-22 (data-layer conversation)
 
 > 1. I think data-card/ validation work should be its own project doc, so b as you say.
