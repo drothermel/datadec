@@ -434,6 +434,52 @@ always survive the conversion" (code compresses well; dense natural language may
 exactly the miniature pilot from before — your first real optimization run and the pipeline
 shakedown in one."
 
+## 2026-07-11 — Baseline vs. seed: where to start the optimization
+
+**Danielle's decision point.** The lab's constraints: HumanEval (agreed suboptimal — "the
+original code is so short that, what are we even really measuring?") and the original
+HumanEval-explain "describe this code" prompts as the baseline. Her reading: optimization
+should therefore start *from* those prompts. But "the task was to describe in natural
+language and then reconstruct. That's not actually what we're doing, so it seems strange to
+start an optimization for compression from a 'describe this function' prompt instead of from
+a 'provide a representation that would let another model reconstruct' prompt or 'compress
+this function as much as possible' prompt." Two worries: it seems silly; and "by starting
+with a prompt that doesn't have anything to do with optimization, I'm worried that it'll
+bias the outer LLM towards exploring things in the space of the initial prompt, as opposed to
+... the types of prompts that actually might optimize performance."
+
+**Response (near-verbatim).**
+
+*Disentangle two roles.* "A baseline is a comparison point — the number your final result is
+reported against. A seed is an optimizer hyperparameter. [The constraint] mandated the
+first; the second [says] nothing, and the optimized-vs-baseline comparison is equally valid
+wherever the trajectory started."
+
+*The attribution argument for seeding from the baseline.* "If you seed with your own
+task-aligned prompt, the final score is part your manual prompt engineering, part the
+optimizer's search, and you can't decompose them. Seeded from the naive baseline, the entire
+delta belongs to the loop: 'we took prior work's prompt and optimization took it from X to Y'
+is the attribution-clean headline. ... though [a] misaligned seed burns early budget
+rediscovering the task, which means it understates the method's ceiling. Those are two
+different measurements: delta-from-baseline measures what optimization contributes;
+aligned-seed measures what the method can achieve."
+
+*Anchoring lives mostly in the meta-prompt, not the seed.* "Proposals condition on
+incumbents, and COPRO-style loops drift into paraphrases of whatever they're shown. But the
+optimizer's goal comes from the meta-prompt you write ... if it plainly states 'propose
+encoder prompts that maximize reconstruction pass rate under budget R; scores below,' the
+loop knows description-quality isn't the objective no matter what the incumbent looks like."
+Second escape force at the aggressive tier: the baseline scores ~0 via refusals, pushing
+proposals out of description-space — "with the caveat that a flat-zero incumbent provides no
+differential signal, so whether the optimizer makes the conceptual leap or flails is itself
+worth watching."
+
+*Make initialization an arm rather than an anxiety.* "Run both seeds, equal budgets, shared
+validation. Convergence to similar prompts and scores means your search escapes its basin —
+the reachability question from point 1, answered empirically. Divergence means
+initialization sensitivity is real, which is both a reportable finding and the justification
+for the diagnosis-driven arm later."
+
 ## Open questions
 
 - Bottleneck: now framed as *optional* and itself an experimental variable — does
@@ -463,5 +509,9 @@ shakedown in one."
 - Cliff-based measurement plan: bisection for per-problem critical ratios; tiers at ~30–60%
   and ~0% (refusal) baseline; five-way outcome taxonomy; frozen deterministic extraction;
   blind propose–evaluate–select first; log zstd bytes alongside tokens.
+- Initialization: primary arm seeds from the mandated HumanEval-explain baseline
+  (attribution-clean delta); second arm seeds from a task-aligned prompt (method ceiling /
+  initialization-sensitivity check); the true objective is stated in the meta-prompt either
+  way.
 
 **Waiting on:** the remaining points of the point-by-point discussion; a promotion decision.

@@ -1116,3 +1116,36 @@ Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-c
 
 Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-code-autoencoder.md)
 ("Sequencing the first measurements; the cliff structure").
+
+### Text-latent code autoencoder — baseline vs. seed — conversation 2026-07-11, intake 2026-08-22
+
+> Okay. I think that makes a lot of sense. And then I think the last, like, um, decision
+> point that I've been thinking about is basically, like, at the same point where my adviser
+> dictated that we were gonna use him and eval, which I think we both agree is kind of
+> suboptimal for this setting because the the original code is so short that… I mean, what
+> are we even really measuring? Um, and also so simple. But at that same point, he stated
+> that we had to use the, um, original human eval explained prompts as the baseline because
+> we wanna get a good baseline. And so my interpretation of that is basically that then
+> when we do this optimization, we should be optimizing from those prompts. But the problem
+> is that, like, those prompts are basically just described this problem in natural
+> language, and the task was to describe a natural language and then reconstruct. But
+> that's not actually what we're doing, so it seems strange to start an optimization, like,
+> to start an optimization for compression from a describe this function prompt instead of
+> from a reconstruct, like, provide a representation that would let another model
+> reconstruct prompt or from a compress this function as much as possible to reconstruct,
+> um, something like that. And so I guess, like, I feel very conflicted between two
+> possibilities, one which is to just continue with what my adviser instructed, which is to
+> take our baseline and then optimize from it, which he didn't explicitly say, but I think
+> he strongly implied, um, which then should give space for optimization performance if it
+> seems like there's an obvious improvement on the prompt. versus starting with something
+> that's already in the direction of optimization. Um, and, like, I guess, one of the things
+> I'm worried about is just, like, it seems silly, but another thing that I'm worried about
+> is that, like, by starting with a prompt that doesn't have anything to do with
+> optimization, I'm worried that it'll bias the outer LLM towards exploring things in the
+> space, the initial prompt, as opposed to towards exploring things in the space of the
+> types of prompts that actually might optimize performance. Um, so what do you think about
+> this trade off?
+
+Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-code-autoencoder.md)
+("Baseline vs. seed"). The response's closing advice on what to say to the adviser was
+dropped; the baseline constraint is recorded as a project fact.
