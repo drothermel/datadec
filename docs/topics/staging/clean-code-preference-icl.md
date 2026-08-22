@@ -77,8 +77,39 @@ preference; the prior-art question that actually matters — code *readability/q
 preference pairs, LLM-as-judge for code style, clean-code rubrics, code-review datasets —
 was not searched. Add to the gate: a real literature check before any paper framing.
 
+## Undated — Experimental structure: N in-context + M interactive examples; context-fraction axis
+
+**Danielle's design.** Start with her own functions ("the thing that I want the model to
+do is improve data in this specific domain"); easiest first: **parsing functions and
+DataFrame-manipulation functions** — many of them, well contained. Prompt = task
+description + N in-context examples; then M held-out examples worked *interactively*:
+the agent produces code, it is tested, feedback is returned. Performance on the M examples
+evaluates the initial prompt — but "there's not really something built into that setup
+that would provide an evaluation of the benefit of the active learning steps." Response
+(thin): measure held-out performance before vs. after the interactive rounds; and keep a
+separate final test set seen only after all interactive steps to measure generalisation.
+
+**Danielle's additional axis.** The fraction of the context window in use. With short
+examples and a small fraction used, she would not expect much difference between the
+first and last interactive example; to *test how interactive learning changes performance
+over time* (rather than prepare an agent for her own interactive use), she would throw all
+examples at the agent, and then must weigh "more examples versus a longer context over
+which to remember." Response (content-free): agrees it's a trade-off.
+
+*Intake note.* This pins the experiment's two distinct goals and their designs:
+(a) *tool preparation* — find the N-shot prompt that generalises best, evaluated on
+held-out functions; (b) *interactive-learning curve* — fix the prompt, stream M examples
+with test feedback, and measure per-step performance on fresh items, i.e. the ICL learning
+curve from `../reference/icl-literature.md` with test feedback as the "label." For (b) the
+confound she names is context length: per-step improvement is entangled with growing
+context, so the clean comparison is matched total context with different splits of
+(unique examples × feedback rounds), which is the same (unique × repetition) factorial
+proposed for ICL-elicitability.
+
 ## Open questions
 
+- Which of the two goals (tool preparation vs. interactive-learning curve) v0 targets —
+  they need different evaluation designs; start with (a).
 - Whether to treat the rubric ("clean") as a learned judge or keep it manual.
 - Which models (API vs. local) and whether any weight updates are in scope for v0.
 - Relation to the text-latent code autoencoder (`../../potential-projs/text-latent-code-autoencoder.md`):

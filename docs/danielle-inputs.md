@@ -2035,3 +2035,36 @@ closing note in [topics/icl-literature.md](topics/reference/icl-literature.md).
 Routed to: [topics/clean-code-preference-icl.md](topics/staging/clean-code-preference-icl.md)
 ("Paper potential and prior-art check"); AgentPack / KODCODE kept as leads, with a note that
 the style-preference prior art was not actually searched.
+
+> Interesting. Okay. So, yeah, I think it makes sense to start with my functions mainly
+> because the thing that I want the model to do is to, in fact, improve data in this
+> specific domain, and so it's specifically relevant to me. I guess then the question, then
+> this raises like practical questions. So, I guess the easiest types of functions that I
+> think exist to start out with would be like parsing functions and data frame
+> manipulation functions, because I have a lot of those, and they're also fairly well
+> contained. And so then I guess probably the structure that I would imagine is that the
+> prompt would involve some type of description of the task, and then it would involve
+> some examples, and then there would be some held out examples that would be the like
+> learning process where the agent would be asked to execute, and then there would need
+> to be some way to get the code produced, test it, and then provide feedback. Does that
+> sound? Maybe there would be so like there would be N in context examples in the
+> original prompt, and then maybe like M additional interactive examples, and then I
+> guess the performance on the additional interactive examples would provide an
+> evaluation metric for the initial prompt, but then I guess there's not really a setup,
+> like there's not really something built into that setup that would provide an
+> evaluation of the like benefit of the active learning steps.
+
+> Fascinating. Okay. And I guess there's an additional access that matters here, which is
+> basically the percentage of the context window that I've been using. Because I guess if
+> all of these are very short examples, since the percentage of the context window is
+> very low, then I wouldn't necessarily expect there to be a large difference that was
+> produced in terms of the agent ability between the first active learning and the last
+> active learning example. But if instead I wanted to just basically throw all of the
+> examples at an agent and just like not, it's not like preparing the agent to be able to
+> be used by me interactively, but instead actually just testing how the active learning
+> changes performance over time, then looking at that result, I would need to consider
+> the impact of the trade-off between more examples versus like a longer context over
+> which to remember.
+
+Routed to: [topics/clean-code-preference-icl.md](topics/staging/clean-code-preference-icl.md)
+("Experimental structure"); the two goals separated in the open questions.
