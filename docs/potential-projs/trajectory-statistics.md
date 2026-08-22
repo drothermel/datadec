@@ -339,3 +339,25 @@ referencing the Signal-and-Noise paper.
   FLAME-MoE's released routing logs across checkpoints mean "your Stage-0 (zero-training
   analysis of public trajectories) extends to MoE immediately." Paper list in
   `docs/topics/moe-literature.md`.
+
+### 2026-08-18 — origin of TRJ-6's three components (from the Research Trajectory page)
+
+Question posed: will evaluating the same checkpoint with different random seeds give the
+same or different results — because 3 seeds is a small n for averages?
+
+- "Same checkpoint, different eval seeds: mostly deterministic." For loglikelihood /
+  rank-classification evals "the only randomness is floating-point non-associativity from
+  batching/kernel scheduling… typically negligible"; generation-based evals vary but are
+  not most of the suite; configuration variance (few-shot demo choice, order, template) "is
+  large, but it's *systematic*, not random: it shifts all models coherently, so it's a bias
+  axis to sweep, not noise to average." "Almost all of the variance you care about isn't in
+  the eval — it's in *training* (seed, data order, init)."
+- The three mitigations that became TRJ-6: "**pool**: assume (and then test) that
+  seed-variance is roughly homoscedastic across recipes at fixed scale — 25 recipes × 3
+  seeds gives you ~50 degrees of freedom for a *shared* variance estimate… a recipe whose
+  seeds diverge more is a finding, not a nuisance"; "**use the trajectory as replicate** —
+  Signal and Noise's own trick… their windowed noise estimate assumes the drift within the
+  window is negligible; your decomposition checks and corrects that assumption";
+  "**bootstrap over items** for the orthogonal axis — benchmark-composition uncertainty
+  from a single run." "With those three, n=3 stops being a blocker for anything except
+  recipe-specific variance claims."

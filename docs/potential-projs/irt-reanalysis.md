@@ -243,3 +243,50 @@ pitch is rigor and science rather than large-lab adoption?
 - The matched-loss caution applies to matched-θ recipe comparisons (IRT-3) too: "equal loss
   at different token counts vs. equal tokens at different loss are different controls" —
   report DIF at matched θ both with and without conditioning on compute.
+
+### 2026-08-18 — origin of this project (from the Research Trajectory page)
+
+**Danielle-flagged project seeds** (the `→` notes on the Notion toggle):
+1. Prior work "fit IRT to *diverse converged models* to compress benchmarks"; "the
+   DataDecide setting adds is *structure in the model axis*… which converts IRT from a
+   compression tool into a measurement instrument for your program."
+2. "**Use 'ability' from IRT as your movement metric**: it should be substantially
+   lower-noise than accuracy. Test Signal-to-Noise approach of 'switching to better-signal
+   metrics and filtering noisy subtasks': is SNR(θ trajectories) > SNR(accuracy
+   trajectories) on their own released data?"
+3. "**Differential item functioning (DIF) is your matched-loss comparison**, formalized. A
+   measure of whether 'items behave differently across model groups *at the same ability
+   level*.' Use recipes as groups and then you have the psychometric statement of
+   'pretraining data shapes models beyond final performance.' Items exhibiting recipe-DIF
+   are the loci where recipes differ irreducibly — and the natural follow-up is whether DIF
+   items cluster by your token-determinism buckets or by domain."
+4. "**Item characteristic curves against compute give per-item emergence points.** Then
+   emergence becomes a distribution providing a per-item version of the loss-to-accuracy
+   mapping for the proxy-metric track."
+5. "**IRT provides insight over latent dimensionality.** Classical IRT assumes one latent
+   dimension; if a single θ fits the DataDecide matrix well, that's evidence recipes at
+   these scales differ mostly along one axis (and matched-loss ≈ matched-everything,
+   deflating part of your hypothesis at this scale!); if it demands multiple dimensions,
+   the factor structure *is* the answer to 'what do recipes change besides final
+   performance.'"
+6. "Binary IRT discards the margin information that carries most small-scale signal, so fit
+   both binary and continuous-response variants (on likelihood margins) and compare. **The
+   comparison itself replicates Signal and Noise's metric-choice finding inside a single
+   framework.**"
+
+These map onto IRT-2 (seed 2), IRT-3 and IRT-7 (seed 3), IRT-4 (seed 4), IRT-1 (seed 5),
+IRT-5 (seed 6). Question posed: the large set of evaluated models and tasks seems like the
+ideal setting for IRT and other approaches that analyze benchmarks using a set of models'
+predictions; DataDecide publishes per-task eval results and perplexity evals for a range
+of corpora.
+
+- "The setup is ideal: hundreds of model×checkpoint rows, thousands of item columns, binary
+  (and margin) outcomes — precisely the data shape item response theory was built for."
+  Prior art (Lalor; Rodriguez; tinyBenchmarks; metabench) compressed benchmarks over
+  diverse converged models; see `docs/topics/irt-literature.md`.
+- "Dimensionality is the honest first check, and it's substantive rather than procedural…
+  Either outcome is a result."
+- Project shape as first stated: "another all-inference, public-data, weeks-scale artifact:
+  'a psychometric reanalysis of DataDecide'… produces the calibrated instrument (θ
+  trajectories, item bank with difficulty/discrimination/DIF flags) that every later stage
+  would rather use than raw accuracy."

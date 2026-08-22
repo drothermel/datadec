@@ -775,3 +775,22 @@ entries in [potential-projs/trajectory-statistics.md](potential-projs/trajectory
 expert matching); [topics/critical-period-timing-study.md](topics/critical-period-timing-study.md)
 (fourth commitment clock); [topics/identifiability-literature.md](topics/identifiability-literature.md).
 
+### Toggle 24 — 2026-08-18 22:45 (eval seeds at a fixed checkpoint; IRT on the DataDecide matrix)
+
+> Do we expect evaling the same model checkpoint with different random seeds on the same
+> dataset will give the same or different results? because 3 checkpoints is a pretty small
+> n for averages. separately, it seems like the large set of eval models and tasks is the
+> ideal setting for something like IRT and other approaches for analyzing benchmarks/eval
+> datasets using the predictions from a set of models. DataDecide publishes the per task
+> eval results and the perplexity eval results for a range of corpa too.
+
+Danielle-flagged project seeds (the six `→` notes on the toggle title) are reproduced in
+[potential-projs/irt-reanalysis.md](potential-projs/irt-reanalysis.md) §4 (origin entry).
+
+Routed to: [potential-projs/irt-reanalysis.md](potential-projs/irt-reanalysis.md) §4;
+[potential-projs/trajectory-statistics.md](potential-projs/trajectory-statistics.md) §4
+(origin of TRJ-6); new reference topic [topics/irt-literature.md](topics/irt-literature.md);
+[topics/evaluation-methodology-literature.md](topics/evaluation-methodology-literature.md)
+and [potential-projs/tiny-scale-measurement.md](potential-projs/tiny-scale-measurement.md)
+§4 (where eval variance lives).
+

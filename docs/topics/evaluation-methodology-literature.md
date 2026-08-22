@@ -42,3 +42,14 @@ existence-proof alternative.
   both; filtering noisy subtasks improves aggregate reliability. Release: ~900K evaluation
   results on 465 open-weight models including OLMo intermediate checkpoints, DataDecide,
   and the model-ladder runs. The trajectory drift/diffusion project is its dual.
+
+---
+
+## 2026-08-18 — where eval variance actually lives (from the Research Trajectory page)
+
+For OLMES-style loglikelihood evaluation, re-evaluating a fixed checkpoint with new seeds
+buys nothing: inference nondeterminism is negligible, generation-based evals are the
+exception, and few-shot configuration variance is "a bias axis to sweep, not noise to
+average." The variance of interest is in training (seed, data order, init) — consistent
+with Signal and Noise's definition of noise as step-to-step wander. Cited: OLMES (*A
+Standard for Language Model Evaluations*).

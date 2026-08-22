@@ -299,3 +299,11 @@ program looks like from the inside."
   settings. *The Butterfly Effect* (arXiv 2506.13234): trajectories are highly sensitive to
   initial conditions — a seed-count argument. See
   `docs/topics/reinit-and-transfer-literature.md`.
+
+### 2026-08-18 — what can and cannot be averaged at a fixed checkpoint (from the Research Trajectory page)
+
+- "You can't buy variance reduction on a fixed checkpoint by re-evaling with new seeds";
+  configuration variance (demos, order, template) is systematic and should be swept as a
+  bias axis. TINY-3's minimum-detectable-effect estimates must therefore come from
+  training-side replicates (seeds, trajectory windows) and item bootstraps, not eval
+  reruns. See `docs/topics/evaluation-methodology-literature.md`.
