@@ -2509,3 +2509,13 @@ the honest form is "external large-model-fit interface makes a tiny model useful
 task"; prior-art starting list; links to TINY within-reach tasks, MIC calibration, and TLC
 machinery; proposed first experiment — a capability existence test under an oracle DSL).
 The PDF was the TLC draft, already represented by the TLC project doc.
+
+> me: "I'm definitely most interested in the wrapper only. And I guess it feels like there
+> are two different types of questions …" (quoted in full in the staging topic)
+
+Routed to: the same staging topic (wrapper-only decision; Q1 cliff curve across DataDecide
+sizes at fixed optimizer + budget; Q2 elicitation loop as a pre/post-training movement
+detector; response's S_0 / S_opt / ΔS / iterations-to-threshold / stability metrics and two
+controls recorded; intake notes link it to ICL-elicitability and MIC, reuse TLC's cliff
+machinery, add swapped-executor and wrapper-transfer controls and an answer-leak audit, and
+suggest testing Q2 on the earlier project's SFT checkpoints if they exist).
