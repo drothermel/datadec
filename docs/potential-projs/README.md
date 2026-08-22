@@ -36,7 +36,8 @@ Source inventories: [../refs/lr-schedule-wsd-synthesis.md](../refs/lr-schedule-w
 (ANN, WSD, GEO, TOK Stage 2), [../refs/research-trajectory-synthesis.md](../refs/research-trajectory-synthesis.md)
 (TRJ, IRT, TOK Stage 1), and [../dataset-analysis-idea-map.md](../dataset-analysis-idea-map.md)
 (REC); the MoE, tiny-scale, and functional-featurization docs were promoted from
-[../topics/](../topics/) on 2026-08-21 and carry their origin notes in their §4.
+[../topics/](../topics/) on 2026-08-21, carry their origin notes in their §4, and are marked
+**draft scaffolding** (§1–§3 synthesized, not yet reviewed) until the note in each is removed.
 
 Resolved gate checks and open questions (with the code used to answer them) are logged in
 [../open-questions-answered.md](../open-questions-answered.md). The recipe-featurization

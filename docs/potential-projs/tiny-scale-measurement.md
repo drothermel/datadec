@@ -1,5 +1,10 @@
 # Tiny-scale measurement — how small can you measure, and what can you do down there?
 
+> **Draft scaffolding (2026-08-21).** This doc was promoted from a topic. The quoted material in
+> §4 is external text; the core steps, doability notes, impact ratings, and infrastructure
+> sequence in §1–§3 are synthesized scaffolding not yet reviewed by Danielle. Treat them as
+> provisional until this note is removed.
+
 **One-line pitch.** At 10M–150M the standard eval stack collapses: most items sit at chance,
 accuracy is quantized, seed variance swamps treatment effects. "How do you detect a training
 or hyperparameter signal at all" is the research question. Measure the decision-reliability

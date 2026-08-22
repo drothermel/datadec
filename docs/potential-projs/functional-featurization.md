@@ -1,5 +1,10 @@
 # Functional featurization — data types defined by training response
 
+> **Draft scaffolding (2026-08-21).** This doc was promoted from a topic. The quoted material in
+> §4 is external text; the core steps, doability notes, impact ratings, and infrastructure
+> sequence in §1–§3 are synthesized scaffolding not yet reviewed by Danielle. Treat them as
+> provisional until this note is removed.
+
 **One-line pitch.** Replace *intrinsic* featurization (properties of the text) with
 *functional* featurization (properties of the text's effect on a model, conditioned on where
 the model is in training). Perturb the data stream from an intermediate checkpoint, log a

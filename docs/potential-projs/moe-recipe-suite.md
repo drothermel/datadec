@@ -1,5 +1,10 @@
 # MoE recipe suite — data varied at fixed architecture, routing as the readout
 
+> **Draft scaffolding (2026-08-21).** This doc was promoted from a topic. The quoted material in
+> §4 is external text; the core steps, doability notes, impact ratings, and infrastructure
+> sequence in §1–§3 are synthesized scaffolding not yet reviewed by Danielle. Treat them as
+> provisional until this note is removed.
+
 **One-line pitch.** Train small MoE models on 4–6 DataDecide recipes spanning the outcome
 range, with the architecture fixed to the Slicing-and-Dicing sweep's validated defaults (fix
 expert size by active params, dropless routing, second-order knobs ignored), dense
