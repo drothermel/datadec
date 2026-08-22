@@ -195,34 +195,34 @@ Routing follow-up sequence (after the steps above):
 Dated, attributed notes from external review conversations, recorded for consolidation — not
 decisions. Only notes about this project are kept here.
 
-### 2026-08-21 — two "top-N by workshop-paper likelihood × speed" rankings
+### 2026-08-21 — two "top-N by workshop-paper likelihood × speed" lists
 
-- **Reviewer 1, ranked #1 of 3.** "Pure T0 on data you already have parsed. The methods are
+- **Ranked #1 in a top-3 list.** "Pure T0 on data you already have parsed. The methods are
   standard small-series time-series estimation. Critically, it's robust to outcome: the TRJ-6
   noise floor plus the movement-SNR table (TRJ-1) plus the Signal-and-Noise re-derivation
   (TRJ-4) form a paper even if the exciting bits (TRJ-2's LR test, TRJ-3's matched-loss
   signatures) come up null. The one gate — checkpoint spacing — can be checked in an afternoon
   before you commit. And the noise-floor module is the single most reusable artifact in the
   whole portfolio; every other project's credibility section needs it."
-- **Reviewer 2, ranked #2 of 5.** "TRJ-6 + TRJ-1 + TRJ-4, TRJ-2 as headline. Also pure T0,
+- **Ranked #2 in a top-5 list.** "TRJ-6 + TRJ-1 + TRJ-4, TRJ-2 as headline. Also pure T0,
   robust to outcome, and the noise-floor module (TRJ-6) is a public good every other project
   cites. One gate to check on day one: checkpoint spacing. The TRJ-2 river-valley LR test is
   the quotable figure if it works, but the paper stands without it."
-- **Downstream use (reviewer 1).** Results here "will tell you which recipes and steps are
+- **Downstream use.** Results here "will tell you which recipes and steps are
   most schedule-sensitive, making the branch grid [for annealed readouts] smaller and better
   targeted."
-- **Pairing (reviewer 2).** The annealed-readouts T0 half (MPL correction + ranking-flip
+- **Pairing.** The annealed-readouts T0 half (MPL correction + ranking-flip
   analysis) could be paired with this paper, since "they share the trajectory accessor and the
   noise floor."
 - Checkpoint-spacing gate: resolved (see `docs/open-questions-answered.md`).
 
-- **Overlap (reviewer 1).** TRJ-3 matched-loss signatures and IRT recipe-DIF "are close enough
+- **Overlap.** TRJ-3 matched-loss signatures and IRT recipe-DIF "are close enough
   that reviewers will ask why you need both" — decide which instrument makes the
   beyond-final-performance claim first.
-- **n = 25 (reviewer 2).** TRJ-3 "currently treat[s] 25 recipes as exchangeable"; prefer
+- **n = 25.** TRJ-3 "currently treat[s] 25 recipes as exchangeable"; prefer
   within-family comparisons along a measured dose (the family-contrast framing from recipe
   featurization).
-- **Feasibility role (reviewer 1).** "The noise-floor module isn't just reusable hygiene; it's
+- **Feasibility role.** "The noise-floor module isn't just reusable hygiene; it's
   the thing that determines whether the whole program has publishable effect sizes. That's
   another argument for [this project] first: it's partly a feasibility study for everything
   else."

@@ -7,9 +7,9 @@ close to verbatim, no decisions.
 
 Unlike project docs, topic docs may reference projects freely — they are staging, not plans.
 
-**Caveat on quoted related-work claims.** Statements in quoted reviewer text about what does or
+**Caveat on quoted related-work claims.** Statements in quoted external text about what does or
 does not exist in the literature ("nobody has…", "this is unclaimed", specific paper
-attributions) are unverified: the reviewing agents did not run literature searches and have no
+attributions) are unverified: the responding agents did not run literature searches and have no
 reliable knowledge of the current landscape. Treat them as leads to check, not facts. The ideas
 stand on their own.
 

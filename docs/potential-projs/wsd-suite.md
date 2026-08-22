@@ -140,7 +140,7 @@ it also validates the training stack for any decay branches resumed from release
 Dated, attributed notes from external review conversations, recorded for consolidation — not
 decisions. Only notes about this project are kept here.
 
-### 2026-08-21 — reviewer 2, on stage-dependent data value
+### 2026-08-21 — on stage-dependent data value
 
 - WSD-opt-4 (mixed-in decay data) reframed: "Your docs already flagged this and deferred it
   ('MiniCPM-style mixed-in decay data — scope creep risk'). Under this framing it's not scope

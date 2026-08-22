@@ -172,31 +172,31 @@ they also tell you whether that half is worth it.
 Dated, attributed notes from external review conversations, recorded for consolidation — not
 decisions. Only notes about this project are kept here.
 
-### 2026-08-21 — two "top-N by workshop-paper likelihood × speed" rankings
+### 2026-08-21 — two "top-N by workshop-paper likelihood × speed" lists
 
-- **Reviewer 1: deliberately not in the top 3.** "It has the highest ceiling of the
+- **Deliberately left out of a top-3 list.** "It has the highest ceiling of the
   eval-adjacent work, but its paper-worthy version requires the branch runs, an eval harness,
   and a checkpoint loader — real infrastructure and real wall-clock. It's the right second
   wave project, and [trajectory drift/diffusion and IRT] results will tell you which recipes
   and steps are most schedule-sensitive, making the branch grid smaller and better targeted."
-- **Reviewer 2, ranked #4 of 5 (T0 half only).** "MPL correction + 'which rankings flip' is
+- **Ranked #4 in a top-5 list (T0 half only).** "MPL correction + 'which rankings flip' is
   cheap, and 'how much should anyone trust intermediate-checkpoint rankings' is the question
   every DataDecide user has. Your own doc rightly says [the T0 half] alone is a section, not a
   paper — so either pair it with [the trajectory drift/diffusion paper] (they share the
   trajectory accessor and the noise floor) or treat it as the mandatory prelude to the branch
   grid."
-- **Grid targeting (both reviewers).** Use the T0 results from the trajectory and IRT projects
+- **Grid targeting.** Use the T0 results from the trajectory and IRT projects
   to choose schedule-sensitive recipes and steps before branching, in addition to the MPL-fit
   selection in ANN-5.
 
-- **Nulls (reviewer 1).** The merging-on-cosine result (ANN-1) and the flip analysis (ANN-6)
+- **Nulls.** The merging-on-cosine result (ANN-1) and the flip analysis (ANN-6)
   are listed among the "shakier" either-outcome claims: "distinguish nulls that are
   informative from nulls that are merely reportable."
-- **Competition (reviewer 2).** The Signal-and-Noise / DataDecide authors "are the obvious
+- **Competition.** The Signal-and-Noise / DataDecide authors "are the obvious
   people to do [the T0 reanalysis] themselves"; ship the T0 half fast and consider them as
   collaborators on the branch grid, "where your infrastructure investment is the moat."
 
-### 2026-08-21 — reviewer 2, on short-branch landscape probes
+### 2026-08-21 — on short-branch landscape probes
 
 - The decay branch (ANN-3) read as "a wall-height meter": "'branch + decay + measure the loss
   drop' is established; the drop is your height-above-river statistic. What's not

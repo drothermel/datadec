@@ -10,7 +10,7 @@ the DataDecide-specific world? See [../danielle-inputs.md](../danielle-inputs.md
 
 ---
 
-## 2026-08-21 — Round 1a response
+## 2026-08-21 — Response
 
 "Yes, with an important qualification: the space is real, but it's unevenly occupied, and the
 crowded parts are exactly the ones that are easiest to do. So agreement, but the value depends

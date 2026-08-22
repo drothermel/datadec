@@ -118,9 +118,9 @@ Steps 1–3 are the commit-worthy foundation and take roughly the first week; 4�
 Dated, attributed notes from external review conversations, recorded for consolidation — not
 decisions. Only notes about this project are kept here.
 
-### 2026-08-21 — two "top-N by workshop-paper likelihood × speed" rankings
+### 2026-08-21 — two "top-N by workshop-paper likelihood × speed" lists
 
-- **Reviewer 1, ranked #3 of 3 (the floor only).** "REC-a data card + label correction + REC-5
+- **Ranked #3 in a top-3 list (the floor only).** "REC-a data card + label correction + REC-5
   per-source attribution. The composition ground-truth work is partially done, mechanical to
   extend, and the shard-fraction ≠ token-fraction correction is concrete, surprising, and
   affects everyone using DataDecide's mixes — including your own repo's config. That's the
@@ -128,18 +128,18 @@ decisions. Only notes about this project are kept here.
   DCLM-share sweep and Dolma ablations as a designed experiment) needs no new features at all,
   just REC-a joined to outcomes you've already ingested. You can defer the determinism profile
   (REC-2) and the underpowered regression to a second iteration."
-- **Reviewer 2, ranked #3 of 5 (the floor only).** "REC-a + REC-5. The realized-composition
+- **Ranked #3 in a top-5 list (the floor only).** "REC-a + REC-5. The realized-composition
   data card plus the label≠token-share correction is concrete, already one-25th done, affects
   everyone using the suite, and is your most citable single finding across all documents.
   Per-source attribution (REC-5) needs only REC-a + the outcome table. This is the highest
   certainty-per-week item on the list; the determinism profile (REC-2) is the stretch goal,
   not the core."
 
-- **n = 25 (reviewer 2).** "The family-contrast/dose-response framing is the right answer and
+- **n = 25.** "The family-contrast/dose-response framing is the right answer and
   should back-propagate everywhere recipes are compared" — i.e. REC-d is a program-level
   design pattern, not just this project's.
 
-### 2026-08-21 — reviewer 2, on generalizing beyond DataDecide
+### 2026-08-21 — on generalizing beyond DataDecide
 
 - REC-a's finding "almost certainly generalizes. Public datasets' stated compositions vs.
   measured compositions is unglamorous, highly citable, and nobody's job. A 'measured data

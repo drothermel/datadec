@@ -117,15 +117,15 @@ other and can be picked by impact.
 Dated, attributed notes from external review conversations, recorded for consolidation — not
 decisions. Only notes about this project are kept here.
 
-### 2026-08-21 — two "top-N by workshop-paper likelihood × speed" rankings
+### 2026-08-21 — two "top-N by workshop-paper likelihood × speed" lists
 
-- **Reviewer 1, ranked #2 of 3.** "Also pure T0, and IRT-1 (dimensionality) is the rare
+- **Ranked #2 in a top-3 list.** "Also pure T0, and IRT-1 (dimensionality) is the rare
   design where both outcomes are headline claims: 'one axis suffices' deflates the
   beyond-final-performance thesis; 'multiple axes needed' is the thesis. IRT-5 gives you a
   guaranteed medium-strength methodological result as a floor. The methods are mature and the
   engineering risk (matrix size, near-chance items) is well-understood. Main caveat: verify
   per-instance coverage across all cells before starting."
-- **Reviewer 2, ranked #1 of 5.** "IRT-1 + IRT-5, IRT-2 optional. Pure T0, data already parsed,
+- **Ranked #1 in a top-5 list.** "IRT-1 + IRT-5, IRT-2 optional. Pure T0, data already parsed,
   mature methods, and — critically — IRT-1 is a headline in either direction ('recipes are
   one-dimensional at these scales' is as publishable as 'here's the factor structure'). Fastest
   path to a paper with no outcome risk. Main real work is the response-matrix builder and a VI
@@ -133,12 +133,12 @@ decisions. Only notes about this project are kept here.
 - Per-instance coverage gate: resolved — all 25 recipes × 66 tasks, 3 seeds at 150M–1B, 1 seed
   below 150M (see `docs/open-questions-answered.md`).
 
-- **Overlap (reviewer 1).** "IRT's recipe-DIF (IRT-3) and drift/diffusion's matched-loss
+- **Overlap.** "IRT's recipe-DIF (IRT-3) and drift/diffusion's matched-loss
   signatures are close enough that reviewers will ask why you need both" — decide which
   instrument makes the beyond-final-performance claim first.
-- **Nulls (reviewer 1).** IRT-1's null is "a genuine substantive claim"; a null IRT-3 at 150M
+- **Nulls.** IRT-1's null is "a genuine substantive claim"; a null IRT-3 at 150M
   "is ambiguous between 'recipes are one-dimensional' and 'these scales are too small to see
   it,' and reviewers will pick the boring interpretation."
-- **n = 25 (reviewer 2).** IRT-3 "currently treat[s] 25 recipes as exchangeable"; prefer
+- **n = 25.** IRT-3 "currently treat[s] 25 recipes as exchangeable"; prefer
   within-family comparisons along a measured dose (the family-contrast framing from recipe
   featurization).

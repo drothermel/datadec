@@ -246,18 +246,18 @@ Steps 0–4c (Stage 1) have no dependency on branches and should be done early; 
 Dated, attributed notes from external review conversations, recorded for consolidation — not
 decisions. Only notes about this project are kept here.
 
-### 2026-08-21 — two "top-N by workshop-paper likelihood × speed" rankings
+### 2026-08-21 — two "top-N by workshop-paper likelihood × speed" lists
 
-- **Reviewer 2, ranked #5 of 5 (Stage 1 only).** "The TOK-obs-2 → TOK-obs-4 ladder. TOK-obs-2
+- **Ranked #5 in a top-5 list (Stage 1 only).** "The TOK-obs-2 → TOK-obs-4 ladder. TOK-obs-2
   (item flips) is a groupby on existing tables and slots into [the IRT or trajectory papers] as
   a figure. TOK-obs-4 (KL concentrated in high-entropy tokens) is the highest-impact single
   figure available at T1-light cost — one forward-pass campaign, no training. It's the only
   entry here with real null risk, which is why it's fifth, but the harness it builds
   (checkpoint loader, probe corpus, reference scorer) is exactly what [annealed readouts,
   landscape geometry, and Stage 2 here] need next."
-- Reviewer 1 did not rank Stage 1 or Stage 2 in its top 3.
+- Neither stage is in the top-3 list.
 
-- **Structure (reviewer 1).** "The observational/causal pairing is your best long-game
+- **Structure.** "The observational/causal pairing is your best long-game
   structure. [Stage 1] now, [Stage 2] later once the branch runner exists. If TOK-obs-4 holds
   observationally, it both de-risks and motivates the causal follow-up; if it doesn't, you
   saved yourself the branch compute. That's the cleanest dependency chain in the set, and
