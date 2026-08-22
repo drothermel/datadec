@@ -2118,3 +2118,22 @@ Routed to: [topics/project-approach-principles.md](topics/reference/project-appr
 [potential-projs/early-dynamics-prediction.md](potential-projs/early-dynamics-prediction.md) §4
 (the CIFAR-10 loss-slope study as EDP lineage, with the quoted "early findings" marked
 unverified).
+
+### 2026-08-22 — Workshop deadline calendar (two queries, early August 2026)
+
+> ok, this is an entirely different type of information but its really useful: upcoming
+> workshops!
+
+Her prompts (verbatim):
+
+> what are the next few sets of ml, rl or nlp conference workshop deadlines coming up in
+> the next month or two?
+
+> amazing, since conferences generally have a wave of deadlines for workshops at around the
+> same time, maybe you can find as many major RL, ML and NLP conferences whose workshop
+> paper waves happen in the next few months?
+
+Routed to: new [topics/workshop-deadlines.md](topics/reference/workshop-deadlines.md)
+(venue/timing accumulator; both answers merged into one dated table, with an intake note on
+which dates had already passed and which waves the workshop-paper candidates could
+realistically target).
