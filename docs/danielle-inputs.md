@@ -2354,3 +2354,17 @@ fastest early decline ↔ highest accuracy, monotone across bins — and shows t
 are augmentation regime × a mid-ladder LR change, not "methodology"; redo list extended;
 n mismatch between analyses flagged). Second attached file noted:
 `epoch_metrics_long_format.csv`. EDP lineage note updated with the resolved direction.
+
+### 2026-08-22 — NAS state of the field (Perplexity, undated ~2025)
+
+> then, another switch up.
+
+Her prompt (verbatim):
+
+> What is the current state of neural architecture search subfield in machine learning
+> research
+
+Routed to: new [topics/nas-literature.md](topics/reference/nas-literature.md) (survey
+condensed; intake note that the performance-estimation half — zero-cost proxies and
+learning-curve extrapolation — is the closest prior art to EDP and the loss-slope study,
+with the specific papers to check, and the top-k rank-collapse caution).
