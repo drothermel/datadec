@@ -318,10 +318,16 @@ asymmetric design to the potential-projs README program-level notes.
 > Alternatively could we treating "in context learning" as the "post-training" and explore
 > any features that could be extracted from that or elicitation.
 
+Danielle-flagged project seeds (the `→` notes on the toggle title):
+
+> → "ICL-ability as a cheap predictor of finetunability across pretraining recipes."
+> → "How compressible code is into natural language *for a given model pair* is a property
+>   of their shared representations, so reconstruction fidelity could itself serve as a
+>   capability probe, one that's graded rather than thresholded, unlike pass@1."
+
 Routed to: staging topic [topics/icl-as-posttraining.md](topics/icl-as-posttraining.md);
 papers to [topics/pretraining-to-posttraining.md](topics/pretraining-to-posttraining.md) and
 [topics/plasticity.md](topics/plasticity.md); cross-note in
 [topics/posttraining-experiment-design.md](topics/posttraining-experiment-design.md);
 [potential-projs/tiny-scale-measurement.md](potential-projs/tiny-scale-measurement.md) §4;
 the potential-projs README program-level notes.
-

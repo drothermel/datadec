@@ -6,6 +6,14 @@ checkpoints, validated against post-training movement at larger scale), possibly
 the code-autoencoder reconstruction-fidelity probe; or absorption into tiny-scale measurement
 (proxy metrics) and the post-training experiment-design topic.
 
+**Danielle-flagged project seeds** (the `→` notes on the Notion toggle; these mark what she
+considers especially relevant to defining a project):
+
+1. "ICL-ability as a cheap predictor of finetunability across pretraining recipes."
+2. "How compressible code is into natural language *for a given model pair* is a property of
+   their shared representations, so reconstruction fidelity could itself serve as a
+   capability probe, one that's graded rather than thresholded, unlike pass@1."
+
 **Question posed (Danielle, 2026-08-18).** Could in-context learning be treated as the
 post-training stage, and features extracted from it or from elicitation? See
 [../danielle-inputs.md](../danielle-inputs.md).

@@ -21,6 +21,11 @@ attributions) are unverified: the responding agents did not run literature searc
 reliable knowledge of the current landscape. Treat them as leads to check, not facts. The ideas
 stand on their own.
 
+**Danielle-flagged seeds.** On the Research Trajectory Notion page, `→` lines in a toggle's
+title are Danielle's own flags for points she considers especially relevant to defining a
+project. Wherever such a toggle is routed, those lines are quoted verbatim under a
+"Danielle-flagged project seeds" heading near the top, and logged in `../danielle-inputs.md`.
+
 **Routing rule for a new excerpt:** clearly about one existing project → that doc's §4;
 clearly program-level → the potential-projs README; neither → a topic doc here (create on first
 need).
