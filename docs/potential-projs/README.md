@@ -18,3 +18,6 @@ Each document has the same three parts:
 | [C — Geometry & comparability](c-geometry-comparability.md) | Are cross-recipe metric comparisons well-defined, and does basin membership predict when recipe effects hold? | none | Yes, evals-only |
 | [D — Token-level decomposition](d-token-level-decomposition.md) | Which tokens respond to LR decay, does that track epistemic uncertainty, and do recipes differ in how tokens migrate over training? | needs branches (from A or B) | Highest ceiling; depends on A/B |
 | [E — Dataset featurization](e-dataset-featurization.md) | Do intrinsic corpus statistics predict DataDecide's outcome table and annealing behaviour? | none | Yes, GPU-free |
+
+Resolved gate checks and open questions (with the code used to answer them)
+are logged in [open-questions-answered.md](open-questions-answered.md).
