@@ -315,3 +315,26 @@ Full text for each: `recipe-featurization.md` §4 (first),
   never help." Reference topic:
   [../topics/reinit-and-transfer-literature.md](../topics/reinit-and-transfer-literature.md).
 
+### 2026-08-18 — the methodological through-line, and the arc framing (from the Research Trajectory page)
+
+- Danielle's first paper (*Don't Sweep your Learning Rate under the Rug*, 2021, arXiv
+  2107.12460) "is the ur-example of your recurring finding-shape: 'the headline phenomenon
+  is a hyperparameter artifact.'" Structurally identical to the ELR re-warming result, the
+  critical-period deconstruction axis (a), and the *Sober Look* / *Spurious Rewards*
+  demolition of RLVR gains. "The retrospective's methodological through-line — 'before
+  attributing an effect to training history, exhaust the boring explanations: learning
+  rate, seeds, tuning asymmetry' — isn't something you picked up along the way. It's the
+  thing your first paper *was*."
+- Two load-bearing priors it planted, and their tension: (1) "proper measurement requires
+  sweeps and seeds, and asymmetric tuning between conditions silently manufactures
+  phenomena"; (2) "frozen interfaces lag; the body must be updated; but transfer through the
+  body is real" — with ICL-as-post-training as "you finally switching sides."
+- The arc: "the PhD didn't wander from cross-modal transfer to plasticity to scaling laws to
+  elicitation; it repeatedly asked whether claimed training-history effects survive
+  rigorous measurement, found that some do (critical periods, warm-start scars, ITER's
+  memory effect, data-recipe effects on elicitability) and some don't (FPT, small-scale
+  RLVR gains), and is now building the framework that tells them apart — with the LR sweep
+  as its oldest tool and the ICL curve as its newest." For the adviser: "the *completion of
+  an arc that started with your first publication* — same question, same discipline,
+  instruments upgraded."
+

@@ -140,3 +140,16 @@ half (reproduction template, deconstruction axes, elicitability column) is in
   boring reasons), so the ITER arm needs the control the original paper used — distill an
   *undamaged* teacher too, and measure damage relative to that baseline rather than to the
   teacher."
+
+---
+
+## 2026-08-18 — the fourth founding cell: the control (from the Research Trajectory page)
+
+"Achille, Ash & Adams, and Igl each claimed a real, permanent training-history effect. Your
+paper (*Don't Sweep your Learning Rate under the Rug*, arXiv 2107.12460) is the founding
+example of the opposite outcome: an apparent history effect (frozen pretrained structure
+'sufficing') that vanished under fair measurement. Those are precisely the two hypotheses
+every cell of your proposed grid must distinguish — real scar vs. measurement artifact —
+and your retrospective now has a founding paper for *each side of the dichotomy*, one of
+which you wrote." Deconstruction axis (a) — "is the period just the LR schedule closing?" —
+"is structurally identical" to the 2021 move.

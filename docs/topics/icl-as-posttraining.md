@@ -187,3 +187,13 @@ curves, induction-head strength) are the outcome columns. See
 "Whether an ICL-flattened model's distilled student recovers its ICL is exactly the test of
 whether elicitability lives in the function or in the trajectory." The distill-into-fresh-
 network arm is specified in [warmstarting-decomposition.md](warmstarting-decomposition.md).
+
+---
+
+## 2026-08-18 — the project as "quantifying the gap your 2021 paper discovered"
+
+"ICL-as-posttraining is, delightfully, *you finally switching sides*: betting that
+gradient-free elicitation is measurable enough to be the instrument… your planned
+ICL-elicitability protocol is best framed as *quantifying the gap your 2021 paper discovered*:
+how much of what the body carries can the interface reach?" (Rothermel et al. 2021, arXiv
+2107.12460: frozen variants lag full fine-tuning; transfer through the body is real.)

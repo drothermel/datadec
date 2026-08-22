@@ -79,3 +79,26 @@ it's the only one that separates *function* from *trajectory*… Distillation in
 network transfers the *behavior* while discarding the *parameters entirely*… That ITER's
 students generalize *better* than their teachers is direct evidence that the damage lives
 in parameter-space history rather than in the function — you can launder the trajectory."
+
+---
+
+## 2026-08-18 — Danielle's own entry in the body-frozen transfer thread (verified: her paper)
+
+- Rothermel, Li, Rocktäschel & Foerster, *Don't Sweep your Learning Rate under the Rug: A
+  Closer Look at Cross-modal Transfer of Pretrained Transformers* (2021, arXiv 2107.12460).
+  "Lu et al.'s claim that frozen pretrained transformers match or beat training from scratch
+  across modalities was an artifact of not tuning learning rates; with proper tuning,
+  pretrained transformers do outperform or match scratch on every task — but only when the
+  entire model is fine-tuned, with frozen variants often greatly lagging, in direct
+  contradiction to the original findings, and the genuine positive result that on
+  CIFAR10-LRA, fine-tuning the full pretrained model beats training from scratch by a large
+  margin. Reported, notably, with error bounds across 3 seeds."
+- Its substantive stance, as read back: "*frozen interfaces lag; the body must be updated;
+  but transfer through the body is real*… what a pretrained model carries is genuine, but
+  accessing it without weight updates is limited, and apparent no-update successes deserve
+  suspicion." The embedding-reset project is "the same decomposition, from the other side"
+  (interfaces are cheap, the body is where the value lives).
+- "The modern literature landed exactly on your 2021 dividing line — prompt-based adaptation
+  excels few-shot but plateaus as data grows while fine-tuning keeps going — which means the
+  Bornschein–Lyle paper (*Fine-Tuned In-Context Learners for Efficient Adaptation*) is the
+  direct descendant of yours."

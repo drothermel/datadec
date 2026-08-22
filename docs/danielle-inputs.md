@@ -592,3 +592,17 @@ Recorded as an interest flag at the top of
 the topics index; the flag spells out what acting on it would take (targeted literature
 pass → gap list → staging topic or project doc if warranted).
 
+### Toggle 15 — 2026-08-18 18:39 (Rothermel et al. 2021 and how it biased the current hypotheses)
+
+> awesome, please look for a rothermel et al followup to the lu et al paper about learning
+> rates. thats me! and describe how that work fits into this whole narrative and how that
+> project's conclusions likely biased me towards my current interest and hypotheses around
+> these directions
+
+Routed to: [topics/reinit-and-transfer-literature.md](topics/reinit-and-transfer-literature.md)
+(verified entry for the paper and its stance);
+[topics/warmstarting-decomposition.md](topics/warmstarting-decomposition.md) (the fourth
+founding cell — the control); [topics/icl-as-posttraining.md](topics/icl-as-posttraining.md)
+("quantifying the gap your 2021 paper discovered"); the potential-projs README
+program-level notes (through-line, two priors, the arc framing).
+
