@@ -156,4 +156,11 @@ experiments will log intermediates.
   claim built on DataDecide (including the stage-dependent data-value ideas in
   `docs/potential-projs/functional-featurization.md`) and is itself a candidate audit paper — the
   time-resolved extension of REC-a.
-
+- **The AI2 "fine-tuning dataset that moves specific-task metrics" (co-author "Kyle").** Has
+  it been released? Raised by an AI2 contact during the 2025 post-training project (SFT on
+  Tulu / Tulu 3 over DataDecide models moved nothing from multiple choice through
+  HumanEval; first-hand account in `docs/topics/reference/pretraining-to-posttraining.md`).
+  An external search guessed FollowIR, which is a retrieval benchmark and not a match.
+  Resolution is a question to the contact (Danielle's to ask), not a search. Gates the
+  choice of post-training data for `docs/potential-projs/movement-microscope.md` (MIC-opt-1)
+  and `docs/potential-projs/elicitation-gain.md` (ELI-3).

@@ -2557,5 +2557,5 @@ Applied: `tiny-model-specialization` → [potential-projs/elicitation-gain.md](p
 section with [cnn-deconstruction-ladder.md](past-projects/cnn-deconstruction-ladder.md) and
 [loss-slope-prediction.md](past-projects/loss-slope-prediction.md) (split out of the ladder
 staging topic; the SFT no-movement project noted as a candidate third record). Items 3
-(EDP related-work gate) and 4 (open-questions entry for the AI2 dataset) were not decided
-and were not applied.
+(EDP related-work gate) and 4 (open-questions entry for the AI2 dataset) were approved in a
+follow-up ("yes to both 3 and 4") and applied.

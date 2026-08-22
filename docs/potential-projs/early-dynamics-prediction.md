@@ -906,7 +906,18 @@ under the scale-generalisation axis, drop it (B) and carry `size_log`, or use C 
 size-normalised inputs are wanted. This closes the "per-size z-scoring under held-out
 sizes" open question below.
 
-### Related-work pointers (added 2026-08-22)
+### Related-work gate (added 2026-08-22; parked with the other literature gates)
+
+**Gate:** before any write-up, verify and position against the early-curve prediction
+lines below — learning-curve extrapolation (Domhan et al. 2015; Klein et al. 2017; Baker et
+al. 2017; LC-PFN, Adriaensen et al. 2023, arXiv 2310.20447; Ding et al. 2024, arXiv
+2412.15554), early-dynamics proxies (neural capacitance, arXiv 2201.04194), and zero-cost
+NAS proxies (TE-NAS; NASWOT; Abdelfattah et al. 2021; AZ-NAS, arXiv 2403.19232) — plus the
+recipe-ablation papers that motivate the CNN lineage ("Bag of Tricks" 1812.01187;
+"Revisiting ResNets" 2103.07579; "ResNet strikes back" 2110.00476). All are from memory or
+from unchecked searches. Evaluate EDP's ranking metrics on the top-k subset as well as the
+full population (the zero-cost-proxy literature's rank-collapse caution).
+
 
 The prior-art lines for "early curve → final performance" are collected in
 `../topics/reference/loss-curve-forecasting.md` (learning-curve extrapolation: Domhan 2015,
