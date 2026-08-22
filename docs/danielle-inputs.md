@@ -713,9 +713,9 @@ routing was revised accordingly); technical content is.
 > done with prelim analysis in ~2.5weeks if i focus. thats why this seems plausible to me.
 
 Routed to: [topics/warmstarting-decomposition.md](topics/warmstarting-decomposition.md)
-(what compresses vs. not; known-answer replication as acceptance test; sanity battery and
-run manifest; seeds and panel over variations); the potential-projs README (verification
-discipline for agent-written science code). Adviser remarks disregarded.
+(what compresses vs. not; known-answer replication as acceptance test; seeds and panel
+over variations). Adviser remarks disregarded; the agentic-coding verification lecture
+dropped at Danielle's direction (she knows it deeply).
 
 ### Toggle 20 — 2026-08-18 20:12 (CRL foundations for the identifiability tie-in)
 

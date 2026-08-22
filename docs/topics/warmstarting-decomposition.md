@@ -235,15 +235,9 @@ at her direction.)
 - "What compresses: code, configs, plumbing, first plots. What doesn't: wall-clock GPU time
   for seeds (the CIs are the product, and n=10 seeds per cell takes the same hours
   regardless of how fast the code was written), and *verification*."
-- "Agentic coding shifts the risk profile in a way that's specifically dangerous for
-  science code: agents produce plausible-looking experiments whose bugs are silent — a
-  normalization applied twice, a deficit window off by one epoch, eval on the wrong
-  checkpoint — and unlike product code, nothing crashes; you just get clean-looking wrong
-  curves… So the known-answer replication… is the *acceptance test that gates everything*,
-  week one: the harness must reproduce Ash & Adams' published gap magnitude and Achille's
-  sensitivity-window shape before any variation runs. Have the agent write the sanity
-  battery too — loss-curve invariants, intervention-timing assertions, a seed-determinism
-  check — and keep a run manifest so every figure traces to a config hash."
+- The known-answer replication is "the *acceptance test that gates everything*": the
+  harness must reproduce Ash & Adams' published gap magnitude and Achille's
+  sensitivity-window shape before any variation runs.
 - "Spend the speed dividend on *seeds and the panel, not on variations*… the money figure
   needs depth: many seeds per cell so the window boundaries and panel-event timestamps have
   error bars, because 'the Fisher peak aligns with basin commitment' is only a claim if both

@@ -379,12 +379,3 @@ Full text for each: `recipe-featurization.md` §4 (first),
   (The same conversation also contained advice about managing Danielle's adviser; that
   material is disregarded at her direction and not recorded.)
 
-### 2026-08-18 — verification discipline for agent-written science code (from the Research Trajectory page)
-
-- "Agents produce plausible-looking experiments whose bugs are silent… you just get
-  clean-looking wrong curves." Standing rules for every harness in this portfolio: a
-  known-answer replication as the acceptance test that gates variations; an agent-written
-  sanity battery (loss-curve invariants, intervention-timing assertions, seed-determinism
-  check); a run manifest so every figure traces to a config hash; speed dividends spent on
-  seeds and the diagnostic panel rather than on more variations.
-
