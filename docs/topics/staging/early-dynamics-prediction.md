@@ -97,6 +97,44 @@ Framed as six themes for a workshop-first, conference-extension plan within a 30
   rankings are partly a cosine-tail artifact, which bounds what "predicting the final
   ranking" can mean.
 
+## 2025-07 — Second review: GBDT v0 design details (near-verbatim, condensed)
+
+One of several similar reviews Danielle requested of the same plan; recorded where it adds
+to the first. Focused on the GBDT-based proof of concept (GP comparison later). The plan it
+reviewed already had S₀ = min(10% of training, 2B tokens), curve-fit features (linear /
+exponential / power-law, endpoints, variance), LightGBM + basic CV.
+
+*A. Quick wins by pipeline stage.* Store relative progress w.r.t. the LR schedule (% warm-up
+done, % cosine decay done) as a phase feature. Add rolling-slope features (5-point window)
+and a noise-scale estimate (≈ E[(loss_t − loss_{t−1})²]). Add "effective context length" =
+min(seq_len, tokens_seen/steps) per checkpoint. Use a pairwise-ranking objective
+(`lambdarank`) for ranking tasks instead of hand-built binary pairs — yields NDCG /
+Kendall τ directly and handles ties. Add a stratified 10% shuffle split that balances
+size buckets and holds out unseen **seeds** as the fast sanity check and the single HPO
+validation split. Report Spearman ρ / Kendall τ and calibration (ECE) alongside decision
+accuracy. Interpretability: SHAP TreeExplainer per fold, mean |SHAP| aggregated.
+
+*B. Risks and cheap mitigations.* **Seed leakage** — when holding out recipes or sizes, the
+same seed appears in train and test; always split on (recipe, size, seed). **Pair class
+imbalance** (most pairs tie or differ marginally) — `lambdarank` or weight pairs by
+|Δmetric|. **Heteroscedastic noise** (tiny models far noisier) — log-transform and z-score
+within size bucket; pass size as a numeric feature. **Featurization cost** (>10k examples ×
+repeated fits) — cache fits keyed by (recipe, size, seed, metric) (`joblib.Memory`).
+**Non-IID recipes** (Dolma resamplings vs. FineWeb-Edu) — hold out recipe *families* in one
+fold and report separately, so the model can't latch onto recipe identity.
+
+*C. TODO fill-ins.* Modelling-choices list: code-token mix ratio → math (Gadre et al. 2024);
+warm-up length → calibration (Mao et al. 2024); curriculum ordering → convergence (Zhang et
+al. 2025) — all unverified attributions. GBDT spec: LightGBM, 512 leaves, LR 0.05, early
+stopping 50 rounds on validation NDCG; lambdarank for pairwise, MSE for scalars. Recipe
+features: total tokens; % code / % CC-derived / % social-media; mean document length;
+duplicate-rate estimate. Target-timestep sampling: K = 3 fractional positions {33%, 66%,
+100%} of the remaining training after S₀. Early-curve downsampling: 16 equispaced points in
+log-time per metric. Fit visualisation: one subplot per fit type overlaid.
+
+*Timeline claim.* With cached fits, full LOOCV over 25 recipes ≈ 3 CPU-hours; expanding
+window (≤60M → rest) ≈ 2 more. Everything is post-processing — no extra GPU jobs.
+
 ## Open questions
 
 - Is this still live (July 2025 draft; DataDecide scaling-law baselines have since been

@@ -1637,3 +1637,9 @@ Routed to: [topics/schedules-and-annealing-literature.md](topics/reference/sched
 (PDF attached; the Gemini notes markdown was not provided.) Routed to: new staging topic
 [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md); PDF
 copied to [refs/](refs/README.md).
+
+### Early-dynamics draft review, second response — 2025-07 (intake 2026-08-22)
+
+Same prompt as the entry above (Danielle asked several similar questions); response
+recorded in [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
+("Second review: GBDT v0 design details").
