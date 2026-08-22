@@ -111,6 +111,54 @@ longest-common-substring between input and representation) as the optimizer runs
 nothing, doesn't shape the solution, and converts 'worry about degeneracy' into 'watch a
 number.'"
 
+## 2026-07-11 — Point 2, the objective vs. the style goal
+
+**Danielle's position.** The pass-rate objective targets the general-purpose case; style
+transfer would build on it. Sketch: a two-part representation (function F, style S) where
+"the score ... was based on regenerating with just the functional part versus regenerating
+with the functional and style part" — surface-form reconstruction metrics on decode(F+S),
+test passing only on decode(F), and possibly "one more loss element, which would be keeping
+functionality out of the style representation." Then "ideally, you would be able to swap out
+the style representations," and if the optimal representation is human-readable text, "you
+would be able to actually just write language into the style portion." No reason to believe
+pure optimization yields readable text, but "the general structure makes space for different
+types of modifications of the optimization surface." The optimizer is not a semi-random
+search: as an LLM it "would have its own priors about what would work ... and would have the
+ability to look at the outputs and adapt its prompts accordingly" — so playing with
+components may be far more effective than in "a pre-LLM standard autoencoder setup where it
+was notoriously very difficult to tune." This is motivation plus illustrative examples of
+plausibility and usefulness, not loss design.
+
+**Response (near-verbatim; detail beyond the motivation level, kept as a lead).** The third
+term is load-bearing, not optional: "With only the two terms — decode(F) passes tests,
+decode(F+S) reconstructs surface — the optimal S is the verbatim code ... The smuggling
+problem from point 1 doesn't disappear in the factored setup; it relocates to whichever
+channel has no constraint." A function-contaminated S "means a style swap silently swaps
+behavior too." Strongest form: "make the swap itself the training objective. Decode(F_a +
+S_b) must pass a's tests while exhibiting b's surface characteristics — cross-decoding as
+loss, the cycle-consistency trick from classical style transfer ported to prompt space."
+Metrics: no ground truth for "a's function in b's style," so style-feature agreement (naming
+conventions, comment density, idiom usage) or an LLM judge; "raw edit distance actively
+rewards verbatim S," so the reconstruction metric choice is where tuning tension
+concentrates. Style is not fully independent of content; some swaps may not transfer
+sensibly. (Unverified lineage pointer: MUNIT / cycle-consistency style transfer.)
+
+On the optimizer: "The deep reason classical disentanglement was brutal is that gradient
+descent has no concept of 'style' — the factorization had to emerge from blind architectural
+pressure, and you tuned β by superstition. Here you can name the factorization ... a
+frontier model lands near the right split at step zero. Optimization becomes refinement from
+a semantically correct initialization, not search for an unnamed direction. And balancing
+the losses becomes conversational." On readability, mild pushback: "prose is closer to the
+default than you're granting ... drift toward opaque encodings requires the optimizer to
+actively discover them — the same reachability question from point 1. Hand-editable style
+fields are probably nearly free."
+
+**Motivation-level summary (agreed).** "The architecture creates space for these variations
+(factored representations, swappable components, steerable optimization) in a way the
+classical setup never did, and ... an LLM optimizer with semantic priors makes exploring
+that space tractable. ... the fact that we could sketch three plausible designs in one
+exchange is itself evidence for the plausibility argument."
+
 ## Open questions
 
 - Bottleneck: now framed as *optional* and itself an experimental variable — does
@@ -118,7 +166,8 @@ number.'"
   copy-detection metric rather than preventing by construction.
 - Contrastive / invariance objective: how to generate surface-distinct functionally
   equivalent pairs (LLM rewrites + test oracle), and what similarity metric on text latents.
-- Single monolithic latent vs. factored schema; how the style and function objectives are
-  balanced (Points 2+ of the point-by-point discussion pending).
+- Factored (F, S) schema: the third "function stays out of S" term and its metric;
+  cross-decoding as objective; readability of S as nearly free vs. needing pressure.
+  (Loss design deferred — motivation stage; Points 3+ pending.)
 
 **Waiting on:** the remaining points of the point-by-point discussion; a promotion decision.
