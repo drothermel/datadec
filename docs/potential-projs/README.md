@@ -41,7 +41,8 @@ history and on the closed PR 45/46 branches.
 
 Resolved gate checks and open questions (with the code used to answer them) are logged in
 [../open-questions-answered.md](../open-questions-answered.md). The recipe-featurization
-literature review (plan and process) lives in [../litreview/](../litreview/). Ideas that do not yet
+literature review (plan and process) lives in [../litreview/](../litreview/). Danielle's organizing
+hypothesis, in her words with agreed refinements, is [../research-hypothesis.md](../research-hypothesis.md). Ideas that do not yet
 belong to a project are staged in [../topics/](../topics/). Ranked lists of directions
 under different objectives are in [../portfolio-rankings.md](../portfolio-rankings.md). Danielle's own prompts from the source
 conversations are logged verbatim in [../danielle-inputs.md](../danielle-inputs.md).
@@ -195,6 +196,7 @@ the same projects.
 |---|---|---|
 | **Data measurement → training dynamics** | Featurize data by what it does to training (schedule sensitivity, emergence timing, noise, forgetting), not by endpoint scores; DataDecide is the first instrument-validation study | REC, FUNC, ANN, TOK, PART |
 | **Measurement science of LM training at academic scale** | Cheapness converts into replicates, factorial designs, and confidence intervals; the measurement problem at 10–150M is the research question; tiny models as the program's Drosophila | TRJ, IRT, TINY, ANN, MSUITE, FUNC |
+| **Elicitation-controlled evaluation: capability delta vs. accessibility delta** | Pipeline-stage comparisons are confounded by from-scratch-tuned defaults and uncontrolled elicitation; calibrate elicitation as a strong null, report effects raw and elicitation-controlled, and demonstrate (not compare) where weight updates exceed the tuned elicitation ceiling — Danielle's own statement in [../research-hypothesis.md](../research-hypothesis.md) | IRT, TINY, the ICL / post-training-design / warm-starting topics, ANN-opt-3, WSD-opt-2 |
 | **Non-stationarity accounting** | Every thread is a non-stationarity thread (exogenous: schedule, data order, midtraining; endogenous: routing, gradient-weighted self-curriculum); account for how much each source injects and what each stabilizer suppresses | ANN, REC-9/10, TOK, MOVE, FUNC |
 
 Full text for each: `recipe-featurization.md` §4 (first),

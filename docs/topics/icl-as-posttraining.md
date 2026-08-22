@@ -197,3 +197,15 @@ gradient-free elicitation is measurable enough to be the instrument… your plan
 ICL-elicitability protocol is best framed as *quantifying the gap your 2021 paper discovered*:
 how much of what the body carries can the interface reach?" (Rothermel et al. 2021, arXiv
 2107.12460: frozen variants lag full fine-tuning; transfer through the body is real.)
+
+---
+
+## 2026-08-18 — reframed as instrument calibration and the strong null (from the research-hypothesis discussion)
+
+"The ICL/elicitation protocol isn't an outcome measure anymore — it's *instrument
+calibration*… so that the later experiments can report 'capability change net of
+elicitation change.'" The tuned elicitation ceiling becomes "the *strong null model*, and
+every demonstration [that a weight update exceeds it] is a one-sided test against the
+strongest available null." Both readouts — raw and elicitation-controlled — are reported,
+with their difference as the capability-vs-accessibility decomposition. See
+[../research-hypothesis.md](../research-hypothesis.md).

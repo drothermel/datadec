@@ -626,3 +626,22 @@ boundary condition); [topics/landscape-literature.md](topics/landscape-literatur
 (the ladder as an identifiability-vs-scale instrument); the potential-projs README
 (fourth matched-loss control; the identification-strategy framing; the final map).
 
+### Toggle 17, sub-toggles 1–3 — "Detour into my actual hypothesis and research paths" (18:57, 19:05, 19:12)
+
+Danielle's three statements are reproduced in full (lightly cleaned of transcription
+artifacts) in [research-hypothesis.md](research-hypothesis.md): the hypothesis itself
+(broken multistage evaluation; elicitation masks intervention signal; learn to elicit, then
+use those evals to find warm-start-native training procedures); the pushback that matched
+tuning budgets are inherently impossible and misleading given a decade of communal tuning
+of the from-scratch regime; and the position that the best achievable evidence is
+existence proofs — demonstrations that elicitation moves things, then that a weight update
+beats tuned elicitation in some setting.
+
+Routed to: [research-hypothesis.md](research-hypothesis.md) (new, top-level); a fourth
+candidate program framing in the potential-projs README; new reference topic
+[topics/evaluation-methodology-literature.md](topics/evaluation-methodology-literature.md);
+notes in [topics/icl-as-posttraining.md](topics/icl-as-posttraining.md) (instrument
+calibration; strong null), [topics/warmstarting-decomposition.md](topics/warmstarting-decomposition.md)
+(optimum displacement), [topics/posttraining-experiment-design.md](topics/posttraining-experiment-design.md)
+(tuning-response curves; demonstration hygiene; meta-analysis).
+

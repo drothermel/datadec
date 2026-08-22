@@ -94,3 +94,19 @@ claim is false at your scales, that's also a finding."
 Treating in-context learning as the post-training stage makes "seeds" one forward pass and
 sidesteps the elicitation threshold; the proxy candidate is the ICL curve (loss on the k-th
 demo vs. k) on existing checkpoints. Recorded in [icl-as-posttraining.md](icl-as-posttraining.md).
+
+---
+
+## 2026-08-18 — tuning-response curves, demonstration hygiene, and a meta-analysis (from the research-hypothesis discussion)
+
+- Replace matched-budget comparisons with *tuning-response curves*: "performance as a
+  function of search budget for each paradigm… a mature, communally-exhausted paradigm
+  should show a flat curve… an under-explored paradigm with real headroom should show a
+  steep, still-rising curve."
+- Demonstration hygiene for existence proofs: "pre-specified settings, effect sizes with
+  confidence bounds across seeds, replication in at least a second model family, honest
+  reporting of how many settings were searched, and… a mechanism readout from your
+  diagnostic panel explaining *why* the ceiling was exceeded there."
+- A publishable piece on its own: "a modest meta-analysis of 'how often does the
+  incumbent's advantage survive serious re-tuning'" over the field's natural experiments.
+See [../research-hypothesis.md](../research-hypothesis.md).

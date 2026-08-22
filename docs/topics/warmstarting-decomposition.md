@@ -153,3 +153,13 @@ every cell of your proposed grid must distinguish — real scar vs. measurement 
 and your retrospective now has a founding paper for *each side of the dichotomy*, one of
 which you wrote." Deconstruction axis (a) — "is the period just the LR schedule closing?" —
 "is structurally identical" to the 2021 move.
+
+---
+
+## 2026-08-18 — the grid as the smallest instance of "re-tune the regime-mismatched knobs" (from the research-hypothesis discussion)
+
+"The warm-start factorial becomes the oldest, smallest instance of the second half [of the
+hypothesis]: re-tune the regime-mismatched knobs and watch how much 'impossibility'
+evaporates." Supporting measurement to add: *optimum displacement* — "how far the
+warm-start regime's tuned optimum sits from the from-scratch default in hyperparameter
+space," knob by knob. See [../research-hypothesis.md](../research-hypothesis.md).
