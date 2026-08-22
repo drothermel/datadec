@@ -28,7 +28,7 @@ framing separately.
 3. **Decay branches.** At a regular schedule of branch points (e.g. every 5–10% of the budget),
    launch a fixed-length decay (default ~10% of elapsed tokens, linear-to-zero or 1-sqrt) on
    the recipe's own data. Eval each branch endpoint with the full DataDecide suite, and log
-   per-token losses on the shared held-out token set.
+   per-token losses on the fixed held-out token set (specified in §3, step 5).
 4. **Release as a checkpoint suite** with curves, branch endpoints, and eval tables.
 
 ### Optional directions
@@ -40,8 +40,8 @@ framing separately.
   vs. matched stable checkpoints; the cleanest version of the "was post-training starting
   from the wall?" question.
 - **B-opt-3: Cosine twins.** For one or two recipes, also train a cosine run with identical
-  data order, so the suite contains a matched cosine-vs-WSD comparison. Makes Project A's
-  cosine-resumed branches directly validatable against a true stable phase.
+  data order, so the suite contains a matched cosine-vs-WSD comparison. Makes decay
+  branches resumed from cosine checkpoints directly validatable against a true stable phase.
 - **B-opt-4: Mixed-in decay data.** MiniCPM-style: introduce high-quality data only during the
   decay. Tests whether decay-phase data interacts with recipe. Scope creep risk; note and defer.
 - **B-opt-5: Extend to more recipes / a larger size** once the pipeline is proven — the
@@ -59,20 +59,23 @@ framing separately.
 - Rough scale: a 150M run at DataDecide's budget is small; the branches add ~10% × number of
   branch points on top. Five recipes × 2 sizes × 3 seeds × (1 + 0.1 × 10 branches) is a
   meaningful but not unreasonable cluster allocation.
-- Depends on nothing else. Everything else benefits from it.
+- Depends on nothing else. Every project that consumes annealed checkpoints or per-token
+  branch logs benefits from it.
 
 ### As background cluster utilisation
 
 This is the natural use of idle cluster time *provided* two things are fixed first:
 
 1. **The schedule design is frozen** — branch spacing, decay length, checkpoint cadence,
-   held-out token set. Changing these mid-way wastes the early runs. Project A's A-opt-1 (or
-   B-opt-1 on the first recipe) should settle them.
-2. **Per-token logging and the results store exist**, so runs produce the artifact Projects A,
-   C, D, E consume rather than something to re-process later.
+   held-out token set. Changing these mid-way wastes the early runs. B-opt-1 on the first
+   recipe should settle them.
+2. **Per-token logging and the results store exist** (§3, steps 3 and 5), so runs produce
+   the artifact downstream analyses consume rather than something to re-process later.
 
 Given those, the stable-phase runs are fire-and-forget and branch launches can be scripted off
-checkpoint arrival. Start with the recipe pair that Project A finds most schedule-sensitive.
+checkpoint arrival. Start with a recipe pair spanning the outcome range, or — if a
+multi-power-law fit of the released loss curves is available — the pair it predicts to be most
+decay-sensitive.
 
 ### Per-direction workshop-paper impact
 
@@ -86,8 +89,9 @@ checkpoint arrival. Start with the recipe pair that Project A finds most schedul
 | B-opt-5 extension | n/a | Pure resource growth; only matters if the suite is being used. |
 
 **Recommended framing:** do not pitch B1 alone as the workshop paper. Pitch it as the
-infrastructure behind either A (cosine twins, B-opt-3) or the post-training result (B-opt-2),
-and run the stable phases in the background while A's evals-only work proceeds.
+infrastructure behind either the annealed-readouts question (cosine twins, B-opt-3) or the
+post-training result (B-opt-2), and run the stable phases in the background while evals-only
+work proceeds.
 
 ---
 
@@ -98,13 +102,28 @@ and run the stable phases in the background while A's evals-only work proceeds.
    the suite is not comparable.
 2. **WSD config + dense checkpointing.** Swap in constant LR after warmup; set checkpoint
    cadence to the branch-point spacing.
-3. **Decay-branch runner.** Shared with Project A (step 5 there): resume from a checkpoint
-   with configurable decay shape/length on the same data stream; log curves and per-token
-   losses; eval the endpoint. If Project A built it, reuse it unchanged.
+3. **Decay-branch runner.** Resume from a checkpoint with configurable decay shape/length
+   (linear-to-zero or 1-sqrt; length as a fraction of elapsed tokens) on the same data
+   stream; log curves and per-token losses on the held-out set at start and endpoint; save
+   endpoint weights; hand the endpoint to the eval harness as a `branch:<cfg>` variant.
+   Parameterise shape and length from day one. *Project A specifies the same runner; if it
+   already exists, reuse it unchanged.*
 4. **Branch scheduler.** Watch for stable-phase checkpoint arrival and launch branches
    automatically; record provenance (parent step, decay config) in the results store.
-5. **Results store + eval harness** (shared with Project A, steps 2–3): all endpoints evaluated
-   with the DataDecide suite and per-token losses on the fixed held-out set.
+5. **Results store + eval harness + held-out token set.** Load any (recipe, size, seed, step) DataDecide checkpoint; run
+   the DataDecide task suite and perplexity evals; store results keyed by that tuple plus a
+   `variant` field (`raw`, `merged:<cfg>`, `branch:<cfg>`), in the same table schema as the
+   processed OLMES tables so results slot into existing accessors.
+   All endpoints are evaluated with the DataDecide suite. Choose a held-out token set once and freeze it: fixed, versioned token
+   sequences with a manifest; stratified across domains and across the DataDecide leaf
+   corpora; sized so that each domain × entropy-bucket cell has enough tokens to estimate
+   mean per-token loss drop within a set tolerance, while keeping one forward pass per
+   checkpoint cheap. Per-token loss on it is a standard output of the eval harness for every
+   checkpoint variant (raw checkpoints, merged checkpoints, branch starts and endpoints),
+   stored as compact arrays keyed by (checkpoint variant, held-out-set version). Branch
+   endpoints also save their weights. Cheap to add now; expensive to retrofit later because
+   it would mean re-running branches. *An identical spec appears in Project A, Project B, and
+   Project D; keep them in sync.*
 6. **Pilot on one recipe, one size, one seed** end to end, including B-opt-1 on two branch
    points, to freeze the schedule design.
 7. **Scale out** to the chosen recipe subset; then B-opt-3 cosine twins; then B-opt-5 as idle
@@ -112,4 +131,4 @@ and run the stable phases in the background while A's evals-only work proceeds.
 8. **Packaging** for release: checkpoint naming, manifest, eval tables, curve dumps.
 
 Step 1 is the gating item and is worth doing early regardless of whether B proceeds, since
-it also validates the training stack for Project A's branches.
+it also validates the training stack for any decay branches resumed from released checkpoints.

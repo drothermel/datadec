@@ -145,8 +145,8 @@ Ordered so each step is usable on its own and later steps reuse earlier ones.
    checkpoint variant (raw checkpoints, merged checkpoints, branch starts and endpoints),
    stored as compact arrays keyed by (checkpoint variant, held-out-set version). Branch
    endpoints also save their weights. Cheap to add now; expensive to retrofit later because
-   it would mean re-running branches. *An identical spec appears in Project A and Project D;
-   keep them in sync.*
+   it would mean re-running branches. *An identical spec appears in Project A, Project B, and
+   Project D; keep them in sync.*
    Enables A-opt-4 and per-token analyses of branch endpoints.
 4. **Checkpoint-merging tool (A1).** Sliding-window weighted averaging with configurable
    window and weight curve; expert-agnostic (dense models only); outputs a checkpoint that the

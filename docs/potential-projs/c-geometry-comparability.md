@@ -38,9 +38,12 @@ Inventory IDs: C1–C5.
   criterion. Compare its verdict with the barrier-based one.
 - **C-opt-2: River-valley visualisation (C4).** Plot a few recipes in the (pre-cooldown→final
   direction, local Adam-step direction) coordinate system. Explanatory figure.
-- **C-opt-3: Barriers on annealed variants.** Repeat the barrier measurements on Project A's
-  branch endpoints or merged checkpoints. Tests whether annealing brings recipes *into* the
-  same basin (barriers fall) or reveals that they were never in it.
+- **C-opt-3: Barriers on annealed variants.** Repeat the barrier measurements on annealed
+  variants of the checkpoints: endpoints of short decay branches resumed from existing
+  checkpoints (~10% of elapsed tokens, linear-to-zero or 1-sqrt, on the recipe's own data),
+  or decay-weighted sliding-window merges of preceding checkpoints. Tests whether annealing
+  brings recipes *into* the same basin (barriers fall) or reveals that they were never in it.
+  *Project A produces exactly these variants; if they exist, reuse them.*
 - **C-opt-4: Feature-space connectivity.** Layerwise linear feature connectivity in activation
   space, not just loss, for pairs that look connected in loss. Sharper but more expensive.
 - **C-opt-5: Seed-split timing.** Using DataDecide's 3 seeds, estimate when (if ever) sibling
@@ -73,19 +76,23 @@ Inventory IDs: C1–C5.
 | Core (C1, C2, C5) | **Medium–High** | "Metric validity requires basin membership" is an unclaimed framing; applying it to DataDecide's proxy-metric claims is concrete and self-contained. Risk of a degenerate stratification (see above). |
 | C-opt-1 curve collapse | Medium | Cheap and a nice contrast (weights vs. curves); strengthens the core rather than standing alone. |
 | C-opt-2 visualisation | Low | Figure-only. |
-| C-opt-3 barriers on annealed variants | **High** (conditional on Project A) | "Does annealing make recipes comparable?" is a crisp question that links C to A and gives the paper a causal knob. |
+| C-opt-3 barriers on annealed variants | **High** (conditional on annealed variants existing) | "Does annealing make recipes comparable?" is a crisp question that links geometry to the schedule and gives the paper a causal knob. |
 | C-opt-4 feature connectivity | Medium | More expensive, more convincing; a follow-up unless the loss-space result is ambiguous. |
 | C-opt-5 seed-split timing | Medium | Touches the critical-period thread; a good secondary figure and cheap given 3 seeds. |
 
-**Recommended scope:** Core + C-opt-1 + C-opt-5 as an evals-only paper; add C-opt-3 if Project
-A's branches exist by then, which would likely raise it to the strongest version.
+**Recommended scope:** Core + C-opt-1 + C-opt-5 as an evals-only paper; add C-opt-3 if
+annealed variants exist by then, which would likely raise it to the strongest version.
 
 ---
 
 ## 3. Infrastructure build sequence
 
-1. **Checkpoint + eval harness** (shared with Project A, step 2). Needed to load arbitrary
-   checkpoint pairs and evaluate on a fixed eval set.
+1. **Checkpoint + eval harness.** Load any (recipe, size, seed, step) DataDecide checkpoint; run
+   the DataDecide task suite and perplexity evals; store results keyed by that tuple plus a
+   `variant` field (`raw`, `merged:<cfg>`, `branch:<cfg>`), in the same table schema as the
+   processed OLMES tables so results slot into existing accessors.
+   Needed to load arbitrary checkpoint pairs and evaluate on a fixed eval set. *Projects A,
+   B, and D specify the same harness; build it once.*
 2. **Interpolation tool.** Given two checkpoints, evaluate loss (and optionally task metrics)
    at N points on the linear path; emit barrier height, path shape classification, and the raw
    curve. Batch over a pair list.
@@ -99,5 +106,5 @@ A's branches exist by then, which would likely raise it to the strongest version
    and proxy-metric tables; stratify, bootstrap over seeds, produce the core figures.
 6. *(Optional)* **Curve-collapse analysis** (C-opt-1) from logged curves only — can be done
    first, in parallel with steps 1–2, as it needs no checkpoints.
-7. *(Optional)* **Variant support**: accept `merged:*` / `branch:*` checkpoints from Project A
-   as endpoints (C-opt-3) — free if the results store convention is shared.
+7. *(Optional)* **Variant support**: accept `merged:*` / `branch:*` checkpoints as
+   interpolation endpoints (C-opt-3) — free given the `variant` convention in step 1.

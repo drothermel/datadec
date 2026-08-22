@@ -103,8 +103,8 @@ river-valley mechanism in one figure and yields a principled recipe for low-nois
    checkpoint variant (raw checkpoints, merged checkpoints, branch starts and endpoints),
    stored as compact arrays keyed by (checkpoint variant, held-out-set version). Branch
    endpoints also save their weights. Cheap to add now; expensive to retrofit later because
-   it would mean re-running branches. *An identical spec appears in Project A and Project D;
-   keep them in sync.*
+   it would mean re-running branches. *An identical spec appears in Project A, Project B, and
+   Project D; keep them in sync.*
 2. **Per-token decay-responsiveness (D3).** For each branch, the per-token loss drop from
    branch start to branch endpoint. High drop = wall token at that point in training; ~zero
    drop = already at the river.
@@ -200,8 +200,8 @@ project and the T1 harness is reused by Stage 2.
    checkpoint variant (raw checkpoints, merged checkpoints, branch starts and endpoints),
    stored as compact arrays keyed by (checkpoint variant, held-out-set version). Branch
    endpoints also save their weights. Cheap to add now; expensive to retrofit later because
-   it would mean re-running branches. *An identical spec appears in Project A and Project D;
-   keep them in sync.*
+   it would mean re-running branches. *An identical spec appears in Project A, Project B, and
+   Project D; keep them in sync.*
    Freeze it before any branch runs.
 2. **Checkpoint + eval harness with per-token loss logging.** Load any (recipe, size, seed,
    step) DataDecide checkpoint; run the DataDecide task suite and perplexity evals; store

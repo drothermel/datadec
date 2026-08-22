@@ -29,15 +29,15 @@ Known finding this immediately surfaces: mixture labels are shard-file fractions
 
 **D3 · Feature → outcome study (F3).** Which features explain which task-family outcomes; comparison against model-mediated baselines (perplexity-correlation features, RegMix-style mixture weights computed on *realized* shares) and similarity-embedding baselines (Task2Vec alignment). Family contrasts as dose-response evidence (e.g., DCLM QC 3→7→10→20% sweep vs. code/knowledge/commonsense task groups).
 
-**D4 · Determinism profile → annealing behavior.** Does D2 predict how much each recipe's apparent ranking is schedule artifact? Targets come from the A-layer of the idea map: multi-power-law loss correction (analytic, T0) at minimum; checkpoint-merging pseudo-anneals or short decay branches if available. Further geometry targets once they exist: decay gain (Project A branches), interpolation-path curvature (Project C), or per-token migration rates (Project D). This is the bridge to the causal token-bucket work (C1) and the part with a mechanism story.
+**D4 · Determinism profile → annealing behavior.** Does D2 predict how much each recipe's apparent ranking is schedule artifact? Targets come from the A-layer of the idea map: multi-power-law loss correction (analytic, T0) at minimum; checkpoint-merging pseudo-anneals or short decay branches if available. Further geometry targets once they exist: measured decay gain from short decay branches, interpolation-path curvature between checkpoint pairs, or per-token migration rates (when tokens stop responding to decay) — each produced by a separate project if pursued. This is the bridge to the causal token-bucket work (C1) and the part with a mechanism story.
 
 **D5 · Per-source attribution via the mixes and ablations.** Use the three mixes (continuous DCLM share: 0/43/69/87/100%) and the Dolma ablations as a designed experiment over leaf-corpus shares, estimating per-task marginal effects of DCLM-CC, StarCoder, Reddit, Flan, math corpora. Purely from C-a + C-c; no new features required.
 
 *D6–D8 ported from the former Project E doc (`e-dataset-featurization.md`, now removed):*
 
-**D6 · Predict annealed outcomes.** Re-run D3 against Project A's annealed values instead of raw ones; report whether feature importance shifts once the schedule artifact is removed.
+**D6 · Predict annealed outcomes.** Re-run D3 against annealed outcome values (evals of decay-branch endpoints or decay-weighted checkpoint merges, if another project produces them) instead of raw ones; report whether feature importance shifts once the schedule artifact is removed.
 
-**D7 · Curve-parameter targets.** Use Project A's per-recipe MPL parameters (A5) as the regression target: do intrinsic features predict the along-river term, the decay term, or neither?
+**D7 · Curve-parameter targets.** Fit the multi-power law (loss as a power law in cumulative LR plus decay-drop terms) to each recipe's released loss curve — T0, using `processed/scaling-law/checkpoint-losses.parquet` with `lr_at_step` / `cumulative_lr` — and use the per-recipe fitted parameters as the regression target: do intrinsic features predict the along-river term, the decay term, or neither?
 
 **D8 · Per-task feature maps.** Which features predict which tasks; whether code / math / knowledge tasks load on different intrinsic statistics.
 
@@ -73,8 +73,8 @@ Risks are statistical, not engineering:
 | **D3 feature→outcome** | medium (statistics) | medium with family framing; low as a regression paper | Within-family dose-response statements per task family are workshop-sized; a 25-point R² is not |
 | **D4 determinism→annealing** | medium; depends on A-layer targets | medium-high if positive | Only direction with a mechanism story; sets up the causal follow-on. Needs at least the analytic correction, ideally branches |
 | **D5 per-source attribution** | high | medium | Clean designed-experiment reading of existing results; interpretable per-task marginal effects of code/Reddit/Flan/DCLM-CC. Limited by few levels per factor |
-| **D6 annealed targets** | medium; depends on Project A | medium | Makes the paper schedule-aware; a clean "feature importance shifts once you anneal" result would be notable. Depends on Project A. |
-| **D7 MPL-parameter targets** | high; depends on Project A's A5, which is itself cheap | medium | Compact targets with a physical interpretation; depends on Project A's A5, which is itself cheap. |
+| **D6 annealed targets** | medium; depends on annealed outcomes existing | medium | Makes the paper schedule-aware; a clean "feature importance shifts once you anneal" result would be notable. |
+| **D7 MPL-parameter targets** | high; the MPL fit is T0 | medium | Compact targets with a physical interpretation; the fit itself is cheap. |
 | **D8 per-task maps** | high; cheap once D3 exists | medium | Interpretable and practically useful; cheap once D3 exists. |
 
 ### 2.3 Recommended framing
@@ -90,13 +90,13 @@ Expected outcome bands:
 
 ## 3. Proposed infrastructure sequence
 
-Each step produces something usable on its own and is reused by later idea-map projects (per-token movement M1/M2, microscope P-series, token migration C1).
+Each step produces something usable on its own and is reused by later per-token and branch-based analyses.
 
 1. **Recipe manifest + composition module (C-a).** Exec `named_data_mixes.py` in a pinned copy, emit per-recipe shard lists and per-leaf-corpus realized token counts from HF `paths-info` sizes; persist as a versioned table in datadec. Replace `configs/dataset_features.csv` with the measured table. *Reused by:* everything below, probe-corpus construction.
-2. **Shard sampler (C-b).** Given a recipe and a budget, sample uint16 token windows stratified by leaf corpus from `allenai/DataDecide-data-recipes`, with optional detokenization and a deterministic seed; cache locally. *Reused by:* D1, D2, probe corpus for M1/M2.
-3. **Outcome table with full structure (C-c).** Extend the existing ingest to a tidy recipe × scale × seed × step × task frame with accuracy and continuous metrics, plus helpers for rankings, pairwise decisions, task families, and leave-one-family-out splits. Confirm per-item availability while here (gates the IRT project, not this one). *Reused by:* every instrument in the idea map.
+2. **Shard sampler (C-b).** Given a recipe and a budget, sample uint16 token windows stratified by leaf corpus from `allenai/DataDecide-data-recipes`, with optional detokenization and a deterministic seed; cache locally. *Reused by:* D1, D2, probe-corpus construction for per-token analyses.
+3. **Outcome table with full structure (C-c).** Extend the existing ingest to a tidy recipe × scale × seed × step × task frame with accuracy and continuous metrics, plus helpers for rankings, pairwise decisions, task families, and leave-one-family-out splits. Confirm per-item availability while here (gates the IRT project, not this one). *Reused by:* every analysis over the outcome table.
 4. **Intrinsic feature extractors (D1).** Pure functions over sampled text/tokens: duplication, lengths, compression ratio, Zipf/burstiness/TTR, diversity coefficient. *Reused by:* D3.
-5. **Reference-model token scorer (D2).** Per-token entropy/logprob from one or two open reference models at several context lengths; emits per-recipe profile curves. *Reused by:* M2 entropy buckets, C1, P3 — the single most shared piece after the sampler.
+5. **Reference-model token scorer (D2).** Per-token entropy/logprob from one or two open reference models at several context lengths; emits per-recipe profile curves. *Reused by:* any entropy-bucketed per-token analysis — the single most shared piece after the sampler.
 6. **Feature–outcome analysis (D3, D5).** Family-contrast and dose-response analyses, baselines, figures. Analysis code, not infrastructure.
 7. **Annealing targets (D4), only if continuing.** Multi-power-law correction over released loss curves (analytic); then, if the A-layer is pursued, checkpoint-merging utility and decay-branch harness feed D4 as additional targets.
 
