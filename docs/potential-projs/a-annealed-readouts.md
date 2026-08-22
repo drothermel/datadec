@@ -56,18 +56,19 @@ decay branches.
 - **A-opt-2: Merge-window sensitivity (A1 detail).** Vary window length and weight curve for
   the merge; characterise where merging breaks on cosine checkpoints (it is only validated on
   stable-phase runs).
-- **A-opt-3: Post-training from annealed vs. raw checkpoints (B3).** Re-run the earlier
+- **A-opt-3: Post-training from annealed vs. raw checkpoints.** Re-run the earlier
   post-training protocol from A3 endpoints and the matching raw checkpoints. Tests whether the
   previous "post-training did nothing" result was a wall artifact.
 - **A-opt-4: Token-loss-trajectory taxonomy on raw checkpoints (D5).** Rho-1-style
   classification of held-out tokens by loss trajectory across checkpoints. A cheap descriptive
-  sub-result that previews Project D; no branches needed.
+  sub-result — the static version of per-token decay-responsiveness — that previews the
+  causal token-level follow-on; no branches needed.
 - **A-opt-5: Size scaling of the confound.** Repeat the core grid at a second model size to
   test whether the annealed-vs-raw gap and the flip rate shrink or grow with scale.
 - **A-opt-6: Seed-noise floor.** Use the 3 seeds to put confidence intervals on every
   annealed-vs-raw difference; report the fraction of flips that exceed seed noise. This is less
   an option than a requirement for credibility, but it shapes how big the grid must be.
-- **A-opt-7: Durable-movement operator (Track D's D3).** Define durable movement as change
+- **A-opt-7: Durable-movement operator.** Define durable movement as change
   that persists under the schedule-neutralizing transform: compare merged(t) vs. merged(t+k).
   Decomposes Signal-and-Noise "noise" into measurement noise, wall oscillation, and
   unresolved drift. Requires A1 plus per-token or per-item comparison between checkpoints.
@@ -104,8 +105,8 @@ decay branches.
 | Core (A1–A6) | **High** | Directly audits a widely used public suite; the decision-flip figure is self-contained and quotable; methods contribution if merging holds. |
 | A-opt-1 branch sweep | Medium | Needed for a defensible canonical branch length; modest standalone interest but strengthens every claim. |
 | A-opt-2 merge sensitivity | Medium | Makes the "retrofit annealed evals for free" claim precise; mostly a supporting figure. |
-| A-opt-3 post-training (B3) | **High, higher variance** | A positive result ("post-training gains appear once you anneal") is the most compelling story available and closes the loop on the earlier project; a null is still reportable but harder to sell. Adds post-training infrastructure cost. |
-| A-opt-4 token taxonomy (D5) | Low–Medium | Nice descriptive figure; its real value is de-risking Project D. |
+| A-opt-3 post-training | **High, higher variance** | A positive result ("post-training gains appear once you anneal") is the most compelling story available and closes the loop on the earlier project; a null is still reportable but harder to sell. Adds post-training infrastructure cost. |
+| A-opt-4 token taxonomy (D5) | Low–Medium | Nice descriptive figure; its real value is de-risking the causal token-level follow-on. |
 | A-opt-5 size scaling | Medium | Standard reviewer ask; doubles branch compute. |
 | A-opt-6 seed-noise floor | Required | Not an option in practice — without it the flip analysis is not credible. |
 | A-opt-7 durable movement | Medium-high | Conceptually strong; depends entirely on A1 and on a token/item-level harness. |
@@ -136,18 +137,24 @@ Ordered so each step is usable on its own and later steps reuse earlier ones.
    a `variant` field (`raw`, `merged:<cfg>`, `branch:<cfg>`), producing the same table schema
    as the processed OLMES tables so merged-model results slot into existing accessors. Builds
    on this repo's existing data tooling. *Everything downstream writes into this store.*
-3. **Fixed held-out token set + per-token loss logging.** Choose a held-out token set once
-   (stratified across domains, sized for per-token statistics) and make per-token loss on it a
-   standard output of the eval harness. Cheap to add now; expensive to retrofit later because
-   it would mean re-running branches. Enables A-opt-4 and hands Project D its core artifact.
+3. **Fixed held-out token set + per-token loss logging.** Choose a held-out token set once and freeze it: fixed, versioned token
+   sequences with a manifest; stratified across domains and across the DataDecide leaf
+   corpora; sized so that each domain × entropy-bucket cell has enough tokens to estimate
+   mean per-token loss drop within a set tolerance, while keeping one forward pass per
+   checkpoint cheap. Per-token loss on it is a standard output of the eval harness for every
+   checkpoint variant (raw checkpoints, merged checkpoints, branch starts and endpoints),
+   stored as compact arrays keyed by (checkpoint variant, held-out-set version). Branch
+   endpoints also save their weights. Cheap to add now; expensive to retrofit later because
+   it would mean re-running branches. *An identical spec appears in Project A and Project D;
+   keep them in sync.*
+   Enables A-opt-4 and per-token analyses of branch endpoints.
 4. **Checkpoint-merging tool (A1).** Sliding-window weighted averaging with configurable
    window and weight curve; expert-agnostic (dense models only); outputs a checkpoint that the
    eval harness treats as a variant. Evals-only, so it can run on the full DataDecide grid
    immediately.
 5. **Decay-branch runner (A3).** Resume a checkpoint with configurable decay shape/length on
    the recipe's own data stream; log curves and per-token losses; hand the endpoint to the eval
-   harness. Parameterise shape and length from day one (A-opt-1). This same runner serves
-   Project B's branches later.
+   harness. Parameterise shape and length from day one (A-opt-1).
 6. **Analysis layer (A4/A6).** Pairwise-decision recomputation from the results store;
    proxy-vs-branch agreement metrics; seed-noise confidence intervals; flip tables and figures.
 7. *(Optional, A-opt-3)* **Post-training harness hookup.** Point the existing post-training

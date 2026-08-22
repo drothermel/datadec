@@ -13,9 +13,9 @@ recipes differ in migration dynamics for the same tokens is the recipe question.
 
 Inventory IDs: D1–D6.
 
-**Dependency:** Stage 2 requires decay branches with per-token logging — from Project A's A3
-branches or Project B's suite. It cannot start before one of those exists, but Stage 1 and the
-cheap static pieces (D1, D2, D5) can.
+**Dependency:** Stage 2 requires decay branches with per-token logging, specified in §1
+(Stage 2 core, step 0). It cannot start before those runs exist, but Stage 1 and the cheap
+static pieces (D1, D2, D5) can.
 
 **Structure.** Two stages. *Stage 1 (observational; T0/T1 on existing checkpoints)* is the
 former Track E doc (`token-item-movement.md`, now merged here): measure movement at token and
@@ -61,8 +61,9 @@ river-valley mechanism in one figure and yields a principled recipe for low-nois
   adjacent checkpoints on the probe corpus; where in depth movement lives and whether that
   changes over the schedule.
 - **Durable vs. transient movement (T1).** KL(t, t+k) as a function of k: transient movement
-  cancels, durable movement accumulates. (The causal version via checkpoint merging belongs
-  to Project A, `a-annealed-readouts.md`, A-opt-7.)
+  cancels, durable movement accumulates. Causal version: compare schedule-neutralized
+  (merged or branch-annealed) checkpoints at t and t+k; movement that survives the
+  neutralizing transform is durable by construction.
 - **Principled low-noise eval construction.** If E4 holds, weight benchmark items by the
   determinism of their answer tokens and test whether the resulting aggregate has lower
   seed-to-seed variance than subtask filtering.
@@ -85,9 +86,25 @@ river-valley mechanism in one figure and yields a principled recipe for low-nois
 
 ### Stage 2 — causal core (T2)
 
-1. **Fixed held-out token set.** A stratified held-out corpus (across domains, sized for
-   per-token statistics) on which every checkpoint and every branch endpoint logs per-token
-   loss. Shared with Projects A and B.
+0. **Decay branches with per-token logging (T2).** For a chosen set of recipes × checkpoint
+   steps × (1–2) sizes × 3 seeds, resume training from the existing DataDecide checkpoint
+   with a fresh decay (linear-to-zero or 1-sqrt; ~10% of elapsed tokens as the default
+   length) on the recipe's own data; log curves and per-token losses on the held-out set at
+   branch start and endpoint, save endpoint weights, and run the full DataDecide eval suite
+   on the endpoint. Parameterise decay shape and length from day one. These are short
+   continued-training runs at 150M–300M, well within a small cluster budget. *Project A
+   proposes the same branch grid for a different question; if both proceed, run the grid
+   once.*
+1. **Fixed held-out token set.** Choose a held-out token set once and freeze it: fixed, versioned token
+   sequences with a manifest; stratified across domains and across the DataDecide leaf
+   corpora; sized so that each domain × entropy-bucket cell has enough tokens to estimate
+   mean per-token loss drop within a set tolerance, while keeping one forward pass per
+   checkpoint cheap. Per-token loss on it is a standard output of the eval harness for every
+   checkpoint variant (raw checkpoints, merged checkpoints, branch starts and endpoints),
+   stored as compact arrays keyed by (checkpoint variant, held-out-set version). Branch
+   endpoints also save their weights. Cheap to add now; expensive to retrofit later because
+   it would mean re-running branches. *An identical spec appears in Project A and Project D;
+   keep them in sync.*
 2. **Per-token decay-responsiveness (D3).** For each branch, the per-token loss drop from
    branch start to branch endpoint. High drop = wall token at that point in training; ~zero
    drop = already at the river.
@@ -106,7 +123,7 @@ river-valley mechanism in one figure and yields a principled recipe for low-nois
 
 - **D-opt-1: Static determinism profile (D1).** Per-token reference-model entropy on the
   held-out set and on each corpus; a dataset-level "% deterministic" statistic. Cheap; also
-  the input to Track C's D4 (`recipe-featurization.md`).
+  usable as a corpus-level feature.
 - **D-opt-2: Loss-trajectory taxonomy on raw checkpoints (D5).** Rho-1-style buckets
   (persistently high/low, descending, fluctuating) across DataDecide's existing checkpoints.
   No branches needed; previews the dynamics, though it conflates wall oscillation with river
@@ -114,8 +131,8 @@ river-valley mechanism in one figure and yields a principled recipe for low-nois
 - **D-opt-3: Domain and token-type breakdown.** Aggregate responsiveness by domain, POS,
   frequency band, and position-in-sequence to give the buckets interpretable structure.
 - **D-opt-4: Bridge to post-training token regimes (D6).** Compare the wall bucket with the
-  high-entropy "forking tokens" that carry most of RLVR's effect. Needs a post-training run
-  (Project A's A-opt-3 or Project B's B3).
+  high-entropy "forking tokens" that carry most of RLVR's effect. Needs the earlier
+  post-training protocol re-run from branch endpoints and the matching raw checkpoints.
 - **D-opt-5: Toy replication.** Reproduce Wen et al.'s bigram-language toy with varying
   determinism profiles and run the same branch protocol; gives a controlled sanity check of the
   measurement before interpreting real-data results.
@@ -127,7 +144,7 @@ river-valley mechanism in one figure and yields a principled recipe for low-nois
 ### Overall doability: **medium**, gated on branches
 
 - Once branches with per-token logging exist, D3/D4 are pure analysis over logged arrays —
-  cheap. The gating cost is entirely in Projects A/B.
+  cheap. The gating cost is entirely the branch runs (Stage 2 step 0).
 - D2 is the delicate part: aleatoric estimation from 3 seeds is crude, and a larger reference
   model's entropy is a different quantity from the small model's aleatoric floor. Expect to
   report both and be explicit about the limitation.
@@ -155,14 +172,14 @@ river-valley mechanism in one figure and yields a principled recipe for low-nois
 | Cross-recipe migration (observational D4) | Medium-high | Thesis-relevant; needs matched-loss pairing and more checkpoints. |
 | F2 flips by entropy (FLAME-MoE) | **High if positive** | Sharp, unasked question; the MoE counterpart to E4. |
 | Stage 2 core (D3, D4, D2) | **High — highest ceiling in the programme** | The first causal token-level validation of the river-valley mechanism, plus a recipe-comparison result nobody has run. Strong enough for a main venue if the signal is clean. Workshop version can ship with D3/D4 alone and a partial D2. |
-| D-opt-1 determinism profile | Medium | Cheap descriptive statistic; its value is as a predictor (Track C, `recipe-featurization.md`) and as a sanity check. |
-| D-opt-2 raw taxonomy (D5) | Low–Medium | Descriptive; good as a warm-up figure in Project A's paper. |
+| D-opt-1 determinism profile | Medium | Cheap descriptive statistic; its value is as a corpus-level predictor and as a sanity check. |
+| D-opt-2 raw taxonomy (D5) | Low–Medium | Descriptive; good as a warm-up figure. |
 | D-opt-3 breakdowns | Medium | Turns the result from a histogram into an interpretable story; low cost once D3 exists. |
 | D-opt-4 RLVR bridge | High, speculative | A striking link if it holds; depends on a post-training run and on the wall bucket being well-defined. |
 | D-opt-5 toy replication | Medium | Mostly credibility; reviewers will ask. Cheap. |
 
 **Recommended scope:** Start Stage 1 (E2 first), D-opt-1 and D-opt-2 now (no dependencies).
-Run the Stage 2 core as soon as Project A's first branch grid lands; add D-opt-3 and D-opt-5
+Run the Stage 2 core as soon as the first branch grid lands; add D-opt-3 and D-opt-5
 for the paper. Hold D-opt-4 for a follow-up.
 
 **Stage 1 paper shape.** E2 + E1 + E4 with the eval-construction corollary. Standalone
@@ -175,14 +192,23 @@ project and the T1 harness is reused by Stage 2.
 
 0. **Item-flip analysis (E2).** Adjacent-pair joins on `instances.parquet`; per task × scale
    × recipe flip-rate tables; confidence via the pooled seed variance. Pure T0, do first.
-1. **Held-out token set / probe corpus design.** Fixed, versioned token sequences with a
-   manifest; size and stratification chosen for per-token statistics (target: enough tokens
-   per domain × entropy-bucket cell to estimate mean loss drop within a tolerance), and sized
-   for one forward pass per checkpoint to be cheap. Freeze it and share it with Projects A
-   and B before any branch runs.
-2. **Per-token loss logging in the eval harness.** Standard output for every checkpoint variant
-   (shared infra; Project A step 3). Store as compact arrays keyed by (checkpoint variant,
-   held-out set version).
+1. **Held-out token set / probe corpus design.** Choose a held-out token set once and freeze it: fixed, versioned token
+   sequences with a manifest; stratified across domains and across the DataDecide leaf
+   corpora; sized so that each domain × entropy-bucket cell has enough tokens to estimate
+   mean per-token loss drop within a set tolerance, while keeping one forward pass per
+   checkpoint cheap. Per-token loss on it is a standard output of the eval harness for every
+   checkpoint variant (raw checkpoints, merged checkpoints, branch starts and endpoints),
+   stored as compact arrays keyed by (checkpoint variant, held-out-set version). Branch
+   endpoints also save their weights. Cheap to add now; expensive to retrofit later because
+   it would mean re-running branches. *An identical spec appears in Project A and Project D;
+   keep them in sync.*
+   Freeze it before any branch runs.
+2. **Checkpoint + eval harness with per-token loss logging.** Load any (recipe, size, seed,
+   step) DataDecide checkpoint; run the DataDecide task suite and perplexity evals; store
+   results keyed by that tuple plus a `variant` field (`raw`, `merged:<cfg>`,
+   `branch:<cfg>`), in the same table schema as the processed OLMES tables. Per-token loss
+   on the held-out set is a standard output for every variant, stored as compact arrays
+   keyed by (checkpoint variant, held-out-set version).
 3. **Reference-model scoring (D1/D2).** Per-token entropy from a strong reference model and
    per-token loss from each DataDecide seed on the held-out set; compute ensemble-based
    aleatoric estimates.
@@ -198,6 +224,9 @@ project and the T1 harness is reused by Stage 2.
    ingest as a long table of (checkpoint, layer, token id/position, expert ids),
    reference-model scoring of logged tokens, routing recomputation only if logs are
    insufficient).
+4d. **Decay-branch runner (Stage 2 step 0).** Resume a checkpoint with configurable decay
+   shape/length on the recipe's own data stream; log curves and per-token losses; save
+   endpoint weights; hand the endpoint to the eval harness as a `branch:<cfg>` variant.
 5. **Branch-pair differencing (D3).** Given (branch start, branch endpoint) pairs from the
    results store, compute per-token drops and aggregate by bucket/domain/type.
 6. **Migration analysis (D4).** Assemble per-token responsiveness across branch points into
@@ -208,4 +237,4 @@ project and the T1 harness is reused by Stage 2.
    determinism dial, trained with the same branch runner.
 
 Steps 0–4c (Stage 1) have no dependency on branches and should be done early; steps 5–7
-(Stage 2) are analysis over artifacts produced by Projects A/B.
+(Stage 2) are analysis over artifacts produced by the branch runner (4d).
