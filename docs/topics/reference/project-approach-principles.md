@@ -103,3 +103,36 @@ we just need a better dataset."
   is a live phase-3 pivot, not phase-1 creep. "The failure mode for someone with your
   instincts isn't over-indexing on QAMPARI; it's the cleaning-and-tooling rabbit hole
   wearing the costume of rigor."
+
+## 2026-08-17 — Sequencing for delivery; unbiased error-driven annotation
+
+**Danielle.** Agrees the ceiling numbers are findings; they have not historically been
+treated that way. On annotation: surfacing candidates from existing systems is clearly
+biased toward their errors; she proposed using *generic baselines* (not the proposed method)
+to surface potential errors, to avoid biasing the fixed dataset toward the proposed
+approach over the baselines it will be compared against. (Discussion of how to handle
+collaborators' expectations was dropped from this record.)
+
+**Feedback received (near-verbatim, method-neutral parts).**
+- *Sequencing.* "The dumb floor system (string-link → BM25 → read → normalize) is maybe a
+  week of work precisely because it's dumb. Ship that number first. Then the ceilings arrive
+  in the same breath — 'baseline gets 18 F1; here's why, stage by stage; the metric alone
+  eats 6 points; retrieval caps us at 61.'" Avoid sequencing as measurement-then-baseline
+  with a quiet measurement phase: "Interleave, and lead with whatever emits a number
+  soonest." A ceiling ladder that costs two extra days beyond the baseline needs no
+  justification once the findings are on the table.
+- *Baseline-surfaced annotation is valid* — it addresses "a dataset quietly tuned so that
+  your method's characteristic outputs get credited." Three refinements: (1) use a **union of
+  diverse baselines** (BM25, a dense retriever, closed-book LLM) — any single system's
+  disagreements oversample its error style; (2) the real protection is a **system-blind
+  annotation criterion** — each disputed answer or passage is judged against the question
+  and Wikipedia alone, with no information about who produced it, and corrections apply in
+  whichever direction they cut; "if the judgment procedure is system-agnostic, the sampling
+  frame only determines coverage, not direction"; (3) **freeze the cleaned set (version,
+  hash, date) before the proposed method ever runs against it** — "'the dataset was fixed
+  before the method existed' ends the conversation."
+- *Residual bias to state, not solve.* Baseline-surfaced candidates only cover errors some
+  system makes; gold answers every system agrees with but which are wrong, and missing
+  answers no system finds, stay invisible. Put it in a limitations sentence: the cleaned set
+  is a lower bound on dataset noise. "You're estimating error bars, not achieving ground
+  truth."

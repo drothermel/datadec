@@ -305,6 +305,9 @@ contribution."
   gold → hand-check; predicted-but-marked-wrong answers → hand-check), reported as noise-rate
   scalars with error bars rather than a "clean dataset"; a ~50-line answer normalizer with a
   test file of known-equivalent pairs. No sibling-dataset transfer slice during iteration.
+  Sampling frame = union of generic baselines (BM25, dense, closed-book LLM), never the
+  proposed method; system-blind judging; freeze and hash `qampari-dev-clean-v1` before the
+  proposed method runs. Deliver the floor number first, ceilings in the same report.
 - Kill criteria for the entity-centric shape (undecided); precision-control / stopping
   mechanism as an explicit impact axis.
 

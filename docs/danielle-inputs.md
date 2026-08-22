@@ -1568,3 +1568,18 @@ Routed to: [topics/project-approach-principles.md](topics/reference/project-appr
 (integration tax; front-load findings; error-driven annotation; over-indexing guardrails)
 and a bounded-cleaning open question in
 [topics/maqa-oracle-ladder.md](topics/staging/maqa-oracle-ladder.md).
+
+### Baseline-surfaced annotation — conversation 2026-08-17
+
+> Amazing. I agree with your point that these numbers are findings. [discussion of
+> collaborator expectations omitted] […] I also agree about if we're correcting… or if we're
+> doing annotation based on existing systems, then it's clearly a biased Getting a byproduct
+> of errors that were king. I was hoping to offset using, um, January baselines to get the
+> potential errors as opposed to my proposed… and I'm hoping that that would at least, um,
+> avoid biasing the fixed dataset to match my proposed approach over the baselines we'd be
+> comparing to. Does that seem valid?
+
+Routed to: [topics/project-approach-principles.md](topics/reference/project-approach-principles.md)
+(sequencing for delivery; unbiased error-driven annotation) and the bounded-cleaning entry
+in [topics/maqa-oracle-ladder.md](topics/staging/maqa-oracle-ladder.md). The response's
+collaborator-management advice was dropped; its method-neutral sequencing point was kept.
