@@ -83,8 +83,8 @@ decay-sensitive.
 |-----------|--------|-----------|
 | Core (B1) | **Medium as a paper, High as an enabler** | A resource contribution; workshops accept these but they are cited more than they are celebrated. Its value is that every other project becomes cleaner. Pair with a headline analysis (A6 or B3 on the suite) to make it a paper. |
 | B-opt-1 branch sweep | Medium | Settles a methodological parameter the community mostly guesses at; a good figure, not a paper. |
-| B-opt-2 post-training (B3) | **High** | Clean test of the personal-narrative hypothesis; stronger than the Project A version because the starting checkpoints are genuinely stable-phase. |
-| B-opt-3 cosine twins | Medium–High | Turns "does cosine-resumed branching approximate a true anneal" from an assumption into a measurement; directly validates Project A's method. |
+| B-opt-2 post-training (B3) | **High** | Clean test of the personal-narrative hypothesis; stronger than the version resumed from cosine checkpoints because the starting checkpoints are genuinely stable-phase. |
+| B-opt-3 cosine twins | Medium–High | Turns "does cosine-resumed branching approximate a true anneal" from an assumption into a measurement; directly validates decay branches resumed from cosine checkpoints. |
 | B-opt-4 mixed decay data | Low (for now) | Interesting but a different paper; would dilute the suite's comparability. |
 | B-opt-5 extension | n/a | Pure resource growth; only matters if the suite is being used. |
 
