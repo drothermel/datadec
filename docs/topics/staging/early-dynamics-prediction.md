@@ -667,6 +667,39 @@ row-wise functions of (slope, std_err, n) with n fixed per window — and `std_e
 *are* redundant across rows only if Σ(xᵢ − x̄)² is constant per window, which it is for a
 fixed sampling grid.
 
+### 2025-07 — Pruned feature set and Danielle's normalisation plan (her statement; answer pending)
+
+**Pruned set (67 columns).** Per window (`warmup_`, `early_lr_decay_`, `full_early_`):
+`num_steps`, `first_val`, `last_val`, `val_first_last_diff`, `val_first_last_slope`, and for
+each of the four fit types `_slope` + `_r_squared`, plus `window_mean`, `window_std` (15 per
+window). Architecture/schedule: `d_model`, `n_layers`, `n_heads`, `mlp_ratio`,
+`warmup_perc`, `warmup_steps`, `lr_decay_steps`, `lr_max`, `lr_final`, `batch_size`,
+`total_steps`, `total_tokens`, `total_tokens_billions`. Recipe: `pct_code`,
+`pct_common_crawl`, `pct_social_media`, `mean_doc_length_tokens`, `duplicate_rate_pct`,
+`quality_filter_strength`, `is_mixed_dataset`, `num_sources_mixed`,
+`educational_content_score`. All normalisation switched to `log1p`; Pile perplexity only
+for now.
+
+**Her proposed treatment.** (1) 0/1-encode `is_mixed_dataset`. (2) Leave unchanged:
+`lr_max`, `lr_final`, `batch_size`, `d_model`, `n_layers`, `n_heads`, `mlp_ratio`,
+`pct_code`, `pct_common_crawl`, `pct_social_media`, `duplicate_rate_pct`. (3) `log1p` only:
+`total_steps`, `total_tokens`, `total_tokens_billions`, `mean_doc_length_tokens`,
+`warmup_steps`, `lr_decay_steps`, `full_early_num_steps`, `early_lr_decay_num_steps`,
+`warmup_num_steps`. (4) Everything else on the perplexity scale: `log1p`, then per-size
+bucket z-score. "Is this correct?"
+
+*Intake notes (before the answer).* Unassigned by her list: `warmup_perc`,
+`quality_filter_strength`, `num_sources_mixed`, `educational_content_score` (all plain
+scalars — leave unchanged). Not on the perplexity scale despite being "the rest": every
+`*_slope` and `*_r_squared` column (slopes are in transformed-axis units already; R² is
+unit-free) — these should not get `log1p` (slopes are signed), and R² arguably needs no
+bucket normalisation; `*_val_first_last_diff/slope` are differences of raw perplexities and
+are signed too. `total_tokens` and `total_tokens_billions` are the same feature (drop one).
+The perplexity-vs-`log1p` slip from the previous answer has propagated: for perplexity
+levels (`first_val`, `last_val`, `window_mean`) plain `log` is the natural transform;
+`log1p` is harmless for ppl ≫ 1 but muddles the log-log slope semantics if applied before
+fitting.
+
 ## Open questions
 
 - Is this still live (July 2025 draft; DataDecide scaling-law baselines have since been

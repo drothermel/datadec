@@ -1858,3 +1858,21 @@ unresolved per-size normalisation for held-out sizes.)
 Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
 ("R² vs. RMSE"), with an intake note that the response's within-one-fit argument does not
 transfer to features compared across rows — Danielle's intuition holds there.
+
+### Early-dynamics, pruned features and normalisation plan — 2025-07 (intake 2026-08-22)
+
+> Ok, my new set of features is: [67-column pruned list — recorded in the topic doc]
+> I've updated all normalization to use log1p instead of log (and I'm only pursuing pile
+> perplexity for now). Then, my understanding is I need to:
+> 1. Encode the following as 0/1: `is_mixed_dataset`
+> 2. Not change: `lr_max`, `lr_final`, `batch_size`, `d_model`, `n_layers`, `n_heads`,
+> `mlp_ratio`, `pct_code`, `pct_common_crawl`, `pct_social_media`, `duplicate_rate_pct`
+> 3. Take log1p only: `total_steps`, `total_tokens`, `total_tokens_billions`,
+> `mean_doc_length_tokens`, `warmup_steps`, `lr_decay_steps`, `full_early_num_steps`,
+> `early_lr_decay_num_steps`, `warmup_num_steps`
+> 4. For all the rest, if it is in the ppl scale take log1p and then apply the bucket
+> normalization
+> Is this correct?
+
+Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
+("Pruned feature set and Danielle's normalisation plan"); answer to follow.
