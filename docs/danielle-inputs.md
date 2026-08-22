@@ -1315,3 +1315,11 @@ Structured Wikipedia"); data-plan open question revised.
 
 Routed to: [topics/wiki-qa-sharding.md](topics/staging/wiki-qa-sharding.md) ("Index stack:
 BM25 to vectors at Wikipedia scale").
+
+### LanceDB alone — conversation 2026-08-16
+
+> so what are the pros and cons of building on lancedb, and how far could i get using it
+> alone for retrieval?
+
+Routed to: [topics/wiki-qa-sharding.md](topics/staging/wiki-qa-sharding.md) ("LanceDB alone:
+pros, cons, how far it goes"); index-plan open question revised.

@@ -222,6 +222,56 @@ distributed serving, graph-partition filters, richer ranking features, or online
 are needed (skip LanceDB and go straight to Vespa if the goal is already a durable
 multi-node service).
 
+## 2026-08-16 — LanceDB alone: pros, cons, how far it goes
+
+**Danielle's question.** Pros and cons of building on LanceDB, and how far could it carry
+retrieval on its own?
+
+**Response (near-verbatim, condensed; product claims unverified, as of Aug 2026).** "For a
+mostly static, single-date Wikipedia snapshot — LanceDB is unusually well matched. You could
+use it alone for essentially the entire experimental retrieval stack ... The main boundary is
+operational rather than retrieval quality: OSS LanceDB is an embedded, single-process
+system, not a distributed search service."
+
+*What it gives.* One canonical store (passage_id, article_id, title, section, text,
+outgoing_links, graph_partition, metadata, dense_vector, colbert_vectors) in the columnar
+Lance format with projection, random access, versioning — data, embeddings and indexes stay
+aligned, no separate Lucene doc IDs / Faiss row numbers / metadata DB; build once, compact,
+pin the version, run read-only. Native BM25 FTS (configurable tokenization, English
+stemming/stopwords, optional positional phrase index at a storage cost, fuzzy/prefix,
+multiple text columns, pre/post-filtering, array fields); suggested lexical field `title +
+title + section_heading + text` as cheap title boosting. ANN choices: `IVF_HNSW_FLAT`,
+`IVF_HNSW_SQ` (recommended general balance), `IVF_HNSW_PQ`, `IVF_PQ`, `IVF_RQ`
+(RaBitQ-style, storage-constrained), plus exhaustive search for ground truth — "measuring
+whether poor QA recall comes from the embedding model or the approximate index." Hybrid
+search with RRF by default; reranker adapters (local cross-encoders, ColBERT, hosted,
+custom); true multivector MaxSim search (a ColBERT-like index, not just top-100 reranking);
+scalar indexes for filters such as graph_partition, category, wikidata_type, is_list,
+is_disambiguation, page_rank_bucket — filters applied before retrieval by default.
+
+*Where it is weaker.* Lexical ranking less expressive than Lucene/Vespa (BM25 parameter
+control, BM25F-style field weighting, analyzers/synonyms, score explanation, ranking
+profiles) — keep a small Pyserini comparison and investigate tokenization/field
+construction if they diverge. OSS is single-process: no distributed execution, replication,
+failover, horizontal read scaling, HA, or automatic maintenance; vendor characterizes OSS as
+~10–50 QPS. Maintenance is manual (`optimize()`, compaction) — irrelevant for a frozen
+snapshot. No graph engine: neighbor expansion, personalized PageRank, community lookup, score
+propagation, and cross-shard routing live in application code or NetworkX/igraph —
+"compute graph partitions and graph features offline, then store the results as indexed
+columns." Manual sharding becomes application logic (choose partitions, query concurrently,
+merge, handle local BM25 statistics — RRF merges rankings but does not reproduce global
+BM25; if exact global BM25 across shards matters, OpenSearch/Vespa).
+
+*How far.* Yes to: full ingestion, section/passage storage, BM25 baseline (validated against
+Pyserini), dense exact on samples, dense ANN over tens of millions of passages, quantized
+indexes, hybrid, cross-encoder reranking, ColBERT/MaxSim, metadata and graph-partition
+filtering, offline QA evaluation (excellent), small research search service (good). Not
+alone: graph traversal (app code), high-QPS multi-node, HA/replication; complex learned
+ranking possible but Vespa stronger. "LanceDB could carry this project through corpus
+construction, retrieval research and a credible single-machine demonstrator." Migrate only
+when query concurrency exceeds one machine, sophisticated lexical/ranking behavior is
+needed, or automatic distributed sharding/HA is required.
+
 ## Open questions
 
 - What the surrounding MAQA system needs (latency target, shard count, update
@@ -233,8 +283,9 @@ multi-node service).
   corpus + graph with link context); SQL `pagelinks` only as a completeness check; pinned
   dated snapshot. Verify the dataset's link schema and whether it is sharded such that a
   graph-coherent subset can be fetched without the full download.
-- Index plan: Pyserini BM25 reference → LanceDB hybrid experiments → Vespa for
-  partition-filtered serving; section-level passages with title/section prefix; RRF first;
+- Index plan: Pyserini BM25 reference → LanceDB as the single-machine stack (one table,
+  `graph_partition` as an indexed filter column; graph features computed offline) → Vespa
+  only if concurrency, ranking expressiveness, or HA demand it; section-level passages with title/section prefix; RRF first;
   article-level diversification for multi-answer readers.
 
 **Waiting on:** further excerpts from the MAQA Next Steps page; a promotion decision.
