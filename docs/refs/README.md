@@ -29,3 +29,9 @@ Fix on the Notion page, then re-pull.
 | Toggle 14 (embedding-reset lineage) | "≥50B tokens of continued training" attributed to Dagan et al. (arXiv 2402.01035) — inverted: the paper says >50B tokens lets you *profitably specialize* a tokenizer, not that recovery requires it | 2026-08-22 |
 | Toggle 14 | Lu et al. 2021 title is *Pretrained Transformers as Universal Computation Engines*; "Frozen Pretrained Transformer" is the model name | 2026-08-22 |
 
+## deep-research/
+
+Danielle's deep-research briefs, their governing guideline documents, and the reports
+they produced, copied verbatim from her working folder (2026-08-22). Intake notes on each
+report live in the reference topic that consumed it (e.g.
+`../topics/reference/code-feature-extraction-tooling.md`).
