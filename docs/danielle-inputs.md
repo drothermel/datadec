@@ -2393,3 +2393,10 @@ Routed to: [topics/cnn-deconstruction-ladder.md](topics/staging/cnn-deconstructi
 figures from memory — to be checked — flagging the ResNet-18/50 "82.9 / 76.0%" numbers as
 wrong-stem or short-budget artifacts and the near-duplicate "9–14% drop" as a misquote;
 pilot's 93.9% @ 25 epochs placed against a ~95% 200-epoch reference).
+
+> (follow-up: "CIFAR-10 Baseline/Vanilla Model Accuracy Source Links" — the report's
+> citation list)
+
+Routed to: the same staging section as a compact unvetted source list (arXiv IDs and
+GitHub repos only); noted that the only original-author source is `KaimingHe/resnet-1k-layers`
+and the rest are secondary or off-topic.
