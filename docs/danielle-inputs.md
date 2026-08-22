@@ -2416,3 +2416,7 @@ Her structured search query (verbatim):
 Routed to: the same staging section (links listed unvetted; intake note that the
 short-budget references actually comparable to 25-epoch runs are the DAWNBench ResNet-9 /
 hlb-CIFAR10 / airbench speed-run lineage, which the search missed).
+
+> (same query without the `"under 100 epochs" OR "fast training"` clause; raw links only)
+
+Routed to: same line in the staging section (two new IDs: arXiv 2209.01848, 2502.00663).
