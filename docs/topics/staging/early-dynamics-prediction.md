@@ -302,6 +302,24 @@ project (`REC`) — if this proposal is promoted, its "static" feature set shoul
 measured recipe properties from `REC`, not hand-assigned percentages, which would also make
 the two projects share one artefact.
 
+## 2025-07 — Tenth response: transform the targets too?
+
+**Danielle's question.** Apply the same transformation to the prediction targets?
+
+**Response (condensed).** Yes — the same monotone transform (log for perplexity, logit for
+correct_prob) on the training targets; invert (exp / sigmoid) before reporting errors on the
+original scale. **Do not z-score targets per size bucket**: the learner needs the global
+shift with size ("for the same early slope, bigger models end lower"), which lives in the
+bucket mean shift; supply `log(size_params)` as an input feature instead. Why transform
+targets: per-size heteroscedasticity (final-perplexity variance shrinks ~10× from 4M to
+1B) so squared error weights sizes evenly; skew/heavy tails from a few hard recipes;
+relationships become approximately additive (multiplicative for perplexity, odds-ratio for
+probabilities). Ranking objectives (`lambdarank`) are invariant to monotone transforms — no
+inverse needed for NDCG/τ. Sanity ballparks quoted (unverified): log-perplexity RMSE ≈ 0.30
+→ ≤ 0.05 in 200 trees, abs-% error < 6% on held-out sizes; logit-correct_prob RMSE ≈ 0.35
+→ ≤ 0.07, Spearman ρ > 0.85. GPs may prefer raw targets later (they model heteroscedastic
+noise differently).
+
 ## Open questions
 
 - Is this still live (July 2025 draft; DataDecide scaling-law baselines have since been

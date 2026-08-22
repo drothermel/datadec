@@ -1708,3 +1708,11 @@ Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-p
 Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
 ("Eighth and ninth responses: featurization"), with a note linking the static features to
 `REC`.
+
+### Early-dynamics draft review, tenth response (target transforms) — 2025-07 (intake 2026-08-22)
+
+> Interesting, so then would you recommend I apply the same transformation to the
+> prediction target metrics?
+
+Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
+("Tenth response: transform the targets too?").
