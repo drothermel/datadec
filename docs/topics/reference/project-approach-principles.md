@@ -184,3 +184,18 @@ Intake note: most of this is generic productivity advice, kept here only because
 not research list" points are the same instincts that now shape this repo's intake
 conventions (`../../danielle-inputs.md`, dated §4 records, the potential-projs README
 table). The seven-track table is the only surviving record of that period's projects.
+
+---
+
+## 2026-08-22 — How the archived agent conversations were used (Danielle)
+
+> note that I didn't just take the answers from the agents and use them, but I was curious
+> how well different agnets would work + found the convos a useful way to document my
+> thoughts and maybe get some useful pointers
+
+Working practice, stated: external-agent conversations served three purposes — an
+informal comparison of agents on real research questions, a record of her own thinking
+(the prompts), and a source of pointers to chase — and were not a decision channel. Intake
+of those conversations into this repo follows the same weighting: her statements are
+quoted in full, responses are condensed to surviving pointers, and response errors are
+noted as data about the agents.

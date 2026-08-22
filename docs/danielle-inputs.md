@@ -10,6 +10,12 @@ verbatim; add them here if recovered.
 
 ---
 
+**How to read the archived conversations (Danielle, 2026-08-22):** she did not take the
+agents' answers and use them; the conversations were a way to see how well different
+agents worked, to document her own thoughts, and to pick up occasional pointers. Her
+prompts are the content of record; the intake notes grading each response are part of the
+agent comparison, not corrections to decisions she made.
+
 ## 2026-08-21
 
 ### Beyond DataDecide: generalizing dataset featurization
@@ -2315,3 +2321,12 @@ Routed to: the same staging section (her spec recorded as the canonical feature 
 — linear-y vs. log-x fits on full / first-half / beginning windows, targets final val
 accuracy *and* tuning quality; the response admitted it had no curves, fabricated
 final-value proxies, and concluded anyway — zero evidential weight).
+
+> (note that I didn't just take the answers from the agents and use them, but I was curious
+> how well different agnets would work + found the convos a useful way to document my
+> thoughts and maybe get some useful pointers)
+
+Recorded as a standing reading note at the top of this log and in
+`topics/reference/project-approach-principles.md`: the archived conversations are
+Danielle's thinking-out-loud plus an informal comparison of agents, not decisions she
+adopted; the intake notes that grade responses should be read as part of that comparison.
