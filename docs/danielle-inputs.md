@@ -3028,6 +3028,22 @@ Routed to: [topics/reference/training-objective-alternatives-literature.md](topi
 selection objectives as TOK's mirror; a T0 coincidence test), and a pointer in
 [topics/reference/token-level-literature.md](topics/reference/token-level-literature.md).
 
+### 2026-08-22 — SciSpace literature review: layer looping / weight tying (report only)
+
+> Do a literature review on layer looping or repeating, or layers with tied weights, in
+> machine learning. I'm referring specifically to the mechanism in the AlBERT and
+> Universal Transformers papers, and others, where on set of layer weights is used
+> multiple times on one token. I want you to start with papers that cite AlBERT and
+> Universal Transformers and fit my description, but also include any other potentially
+> relevant papers. Focus especially on papers about LLMs from the past 5 years.
+
+> artifact: download kept failing, I don't think I care enough about this family to care
+> so lets stick to the resulting report.
+
+Routed to: [topics/reference/layer-looping-literature.md](topics/reference/layer-looping-literature.md)
+(new reference topic, no project link; broken citation numbering, an ALBERT factual slip,
+and the missing 2025 LLM-scale canon flagged). No bundle, no INDEX.
+
 ### Post-intake decisions — 2026-08-22 (data-layer conversation)
 
 > 1. I think data-card/ validation work should be its own project doc, so b as you say.
