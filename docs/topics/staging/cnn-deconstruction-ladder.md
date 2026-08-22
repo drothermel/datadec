@@ -7,7 +7,8 @@ sibling of `../../potential-projs/landscape-geometry.md` and
 (`dr_exp`/`deconCNN`) is the lineage of `../../potential-projs/early-dynamics-prediction.md`);
 or archival as a completed/past learning project. Gate: Danielle says whether this is still
 live — the 2025 seven-track record (`../reference/project-approach-principles.md`) shows it
-at "Stage 3 integration & testing" in ~spring 2025, and nothing later is on file.
+at "Stage 3 integration & testing" in ~spring 2025, and a first 15-configuration ablation
+dataset existed by 2025-06-12 (below; the dataset itself is not on file — find it).
 
 Sources: two Perplexity conversations (undated, ~late 2024 / early 2025; intake 2026-08-22).
 The requirement statement is in `../reference/experiment-tooling.md`; the scoping prompt and

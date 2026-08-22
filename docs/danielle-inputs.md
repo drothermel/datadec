@@ -2280,3 +2280,22 @@ Recorded in both the topic entry and the EDP lineage note.
 Answer 2 appended to the same topic entry; intake note that it manufactures support (conflates
 loss-function with loss-curve smoothness; minor applied papers as evidence) and that neither
 answer found a literature basis for *linearity* — the shape priors on record are power-law.
+
+### 2026-08-22 — First CNN ablation dataset analysis (2025-06-12; dataset not on file)
+
+> ok, so this would be much more helpful if I had the dataset I passed in, but we might
+> find it later. And either way this is a solid historical note: Jun 12 2025. anyways, my
+> statement:
+
+> I have a dataset from training CNN based vision models while removing features that
+> have been added for the last many years. Note that the train acc and loss are calculated
+> on the augmented data so it isn't comparable to the val.
+>
+> Please analyze this data
+
+Routed to: [topics/cnn-deconstruction-ladder.md](topics/staging/cnn-deconstruction-ladder.md)
+as a dated section reconstructing the 15-config dataset from the response and recording why
+the response's reading is wrong (negative train−val gap is the stated augmented-train
+artifact, not leakage; "every removal improves" is the short-budget confound, not a flawed
+baseline), with the design consequence that budget is a hidden axis of the ladder and a
+redo list for when the dataset is found. Gate updated to include locating the dataset.
