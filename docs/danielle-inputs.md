@@ -1259,3 +1259,11 @@ Routed to: new staging topic [topics/wiki-qa-sharding.md](topics/staging/wiki-qa
 Routed to: new reference topic
 [topics/multi-answer-qa-literature.md](topics/reference/multi-answer-qa-literature.md)
 (Danielle interest flag); MAQA expanded in the wiki-sharding staging topic.
+
+### Multi-answer QA — the full report — 2026-08-22
+
+> the report
+
+(File `~/Desktop/multi_answer_qa_state_of_research_2026.md` attached.) Copied verbatim to
+[refs/multi-answer-qa-state-of-research-2026.md](refs/multi-answer-qa-state-of-research-2026.md);
+distilled into [topics/multi-answer-qa-literature.md](topics/reference/multi-answer-qa-literature.md).

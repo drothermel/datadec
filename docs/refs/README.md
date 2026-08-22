@@ -1,4 +1,6 @@
-# refs — local copies of Notion source pages
+# refs — local copies of external source material
+
+Notion page mirrors and verbatim external reports. Re-pull or re-copy rather than edit.
 
 Pulled with the Notion CLI, one call per page:
 
@@ -13,6 +15,7 @@ to `[title](url)` by fetching each unique id's title with `ntn api /v1/pages/<id
 | File | Source |
 |---|---|
 | `research-trajectory-pre-to-post-training.md` | https://app.notion.com/p/Research-Trajectory-Pre-to-Post-Training-3c1de135cd1f81ac8b01f62d63d403cb |
+| `multi-answer-qa-state-of-research-2026.md` | Deep-search report (external assistant, 2026-08-16) linked from the "MAQA Next Steps" page; copied from Danielle's Desktop 2026-08-22 |
 
 ## Citation gaps noticed during intake
 
