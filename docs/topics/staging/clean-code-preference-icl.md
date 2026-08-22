@@ -106,6 +106,22 @@ context, so the clean comparison is matched total context with different splits 
 (unique examples × feedback rounds), which is the same (unique × repetition) factorial
 proposed for ICL-elicitability.
 
+## Undated — Tooling for generating variants without API keys
+
+**Danielle.** She has Codex CLI, Claude Code CLI, and Gemini subscriptions; wants to
+generate many better/worse versions of her code samples *without* API keys by using the
+CLIs' non-interactive prompting mode (pass a prompt, agent gets some rounds of execution).
+Are there tools that support or ease that? Response (content-free): wrap the CLIs in a
+Python/shell script that reads samples, prompts, captures output, and runs tests.
+
+*Intake note.* Concretely available on her machine: Claude Code's `claude -p` (print mode)
+and Codex CLI's `codex exec` both run a single prompt non-interactively and can be looped
+from a script; both support headless runs in a working directory so the agent can execute
+tests itself. Her own dotfiles-based agent harness (skills/workflows, Opus subagents) is
+the natural orchestrator for the fan-out: one job per (function, model, direction ∈
+{cleaner, dirtier}), each writing a variant file + test result. Gemini CLI has an
+equivalent non-interactive mode. Record as the v0 generation path; no new tooling needed.
+
 ## Open questions
 
 - Which of the two goals (tool preparation vs. interactive-learning curve) v0 targets —

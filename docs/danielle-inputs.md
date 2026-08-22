@@ -2068,3 +2068,24 @@ the style-preference prior art was not actually searched.
 
 Routed to: [topics/clean-code-preference-icl.md](topics/staging/clean-code-preference-icl.md)
 ("Experimental structure"); the two goals separated in the open questions.
+
+> So my understanding of how people benchmark these, like as the industry-level production
+> quality models, is that often, I guess I've heard people talk about tasks that measure
+> how well, like in quotes, a model can use its context, like needle in a haystack type of
+> tasks that don't necessarily correlate to like actually how well an agent can use its
+> context. But I haven't actually seen things that directly look at this comparison
+> between the number of, like the trade-off between more examples for in-context learning
+> versus worst performance over the course of the context window, is that, can you look to
+> see whether there are any papers in the last year that look at that?
+
+> Is there tooling or best practices in terms of how to use? So I have access to Codex CLI,
+> Cloud Code CLI, I guess Gemini. And so I guess I would imagine that the best way to get a
+> bunch of examples, the best way to not use an API key, since I'm already paying for the
+> subscriptions, to get a bunch of examples of better and worse versions of my code
+> samples would be to use the CLI prompting mode, where you pass in a prompt, and then the
+> agent gets a certain number of rounds of execution. Are there tools that support that or
+> make this easier?
+
+Routed to: [topics/icl-literature.md](topics/reference/icl-literature.md) (many-shot vs.
+long-context leads) and [topics/clean-code-preference-icl.md](topics/staging/clean-code-preference-icl.md)
+("Tooling for generating variants without API keys", with concrete CLI modes noted).

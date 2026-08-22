@@ -219,3 +219,16 @@ Bayesian framings of accuracy vs. shots; continued-pretraining-for-ICL.
 **Closing note (same conversation).** Danielle tabled the related-work investigation to
 test the approach practically at small scale first; the practical setup is staged in
 `../staging/clean-code-preference-icl.md`.
+
+**Follow-up — many-shot ICL vs. long-context degradation (same conversation, later).**
+Danielle: production models are benchmarked on "how well a model can use its context"
+(needle-in-a-haystack) which "doesn't necessarily correlate to how well an agent can use
+its context"; she has not seen work directly on the trade-off between more in-context
+examples and worse performance over the course of the context window — any papers in the
+last year? Response (thin): *In-Context Learning with Long-Context Models* (NAACL 2025,
+aclanthology 2025.naacl-long.605) — performance improves with more examples up to a limit,
+then diminishing returns; *Efficient Prompting via Dynamic In-Context Learning* (no
+venue/ID) — adapt the number of examples to balance performance and cost. Unverified; the
+first is a real lead for the many-shot curve question, the second is adjacent at best.
+Her underlying question — separating "more examples help" from "longer context hurts" —
+is the matched-context factorial already noted above.
