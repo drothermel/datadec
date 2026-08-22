@@ -1688,3 +1688,23 @@ conflicts with the 2026-08-21 coverage check in open-questions-answered.md.
 
 Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
 ("Sixth and seventh responses"), with a row-count correction.
+
+### Early-dynamics draft review, eighth and ninth responses (featurization) — 2025-07 (intake 2026-08-22)
+
+> Great, next lets talk more about featurization. You said "a) Log-transform and z-score
+> metric within each model-size bucket before fitting. b) Pass model size as numeric feature
+> so LightGBM can split on it." Can you explain (a) in more depth, what would this look like
+> and why would I do it?
+> Additionally, you said dataset features should be "(a) total tokens in recipe; (b) % code,
+> % CC-derived, % social-media; (c) mean document length; (d) duplicate-rate estimate". Why
+> choose these features? do you think these are sufficient?
+> Please also provide any more thoughts you have on featurization.
+
+> So, the two metrics I'm predicting are perplexity and correct_prob (the average of the
+> probabilities for all correct continuations). I see why I would log transform the
+> perplexity but should I also do this for correct_prob since its already on the 0 to 1
+> scale?
+
+Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
+("Eighth and ninth responses: featurization"), with a note linking the static features to
+`REC`.

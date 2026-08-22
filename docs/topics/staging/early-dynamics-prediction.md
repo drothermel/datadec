@@ -257,6 +257,51 @@ corrected above. Singleton-family test sets at 6 large sizes × 1 seed = 6 rows 
 for stable ranking metrics — report them with CIs or pool singleton families for this
 stress test.
 
+## 2025-07 — Eighth and ninth responses: featurization
+
+**Danielle's questions.** Explain "log-transform and z-score within each model-size bucket"
+(what and why); why those five recipe features and are they sufficient; any more
+featurization thoughts. Then: perplexity is obviously log-transformed, but should
+correct_prob (already on [0, 1]) be transformed too?
+
+**Per-size normalisation (condensed).** For each early-window scalar m and size s: m_log =
+f(m); μ_s, σ_s computed **on training rows only** within that fold; m̂ = (m_log − μ_s)/σ_s;
+store (μ_s, σ_s) and apply to val/test. Why: mean *and* variance shrink with size
+(heteroscedasticity); LightGBM's axis-aligned splits would spend depth separating sizes
+before learning curve shape; per-bucket z-scoring "puts every size on roughly the same
+numeric footing, so subsequent splits encode the dynamic behaviour you actually care
+about," and SHAP then reflects shape rather than "8M has higher raw loss than 750M."
+Re-add `size_log = log(params_M)` as its own feature so the removed global trend returns as
+a learnable interaction.
+
+**Transforms by metric.** Perplexity (1, ∞): log. **Correct prob (0, 1): logit**,
+`log((m + ε)/(1 − m + ε))`, ε ≈ 1e-4 — spreads the squeezed tail near 1, makes increments
+additive (Δlogit ≈ log odds ratio), near-Gaussian noise so the z-score has sensible
+variance; arcsin √ is the alternative but less interpretable. Since early correct_prob sits
+≈ 0.01–0.05 rising toward ~0.2–0.3, logit linearises small absolute gains. Mask exact 0/1
+before logit. Rule of thumb: bounded + relative differences matter → logit; positive reals
+→ log; then z-score.
+
+**Why the five recipe features** (total tokens; % code; % CC-derived; % social media; mean
+document length; duplicate rate): "five orthogonal axes: quantity, domain, quality,
+structure, redundancy"; one scalar each; sufficient for a v0 whose goal is to demonstrate
+signal without overfitting. Backlog: tokenizer diversity (unique BPE tokens / 1k docs);
+unigram entropy; quality-classifier score moments; rolling slope/curvature at several
+radii; spectral density / AR(1) of loss deltas; LR-phase one-hot or continuous cosine
+position; log grad-norm and param-norm; Fisher-trace / Hessian-norm estimates;
+log(batch_tokens), grad-accumulation, tokens-per-update × LR; LM-based quality scores;
+recipe-family one-hot or learned embedding (only if families are not held out).
+
+**Hygiene.** Separate `dyn_*` vs. `stat_*` column namespaces for regex ablations; immutable
+feature-derivation code with a hash-tagged artefact (`features_v0_<sha>.parquet`); cache
+the bucket μ/σ dict in the artefact so the later GP baseline normalises identically;
+ablation waterfall: early-curve only → + `size_log` → + static stats.
+
+*Intake note.* The static recipe features overlap heavily with the recipe-featurization
+project (`REC`) — if this proposal is promoted, its "static" feature set should be the
+measured recipe properties from `REC`, not hand-assigned percentages, which would also make
+the two projects share one artefact.
+
 ## Open questions
 
 - Is this still live (July 2025 draft; DataDecide scaling-law baselines have since been
@@ -266,6 +311,7 @@ stress test.
   the 2026-08-21 finding of 3 seeds at every size in the aggregate table.
 - Whether the target should be the annealed (`ANN`) readout rather than the raw final
   checkpoint.
-- Promote, absorb into `TINY` as an option, or archive.
+- Promote, absorb into `TINY` as an option, or archive. If promoted, source the static
+  recipe features from `REC`'s measured properties.
 
 **Waiting on:** Danielle's status call.
