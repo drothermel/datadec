@@ -2137,3 +2137,23 @@ Routed to: new [topics/workshop-deadlines.md](topics/reference/workshop-deadline
 (venue/timing accumulator; both answers merged into one dated table, with an intake note on
 which dates had already passed and which waves the workshop-paper candidates could
 realistically target).
+
+### 2026-08-22 — Generalization / OOD question sequence (2025-01-04 conversation)
+
+> ok, an even older convo, jan 4 2025 not necessarily the most useful answers/I'm not sure I
+> trust the citations, but the sequence is worth including
+
+Her prompts (verbatim):
+
+> Is pretraining LLMs considered an unsupervised learning approach
+
+> How have Machine Learning researchers formalized the idea of generalization to compare
+> generalization performance in supervised AND self-supervised settings?
+
+> What work has been done on measuring out of domain generalization performance and
+> predicting the performance conditioned on the method?
+
+Routed to: new [topics/generalization-and-ood-literature.md](topics/reference/generalization-and-ood-literature.md)
+(responses condensed; all citations marked unverified; intake note that the
+"predicting performance conditioned on the method" half was never answered and is the
+thread that recipe-featurization / EDP pick up).
