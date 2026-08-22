@@ -1299,3 +1299,10 @@ Routed to: [topics/multi-answer-qa-literature.md](topics/reference/multi-answer-
 
 Routed to: [topics/wiki-qa-sharding.md](topics/staging/wiki-qa-sharding.md) ("Downloading
 Wikipedia under a storage budget").
+
+### Link graph from Structured Wikipedia — conversation 2026-08-16
+
+> is there something like the huggingface structed dataset for the wikipedia link graph too?
+
+Routed to: [topics/wiki-qa-sharding.md](topics/staging/wiki-qa-sharding.md) ("Link graph from
+Structured Wikipedia"); data-plan open question revised.

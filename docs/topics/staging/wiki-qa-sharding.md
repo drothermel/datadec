@@ -142,6 +142,39 @@ raw wikitext, rendered HTML, or an extractor was used. Server holds recent month
 (Feb–Aug 2026 at the time); older snapshots via Internet Archive per Wikimedia's
 "Finding older xml dumps" guidance. One date ⇒ no need for the revision-history dump.
 
+## 2026-08-16 — Link graph from Structured Wikipedia
+
+**Danielle's question.** Is there something like the Hugging Face Structured Wikipedia
+dataset for the link graph too?
+
+**Response (near-verbatim, condensed; unverified).** The official `wikimedia/structured-wikipedia`
+dataset "already contains the hyperlink information, although it does not expose a separate,
+flat `edges.parquet` table" — links sit recursively inside sections/paragraphs, lists, infobox
+fields, references, and other components, each generally with target `url` and anchor `text`
+(schema: enterprise.wikimedia.com data dictionary).
+
+*Recommended derivation.* Two tables: `nodes.parquet` (page_id, title, url, wikidata_qid,
+redirect/status) and `edges.parquet` (source_page_id, target_page_id, target_url,
+anchor_text, section_path, component_type, occurrence_count). Process: recursively flatten
+every `links` field → keep internal `en.wikipedia.org/wiki/...` links → strip fragments
+(optionally keep as `target_section`) → normalize encoding/capitalization → join target URLs
+to article URLs for IDs → resolve redirects → keep occurrences or aggregate to weighted
+edges. Advantage over `pagelinks.sql.gz`: anchor text and approximate location survive, so
+lead-paragraph links can be weighted differently from navigation lists, infoboxes,
+citations, or "See also" — directly useful for the affinity weighting above.
+
+*Ready-made alternatives.* HotpotQA Wikipedia corpus with links (HF
+`ParthMandaliya/hotpotqa-wiki`; Oct-2017 snapshot; 5.49M articles, explicit `links` column,
+clean text, 26.3 GB Parquet — old). USearchWiki (HF `unum-cloud/USearchWiki`; Aug 2025,
+multilingual, text + graph metadata + embeddings; 943 GB — overkill). SNAP enwiki-2013 edge
+list (very old). WikiLinkGraphs (arXiv 1902.04298; annual snapshots to 2018, nine languages).
+
+*If completeness matters most.* The authoritative graph is still the SQL dumps (`page`,
+`linktarget`, `pagelinks`, `redirect`; ~11 GB). Recommendation: "extract the graph directly
+from Structured Wikipedia. You get a snapshot-aligned corpus and graph, link context for
+QA-aware weighting, and avoid maintaining two substantially different ingestion pipelines.
+Use the SQL graph only as a completeness check."
+
 ## Open questions
 
 - What the surrounding MAQA system needs (latency target, shard count, update
@@ -149,7 +182,9 @@ raw wikitext, rendered HTML, or an extractor was used. Server holds recent month
   at all.
 - Verify the gap claim and the tool/paper citations above.
 - Whether this is a project in itself or infrastructure for another one.
-- Data plan: graph tables (~11 GB) first for subset construction; `pages-articles` multistream
-  or Structured Wikipedia Parquet for text; pinned dated snapshot.
+- Data plan (revised): derive nodes/edges from Structured Wikipedia Parquet (snapshot-aligned
+  corpus + graph with link context); SQL `pagelinks` only as a completeness check; pinned
+  dated snapshot. Verify the dataset's link schema and whether it is sharded such that a
+  graph-coherent subset can be fetched without the full download.
 
 **Waiting on:** further excerpts from the MAQA Next Steps page; a promotion decision.
