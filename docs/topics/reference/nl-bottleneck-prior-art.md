@@ -128,3 +128,9 @@ fundamentally new invention."
   families in the bundle (`INDEX.md` §5) did not include "language bottleneck model".
 - Four new arXiv IDs added to `../../litreview/citation-verification-ledger.md`
   (agent-supplied, unverified).
+- **Danielle's read of LBM (2026-08-22, from memory):** very relevant and definitely
+  prior work, but the bottleneck grades student responses (non-verifiable target) and the
+  paper tries only ~3 prompts — no optimization loop. Gives TLC neither a baseline, a
+  method, nor comparative results. Cite as the nearest named framework; the agent's
+  "minor variation of LBM" verdict does not hold. Her recollection, not a re-read;
+  confirm the prompt count when writing §2.

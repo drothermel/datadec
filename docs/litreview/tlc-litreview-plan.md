@@ -28,12 +28,13 @@ series), mixed prose+code handling (Report 1), neural code embeddings as represe
 
 ## Gate items (resolve before writing §2 of the paper)
 
-1. **Read GenDLN** (ACL SRW 2025) **and Language Bottleneck Models** (2506.16982). GenDLN:
-   stacked-LLM joint prompt optimization is structurally the encoder+decoder harness
-   search. LBM: a second novelty check (2026-08-22) named it as the published framework
-   TLC is "a minor variation" of — weight-trained encoder, one side optimized, not code.
-   Decide for each whether it is prior art, related work, or neither. Danielle's read, not
-   an agent's.
+1. **Read GenDLN** (ACL SRW 2025): stacked-LLM joint prompt optimization is structurally
+   the encoder+decoder harness search; decide whether it is prior art, related work, or
+   neither. Danielle's read, not an agent's. *Language Bottleneck Models* (2506.16982)
+   — resolved 2026-08-22 from Danielle's memory of the paper: prior work and the nearest
+   named framework, but a non-verifiable grading target and only ~3 prompts, no
+   optimization loop → cite in §2, not a baseline/method/comparison. Confirm the prompt
+   count against the PDF when writing.
 2. **Fix the identifier slips** in the ICBINB bibliography (EPiC 2408.11198 not
    2410.14321; AlphaCodium 2401.08500 not 2401.19489; Midolo "2024" carries a 2601
    arXiv number; Nano-Capsulator first author Chuang); locate or discard OverLang. Ledger:

@@ -3135,3 +3135,12 @@ Routed: [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-l
 [topics/reference/nl-bottleneck-prior-art.md](topics/reference/nl-bottleneck-prior-art.md);
 LBM added to [litreview/tlc-litreview-plan.md](litreview/tlc-litreview-plan.md) subdomain A
 and gate item 1 (Danielle's read, with GenDLN); four IDs added to the citation ledger.
+
+> yeah, LBM is very relevant, but its using the structure to grade student responses, very
+> non-verifiable, and they only try 3 different prompts if I remember correctly so its
+> definitely prior work, but doesn't quite give either a baseline, a method, or comparative
+> results.
+
+Applied: recorded as her read in the TLC §4 note and the prior-art reference entry; LBM
+half of plan gate item 1 closed (GenDLN remains); positioning = nearest named framework in
+§2, not a baseline.

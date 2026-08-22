@@ -480,6 +480,14 @@ reconstruction; "Semantic Compression with LLMs" (Gilbert et al., already on fil
 Sentence Bottleneck autoencoders (already on file, soft-vector bottleneck). Net effect on
 the plan: LBM joins GenDLN as a must-read gate item; nothing else changes the gap statement.
 
+**Danielle's read (same day, from memory of the paper):** LBM is very relevant and is
+definitely prior work — but it uses the bottleneck to grade student responses (a
+non-verifiable target, unlike tests on code), and tries only about three prompts rather
+than running an optimization loop. So it supplies neither a baseline, a method, nor
+comparative results for TLC. Position it as the nearest named framework in §2 related
+work; the "minor variation" judgment does not survive the comparison. The LBM half of
+gate item 1 is closed; GenDLN remains.
+
 ### Origin notes — moved from `topics/staging/text-latent-code-autoencoder.md`
 
 ### 2026-07-11 — the idea as played back
