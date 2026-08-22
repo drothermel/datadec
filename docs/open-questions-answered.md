@@ -1,8 +1,7 @@
 # Open questions — answered
 
 Running log of gate checks and open questions from the potential-project docs
-(this branch's `a`–`e` docs, the `datadec-analysis` tracks, and the
-`dataset-analysis` idea map) that have been resolved against local data. Each
+(`docs/potential-projs/` and the `dataset-analysis` idea map) that have been resolved against local data. Each
 entry records the date, the answer, and the exact code used, so the check can
 be re-run when `data/processed/` changes.
 
@@ -11,7 +10,7 @@ note if an answer changes.
 
 ---
 
-## 2026-08-21 — Per-instance eval coverage (gates IRT Track B, N1 item bootstrap, E2 item flips)
+## 2026-08-21 — Per-instance eval coverage (gates IRT reanalysis, the trajectory noise-floor item bootstrap, and TOK-obs-2 item flips)
 
 **Question.** Do instance-level OLMES results exist for every recipe × scale ×
 seed cell, or only a subset? (Raised in `irt-reanalysis.md` §2,
@@ -37,19 +36,19 @@ differs by size:
 Missing sizes: 6M, 8M, 10M, 14M, 16M. Columns include binary correctness
 (`acc_raw`, `acc_per_token`, `acc_per_char`, `acc_per_byte`, `acc_uncond`) and
 continuous margins (`sum_logits_corr`, `logits_per_*_corr`), so both the binary
-and margin IRT response models (B1/B5) are buildable without the separate
+and margin IRT response models (IRT-1/IRT-5) are buildable without the separate
 `choices.parquet`.
 
-**Consequence.** IRT dimensionality (B1), recipe-DIF (B3), and the item
+**Consequence.** IRT dimensionality (IRT-1), recipe-DIF (IRT-3), and the item
 bootstrap in the noise-floor module are fully supported at **150M–1B (3
 seeds)**. Below 150M there is one seed per cell, so seed-variance estimates
 are unavailable there and pooled-across-recipe floors must be used instead.
 
-## 2026-08-21 — Checkpoint spacing (gates Track A drift/diffusion; decides whether A5 resolution transfer is needed)
+## 2026-08-21 — Checkpoint spacing (gates Trajectory drift/diffusion; decides whether TRJ-5 resolution transfer is needed)
 
 **Question.** Are DataDecide checkpoints dense enough that adjacent-checkpoint
 increments can separate diffusion from drift, or is transfer from the denser
-OLMo trajectories (A5) required? (Raised in `trajectory-movement.md` §2 and
+OLMo trajectories (TRJ-5) required? (Raised in `trajectory-statistics.md` §2 and
 `dataset-analysis-idea-map.md` §7.)
 
 **Answer.** From the aggregate `data/processed/olmes.parquet` (25 recipes × 3
@@ -74,7 +73,7 @@ seeds at every size):
 
 Spacing is roughly uniform at ~1,000–1,300 steps for everything from 8M to
 530M, with 30–40 checkpoints per run at 150M–530M. That is enough points per
-series for windowed drift+diffusion fits; **A5 (OLMo resolution transfer) is
+series for windowed drift+diffusion fits; **TRJ-5 (OLMo resolution transfer) is
 not needed as a prerequisite** and can stay an optional robustness check. 1B
 is the coarsest (~2,500-step spacing, 27 points) and the sub-10M sizes have
 too few points to fit per-run.
