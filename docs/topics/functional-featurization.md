@@ -10,6 +10,89 @@ being a descriptor and becomes an operator.
 
 ---
 
+## 2026-08-21 — Reviewer 2, answering "is that a thing?" (the origin of this topic)
+
+**Question posed (Danielle).** Not high-level descriptors like "quality"; instead chunk the
+datasets, identify different types of contributions, look at how they are distributed, and
+how they move metrics or the loss landscape when applied at different stages of training. See
+[../danielle-inputs.md](../danielle-inputs.md).
+
+"Yes, it's a thing — but only in pieces. Nobody has assembled the version you're describing,
+and the assembled version has a name-able shape: **the value of a data component as a
+function of training time**, call it U_c(t)."
+
+**Decomposition into contribution types.** "This exists but is mostly coarse and
+provenance-based. The standard axis is source/domain labels (what DoReMi and RegMix reweight).
+More interesting recent work builds *learned* taxonomies — WebOrganizer-style topic×format
+classification of web data, embedding-cluster decompositions used for mixture optimization,
+Skill-It's skill graphs. And there are *functional* decompositions closer to your instinct:
+instruction-like text hiding in web crawl, reasoning-dense passages, and your own
+determinism/entropy profile is exactly a functional decomposition at token granularity. So
+the 'chunk and identify types of contribution' step has tooling, but almost everyone stops at
+domains because that's what's labeled."
+
+**Component → metric attribution.** "Also exists in two flavors: mixture-level (RegMix, data
+mixing laws — regress outcomes on mixture weights, coarse but scalable) and example-level
+(influence functions, datamodels — precise but brutally expensive at pretrain scale). The
+middle granularity you're describing — cluster/component-level causal contribution — is
+comparatively empty, and it's the tractable one: hundreds of components instead of billions
+of examples."
+
+**The stage/timing axis.** "This is where the field is most active *and* most anecdotal.
+Multi-stage pretraining is now standard practice — early pretraining on diverse noisy
+corpora, then shifting the distribution toward more challenging, higher-quality data as the
+learning rate anneals, which the mid-training literature explicitly frames as
+curriculum-style scheduling. Production models publish their stage tables — HyperCLOVA X, for
+example, reports code going from 12% to 25% and math from 8.6% to 25.3% across four stages,
+with instruction data appearing only late. And there's emerging work on the schedule×data
+interaction directly — one recent paper's title is literally about how learning rate decay
+wastes your best data, in the context of the now-standard practice of shifting to
+high-quality mixtures at mid-training. There's even evidence for effects invisible at the
+endpoint: a recent study of pretraining data ordering found curriculum effects that don't
+show up in final performance alone — ordering shapes when and which linguistic capabilities
+emerge and reorganizes embedding-space structure."
+
+**The gap.** "Every existing timing result has one of three limitations. Either the component
+axis is crude ('high quality data' — exactly the ambiguous descriptor you're rejecting), or
+the timing axis is crude (two stages: before and after midtrain), or the outcome is crude
+(final benchmark score, no dynamics, no landscape). The practice you see in stage tables like
+HyperCLOVA's is real engineering knowledge, but it's *folklore encoded as percentages* —
+nobody has published the underlying map: for a measured decomposition of data into
+components, what is each component's marginal effect as a function of *when* it's
+introduced, on *which* metrics, and on the geometry of where the model ends up?"
+
+**Why the existing machinery is well-positioned.** "The decay-branch runner is the missing
+instrument. A branch at step t with component c injected (or ablated) at some mixing weight is
+a causal probe of U_c(t) — it's a factorial component × injection-time experiment where each
+cell costs ~10% of a training run, not a full run. Your docs already flagged this and
+deferred it ([WSD-opt-4], 'MiniCPM-style mixed-in decay data — scope creep risk'). Under this
+framing it's not scope creep; it's the point. And the per-token logging plus reference-model
+scoring gives you the mechanism-level outcome: which *tokens* each component moves, whether
+components act on the wall (transient, schedule-dependent) or the river (durable), and — via
+the interpolation/barrier tooling from [landscape geometry] — whether late-injected
+components land the model somewhere geometrically different than early-injected ones. That
+last question, component timing → landscape position, is as far as I can tell completely
+unoccupied."
+
+**Concrete study sketch.** "Take one base recipe; decompose a candidate pool into ~10–20
+components by a learned taxonomy crossed with functional features (entropy profile,
+instruction-likeness, reasoning density) rather than source labels; run branches at 4–6
+points along training, each injecting one component; measure per-token response, task-family
+deltas, and durable-vs-transient split. Output is a component × timing × outcome tensor — the
+measured version of every lab's stage table. Even a small version (5 components × 4 timings)
+would be the first public map of its kind, and it composes with everything else: the
+DataDecide featurization becomes 'which measurable properties of a component predict its
+U_c(t) curve,' which is the generalizing claim that turns a map into a theory."
+
+**Caution.** "Curriculum learning proper has a long history of weak-at-scale results, and
+reviewers carry that prior. The defense is that you're not proposing a curriculum — you're
+*measuring* stage-dependent data value with causal probes, which is upstream of (and agnostic
+about) whether any curriculum beats random. The mid-training practice of the entire field is
+the proof that stage-dependence exists; what's missing is the measurement, and that's the
+paper."
+
+---
+
 ## 2026-08-21 — Reviewer 2, reacting to a proposal to branch 1/16-of-a-run on pure data types
 
 **Where it sits relative to existing literature.** "The nearest neighbors are data attribution

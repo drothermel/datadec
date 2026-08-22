@@ -132,3 +132,20 @@ work proceeds.
 
 Step 1 is the gating item and is worth doing early regardless of whether B proceeds, since
 it also validates the training stack for any decay branches resumed from released checkpoints.
+
+---
+
+## 4. External assessments
+
+Dated, attributed notes from external review conversations, recorded for consolidation — not
+decisions. Only notes about this project are kept here.
+
+### 2026-08-21 — reviewer 2, on stage-dependent data value
+
+- WSD-opt-4 (mixed-in decay data) reframed: "Your docs already flagged this and deferred it
+  ('MiniCPM-style mixed-in decay data — scope creep risk'). Under this framing it's not scope
+  creep; it's the point." A branch at step t with a data component injected at some mixing
+  weight "is a causal probe of [the component's value as a function of training time] — a
+  factorial component × injection-time experiment where each cell costs ~10% of a training
+  run, not a full run." (Full discussion in `docs/topics/functional-featurization.md`.)
+

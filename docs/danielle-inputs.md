@@ -21,3 +21,20 @@ add them here if recovered.
 
 Response routed to: [topics/beyond-datadecide-data-measurement.md](topics/beyond-datadecide-data-measurement.md);
 project-specific parts to [potential-projs/recipe-featurization.md](potential-projs/recipe-featurization.md) §4.
+
+### Chunked datasets, contribution types, and stage-dependent effects
+
+> Separate question. Going back to the investigation of datasets more broadly and their
+> features. So I think that I was less interested in, like, these high level fairly ambiguous
+> descriptors like quality or, I guess, deduplication is a very specific figure. Um, and
+> instead, I'm interested in things that are more like and we, you know, chunk the datasets
+> and then look at... and somehow identify different types of contributions to a dataset and
+> look at how those contributions, um, are distributed and how they clearly move some types of
+> metrics or the loss landscape when they're applied at different stages in training. Um,
+> that's more what I was imagining. is that a thing?
+
+Response routed to: [topics/functional-featurization.md](topics/functional-featurization.md)
+(as its origin entry); project-specific parts to
+[potential-projs/wsd-suite.md](potential-projs/wsd-suite.md) §4 and
+[potential-projs/landscape-geometry.md](potential-projs/landscape-geometry.md) §4.
+

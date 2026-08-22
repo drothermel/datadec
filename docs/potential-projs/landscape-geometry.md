@@ -122,3 +122,11 @@ decisions. Only notes about this project are kept here.
   raw-barrier core is the alternate — evals-only, but your own risk analysis (all
   cross-recipe barriers high → degenerate stratification) is real."
 - Reviewer 1 did not rank this project in its top 3.
+
+### 2026-08-21 — reviewer 2, on stage-dependent data value
+
+- The interpolation/barrier tooling here has a further use: testing "whether late-injected
+  [data] components land the model somewhere geometrically different than early-injected
+  ones. That last question, component timing → landscape position, is as far as I can tell
+  completely unoccupied." (Full discussion in `docs/topics/functional-featurization.md`.)
+
