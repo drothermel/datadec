@@ -824,5 +824,9 @@ Routed to: new staging topic
 > ok, so we're actually collecting potential projects wide and far, they don't have to have
 > anything to do with datadecide
 
-Standing rule recorded in the potential-projs and topics READMEs: the project collection is
-wide; non-DataDecide ideas are first-class.
+> and even though we have a "thesis topic" proposal, if projects don't fall under it, then
+> we'll just create alternative topic proposals for them
+
+Standing rules recorded in the potential-projs and topics READMEs: the project collection is
+wide; non-DataDecide ideas are first-class; the apex + pillars is one thesis-topic proposal,
+with alternatives created for projects outside it.

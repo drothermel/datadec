@@ -2,7 +2,9 @@
 
 The collection is deliberately wide: candidates need not involve DataDecide, the three
 program pillars, or LM training dynamics at all. Projects that do serve the program say so
-on their "Program pillars served" line; others simply say "none".
+on their "Program pillars served" line; others simply say "none". The apex question and
+pillars below are *one* thesis-topic proposal; projects that do not fall under it get
+alternative topic proposals of their own rather than being forced in or dropped.
 
 One document per candidate workshop-paper project. Each is written to stand alone so it can be
 evaluated on its own merits: shared infrastructure is restated in every document that needs it
