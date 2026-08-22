@@ -2776,6 +2776,32 @@ Routed to: [topics/reference/nl-bottleneck-prior-art.md](topics/reference/nl-bot
 §4 (verdicts; ICBINB grounding supersedes the prior-art stub list; GenDLN flagged for
 her own read; identifier slips).
 
+### 2026-08-22 — SciSpace deep review: coding datasets and benchmarks
+
+> next artifact, lets index this one too
+
+> What are the most frequently used coding datasets/benchmarks for LLMs as of late 2025
+> and 2026? What tasks do they focus on and how are they used. What are the general
+> strengths and weaknesses of these datasets/benchmarks? How do they relate to very recent
+> coding datasets/benchmarks released mid 2025 to early 2026?
+
+> I want to get a general understanding of the coding benchmark space, primarily from the
+> perspective of NLP with LLMs use cases as an ML researcher, but I do want to include any
+> highly relevant topics from more of the CS program synthesis side of things. Then, I
+> want to understand what the possible focus areas are, aiming for qualitative insights and
+> breadth more than depth.
+
+Applied: `INDEX.md` inside the bundle (`~/drotherm/data/convo-artifacts/2026/scispace-coding-datasets-and-benchmarks-agent-artifacts-zip_bdc06926-5b5a-465b-b70b-9af7aa5a4fcd_1787423366/`) — the two report drafts, the 30-paper
+source set keyed to the reference numbers, the merged CSVs with extracted columns, the
+deep-search tables (two byte-identical duplicate pairs noted), raw query results, and a
+list of well-known benchmarks the review does not cover.
+
+Routed to: [topics/reference/code-benchmarks-landscape.md](topics/reference/code-benchmarks-landscape.md)
+(new reference topic) and a dated note in
+[potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+§4 (task-set choice: contamination critiques; code-reasoning benchmarks as the nearest
+neighbour to reconstruct-from-description).
+
 ### Post-intake decisions — 2026-08-22 (data-layer conversation)
 
 > 1. I think data-card/ validation work should be its own project doc, so b as you say.

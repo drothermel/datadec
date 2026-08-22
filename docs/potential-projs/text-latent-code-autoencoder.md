@@ -344,6 +344,19 @@ Dated notes from the external conversation this doc was promoted from, recorded 
 consolidation — not decisions. Related-work claims in quoted text are unverified unless a
 citation is given; Danielle's prompts are logged verbatim in `../danielle-inputs.md`.
 
+### 2026-08-22 — task-set choice against the benchmark landscape
+
+From Danielle's SciSpace deep review of coding benchmarks (record in
+`../topics/reference/code-benchmarks-landscape.md`). Two points for the census and the
+ICBINB evaluation: (1) HumanEval/MBPP are the reporting standard but carry the heaviest
+contamination and toy-function critiques; LiveCodeBench-style dated problems or
+HumanEvalPack subtasks (HumanEvalExplain is this project's loop, see the note below) are
+the cleaner task sets, and MBPP+/HumanEval+ test suites should be used where the
+originals are kept for comparability; (2) the "code reasoning / execution prediction"
+benchmark family (CRUXEval-like; LiveCodeBench's execution and output-prediction tracks)
+is the nearest neighbour to reconstruct-from-description evaluation and a candidate
+source of "semantic contract" probes beyond pass@1.
+
 ### 2026-08-22 — prior-art verdicts and the ICBINB grounding bundle
 
 Danielle ran a SciSpace prior-art search on this project's mechanism (brief, verdicts,
