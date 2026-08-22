@@ -7,6 +7,17 @@ still stands alone. Recorded for consolidation, not decisions.
 
 Related-work claims in quoted text are unverified (see `potential-projs/README.md`).
 
+> **Scope of these rankings (added 2026-08-22).** All four lists were produced on 2026-08-21,
+> before most of the portfolio existed in its current form. They rank a **small subset** of
+> the full candidate list: the seven original projects plus a few directions named in
+> conversation. Not ranked anywhere below: the five promoted project docs in their current
+> form (PART, MOVE, MSUITE, TINY, FUNC were ranked only as conversation-stage ideas), the
+> twelve staging topics in `topics/` (reset/transfer gaps, movement microscope,
+> ICL-as-post-training, post-training experiment design, warm-starting grid,
+> critical-period timing study, checkpoint tomography), and the research-hypothesis
+> program (`research-hypothesis.md`). Treat the lists as a dated snapshot, not a current
+> prioritization.
+
 ## Crosswalk — every project's position in each list
 
 One row per project (current names); columns are the four lists below. "—" means not
