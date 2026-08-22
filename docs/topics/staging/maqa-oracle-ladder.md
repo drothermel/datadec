@@ -300,6 +300,11 @@ contribution."
 - Relationship to the cleaner-dataset pipeline in the literature topic (verification-first
   gold sets) — same project or a follow-on.
 
+- Bounded dataset-noise work for QAMPARI (per `../reference/project-approach-principles.md`,
+  2026-08-17): error-driven annotation of a small subset (baseline's top evidence that is not
+  gold → hand-check; predicted-but-marked-wrong answers → hand-check), reported as noise-rate
+  scalars with error bars rather than a "clean dataset"; a ~50-line answer normalizer with a
+  test file of known-equivalent pairs. No sibling-dataset transfer slice during iteration.
 - Kill criteria for the entity-centric shape (undecided); precision-control / stopping
   mechanism as an explicit impact axis.
 

@@ -54,3 +54,52 @@ and the response to it.
   every plot from day one** — for a "how far can simple brute force go" thesis, the
   performance-vs-compute curve is the contribution, and retrofitting cost tracking is
   miserable.
+
+## 2026-08-17 — Implementation time, upfront work, and over-indexing
+
+**Danielle's additional takeaway.** She often gets stuck on implementation time. Setting
+up multiple datasets is "a dramatic use of time because nothing ever actually works" —
+different baselines, setups, quirks; "it's often hard to even tell what the papers are
+measuring, let alone understanding it from the released data, even if they do release a
+repo." Some work is worth doing upfront even though it delays the gap between first
+discussing a project with collaborators and delivering the results they care about: "if I
+had done [these things] first, I would have been able to give those results more
+consistently, in a way that was more meaningful, and we would have gotten final outcomes
+much faster." But limit ceremony (e.g. keeping slices from other datasets) because it
+backfires. Quick, bounded versions are what she wants: a small hand-annotated subset (take a
+baseline's highly relevant evidence, personally inspect the passages that aren't gold
+evidence); an answer matcher doing "what I think are reasonable string normalizations."
+Over-indexing on a dataset or on one's own dev set is possible, but "ultimately what we
+want is to produce solutions that work on the actual task" — and "maybe the problem is that
+we just need a better dataset."
+
+**Feedback received (near-verbatim).**
+- *Integration tax.* "Every dataset you touch costs a fixed integration tax (loaders,
+  corpus alignment, metric reimplementation, figuring out what the paper actually
+  measured), and you should pay that tax at most once per project phase, not
+  speculatively." The earlier transfer-slice suggestion is withdrawn for the iteration
+  phase — it only matters at paper time, when everything is re-run anyway.
+- *Front-load findings, defer scaffolding.* "The ceiling measurements aren't infrastructure
+  that delays results — they are results. 'Closed-book gets X, answer-vocab caps us at Y,
+  BM25@200 covers Z% of answers, the metric eats W points on perturbed gold' is a genuinely
+  interesting first meeting, arguably more interesting than a mediocre end-to-end F1. The
+  upfront work that actually burns you is the kind that produces no numbers: abstractions,
+  configurability, multi-dataset harnesses, 'clean' pipelines for experiments you haven't
+  run yet. So the principle isn't 'spend more time upfront,' it's 'front-load the work that
+  emits findings, defer the work that emits scaffolding.'"
+- *Error-driven annotation.* Using the system's disagreements with gold as the sampling
+  frame is far more efficient than random sampling. Asymmetry: hand-checking
+  retrieved-but-not-gold evidence and predicted-but-marked-wrong answers measures gold
+  incompleteness as it punishes your system, not answers missing from gold that the baseline
+  also misses — acceptable, because "the noise that matters is precisely the noise that
+  distorts your measurements. You don't need the dataset to be clean, you need to know the
+  error bars on your scores." Frame it as "estimate noise rates as scalars, correct or caveat
+  the metrics accordingly," which keeps it time-boxed. A 50-line normalizer with a test file
+  of known-equivalent pairs "is an afternoon and permanently improves every number you
+  produce after it."
+- *Over-indexing guardrails.* Touch the official test set rarely and only at milestones;
+  when cleaned-dev and official-dev diverge in *trend* (not level), treat it as a finding —
+  cleaning or dataset encodes something systematic. "Maybe the field needs a better dataset"
+  is a live phase-3 pivot, not phase-1 creep. "The failure mode for someone with your
+  instincts isn't over-indexing on QAMPARI; it's the cleaning-and-tooling rabbit hole
+  wearing the costume of rigor."

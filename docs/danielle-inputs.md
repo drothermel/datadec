@@ -1527,3 +1527,44 @@ Routed to: new reference topic
 (the four general principles + feedback) and
 [topics/maqa-oracle-ladder.md](topics/staging/maqa-oracle-ladder.md) (problem definition,
 solution shape, impact hypotheses, plan-specific feedback).
+
+### Implementation time and bounded cleaning — conversation 2026-08-17
+
+> Interesting. So one other major takeaway from the whole process is that I often get stuck
+> on implementation time. So, basically, like, part of why I would say to start with one
+> dataset instead of multiple is that trying to get multiple datasets set up is often really
+> a dramatic use of time because nothing ever actually works. And I'll have their different
+> baselines and their different, um, setups and quirks, and it's often hard to even tell
+> what the papers are measuring, um, let alone understanding it from the release data, um,
+> even if they do release a repo along with it. And so I think that I'm trying to also
+> encode in this set of things. Basically, like, some stuff is worth the extra time upfront
+> even though it delays the time between when I work with somebody, uh, collaborator and
+> adviser, and they first talk about the project versus when I can give them the results
+> they're actually interested in. And I think that, like, a main takeaway for me is that a
+> lot of these things, if I had done first, I would have been able to give those results,
+> um, more consistently, um, in a way that was more meaningful, and we would have gotten,
+> like, final outcomes much faster. But I also think that I want to limit things like
+> keeping slices from other datasets. or, like, too much ceremony over different things
+> because that will then definitely backfire. And so I agree that, like, dataset cleaning
+> and be its own whole thing. But I think also basically saying, okay, like a small subset
+> of questions, and I'm going to look at them by hand and then maybe use, like, an LM to…
+> like, for example, I'm gonna take a small subset of questions. I'm going to use a
+> baseline method to get the high relevant evidence. And then for the ones that are not
+> actually used as ground truth evidence, I'm personally gonna look at them and see whether
+> they seem correct or not. So, basically, I'm gonna hand annotate small subset that I have
+> a clear example or I'm gonna create a answer matcher that just does what I think are
+> reasonable string normalizations before comparing things like this. Um, I think that
+> those are things that can be done pretty quickly and that then I know what I'm working
+> with. Um, as I go through the project and it is possible to overindex on a specific
+> dataset, I think also… and it's possible to overindex on your own dev set. I think that
+> ultimately what we want is to produce solutions work on the actual task. We're aiming to
+> work on. Um, and so even if my solution works better on my dev set, then the actual dev
+> set, then there are all kinds of tricky things you can do to fix that. also, like,
+> ideally, that means it also translate vendor to other datasets. And maybe the problem is
+> that we just need a better dataset. Um, so do these concerns make sense to your
+> responses?
+
+Routed to: [topics/project-approach-principles.md](topics/reference/project-approach-principles.md)
+(integration tax; front-load findings; error-driven annotation; over-indexing guardrails)
+and a bounded-cleaning open question in
+[topics/maqa-oracle-ladder.md](topics/staging/maqa-oracle-ladder.md).
