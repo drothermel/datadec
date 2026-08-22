@@ -131,3 +131,13 @@ Recorded in: [open-questions-answered.md](open-questions-answered.md) (as a reso
 [topics/moe-analysis-program.md](topics/moe-analysis-program.md), and
 [topics/moe-recipe-suite.md](topics/moe-recipe-suite.md).
 
+### IRT as a full-conference paper
+
+> i feel like there has to be a path to turn something around IRT on datasets into a
+> acceptance worthy full conference paper (which is what i personally meant by strong). if
+> not in the nlp space then maybe in a continual learning /plasticity type of smaller scale
+> space where the pitch is rigor and science more than large lab adoption?
+
+Item 1 of a three-item response. Routed to:
+[potential-projs/irt-reanalysis.md](potential-projs/irt-reanalysis.md) §4.
+

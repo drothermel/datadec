@@ -142,3 +142,43 @@ decisions. Only notes about this project are kept here.
 - **n = 25.** IRT-3 "currently treat[s] 25 recipes as exchangeable"; prefer
   within-family comparisons along a measured dose (the family-contrast framing from recipe
   featurization).
+
+### 2026-08-21 — on a full-conference ("strong") version
+
+Question posed: is there a path to turn IRT-on-datasets into an acceptance-worthy full
+conference paper — if not in NLP, then in a continual-learning / plasticity space where the
+pitch is rigor and science rather than large-lab adoption?
+
+- **Precedent and pattern.** "IRT-for-NLP-evaluation papers have gotten into main venues
+  before (Rodriguez et al.'s leaderboard IRT at ACL 2021, tinyBenchmarks at ICML 2024). The
+  pattern in every accepted one: IRT plus a claim or payoff, never IRT as reanalysis."
+  (Unverified attributions.)
+- **Claim 1 — "emergence is a measurement phenomenon."** "Schaeffer et al.'s 'mirage' paper
+  showed metric choice manufactures discontinuities, but it lacked a principled framework —
+  it swapped metrics ad hoc. IRT is the discipline that has spent 70 years on exactly this
+  problem: latent ability θ, item difficulty distributions, and link functions jointly
+  determine when smooth latent growth produces discontinuous observed scores. The paper: fit
+  longitudinal IRT to checkpoint sequences (DataDecide, Pythia, OLMo), show θ(compute) is
+  smooth where accuracy jumps, and decompose each claimed emergent ability into
+  latent-growth vs. item-threshold-distribution components, with per-item emergence points
+  (IRT-4) as the mechanism figure. That's a headline claim about a topic main venues actively
+  care about, with the rigor pitch as the differentiator rather than the whole pitch."
+- **Claim 2 — the continual-learning / plasticity pivot** ("genuinely good and underrated").
+  "CL's measurement situation is a mess — forgetting metrics conflate item difficulty with
+  ability change, task orderings aren't on a common scale, and the community knows this. IRT
+  gives you: forgetting as θ decline on a vertically-scaled common metric; DIF-over-time as a
+  localization tool for which items a new task interferes with (interference structure, not
+  just a scalar); and measurement invariance testing as the formal criterion for 'is this
+  benchmark measuring the same thing before and after training on B.' CoLLAs and TMLR would
+  take this readily, and it's plausibly strong enough for a main venue because it fixes a
+  recognized methodological hole rather than adding a method. Bonus: CL experiments are
+  small-scale by nature, so the 'population of respondents' IRT needs (many models ×
+  checkpoints) is cheap to generate."
+- **Claim 3 — dimensionality / matched ability (IRT-1).** "Real but I'd rank it third for
+  full-conference purposes — 'recipes differ along k axes' needs the DIF result [IRT-3] to
+  land to be exciting, and that's your highest-variance component."
+- **What upgrades workshop → full paper.** "Validation of the measurement model itself —
+  invariance testing across training, simulation studies showing the decomposition recovers
+  ground truth, robustness to the response-model choice (IRT-5). Psychometrics reviewers do
+  this by default; ML papers using IRT mostly skip it. Doing it properly is both the rigor
+  pitch and the extra 4 months of work that justifies the venue."
