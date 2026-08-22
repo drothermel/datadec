@@ -1377,3 +1377,38 @@ Routed to: [topics/retrieval-storage-tooling.md](topics/reference/retrieval-stor
 Routed to: new reference topic
 [topics/entity-linking-at-scale.md](topics/reference/entity-linking-at-scale.md); pointer
 added in [topics/wiki-qa-sharding.md](topics/staging/wiki-qa-sharding.md).
+
+### MAQA decomposition goal — conversation 2026-08-16
+
+> Okay, so one thing I definitely learned from the first time trying to attempt this problem
+> is that there are so many pieces that interact, and there are kind of infinitely complex
+> ways to try to address each of the pieces. And what I really want is to start with, like,
+> the simplest of heuristic baselines and to decompose the different pieces of the problem
+> as much as possible to try to understand, like, how well different pieces work,
+> especially as you scale them up or down. And so my thought is, like, and of course it's
+> challenging to decompose the piece of the problem because they interact with each other,
+> but I feel like it should be possible to test question entity linking, to test retrieval,
+> to test what the max possible retrieval is for some given assumption. So, like, if we
+> assume that the entity set is given by the Wikipedia entity knowledge base, or if we
+> assume that it's given by some form of normalization of Wikipedia page titles, that should
+> give us, like, an upper bound because we can't predict entities that are not included in
+> that set. Also, if we cap different pieces along the way, so if we cap the number of
+> evidence passages that we consider, then in the best possible case where somehow we
+> magically get the correct evidence passage and we get full, what's it called, full
+> diversity in our evidence passage list, that still, for some of the questions, will
+> prevent them from reaching 100%. And then basically using, sorry, I'm thinking about
+> QAMPARI specifically, using things like for retrieval, taking all of Wikipedia and doing
+> retrieval, and then looking for the presence of any evidence passage that's a ground truth
+> evidence passage, looking for the presence of the correct answer helps us to understand
+> whether we can handle complex questions with a single round of retrieval, etc. And for
+> reading, verifying that if we pass in the full set of evidence passages, either all
+> together or individually, depending on how we're actually doing the reading, seeing how
+> many correct answers we get from that and whether our evaluation metric actually considers
+> correct answers correct. I think each of those things are things that can be analyzed
+> before trying to hook up the whole system together. Does that make sense as a goal? And if
+> so, what are some ideas for kind of like the simplest possible heuristic approach for each
+> of these things and the values that would actually be useful for understanding kind of
+> like the very coarse-grain impact of different types of decisions.
+
+Routed to: new staging topic [topics/maqa-oracle-ladder.md](topics/staging/maqa-oracle-ladder.md)
+(Danielle's goal recorded as the seed).
