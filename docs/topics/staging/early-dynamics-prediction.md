@@ -641,6 +641,32 @@ or from a size-extrapolated fit — a per-test-size scaler fit on test rows is l
 earlier reviews' "store (μ_s, σ_s) from training rows" rule does not directly cover unseen
 sizes, and this gap is unresolved.
 
+### 2025-07 — R² vs. RMSE: are they really redundant?
+
+**Danielle:** "I was under the impression that residuals (R²) and RMSE give you different
+information that you should interpret differently and can sometimes point in different
+directions. Is this false?"
+
+**Response (condensed).** Within one fit on the same n points with fixed TSS, RMSE and R² are
+monotone functions of the same RSS (R² = 1 − n·RMSE²/TSS), so they rank models identically
+and a tree gains nothing from both; `std_err` is RMSE rescaled. They diverge only when
+comparing across data sets / target scales (same RMSE, very different R² when TSS differs)
+or when R² is computed against a different baseline. Recommends slope + one residual
+statistic (R² for unit-free fit quality; RMSE for metric units; `std_err` for slope
+uncertainty).
+
+*Intake note — the response's conclusion does not follow for the feature matrix.* The
+monotone link holds *within one row* (one run × window), but the GBDT compares features
+*across rows*, and TSS (the variance of the metric inside the window) differs per run and
+per size. Across rows R² is scale-free ("how straight") while RMSE carries the metric's
+scale ("how far off, in log-perplexity units") — exactly the cross-data-set case the
+response itself lists as divergent. So Danielle's intuition is right in this context: the
+two are not redundant features, and which one matters is an empirical question (SHAP will
+say). The pruning of `p_value` and `ci_lower/upper` still stands, since those are
+row-wise functions of (slope, std_err, n) with n fixed per window — and `std_err` vs. RMSE
+*are* redundant across rows only if Σ(xᵢ − x̄)² is constant per window, which it is for a
+fixed sampling grid.
+
 ## Open questions
 
 - Is this still live (July 2025 draft; DataDecide scaling-law baselines have since been

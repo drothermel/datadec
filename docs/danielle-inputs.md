@@ -1848,3 +1848,13 @@ Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-p
 fit statistics — recorded under "Answers: what to tune, what to normalise, what to prune",
 with intake notes on the ungrouped Optuna split, the perplexity/`log1p` slip, and the
 unresolved per-size normalisation for held-out sizes.)
+
+### Early-dynamics, R² vs. RMSE — 2025-07 (intake 2026-08-22)
+
+> I was under the impression that residuals (r^2) and RMSE give you different information
+> that you should interpret diffferently and can sometimes poinnt in different directions.
+> Is this false?
+
+Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
+("R² vs. RMSE"), with an intake note that the response's within-one-fit argument does not
+transfer to features compared across rows — Danielle's intuition holds there.
