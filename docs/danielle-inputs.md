@@ -3119,3 +3119,19 @@ section with [cnn-deconstruction-ladder.md](past-projects/cnn-deconstruction-lad
 staging topic; the SFT no-movement project noted as a candidate third record). Items 3
 (EDP related-work gate) and 4 (open-questions entry for the AI2 dataset) were approved in a
 follow-up ("yes to both 3 and 4") and applied.
+
+### 2026-08-22 — second novelty check for the NL-bottleneck code autoencoder (answer only)
+
+> ok, ready to go?  for this next one I'm skipping my prompt and just passing the answer:
+
+Her prompt was not pasted; the response plays it back as compressing code into a
+natural-language latent with an RL/search optimization loop and a frozen LLM decoder
+(it calls the idea "CodeVLAE"). Verdict: "Equivalent Method Already Published", high
+confidence — headline match Language Bottleneck Models (2506.16982), plus OverLang,
+APRIL, Proof2Silicon, Concept Bottleneck LLMs, and two items already on file.
+
+Routed: [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+§4 (the verdict reversal and what it rests on); full claim table and intake notes in
+[topics/reference/nl-bottleneck-prior-art.md](topics/reference/nl-bottleneck-prior-art.md);
+LBM added to [litreview/tlc-litreview-plan.md](litreview/tlc-litreview-plan.md) subdomain A
+and gate item 1 (Danielle's read, with GenDLN); four IDs added to the citation ledger.

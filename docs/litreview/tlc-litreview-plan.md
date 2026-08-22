@@ -17,7 +17,7 @@ only.
 
 | Id | Subdomain | Serves | Seeds already on file |
 |---|---|---|---|
-| A | Prior art for the mechanism: text/NL bottlenecks with frozen decoders, program autoencoders, language-as-latent | novelty claim; §2 related work | Nano-Capsulator 2402.18700; Latent Programmer 2012.00377; Sentence Bottleneck AE 2109.00055; ICAE 2307.06945; RLPrompt; SPELL 2310.01260; PCRL; **GenDLN** (ACL SRW 2025 — the one unread three-keyword hit); EvoPrompting 2302.14838 (`nl-bottleneck-prior-art.md`, bundle `INDEX.md` §4–5) |
+| A | Prior art for the mechanism: text/NL bottlenecks with frozen decoders, program autoencoders, language-as-latent | novelty claim; §2 related work | Nano-Capsulator 2402.18700; Latent Programmer 2012.00377; Sentence Bottleneck AE 2109.00055; ICAE 2307.06945; RLPrompt; SPELL 2310.01260; PCRL; **GenDLN** (ACL SRW 2025 — the one unread three-keyword hit); EvoPrompting 2302.14838; **Language Bottleneck Models** 2506.16982 (Berthon & van der Schaar — second novelty check's headline match, unread); Concept Bottleneck LLMs 2412.07992; OverLang (agents4agents PDF, provenance weak) (`nl-bottleneck-prior-art.md`, bundle `INDEX.md` §4–5) |
 | B | Prompt / harness optimization — LLM-as-optimizer and system-level | the optimizer loop; baselines | Canon the reviews missed: APE, OPRO, ProTeGi/APO, TextGrad, DSPy/MIPROv2, GEPA, EvoPrompt; present: Promptbreeder 2309.16797, PromptWizard 2405.18369, Trace/OptoPrime 2406.16218, LLM-AutoDiff 2501.16673, SPRIG 2410.14826, Prochemy 2503.11085, EPiC 2408.11198, MCTS-OPS 2508.05995, RL4QE, SelfEvolve 2306.02907 (`prompt-optimization-landscape.md`, 648-row table in the bundle) |
 | C | Code compression and rate–distortion framing | positioning; the length-vs-reconstruction curve | Girish et al. 2407.15504 (rate–distortion for black-box prompt compression); LLMLingua; gist tokens 2304.08467; 500xCompressor 2408.03094; CodePromptZip 2502.14925; LongCodeZip; Leroy 2410.06438 (library learning as the contrast case); Cummins et al. 2410.08806; Delétang "LM is compression" 2309.10668 (`code-compression-literature.md`; `prompt-compression-and-optimization-literature.md`) |
 | D | Evaluation protocol and task sets for reconstruct-from-description | TLC-1 census design; metrics | OctoPack / HumanEvalExplain 2308.07124 (the explain→regenerate protocol; only three papers report it); WaveCoder 2312.14187; Szalontai 2405.19032; LiveCodeBench 2403.07974; HumanEval+/MBPP+ (EvalPlus); CRUXEval; AlphaCodium 2401.08500; Misu et al. Dafny 10.1145/3643763; code-feature extraction tooling for latent-length and structure measures (`humanevalexplain-results.md`, `code-benchmarks-landscape.md`, `code-feature-extraction-tooling.md`) |
@@ -28,12 +28,15 @@ series), mixed prose+code handling (Report 1), neural code embeddings as represe
 
 ## Gate items (resolve before writing §2 of the paper)
 
-1. **Read GenDLN** (ACL SRW 2025). Stacked-LLM joint prompt optimization is structurally
-   the encoder+decoder harness search; decide whether it is prior art, related work, or
-   neither. Danielle's read, not an agent's.
+1. **Read GenDLN** (ACL SRW 2025) **and Language Bottleneck Models** (2506.16982). GenDLN:
+   stacked-LLM joint prompt optimization is structurally the encoder+decoder harness
+   search. LBM: a second novelty check (2026-08-22) named it as the published framework
+   TLC is "a minor variation" of — weight-trained encoder, one side optimized, not code.
+   Decide for each whether it is prior art, related work, or neither. Danielle's read, not
+   an agent's.
 2. **Fix the identifier slips** in the ICBINB bibliography (EPiC 2408.11198 not
    2410.14321; AlphaCodium 2401.08500 not 2401.19489; Midolo "2024" carries a 2601
-   arXiv number; Nano-Capsulator first author Chuang). Ledger:
+   arXiv number; Nano-Capsulator first author Chuang); locate or discard OverLang. Ledger:
    [citation-verification-ledger.md](citation-verification-ledger.md).
 3. **Supply the prompt-optimization anchors** (APE, OPRO, ProTeGi, TextGrad,
    DSPy/MIPROv2, GEPA) — none appear in any SciSpace output; verify IDs and position the

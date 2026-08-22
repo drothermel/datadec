@@ -446,6 +446,40 @@ tokens-per-solved-problem metric — the published analog of this project's opti
 accounting). The SciSpace search CSVs on disk are a seeded candidate list for the full
 prior-art pass (still parked).
 
+### 2026-08-22 — a second novelty check returns the opposite verdict: "Language Bottleneck Models"
+
+A separate novelty query (Danielle's prompt not kept; the response plays it back as "a
+system that compresses code into a natural-language latent representation using an
+optimization loop (RL/search) with a frozen LLM decoder") concludes **"equivalent method
+already published", confidence high** — the reverse of the Dec-2025 SciSpace verdict ("no
+publication matches … appears novel"). All attributions below are the response's and
+unverified; the full record is in
+`../topics/reference/nl-bottleneck-prior-art.md` (2026-08-22 second-check entry).
+
+The one item that is genuinely new to the record and needs Danielle's read, beside GenDLN:
+**Language Bottleneck Models** (Berthon & van der Schaar, arXiv 2506.16982, June 2025) —
+encoder LLM emits a short NL summary, a *frozen* LLM decodes from the summary alone, the
+encoder is trained with group-relative policy optimization against the frozen decoder's
+performance; primary domain is knowledge tracing (summarizing a student history), framed
+as a general "inverse problems with frozen LLMs" recipe. If the characterization holds,
+LBM is the named framework TLC must position against. The response's own fine print
+concedes the gap: LBM trains the encoder's weights and optimizes one side, whereas TLC
+optimizes *both* prompts by search with both models frozen — which the response calls
+"less common … an implementation detail or a minor variation." That judgment is the
+respondent's, and it is the same adjacent-question substitution the SciSpace sessions made
+(weight-trained encoder ≈ search-only harness). The substantive claim to defend is the one
+already in §1: whether a search-optimized representation beats a hand-prompted one, and
+whether it serves more than reconstruction.
+
+Also surfaced: "OverLang — Teaching LLMs to Speak in Pseudocode" (an `agents4agents.ai`
+PDF, no arXiv record given; RL-trained pseudocode shorthand decodable by other models —
+credibility unknown, treat as a lead only); APRIL (2509.25196) and Proof2Silicon
+(2509.06239), RL prompt optimization for frozen code generators — the decoder half only;
+Concept Bottleneck LLMs (2412.07992) — classification through text concepts, not
+reconstruction; "Semantic Compression with LLMs" (Gilbert et al., already on file) and
+Sentence Bottleneck autoencoders (already on file, soft-vector bottleneck). Net effect on
+the plan: LBM joins GenDLN as a must-read gate item; nothing else changes the gap statement.
+
 ### Origin notes — moved from `topics/staging/text-latent-code-autoencoder.md`
 
 ### 2026-07-11 — the idea as played back

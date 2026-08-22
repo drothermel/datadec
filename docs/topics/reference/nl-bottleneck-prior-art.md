@@ -86,3 +86,45 @@ code/artifacts listed in `REPRODUCIBLE_PAPERS_WITH_CODE.md`.
 - The "six novel aspects" and "proceed with confidence" sections are agent
   editorializing, dropped; the rubric and partial list are kept because they are the
   related-work skeleton.
+
+## 2026-08-22 — second novelty check (different agent, prompt not kept): "equivalent method already published"
+
+Danielle passed only the answer. The response plays her prompt back as: code →
+natural-language latent → frozen LLM decoder, optimized by RL/search; it refers to the
+idea as "CodeVLAE" (not a term on file here). Verdict: **"Equivalent Method Already
+Published … Confidence: High"** — the opposite of the Dec-2025 verdict above. Nothing
+below is verified; the response cites by link, not by bibliography.
+
+**Claimed matches, as the response gave them.**
+
+| Item | Response's characterization | Status in this record |
+|---|---|---|
+| **Language Bottleneck Models** — Berthon & van der Schaar, arXiv 2506.16982 (June 2025) | Optimizable encoder LLM/prompt → short NL summary → *frozen* LLM decoder; encoder trained by group-relative policy optimization to maximize frozen-decoder performance; domain knowledge tracing, offered as a general framework for "inverse problems" with frozen LLMs | **New.** Not in any SciSpace pass. Needs Danielle's read (gate item alongside GenDLN). Weight-trained encoder, one side optimized, no code, prediction rather than reconstruction — on the Dec-2025 rubric that is roughly 3–4/6, but it is the *named* framework |
+| **OverLang** — "Teaching LLMs to Speak in Pseudocode for Efficient Compression", `agents4agents.ai/media/OverLang.pdf` | RL-trained "pseudo-language" shorthand for code, decodable by other (possibly frozen) models, "semantic compression" | **New; provenance weak.** No arXiv ID or venue given; the host is not a publisher. Lead only until located |
+| "Semantic Compression With Large Language Models" (academia.edu link) | LLMs compress text/code to short representations preserving functional equivalence; manual prompting, no joint optimization | Already on file (Gilbert et al. 2023, 2304.12512 in `code-compression-literature.md`) |
+| APRIL 2509.25196; Proof2Silicon 2509.06239 | RL optimizes prompts for frozen LLM code/hardware synthesis | New IDs; the response itself classes them as "the decoder half" |
+| Concept Bottleneck LLMs 2412.07992 | Text concepts as bottleneck for classification | New ID; interpretability lineage, not reconstruction |
+| Sentence Bottleneck Autoencoders (ACL 2021.emnlp-main.137) | Frozen transformers, soft-vector bottleneck | Already on file (2109.00055) |
+| "Text Bottleneck Models (TBM)" — a Hugging Face *search-results* link; "Vision-to-Language Tokenizers" IEEE 10657022 | Discrete text as latent; frozen LLM reading a latent | Not papers as cited (one is a query URL); tangential |
+
+**Response's own novelty-gap paragraph (near-verbatim):** if the system strictly uses
+only prompt search for *both* encoder and decoder simultaneously, "this specific
+dual-prompt optimization configuration is less common than training a small encoder
+network or optimizing just one side. However, it would likely be considered an
+implementation detail or a minor variation of the LBM framework rather than a
+fundamentally new invention."
+
+**Intake notes.**
+- The "High confidence / equivalent method" verdict rests on relaxing two of Danielle's
+  four required properties (search-only optimization of *both* sides; code as the
+  domain). Same failure class as the SciSpace sessions: adjacent-question substitution
+  reported as a match. Recorded, not adjudicated.
+- The two verdicts are not contradictory on the facts — both agree no paper does all of
+  code + frozen decoder + search-only + both sides — they differ on whether that residual
+  is "novel" or "a minor variation". That is the framing question TLC §1 already takes on
+  (optimized vs. hand-prompted representation; multi-use representation).
+- LBM's 2506 date post-dates the Dec-2025 SciSpace search window only by its own
+  absence from that search, not by publication — it should have been found; the keyword
+  families in the bundle (`INDEX.md` §5) did not include "language bottleneck model".
+- Four new arXiv IDs added to `../../litreview/citation-verification-ledger.md`
+  (agent-supplied, unverified).

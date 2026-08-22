@@ -230,6 +230,10 @@ Context column = the ~80 characters preceding the ID in the topic, as a memory a
 | 2511.00198 | es, ~50% cost reduction at matched loss), "filling the mutual-information gap" ( | `training-objective-alternatives-literature` | agent-supplied | TOK, dense | |
 | 2512.10545 | ** (2411.14318; weight domains by learning velocity), tDRO (2408.10613), XDoGE ( | `training-objective-alternatives-literature` | agent-supplied | TOK, dense | |
 | 2601.11791 |  mutual-information gap" (2511.00198). **Concept-level objectives** (Iyer et al. | `training-objective-alternatives-literature` | agent-supplied | TOK, dense | |
+| 2506.16982 | Language Bottleneck Models — Berthon & van der Schaar (second novelty check headline) | `nl-bottleneck-prior-art` | agent-supplied | TLC | |
+| 2509.25196 | APRIL — RL prompt optimization for frozen code generators ("decoder half") | `nl-bottleneck-prior-art` | agent-supplied | TLC | |
+| 2509.06239 | Proof2Silicon — RL prompt optimization for frozen LLM synthesis ("decoder half") | `nl-bottleneck-prior-art` | agent-supplied | TLC | |
+| 2412.07992 | Concept Bottleneck LLMs — text concepts as bottleneck for classification | `nl-bottleneck-prior-art` | agent-supplied | TLC | |
 
 Rows: 208 (181 agent-supplied, 27 Claude-added, 5 named without ID).
 
