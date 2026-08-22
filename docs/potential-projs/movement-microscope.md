@@ -16,7 +16,7 @@ effect interventions to calibrate each metric's sensitivity, a decomposition of 
 layer, token bucket, and direction, and only then the recipe question — recipe-dependent
 movement profiles at matched final loss, below the elicitation threshold.
 
-IDs: MIC-1–MIC-4 (the four stages), MIC-opt-1–MIC-opt-4.
+IDs: MIC-1–MIC-4 (the four stages), MIC-opt-1–MIC-opt-5.
 
 **Paper goal.** Workshop-sized from Stages 1–3 alone (a noise-floor atlas, a metric
 dose-response benchmark, a movement decomposition); main-conference with Stage 4 across the
@@ -65,6 +65,13 @@ continued-training branches or fine-tunes; **T3** = new pretraining runs.
   the elicitation-controlled readout MIC-opt-2 wants, on the same SFT checkpoints if they
   exist.
 - **MIC-opt-4: MoE variant.** Routing flips as the categorical movement channel.
+- **MIC-opt-5: Sequential vs. direct distillation.** Distil one 150M-class student from a
+  base teacher and then post-train it, versus distilling the same student from the
+  teacher's post-trained sibling; read both with the microscope. The six-question
+  distillation review found no published controlled comparison; it is the apex question
+  with a teacher in the loop. Default objective reverse KL / skew KL with an explicit LM
+  term; include a from-scratch control at matched token budget. Hook in
+  `../topics/reference/distillation-literature.md`.
 
 ---
 
@@ -90,6 +97,7 @@ continued-training branches or fine-tunes; **T3** = new pretraining runs.
 | MIC-3 decomposition | **High** | The token-bucket slice connects movement to the landscape story; pure inference. |
 | MIC-4 recipe profiles | **High if positive** | The original thesis demonstrated below the elicitation threshold. |
 | MIC-opt-3 power analysis | Medium-high | Legitimizes the earlier negative result; publishable alone. |
+| MIC-opt-5 sequential vs. direct distillation | High, if the microscope is built | Unclaimed comparison; two small distillation runs; reuses the Stage-1/2 readouts. |
 
 ---
 

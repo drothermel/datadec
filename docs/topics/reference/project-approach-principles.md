@@ -187,6 +187,47 @@ table). The seven-track table is the only surviving record of that period's proj
 
 ---
 
+## 2026-08-22 — SciSpace deep reviews: what they are for (Danielle + intake record)
+
+Danielle's verdict after thirteen SciSpace sessions were intaken in one day: "a source of
+many many citations but not particularly useful answers."
+
+**What SciSpace reliably produced:** seeded candidate lists (hundreds to thousands of
+rows per session, with LLM-extracted per-paper columns such as method category, key
+findings, limitations); downloaded full texts and cropped figures for the handful of
+papers it read; reasonable condensations of the papers it actually opened.
+
+**What it did not produce:** synthesis that answers the question as posed; foundational
+works for a subfield (it anchors on whatever the query surfaced, not the canon);
+respect for exclusion clauses; reliable bibliographies.
+
+**Failure modes seen (with the instance):**
+
+1. *Adjacent-question substitution* — the regularization review answered "deduplicate
+   the repeats" when asked "regularize a model that trains on repeats"; the
+   pretraining/midtraining review answered across modalities and adaptation methods
+   when asked about LM midtraining.
+2. *Topic and search drift* — downloaded PDF folders full of photonics, astronomy,
+   Turkic cognates, harmful memes; graph prompting and vision middleware in an LM
+   review.
+3. *Fabricated or swapped attribution* — the small-scale-metrics review's second
+   version invented an AI2 author list for Patel et al. 2605.18607 (real: Patel, Reddy,
+   Mosbach, Bahdanau) and cited bibliography entries that point at different papers
+   (The Pile for lm-eval-harness; WizardCoder for code scaling laws); the prior-art
+   bundle gives EPiC and AlphaCodium two arXiv IDs each; duplicate reference blocks in
+   three reviews; a Zenodo crank paper cited as state of the art.
+4. *Title-level false positives and negatives* — "Can LLMs Compress (and Decompress)?"
+   looked like TLC's nearest neighbour and was not (Danielle read it); GenDLN was the one
+   three-keyword hit in the novelty search and was dismissed in one line.
+5. *Confidence theatre* — "95% → 96% confidence", "research is moving away from your
+   mechanism" from a 36-paper keyword sample.
+
+**How to use it next time:** treat a session as a harvesting step — keep the CSVs and
+PDFs, index the bundle, and write the intake note around *what the question was*; never
+cite from the report's bibliography without resolving the identifier; list the canon
+the review missed at intake so the gap is visible; for any question with an exclusion or
+a "foundational" clause, expect to supply the anchors yourself.
+
 ## 2026-08-22 — How the archived agent conversations were used (Danielle)
 
 > note that I didn't just take the answers from the agents and use them, but I was curious

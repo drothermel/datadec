@@ -15,7 +15,7 @@ measurement method — derive an eval that works at tiny scale from the IRT fit,
 resulting fast, replicated substrate for elicitation, post-training, and RL experiments with
 confidence intervals.
 
-IDs: TINY-1–TINY-3, TINY-opt-1–TINY-opt-4.
+IDs: TINY-1–TINY-3, TINY-opt-1–TINY-opt-5.
 
 **Scope rule.** Ask dynamics / mechanism / measurement questions (plausibly scale-portable,
 checkable on a scale ladder), not capability-emergence questions.
@@ -58,6 +58,13 @@ continued-training branches; **T3** = new pretraining runs.
 - **TINY-opt-4: Design decisions tuned for larger models.** Which optimizer/schedule/
   architecture defaults are wrong at 10–50M (speedrun-style evidence), measured against the
   noise floor.
+- **TINY-opt-5: The which-loss axis.** Decision-accuracy-vs-compute curves on the same
+  checkpoints with the *response variable* as the treatment: per-token vs. per-byte
+  normalization, gold-span vs. whole-sequence likelihood (OLMES per-character correct
+  probability), token-selected likelihood (LongPPL-style key tokens; Patel et al.'s
+  expert-trajectory reweighting), and tokenization-marginal likelihood. T0 on released
+  tables; the literature hook is in
+  `../topics/reference/loss-alternative-metrics-literature.md` (2026-08-22 §4 note).
 
 ---
 
@@ -88,6 +95,7 @@ continued-training branches; **T3** = new pretraining runs.
 | TINY-opt-2 IRT-scheduled RL | Medium-high if it works | "Unlocks RL at scales where naive reward gives zero gradient." |
 | TINY-opt-3 factorials | Medium | Methodological demonstration. |
 | TINY-opt-4 defaults | Medium | Practical for local-model users. |
+| TINY-opt-5 which-loss axis | Medium–High | Cheap; directly answers "which loss should a small-scale suite report"; feeds IRT's response-model choice and DCARD's table conventions. |
 
 ---
 

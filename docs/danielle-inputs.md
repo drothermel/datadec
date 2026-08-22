@@ -3065,6 +3065,27 @@ regularization recipe as a stated design choice; read routing at matched epochs)
 design-constraint line in
 [topics/staging/datadecide-dense.md](topics/staging/datadecide-dense.md).
 
+### Post-intake decisions — 2026-08-22 (SciSpace batch)
+
+> amazing! ok, we've finished with scispace, which appears to be a source of many many
+> citations but not particularly useful answers. then, what processing steps should we
+> take?
+
+> 1 and 2 yes. 3, (b) now (c) later sounds right. 4) yes, TLC is so lets write it.
+> 5) agreed, promote all three 6) grouping sounds great, and last sounds good.
+
+Applied (1, 2, 5 in this commit): `INDEX.md` written for the three un-indexed folders
+(prompt-compression bundle, HumanEvalExplain bundle, the 2026-07-03 deep-research
+folder); a dated SciSpace process entry in
+[topics/reference/project-approach-principles.md](topics/reference/project-approach-principles.md)
+with the five failure modes and their instances; promotions — TINY-opt-5 (which-loss
+axis) in [tiny-scale-measurement.md](potential-projs/tiny-scale-measurement.md),
+TOK-opt-6 (selection–movement coincidence) in [token-movement.md](potential-projs/token-movement.md),
+MIC-opt-5 (sequential vs. direct distillation) in
+[movement-microscope.md](potential-projs/movement-microscope.md). Steps 3 (citation
+ledger), 4 (TLC litreview plan), 6 (topics README grouping) follow in the next commits;
+step 3's verification run (c) is parked until a gate runs.
+
 ### Post-intake decisions — 2026-08-22 (data-layer conversation)
 
 > 1. I think data-card/ validation work should be its own project doc, so b as you say.

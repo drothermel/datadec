@@ -138,6 +138,13 @@ river-valley mechanism in one figure and yields a principled recipe for low-nois
 - **TOK-opt-5: Toy replication.** Reproduce Wen et al.'s bigram-language toy with varying
   determinism profiles and run the same branch protocol; gives a controlled sanity check of the
   measurement before interpreting real-data results.
+- **TOK-opt-6: Selection–movement coincidence (T0).** Score every probe-corpus token with a
+  Rho-1-style reference-model excess loss (and MiLe-style predictive entropy), then test
+  whether the tokens those training objectives *would select* coincide with the tokens
+  DataDecide training *actually moves* (TOK-obs-1/4 per-token KL by bucket). Agreement
+  means the selection objectives are formalizing what happens anyway; disagreement is a
+  finding either way. No new training; hook in
+  `../topics/reference/training-objective-alternatives-literature.md`.
 
 ---
 
@@ -179,6 +186,7 @@ river-valley mechanism in one figure and yields a principled recipe for low-nois
 | TOK-opt-3 breakdowns | Medium | Turns the result from a histogram into an interpretable story; low cost once TOK-3 exists. |
 | TOK-opt-4 RLVR bridge | High, speculative | A striking link if it holds; depends on a post-training run and on the wall bucket being well-defined. |
 | TOK-opt-5 toy replication | Medium | Mostly credibility; reviewers will ask. Cheap. |
+| TOK-opt-6 selection–movement coincidence | Medium–High | Connects the descriptive result to a prescriptive literature; T0; a clean figure either way. |
 
 **Recommended scope:** Start Stage 1 (TOK-obs-2 first), TOK-opt-1 and TOK-opt-2 now (no dependencies).
 Run the Stage 2 core as soon as the first branch grid lands; add TOK-opt-3 and TOK-opt-5
