@@ -2926,6 +2926,22 @@ baseline), [potential-projs/early-dynamics-prediction.md](potential-projs/early-
 (a published consumer to re-derive), and a pointer in
 [topics/reference/loss-curve-forecasting.md](topics/reference/loss-curve-forecasting.md).
 
+### 2026-08-22 — SciSpace literature review: pretraining and midtraining toward a target task suite
+
+> Please do a literature review about pretraining and midtraining to target a specific
+> task or suite of downstream tasks.
+
+Applied: `INDEX.md` in `~/drotherm/data/convo-artifacts/2026/scispace-pretraining-task-analysis-agent-artifacts-zip_73fb24c0-fa4f-4ea3-b380-6dbe92b7e173_1787424452/` (report md/tex/pdf, insight extraction, six downloaded PDFs
+with figures, search CSVs; caveat list of the LM midtraining canon the review missed).
+
+Routed to: [topics/reference/targeted-pretraining-midtraining-literature.md](topics/reference/targeted-pretraining-midtraining-literature.md)
+(new reference topic; LM-relevant entries only, drift flagged) and dated notes in
+[potential-projs/functional-featurization.md](potential-projs/functional-featurization.md)
+§4 (midtraining as the intervention FUNC measures; 2512.07783),
+[potential-projs/annealed-readouts.md](potential-projs/annealed-readouts.md) §4 (pointer),
+and [topics/reference/pretraining-to-posttraining.md](topics/reference/pretraining-to-posttraining.md)
+(pointer).
+
 ### Post-intake decisions — 2026-08-22 (data-layer conversation)
 
 > 1. I think data-card/ validation work should be its own project doc, so b as you say.

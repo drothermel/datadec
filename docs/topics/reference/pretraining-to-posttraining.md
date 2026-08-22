@@ -12,6 +12,13 @@ all descend from it.
 
 ---
 
+## 2026-08-22 — pointer: midtraining toward a target suite
+
+The forward-run version of this file's question — deliberately pretraining or
+midtraining *for* a downstream suite, and how that trades against post-training — is
+accumulated in `targeted-pretraining-midtraining-literature.md` (key entry: the
+pre-/mid-training/RL interplay study 2512.07783).
+
 ## 2026-08-18 — DataDecide, and the two paper clusters (from the Research Trajectory page)
 
 Prompt context (Danielle): DataDecide "seemed like an awesome source of variance which could

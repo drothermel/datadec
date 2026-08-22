@@ -174,6 +174,17 @@ they also tell you whether that half is worth it.
 Dated, attributed notes from external review conversations, recorded for consolidation — not
 decisions. Only notes about this project are kept here.
 
+### 2026-08-22 — midtraining literature pointer
+
+Danielle's SciSpace review of pretraining/midtraining toward a target suite (record in
+`../topics/reference/targeted-pretraining-midtraining-literature.md`) surfaced the
+midtraining ↔ RL interplay study (2512.07783) and little else LM-specific; the
+annealing-data canon this project's decay branches relate to (MiniCPM, Llama 3 annealing,
+OLMo 2 / Dolmino, Blakeney et al.) remains in
+`../topics/reference/schedules-and-annealing-literature.md`. Relevance here: ANN-3 decay
+branches with a *changed* data mixture are the controlled version of "midtraining to
+target a suite"; the interplay paper's fixed-compute comparison is a framing precedent.
+
 ### 2026-08-22 — the intermediate-vs-final compute-matched claim is unassessed, not refuted
 
 *Provenance caveat: the reproduction numbers cited here come from agent-written verification code that Danielle has not yet personally read, debugged, run, or analyzed; treat them as flags for where to look first, not as findings (her statement in `../topics/reference/datadecide-data-pipeline.md`).*

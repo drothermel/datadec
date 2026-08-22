@@ -151,6 +151,20 @@ Dated, attributed-by-date notes from external review conversations, recorded for
 consolidation — not decisions. Only notes about this project are kept here. Related-work
 claims in quoted text are unverified.
 
+### 2026-08-22 — the midtraining-as-intervention literature this project measures
+
+From Danielle's SciSpace review of pretraining/midtraining toward a target suite (record
+in `../topics/reference/targeted-pretraining-midtraining-literature.md`). The one result
+to hold onto: Zhang et al. 2025 (2512.07783) show, under fixed compute, that midtraining
+on task-relevant data moves the competence boundary more efficiently than RL-only
+post-training when pretraining leaves headroom — i.e. *where in training* task-relevant
+data lands is decision-relevant, which is FUNC's stage axis stated as a training recipe.
+Positioning note: every lab's midtraining recipe is an implicit claim about
+stage-dependent data value; the component × stage × measurement tensor is the measured
+version of that claim, and the related-work section should anchor on the annealing-data
+line (MiniCPM, Llama 3, OLMo 2 / Dolmino, OctoThinker) that the review omitted rather
+than on its graph/vision entries.
+
 ### 2026-08-21 — origin: response to "is that a thing?" (the origin of this topic)
 
 **Question posed (Danielle).** Not high-level descriptors like "quality"; instead chunk the
