@@ -2694,10 +2694,12 @@ README program note).
 > great! ok, a completely different topic, I did a deep research prompt based on the
 > attached doc. and got the answering report.
 
-(attached: `~/Desktop/2026.07.03-report2_code_features_brief.md` — her own Report-2
-brief — and the resulting report
-`~/Desktop/2026.07.03-code-feature-extraction-for-python-source-code-deep-research-report.md`;
+(attached: her own Report-2 brief and the resulting report, copied at her request into
+[refs/deep-research/2026-07-03-report2-code-features-brief.md](refs/deep-research/2026-07-03-report2-code-features-brief.md)
+and [refs/deep-research/2026-07-03-code-feature-extraction-report.md](refs/deep-research/2026-07-03-code-feature-extraction-report.md);
 the deep-research prompt itself was not pasted.)
+
+> oh, please copy them, the paths will change
 
 Routed to: [topics/reference/code-feature-extraction-tooling.md](topics/reference/code-feature-extraction-tooling.md)
 (new reference topic: the brief's contract condensed; the report's tool inventory as a

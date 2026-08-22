@@ -21,7 +21,7 @@ Any of these wants a fixed-schema, no-training feature extractor for Python stri
 > attached doc. and got the answering report.
 
 **The brief (Danielle's own document; on file at
-`~/Desktop/2026.07.03-report2_code_features_brief.md`, not in the repo).** Report 2 of a
+`../../refs/deep-research/2026-07-03-report2-code-features-brief.md`).** Report 2 of a
 series governed by two companion documents (Deep Research Session Guidelines; Text and
 Code Analysis Deep Research Guidelines — not on file). Its contract, condensed:
 
@@ -51,7 +51,7 @@ Code Analysis Deep Research Guidelines — not on file). Its contract, condensed
   exclusion; the matrix-accounting section; a search-log summary.
 
 **The response (on file at
-`~/Desktop/2026.07.03-code-feature-extraction-for-python-source-code-deep-research-report.md`),
+`../../refs/deep-research/2026-07-03-code-feature-extraction-report.md`),
 condensed to the surviving inventory.** It organizes by layer rather than by the brief's
 eleven families:
 
