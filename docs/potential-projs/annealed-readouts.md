@@ -176,6 +176,8 @@ decisions. Only notes about this project are kept here.
 
 ### 2026-08-22 — the intermediate-vs-final compute-matched claim is unassessed, not refuted
 
+*Provenance caveat: the reproduction numbers cited here come from agent-written verification code that Danielle has not yet personally read, debugged, run, or analyzed; treat them as flags for where to look first, not as findings (her statement in `../topics/reference/datadecide-data-pipeline.md`).*
+
 Danielle's reproduction of the DataDecide paper (record in
 `../topics/reference/datadecide-data-pipeline.md`) classified "an intermediate checkpoint
 predicts rankings as accurately as a final checkpoint with equal compute" as

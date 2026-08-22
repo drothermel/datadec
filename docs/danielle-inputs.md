@@ -2674,6 +2674,21 @@ predictive-without-valid twist); [potential-projs/annealed-readouts.md](potentia
 liveness guard); [potential-projs/recipe-featurization.md](potential-projs/recipe-featurization.md)
 §4 (validation-section thesis; three-way classification; definition-matching pass).
 
+### 2026-08-22 — Provenance statement for the reproduction pastes (end of conversation)
+
+> ok, so that was the last set in the convo. the one thing I want to clearly indicate with
+> all claims from the pastes is that I had an agent take a first stab at writing the
+> verification code and then iterate based on findings I thought were suspect or bad
+> methodology, but I will not consider these findings to be real until I personally
+> read/debug/run/analyze the findings myself. But these are good flags for where I should
+> look first.
+
+Applied: a standing status statement at the head of the reproduction entries in
+[topics/reference/datadecide-data-pipeline.md](topics/reference/datadecide-data-pipeline.md)
+and a one-line provenance caveat on every §4 note that cites reproduction numbers
+(irt-reanalysis ×2, trajectory-statistics, annealed-readouts, recipe-featurization ×2,
+README program note).
+
 ### Post-intake decisions — 2026-08-22 (third pass)
 
 > (1) promote (2) I did run a few versions of this, I think we need a new section that

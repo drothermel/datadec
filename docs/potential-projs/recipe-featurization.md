@@ -348,6 +348,8 @@ deterministic tokens)? Has it been done?
 
 ### 2026-08-22 — the validation section's thesis and its three-way classification
 
+*Provenance caveat: the reproduction numbers cited here come from agent-written verification code that Danielle has not yet personally read, debugged, run, or analyzed; treat them as flags for where to look first, not as findings (her statement in `../topics/reference/datadecide-data-pipeline.md`).*
+
 After the "directionally consistent" (4) and "not reproduced" (6, one misclassified as
 not assessable) batches of the reproduction: the paper's quantitative headline results
 reproduce (0.80 decision accuracy, compute-reliability trend, task-difficulty spread,
@@ -371,6 +373,8 @@ is the model case), the `not_assessable` category, and a predicate-liveness guar
 contribution to reproduction practice in its own right (its judgment, not a decision).
 
 ### 2026-08-22 — the validation report and a coverage/abnormality ledger as data-card components
+
+*Provenance caveat: the reproduction numbers cited here come from agent-written verification code that Danielle has not yet personally read, debugged, run, or analyzed; treat them as flags for where to look first, not as findings (her statement in `../topics/reference/datadecide-data-pipeline.md`).*
 
 Danielle had an agent reproduce the DataDecide paper's claims from the processed tables
 (`docs/paper-validation-report.md` on `main`: 27 reproduced + 3 approximately reproduced

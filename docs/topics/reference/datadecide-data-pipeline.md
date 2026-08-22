@@ -310,6 +310,12 @@ releasable object.
 
 ## 2026-08-22 — Paper-reproduction summary and four objections (same conversation, two turns)
 
+**Status of all reproduction numbers (Danielle, 2026-08-22):** the verification code was
+written by an agent as a first stab and iterated on findings she judged suspect or bad
+methodology; she will not consider any of these findings real until she has personally
+read, debugged, run, and analyzed them herself. They are flags for where to look first,
+not results.
+
 **Danielle (verbatim, turn 1):**
 
 > ok, then, I was having an agent try to reproduce the different claims from the datadecide

@@ -79,6 +79,8 @@ stand on their own. This applies equally to every §4 section.
 
 ### 2026-08-22 — "DataDecide with error bars" as a unifying sentence
 
+*Provenance caveat: the reproduction numbers cited here come from agent-written verification code that Danielle has not yet personally read, debugged, run, or analyzed; treat them as flags for where to look first, not as findings (her statement in `../topics/reference/datadecide-data-pipeline.md`).*
+
 From a conversation on Danielle's reproduction of the DataDecide paper (record in
 `../topics/reference/datadecide-data-pipeline.md`; project notes in `irt-reanalysis.md`,
 `trajectory-statistics.md`, `recipe-featurization.md` §4). Four of her objections —

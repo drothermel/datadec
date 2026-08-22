@@ -199,6 +199,8 @@ decisions. Only notes about this project are kept here.
 
 ### 2026-08-22 — the spread-to-noise correlation is TRJ in embryo; "meaningful crossing" = drift-attributable
 
+*Provenance caveat: the reproduction numbers cited here come from agent-written verification code that Danielle has not yet personally read, debugged, run, or analyzed; treat them as flags for where to look first, not as findings (her statement in `../topics/reference/datadecide-data-pipeline.md`).*
+
 From Danielle's reproduction of the DataDecide paper (summary in
 `../topics/reference/datadecide-data-pipeline.md`): across 160 task/metric observations
 the Spearman association between predictability and the spread-to-noise ratio was 0.798

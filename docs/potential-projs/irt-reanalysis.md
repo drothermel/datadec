@@ -121,6 +121,8 @@ decisions. Only notes about this project are kept here.
 
 ### 2026-08-22 — margin demoted, the metric hierarchy, the two-cluster null, and a BoolQ twist
 
+*Provenance caveat: the reproduction numbers cited here come from agent-written verification code that Danielle has not yet personally read, debugged, run, or analyzed; treat them as flags for where to look first, not as findings (her statement in `../topics/reference/datadecide-data-pipeline.md`).*
+
 From the "directionally consistent" and "not reproduced" batches of Danielle's
 reproduction of the DataDecide paper (numbers as reported in
 `../topics/reference/datadecide-data-pipeline.md`; not re-checked here).
@@ -182,6 +184,8 @@ reproduction of the DataDecide paper (numbers as reported in
   comparison replace.
 
 ### 2026-08-22 — BoolQ as the diagnostic case study; noise-aware crossings; the frontier's design brief
+
+*Provenance caveat: the reproduction numbers cited here come from agent-written verification code that Danielle has not yet personally read, debugged, run, or analyzed; treat them as flags for where to look first, not as findings (her statement in `../topics/reference/datadecide-data-pipeline.md`).*
 
 Prompted by Danielle's claim-by-claim reproduction of the DataDecide paper on the
 processed tables (`docs/paper-validation-report.md` on `main`; the summary she pasted is
