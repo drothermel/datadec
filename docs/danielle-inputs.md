@@ -3523,3 +3523,23 @@ machinery, roles swapped); two ledger rows.
 (seven clusters; the five directions; intake notes); TLC §4 note (Decodable IB and
 ContraCode as the two naming citations; where each direction lands; CodeNet as the source
 of behaviour-equivalent positives); litreview plan subdomain F; twenty ledger rows.
+
+### Post-intake decisions — 2026-08-22 (evening batch: estimation, difficulty, structured output, metrics, compression, IB)
+
+> (1) I suspect that 1-3 and 4 actually describe different research programs for TLC, is
+> that accurate?
+
+> yeah, lets do the 3 layers. the thing is, I was most interested in the representation
+> project […] so I started with representation but […] switched and am focusing on
+> compression to satisfy my phd reqs. hence we need to keep both as clear separate projects
+
+Applied: TLC restructured as three layers — TLC-0 measurement suite (𝒱-information
+retention/leakage, condition matrix, contrastive game, controls) as the shared instrument;
+the compression project (TLC-1–3) and the representation program (TLC-opt-*) as **separate
+projects** sharing the harness and TLC-0; §1 objective restated in IB/𝒱 form with the
+layered baseline suite; the sequencing paragraph rewritten (compression first for harness
+and crispness, no longer because its metric is the representation instrument); TLC-2 gets
+the DSPy/GEPA incumbent; standing instrumentation updated. Header records that Danielle's
+primary interest is the representation program and the compression project is the thesis
+track. Items 2–4 of the walkthrough (int64 check; calibrate-after-selection principle;
+IRT-11 ID) still open.

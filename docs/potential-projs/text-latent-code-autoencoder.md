@@ -13,17 +13,28 @@ three pillars; it gets its own topic proposal if pursued as a thesis direction. 
 **One-line pitch.** An autoencoder whose encoder and decoder are frozen frontier LLMs behind
 APIs, whose latent is *text*, whose reconstruction signal is the test pass rate of the decoded
 program, and whose only learnable object is the harness (prompts) optimized by an LLM outer
-loop. First paper: beat lossless compression of code by composing lossy *functional*
-compression with standard lossless compression of the intermediate. Broader program: what
-representations can be induced this way, how robust and controllable they are, and whether
-function and style can be factored.
+loop. Three layers (decided 2026-08-22): a **measurement suite** (TLC-0) that scores any
+representation for retained behavioural information and leaked implementation detail
+relative to a declared extractor family; the **compression project** (TLC-1–TLC-3) — beat
+lossless compression of code by composing lossy *functional* compression with standard
+lossless compression of the intermediate; and the **representation program**
+(TLC-opt-1–TLC-opt-4) — what representations can be induced this way, how robust and
+controllable they are, and whether function and style can be factored. The compression
+project and the representation program are **separate projects** sharing the harness and
+the measurement suite; they are not stages of one paper. Danielle's primary research
+interest is the representation program; the compression project is the track being pursued
+for the thesis.
 
-IDs: TLC-1–TLC-3 (phases), TLC-opt-1–TLC-opt-4.
+IDs: TLC-0 (measurement suite), TLC-1–TLC-3 (compression phases), TLC-opt-1–TLC-opt-4
+(representation program).
 
-**Paper goal.** A crisp compression result (Phase 1–3 below) is the first paper —
-workshop-sized if the claim holds only against zstd-class baselines, main-conference if it
-holds against LLM arithmetic coding with honest bit accounting. The representation program
-(TLC-opt-*) is the thesis-scale continuation.
+**Paper goal.** A crisp compression result (TLC-1–TLC-3) is the compression project's
+paper — workshop-sized if the claim holds only against raw-source zstd-class baselines,
+main-conference if it holds against the strongest fixed-prior baselines (trained
+dictionaries, AST stream codecs, LLM arithmetic coding) with honest bit accounting. The
+representation program (TLC-opt-*) is its own project with its own paper: what a
+search-optimized text representation of code retains, leaks, and can be made to do. TLC-0
+is the instrument both report with; it may also carry a measurement paper on its own.
 
 Compute tiers: **API** = frontier/cheap-model inference via OpenRouter only; no training
 anywhere in this project.
@@ -103,10 +114,29 @@ equivalent programs to map to the same representation structurally rules out cop
 than merely discouraging it, and tests provide a cheap equivalence oracle for generating
 such pairs.
 
-### Two research programs on one rate–distortion plane
+### Three layers: one instrument, two separate projects
+
+**The measurement suite (TLC-0): what a representation retains and what it leaks.** Length
+and Shannon mutual information cannot tell compression-by-abstraction ("returns the number
+of unique elements") from compression-by-minification (`def f(x):return len(set(x))`);
+both are short and behaviour-preserving, only the second carries implementation identity.
+The instrument is predictive 𝒱-information: information usable by a *declared* extractor
+family 𝒱 (frozen LMs, prompted probes, decoders, judges), so that the encoder and decoder
+already knowing programming is a property of the measurement rather than something the
+representation must carry. Two quantities per representation Z, against context C
+(signature, imports, type hints, template) and behavioural facts B (test signature, edge
+cases, exceptions, mutation, algebraic properties): **retention** I_𝒱(Z→B | C) normalized
+by I_𝒱(X→B | C), and **leakage** I_𝒱(Z→S | B, C) for implementation facts S after
+controlling for behaviour. Instantiated as decoder-pass probes (K decodes, pass
+probability), question–answer probes, a contrastive game with behaviour-defined positives
+and four negative types, and MDL probes, always with control tasks, and always on the
+condition matrix ∅ / signature / Z / minified X / X / oracle spec. The minified-source
+column is the control that makes "abstraction, not shortening" a measured claim. TLC-0 is
+the decodable-information-bottleneck stance made operational and is what both projects
+below report with (§4 2026-08-22, extractable information; measurement bibliography).
 
 **The representation program (TLC-opt-\*): fix rate loosely, explore the distortion and
-property axis.** What kinds of representations can be induced, and what can be done with
+property axis.** This is a separate project from the compression project below. What kinds of representations can be induced, and what can be done with
 them? Concretely: robustness of a single representation across downstream tasks that take
 code as input (TLC-opt-1); robustness across decoder models — one representation any model
 decodes well — versus hyper-specialization, the smallest representation a specific model
@@ -122,30 +152,42 @@ is that the factorization can be named in the prompt rather than emerging from b
 architectural pressure, and loss balancing becomes conversational rather than hyperparameter
 search.
 
-**The compression project (TLC-1–TLC-3): fix distortion, minimize rate.** The claim: beat
-lossless compression by composing lossy functional compression (this system) with standard
-lossless compression of the intermediate representation. Because the domain is code, we care
-about preserving functionality rather than surface form, so the lossy stage targets the
-entropy of the functional equivalence class rather than the entropy of the surface string —
-and the gap between those two bounds is a real quantity. The metric is a brutal scalar with
-unambiguous baselines: zstd and friends, and the stronger baseline from the LLM-as-compressor
-line (language modeling plus arithmetic coding). Acknowledged costs: the objective is hostile
+**The compression project (TLC-1–TLC-3): fix distortion, minimize rate.** A separate
+project. The claim: beat lossless compression by composing lossy functional compression
+(this system) with standard lossless compression of the intermediate representation.
+Because the domain is code, we care about preserving functionality rather than surface
+form, so the lossy stage targets the entropy of the functional equivalence class rather
+than the entropy of the surface string — and the gap between those two bounds is a real
+quantity. In information-bottleneck terms the objective is min I(X;R) − β I(R;Y_T) with the
+test-suite signature Y_T as the relevance variable, operationalized as rate = description
+length of the representation under a declared LM, distortion = −log of the smoothed
+K-sample pass probability, plus a leakage penalty (§4 2026-08-22, IB reading). The metric
+is a brutal scalar with unambiguous baselines, organized as a layered per-sample suite:
+representation-length controls; standalone compressors up to the slow ceilings (PPMd, PAQ,
+cmix, NNCP); fixed-prior baselines — trained dictionaries per representation, JSZap-style
+AST stream codecs, nearest-reference deltas; and LLM arithmetic coding — with prior
+fairness and selector cost paid, every baseline labelled by its correctness level
+(byte-exact → source-equivalent → runtime-equivalent → test-equivalent), and the headline
+stated against the strongest fixed-prior baseline (§4 2026-08-22, baseline suite;
+classical precedents). Acknowledged costs: the objective is hostile
 to readability, editability, and portability, since all are bits; the guarantee is
 test-relative rather than absolute, and decompression is stochastic and expensive; and
 prompt-space optimization is not obviously the tool best suited to squeezing bits, which
 makes the project ambitious in a specific way.
 
-**Why sequencing the compression project first is right.** The machinery transfers nearly
-completely: harness, optimizer loop, test-based evaluation, equivalence tooling. Its metric
-doubles as an instrument for the representation program's central quantity — bits saved
-relative to lossless is exactly the information content of surface-given-function, a
-measurement of how much of code is style. Its natural ablations (bits versus readability,
-model-specific versus portable) are the representation program's research agenda arriving
-as analysis. And the project is lower risk with crisper claims, building credibility and
-infrastructure before the more exploratory work. The one caution to carry: the
-compression-optimal representation and the representation program's artifacts are different
-objects, so qualitative findings about one (what it looks like, whether it is readable) will
-not transfer — the machinery and the measurements will.
+**Sequencing.** The compression project runs first. What carries that: the harness,
+optimizer loop, test-based evaluation, and equivalence tooling transfer nearly completely;
+its claims are crisper and its risk lower; and its natural ablations (bits versus
+readability, model-specific versus portable) are representation-program questions arriving
+as analysis. What no longer carries it: the earlier argument that the compression metric
+*is* the representation program's instrument — bits saved relative to lossless as the
+information content of surface-given-function. With TLC-0 that quantity is measured
+directly, as leakage relative to a declared extractor family, on any representation,
+without first winning a compression race; so the representation program does not depend
+on the compression result, only on the shared harness and TLC-0. The caution stands: the
+compression-optimal representation and the representation program's artifacts are
+different objects, so qualitative findings about one will not transfer — the machinery
+and the measurements will.
 
 ### Positioning against prior art
 
@@ -207,6 +249,10 @@ claim clears the strong baseline.
 
 ### Per-direction impact
 
+- **TLC-0 (measurement suite).** Retention and leakage numbers against a declared 𝒱 are
+  the figures every other direction reports; the minified-source control and the
+  contrastive game with behavioural negatives are publishable as a measurement
+  contribution on their own if the representation program is the paper.
 - **TLC-1–TLC-3 (compression).** A clean "beat lossless" result on code with a
   functional-equivalence distortion is a workshop paper on its own; the optimizer comparison
   (TLC-3) adds a reachability finding about prompt-space search that reviewers in the
@@ -219,6 +265,24 @@ claim clears the strong baseline.
   anti-leakage term is load-bearing and its metric is unresolved (§4).
 
 ## 3. Infrastructure build sequence
+
+### TLC-0 — Layer 0: the measurement suite
+
+Built alongside the census and before any optimizer claim. Components: (a) a declared,
+frozen extractor family 𝒱 per experiment — model, prompt set, K — published with every
+number; (b) behavioural targets B as an information profile (test signature, edge cases,
+exceptions, mutation/side effects, algebraic properties, complexity facts) and
+implementation targets S (identifier choice, AST shape, library choice, formatting,
+exact-source reconstruction probability log p_D(x | r)); (c) the condition matrix ∅ /
+signature only / Z / minified X / X / oracle spec, with retention and leakage reported per
+condition; (d) probes: decoder-pass (K decodes → smoothed pass probability),
+question–answer, the contrastive game (positives = different implementation, same tests;
+negatives = similar code / different behaviour, same description / different edge case,
+same tests / hidden difference) run as Z→B and Z→S, and MDL probes; (e) control tasks —
+shuffled behaviour labels, random implementation identities — from day one. Data:
+HumanEval/MBPP as the sandbox; CodeNet's many-implementation clusters with I/O tests as the
+source of behaviour-equivalent positives. Every census representation and every optimizer
+candidate gets TLC-0 numbers; the optimizer is not allowed to report without them.
 
 ### TLC-1 — Phase 1: the census
 
@@ -280,7 +344,13 @@ ultimately in bits, and token orderings do not always survive the conversion.
 
 ### TLC-2 — Phase 2: simple optimizer
 
-A COPRO-style propose–evaluate–select loop over the encoder prompt only. This arm is
+A COPRO-style propose–evaluate–select loop over the encoder prompt only. Concrete incumbent
+(2026-08-22): DSPy with GEPA — metric returns a scalar plus structured text feedback
+(compile status, n/N, failed groups, ≤4 representative failures); three pools (reflective
+trainset, Pareto valset, locked full-pass holdout); tasks selected for utility (medium
+difficulty, high prompt sensitivity, diverse failure modes), not difficulty; one level
+(encoder) first, both levels with per-predictor feedback later. Reported scores are
+calibrated under the full selection rule, on the holdout, never per candidate. This arm is
 permanent, not throwaway: it is the null that any smarter optimizer must beat, and its
 failure transcripts are the design input for the diagnosis arm. Before automating, a few
 human-as-optimizer rounds — whatever information I need in order to improve the prompt by
@@ -330,9 +400,13 @@ changes which equilibria the search can reach.
 
 ### Standing instrumentation and decisions
 
-Always on: copy-detection metrics between source and representation; per-sample failure
-taxonomy; per-test identity vectors; token and zstd-byte accounting; provider and version
-pinning per the stationarity check. Decided: pass@1; extraction frozen as deterministic
+Always on: copy-detection metrics between source and representation, superseded as the
+leakage measure by TLC-0's I_𝒱(Z→S | B) once the suite runs; per-sample failure taxonomy;
+per-test identity vectors (the full vector, since full-pass, fractional, near-miss, and
+requirement-grouped scores are all derived from it); token and compressed-byte accounting
+under the layered baseline suite (`code_to_test` separated from scored `payload`, selector
+bytes, per-representation dictionaries); provider and version pinning per the stationarity
+check. Decided: pass@1; extraction frozen as deterministic
 codec spec; soft budgets scored by measured length; held-out set frozen at census time.
 Open: per-tier scalarization of the (pass, length) objective; how the eventual bits-level
 claim frames its guarantee (test-relative equivalence, stochastic decompression) against
