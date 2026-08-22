@@ -56,7 +56,7 @@ trajectories already in `data/processed/`, each row carrying `lr_at_step`,
 ### Follow-up: routing dynamics as a movement channel (FLAME-MoE)
 
 *Moved from the former standalone Track F doc (`moe-routing.md`). Its F2
-direction (flips by token entropy) lives in Track E. Note the label
+direction (flips by token entropy) lives in Project D, `d-token-level-decomposition.md`, Stage 1. Note the label
 collision: Track A's own "F3" above is the scale ladder; the routing
 follow-up's "F3" below is the dense control ladder.*
 
@@ -142,7 +142,7 @@ recipe and data, so it does not share DataDecide's recipe axis; the
 **Likely paper shape.** A6 + A1 + A4 as the core ("what lives inside the
 noise term"), A2 as the headline figure, A3 as the high-variance bonus.
 
-**Routing follow-up paper shape.** F1 + F3 as the core, F2 (Track E) as the
+**Routing follow-up paper shape.** F1 + F3 as the core, F2 (Project D Stage 1) as the
 headline if the logs support it. A real workshop paper, but one that stands
 apart from the DataDecide line: it shares methodology with the trajectory
 project, not data or story. Worth doing if the drift/diffusion machinery
