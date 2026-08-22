@@ -2428,3 +2428,9 @@ hlb-CIFAR10 / airbench speed-run lineage, which the search missed).
 > (same query without the `"under 100 epochs" OR "fast training"` clause; raw links only)
 
 Routed to: same line in the staging section (two new IDs: arXiv 2209.01848, 2502.00663).
+
+> (rerun of the `title:"ResNet-18" AND year:2020..2025` query; raw links only)
+
+Routed to: same line in the staging section; the rerun returned a larger set ignoring the
+year filter — flagged "ResNet strikes back" (2110.00476), "Revisiting ResNets" (2103.07579),
+and "Bag of Tricks" (1812.01187) as the recipe-ablation papers the ladder should cite.
