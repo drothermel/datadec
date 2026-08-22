@@ -17,7 +17,7 @@ Each document has the same three parts:
 | [B — WSD retrain suite](b-wsd-retrain-suite.md) | What does a DataDecide-subset with a proper stable phase + decay branches enable, and is it worth keeping the cluster warm for? | full retrain (subset) | Resource paper; better as an enabler |
 | [C — Geometry & comparability](c-geometry-comparability.md) | Are cross-recipe metric comparisons well-defined, and does basin membership predict when recipe effects hold? | none | Yes, evals-only |
 | [D — Token-level decomposition](d-token-level-decomposition.md) | Which tokens respond to LR decay, does that track epistemic uncertainty, and do recipes differ in how tokens migrate over training? | needs branches (from A or B) | Highest ceiling; depends on A/B |
-| [E — Dataset featurization](e-dataset-featurization.md) | Do intrinsic corpus statistics predict DataDecide's outcome table and annealing behaviour? | none | Yes, GPU-free |
+| [Track C — Recipe featurization](recipe-featurization.md) | What is actually in the DataDecide recipes, and which measurable data properties explain which task-level differences? | none | Yes, GPU-free |
 
 ## Tracks (from the published-data-analysis synthesis)
 
@@ -34,8 +34,8 @@ factored out. Idea IDs (`A1`, `B3`, …) match the synthesis.
 | [schedule-confound.md](schedule-confound.md) | Track D — Annealing-confound correction | T0 / T1+ | Good section; standalone only if merging works |
 | [token-item-movement.md](token-item-movement.md) | Track E — Token/item-level movement | T0 / T1 | Best single figure; needs inference harness |
 
-Track C (dataset featurization) is considered separately and intentionally
-omitted here.
+Track C (dataset featurization) is [recipe-featurization.md](recipe-featurization.md),
+listed in the table above; its idea map is [../dataset-analysis-idea-map.md](../dataset-analysis-idea-map.md).
 
 Track F (FLAME-MoE routing dynamics) is no longer standalone: its routing-flip
 core (survey, ingest, F1, F3, commitment timing, routing-vs-eval, scale ladder)

@@ -42,7 +42,7 @@ or Project B's suite. It cannot start before one of those exists, but the cheap 
 
 - **D-opt-1: Static determinism profile (D1).** Per-token reference-model entropy on the
   held-out set and on each corpus; a dataset-level "% deterministic" statistic. Cheap; also
-  the input to Project E's E5.
+  the input to Track C's D4 (`recipe-featurization.md`).
 - **D-opt-2: Loss-trajectory taxonomy on raw checkpoints (D5).** Rho-1-style buckets
   (persistently high/low, descending, fluctuating) across DataDecide's existing checkpoints.
   No branches needed; previews the dynamics, though it conflates wall oscillation with river
@@ -77,7 +77,7 @@ or Project B's suite. It cannot start before one of those exists, but the cheap 
 | Direction | Impact | Rationale |
 |-----------|--------|-----------|
 | Core (D3, D4, D2) | **High — highest ceiling in the programme** | The first causal token-level validation of the river-valley mechanism, plus a recipe-comparison result nobody has run. Strong enough for a main venue if the signal is clean. Workshop version can ship with D3/D4 alone and a partial D2. |
-| D-opt-1 determinism profile | Medium | Cheap descriptive statistic; its value is as a predictor (Project E) and as a sanity check. |
+| D-opt-1 determinism profile | Medium | Cheap descriptive statistic; its value is as a predictor (Track C, `recipe-featurization.md`) and as a sanity check. |
 | D-opt-2 raw taxonomy (D5) | Low–Medium | Descriptive; good as a warm-up figure in Project A's paper. |
 | D-opt-3 breakdowns | Medium | Turns the result from a histogram into an interpretable story; low cost once D3 exists. |
 | D-opt-4 RLVR bridge | High, speculative | A striking link if it holds; depends on a post-training run and on the wall bucket being well-defined. |
