@@ -2546,6 +2546,18 @@ the related-work map condensed; AlphaCodium flagged) and a dated note in
 §4 (draft internals; AlphaCodium for the prior-art gate; the wrapper-only sibling as a
 candidate optional direction).
 
+### 2026-08-22 — Repo read: datadec data layer against a three-paper plan (undated, ~2026-08)
+
+> are you able to look at this github repo: https://github.com/danielle-rothermel/datadec
+> it should be public?
+
+Routed to: [topics/reference/datadecide-data-pipeline.md](topics/reference/datadecide-data-pipeline.md)
+(new reference topic for this conversation; the response's claims checked against
+`README.md` / `configs/` — all held; its open coverage question answered from
+`sources.toml`: all 25 recipes have detail archives declared; the P1–P3 / A / B / C-a
+labels belong to an earlier plan not on file, mapping to IRT / REC / TRJ-ANN recorded as
+inferred).
+
 ### Post-intake decisions — 2026-08-22 (third pass)
 
 > (1) promote (2) I did run a few versions of this, I think we need a new section that
