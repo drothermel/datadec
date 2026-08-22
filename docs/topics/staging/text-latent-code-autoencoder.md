@@ -295,6 +295,82 @@ research agenda.
 Baseline note (unverified): "beat lossless" should be defined against LLM arithmetic coding
 (Delétang et al., "Language Modeling Is Compression"; LLMZip), not only gzip/zstd.
 
+## 2026-07-11 — Compression project: implementation state and initial experiment design
+
+**State as of 2026-07-11 (Danielle).** A solid implementation of the inner loop exists:
+encode → decode → test evaluation → compression evaluation of the intermediate, runnable
+against different models. The lab's decision is to use **HumanEval exclusively** — "such an
+easy task that it's been a little bit hard to find models that perform poorly on it even with
+fairly low budgets." Current scheme: decoder uses the original HumanEval prompt (generate a
+function matching this description); encoder baseline is the "describe this code" prompt from
+a HumanEval-explain-style paper ("obviously a pretty bad prompt for our goal, but it was the
+baseline"). The system swaps prompts and sweeps a **length budget** ("do this in less than n
+characters") to get a distribution over length vs. correctness; going over budget is not
+counted as failure — the budget instruction is "a way that a prompt can encourage different
+levels of trade-off between correctness and compression." Ready to start optimization of the
+**encoder prompt only**, with DSPy-derived algorithms (not DSPy itself — "not optimal for my
+setup"), starting from COPRO (sample prompts, score, resample).
+
+**Three concerns she raised.** (1) Most HumanEval problems pass 100% (some 0%) — bad examples
+for prompt optimization; subset to non-saturated problems, which is needed anyway since
+optimizing on the full eval set is too expensive and improper. (2) Variance is high even at
+temperature 0; the right number of samples per optimization round is unknown. (3) "I know for
+sure that frontier language models can optimize these prompts really well. I'm not sure that
+the structure that COPRO is using would produce that" — so a mini-test of the outer-loop LLM
+on a simpler, more direct optimization problem (e.g. tune the number of samples until an
+estimate converges) before using it on the real problem. Aside on the compression goal
+itself: "in the theoretical sense, it should be possible. But, practically, I think that
+that's maybe not what I would assume LLM-style optimization would be best at."
+
+**Response (near-verbatim).**
+
+*Steps 1 and 2 are one experiment.* "Before optimizing anything, run one generous census:
+baseline prompt, all 164 problems, 10+ samples each, at each budget tier. That single
+artifact gives you the per-problem difficulty profiles for subsetting, the empirical variance
+floor for sample-size math, and your baseline Pareto curve." On subsetting: "beware
+regression to the mean (a problem measured at 60% with five samples may be a true 100%, so
+characterize with more samples than feels necessary), audit the 0% problems before
+discarding them (some will be harness or test bugs, some are genuine headroom worth keeping a
+few of), and freeze the held-out set now."
+
+*Sample count is a power calculation, not a search.* "You need the standard error of a score
+difference between candidate prompts to be smaller than the gaps you care about detecting —
+early rounds have big gaps and tolerate few samples, late rounds don't." Multipliers: paired
+evaluation on identical problems; caching encoder outputs; adaptive allocation — "screen
+candidates cheaply, spend samples on survivors, one high-n validation of the final top-k
+(racing/successive-halving logic)."
+
+*The pilot instinct is right; the testbed is wrong.* The tune-n-samples toy "doesn't
+exercise the one skill you actually doubt — proposing good prompt edits from feedback; it's
+scalar estimation, a different genre — and a strong model may just do the power calculation
+analytically and stop." Better pilot: "a miniature of the real loop: tightest budget tier
+(where even strong models fail — your headroom problem solves itself under compression
+pressure), 10–15 problems, low n, cheap inner models, strong model driving with full
+transcripts." Also: "playing optimizer yourself for two or three rounds first: whatever
+information you need to improve the prompt is exactly what the automated loop must be
+shown."
+
+*Quirks to expect.* "Under noise, LLM optimizers confidently narrate causal stories about
+score differences that are pure noise — so your variance measurement determines what you're
+allowed to show it. Surface only differences above the noise floor, or print explicit
+intervals ('64% ± 9')." Proposal mode collapse ("COPRO's known failure: later candidates
+become paraphrases of the incumbent"); overfitting to the training subset — validate on
+held-out, early-stop the optimization itself.
+
+*Structure the real run as arms; close one design gap first.* Arms: COPRO as floor;
+OPRO-style trajectory-in-context; a diagnosis-driven arm that sees failure transcripts
+(ProTeGi/TextGrad-style, or fully agentic with the harness as a tool) — equal budgets, shared
+validation; "that comparison is a finding in itself, and it's your point-1 reachability
+question in production form." The gap: "decide what scalar the optimizer sees. You measure
+real length but only request it softly, so the honest objective is the measured (pass,
+length) pair — optimize per budget tier or pick an explicit scalarization." And decide
+pass@1 vs. pass@k now — best-of-k needs a decode-side selector, which changes variance and
+the compression claim.
+
+*Strategic flag.* gzip/zstd are weak on tiny inputs (HumanEval functions are 5–15 lines);
+the convincing baseline is LLM + arithmetic coding, and bit accounting must decide how to
+count the shared decoder prompt.
+
 ## Open questions
 
 - Bottleneck: now framed as *optional* and itself an experimental variable — does
@@ -315,6 +391,11 @@ Baseline note (unverified): "beat lossless" should be defined against LLM arithm
   bits; baseline = LLM arithmetic coding) vs. representation exploration (fix rate, explore
   controllable distortion; cross-model portability vs. per-model hyper-optimization). Decide
   how the compression project's ablations are designed to also answer the representation
-  questions. Next excerpt: how to move the compression goal forward.
+  questions.
+- Compression experiment design: census run (all problems × budget tiers × ≥10 samples) →
+  subset + frozen held-out + power calculation; miniature-loop pilot instead of a toy
+  optimizer test; optimizer arms (COPRO / OPRO-trajectory / diagnosis-driven); the scalar the
+  optimizer sees (per-tier vs. scalarization); pass@1 vs. pass@k; baseline = LLM arithmetic
+  coding with honest bit accounting.
 
 **Waiting on:** the remaining points of the point-by-point discussion; a promotion decision.

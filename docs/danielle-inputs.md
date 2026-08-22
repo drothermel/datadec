@@ -1006,3 +1006,72 @@ Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-c
 ("Two interest categories" section). The lab's compression goal is recorded as a project
 framing; the response's "research agenda smuggled in as analysis" phrasing was rewritten as
 a plain sequencing point.
+
+### Text-latent code autoencoder — compression project state and experiment design — conversation 2026-07-11, intake 2026-08-22
+
+> Great. What you just described aligns with what I have concluded, which is basically that,
+> like, it makes sense. [adviser commentary omitted] […] though kind of wildly ambitious in
+> some sense because beating the best compression algorithms is, like… I don't know. That's
+> that's an interesting choice. Anyways, But, like, as you point out, like, in the
+> theoretical sense, it should be possible. But, practically, I think that that's maybe not
+> what I would assume LLM style optimization would be best at. Uh, yes. Okay. So then if we
+> assume that we're moving on with his goal, then basically where I am now is I have a
+> pretty solid implementation of the setup, and that I have, like, an inner loop, which is
+> the encoding, decoding, test evaluation, and, um, compression evaluation of the
+> intermediate representation. that I can run against different models. And he has declared
+> that we will be using human eval exclusively, um, which is such an easy task that it's
+> been a little bit hard to find models that perform poorly on it even with fairly low
+> budgets. But what I've settled on basically is a scheme where we use the original human
+> eval prompt, which is basically, like, like, for the for the decoder. We used the original
+> human eval prompt, which is basically, like, generate a function matching this description
+> or something like that for the decoder and for the encoder. Then there was a paper that
+> did, like, human eval explain or something like that that had a prompt that was, like,
+> describe this code. And so, obviously, that's a pretty bad prompt for our goal, but it was
+> the baseline. So we're using that as a baseline. But I have a system that can swap those
+> types of things out that works on human eval and that sweeps a budget. So the idea is to
+> get some type of distribution over the space of length versus correctness, then we say do
+> this in less than n characters. Um, and currently, we're not actually counting it as
+> failure. If it goes over n characters, instead we're just treating that as, like, a way
+> that a prompt can encourage different levels of trade off between correctness and
+> compression. And so I have the ability to basically do evaluation. and I'm at the point
+> where I'm ready to start looking at optimization of the system, uh, with the plan to be…
+> to optimize just the encoder prompt, um, and to start with algorithms from DSPI, though I
+> won't be using DSPI directly because it's not optimal for my setup. But now, basically,
+> I'm thinking about how to structure this initial set of experiments because I think that
+> there are kind of Like, keep in mind, there are a few key recipe pieces. So one key risky
+> piece is that a lot of the human eval examples get a hundred percent pass rate, and some
+> of them get zero percent pass rate. Um, uh, Well, although I think I might have fixed
+> that. So most of them get a hundred percent pass rate, which then makes some very bad
+> examples for any type of prompt optimization thing. So I think that one thing I need to do
+> is to subset down the human eval examples, which I would do anyways because I shouldn't be
+> training on the whole dataset we're evaluating. It's just too expensive. Um, so subset
+> down to a smaller subset of examples that don't a hundred percent of the time pass. And
+> then another thing is basically that as you pointed out, the variance is very high, um,
+> even with temperature zero for the performance. And so I think trying to figure out what
+> the right number of samples to use to give an evaluation metric for each optimization
+> round is a key question, um, because I don't even know what the ballpark would be for,
+> like, when it converges. So I'm trying to figure out kind of, like, what is the smallest
+> number of things that I can explore to get, like, reasonable hyperparameters before
+> trying, like, the simplest algorithms, which I think is copro, c o p r o, um, which is
+> basically just sample some prompts, try the prompts, see how they do, sample some more
+> prompts. Um, but I think probably that, like, running copro, totally straightforward. Um,
+> but the thing that I'm more worried about is that I know for sure that frontier language
+> models can optimize these prompts really well. I'm not sure that the structure that copro
+> is using would produce that, and so I feel like the third like ex… like mini test before
+> actually kicking off a round of experiments that I want to do is to just, like, work with
+> a language model. Like, I don't know, something like Codex five point six or something
+> like that. Something that's, like, really, really strong, but maybe not as, like,
+> thoughtful as, like, Fable, for example. Um, and just basically be like, you… your task is
+> to optimize something that's a little bit less complicated than test passing. So maybe
+> something like your task is to optimize the number of samples that would let an
+> optimization run converge to the true value or something like that. And so the way that
+> it would optimize it is that it could give a number of samples and see what the pass rates
+> were and then, like, tune that until it came to some type of conclusion. I don't know.
+> Basically, like, I think it would be good to choose a more direct, less complex
+> optimization problem to test out how the outer loop LLM would perform and what the quirks
+> are of the outer loop LLM optimist before trying to actually use it for my problem because
+> I feel like my problem is pretty complex. What do you think about all of this?
+
+Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-code-autoencoder.md)
+("Compression project: implementation state and initial experiment design"). Lab decisions
+(HumanEval only; compression goal) kept as project facts; adviser commentary omitted.
