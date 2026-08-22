@@ -1205,3 +1205,12 @@ Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-c
 Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-code-autoencoder.md)
 ("Per-test outcomes confirmed; dividends and caveat"). The requested document follows as a
 separate intake.
+
+### Text-latent code autoencoder — promotion — 2026-08-22
+
+Danielle pasted the structured write-up ("Optimizable Text Representations of Code with
+Frozen Frontier LLMs — research framing and experimental plan, functional compression
+first"). Applied: staging topic promoted to
+[potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+(`TLC`); the write-up forms §1 and §3, the dated discussion moved to §4, §2 synthesized and
+marked draft scaffolding. One sentence of adviser-communication advice was dropped.

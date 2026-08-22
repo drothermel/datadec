@@ -1,16 +1,352 @@
-# Text-latent code autoencoder — frozen LLMs as encoder/decoder, prompts as the only learned object
+# Text-latent code autoencoder — optimizable text representations of code with frozen frontier LLMs
 
-**Kind:** staging. Candidate exits: a standalone project doc (representation learning /
-program synthesis; program pillars served: none), or a parked idea. Gate: pin down the bottleneck constraint on the latent (see
-"The open question" below) before any promotion decision.
+> **Draft scaffolding (2026-08-22).** Promoted from a staging topic. §1 and §3 are a
+> lightly edited version of the structured write-up produced at the end of the 2026-07-11
+> discussion (first-person voice is Danielle's); §2 is synthesized scaffolding not yet
+> reviewed by Danielle; §4 is the dated discussion record. Treat §2 as provisional until this
+> note is removed.
 
-Source: an external conversation dated 2026-07-11 (intake 2026-08-22). Danielle's opening
-prompt was not pasted; the setup below is the respondent's playback of it. Related-work claims in the quoted
-material (round-trip correctness, DSPy, OPRO, TextGrad, LLMLingua, gist tokens) are
-**unverified** — treat as leads, not facts.
+**Program pillars served:** none — this project sits outside the DataDecide program and its
+three pillars; it gets its own topic proposal if pursued as a thesis direction. (Program:
+`README.md` → Program.)
+
+**One-line pitch.** An autoencoder whose encoder and decoder are frozen frontier LLMs behind
+APIs, whose latent is *text*, whose reconstruction signal is the test pass rate of the decoded
+program, and whose only learnable object is the harness (prompts) optimized by an LLM outer
+loop. First paper: beat lossless compression of code by composing lossy *functional*
+compression with standard lossless compression of the intermediate. Broader program: what
+representations can be induced this way, how robust and controllable they are, and whether
+function and style can be factored.
+
+IDs: TLC-1–TLC-3 (phases), TLC-opt-1–TLC-opt-4.
+
+**Paper goal.** A crisp compression result (Phase 1–3 below) is the first paper —
+workshop-sized if the claim holds only against zstd-class baselines, main-conference if it
+holds against LLM arithmetic coding with honest bit accounting. The representation program
+(TLC-opt-*) is the thesis-scale continuation.
+
+Compute tiers: **API** = frontier/cheap-model inference via OpenRouter only; no training
+anywhere in this project.
+
 ---
 
-## 2026-07-11 — the idea as played back
+## 1. What the project involves
+
+### Motivation and core idea
+
+Learned representations changed what was possible in other domains: given a good latent
+space, you can forward-model in that space, factor out attributes, and manipulate objects by
+manipulating their representations. I want those affordances for code — forward modeling of
+program evolution in latent space, capturing qualitative aspects of coding style separately
+from function to enable style transfer, and similar.
+
+Two constraints shape everything. First, the capability worth leveraging lives in frontier
+closed models, accessible only through APIs. Second, I want no weight updates anywhere —
+training is expensive, slow, and hard, and it forfeits access to the true frontier. This
+looks like an impasse: even a perfect vector embedding of code would be useless to a frontier
+model, which consumes language, not vectors.
+
+The resolution is to notice what actually makes something an embedding: a representation of
+an object in a different (usually compressed) form, learned against a reconstruction
+objective. Nothing in that definition requires a vector. So the proposal is an autoencoder in
+which the encoder is a frozen frontier LLM plus a harness that maps a code sample to a text
+representation; the decoder is a frozen LLM plus harness that maps the representation back to
+code; the reconstruction signal is the test pass rate of the decoded program against the
+original's tests; and the only learnable object is the harness — in the simplest case, the
+prompts — optimized by an LLM in an outer loop. The resulting representation is natively
+consumable by any LLM, because it is text, and plausibly controllable through
+natural-language instructions to the encoder.
+
+### What the representation is (and is not)
+
+This is not an embedding in the classical sense: it is discrete, human-readable, and carries
+no explicit metric — no distances, interpolation, or arithmetic for free. But the geometry is
+borrowed rather than absent. A text representation consumed by an LLM inherits the model's
+internal semantic space, which interpretability work (linear representation results, SAE
+features) suggests is far more structured than arbitrary. The relevant lineage is discrete
+latent variable models: VQ-VAE showed discrete codes indexing a learned codebook can match
+continuous latents, and this setup is that pattern with text tokens as compositional
+discrete codes and the frozen LLM as an enormous pretrained codebook. Where classical
+VAE-era engineering existed to learn a non-collapsed, well-organized space from scratch,
+here the space is pretrained and the question is whether a text addressing scheme into it is
+useful.
+
+What remains true is that access costs differ: vector geometry is explicit and free, while
+every geometric operation here is mediated by an inference call — functional analogs (blend
+these two; this, minus X, plus Y) that work but are stochastic, priced per token, and backed
+by no metric guarantees. A cheap empirical probe exists: re-embed the text representations
+with an off-the-shelf embedding model. If the structured-space intuition is right, they
+should form a better-organized vector space than embeddings of the raw code — clustering by
+function rather than surface.
+
+### Degeneracy: an open question, not a design constraint
+
+Classical autoencoders require bottlenecks because an unconstrained optimizer reliably finds
+the identity map. Two things differ here. The encoder's default behavior is strongly biased
+away from copying — initial experiments confirm paraphrase, not copy, though substantial
+surface content does flow into the representation, which may or may not matter depending on
+the goal. And the optimizer is not gradient descent: it is an LLM proposing discrete prompt
+edits, a weak, heavily prior-laden search over a small subspace. Whether smuggling
+equilibria — "write a spec, plus include the tricky lines verbatim" — are even reachable
+under such an optimizer at realistic budgets is genuinely open, and either answer is a
+finding: convergence there means prompt optimization is stronger than it looks; failure to
+converge means this domain provides anti-degeneracy for free. Designing constraints in from
+day one would foreclose exactly that experiment.
+
+Policy: instrument rather than design. Copy-detection signals (n-gram overlap, longest
+common substring between source and representation) are logged on every run, converting the
+worry into a number to watch. Two further notes. The compression objective below prices
+smuggling naturally — verbatim fragments cost bits — so the compression project contains its
+own anti-degeneracy pressure. And for the broader program, the principled alternative to a
+blind bottleneck is an invariance objective: requiring surface-distinct, functionally
+equivalent programs to map to the same representation structurally rules out copying rather
+than merely discouraging it, and tests provide a cheap equivalence oracle for generating
+such pairs.
+
+### Two research programs on one rate–distortion plane
+
+**The representation program (TLC-opt-\*): fix rate loosely, explore the distortion and
+property axis.** What kinds of representations can be induced, and what can be done with
+them? Concretely: robustness of a single representation across downstream tasks that take
+code as input (TLC-opt-1); robustness across decoder models — one representation any model
+decodes well — versus hyper-specialization, the smallest representation a specific model
+decodes at high pass rate (TLC-opt-2); controllability through natural-language instruction
+to the encoder (TLC-opt-3); and the flagship future direction, factored representations
+(TLC-opt-4) — separate function and style components trained with reconstruction on the
+function field, surface reconstruction on the combined fields, an anti-leakage term keeping
+function out of the style field, and ideally cross-decoding as a direct objective (decode
+F_a + S_b must pass a's tests while exhibiting b's surface characteristics). That would make
+style transfer a field swap, with the further possibility of optimizing the style field
+toward human-readable, hand-editable text. The deep advantage over classical disentanglement
+is that the factorization can be named in the prompt rather than emerging from blind
+architectural pressure, and loss balancing becomes conversational rather than hyperparameter
+search.
+
+**The compression project (TLC-1–TLC-3): fix distortion, minimize rate.** The claim: beat
+lossless compression by composing lossy functional compression (this system) with standard
+lossless compression of the intermediate representation. Because the domain is code, we care
+about preserving functionality rather than surface form, so the lossy stage targets the
+entropy of the functional equivalence class rather than the entropy of the surface string —
+and the gap between those two bounds is a real quantity. The metric is a brutal scalar with
+unambiguous baselines: zstd and friends, and the stronger baseline from the LLM-as-compressor
+line (language modeling plus arithmetic coding). Acknowledged costs: the objective is hostile
+to readability, editability, and portability, since all are bits; the guarantee is
+test-relative rather than absolute, and decompression is stochastic and expensive; and
+prompt-space optimization is not obviously the tool best suited to squeezing bits, which
+makes the project ambitious in a specific way.
+
+**Why sequencing the compression project first is right.** The machinery transfers nearly
+completely: harness, optimizer loop, test-based evaluation, equivalence tooling. Its metric
+doubles as an instrument for the representation program's central quantity — bits saved
+relative to lossless is exactly the information content of surface-given-function, a
+measurement of how much of code is style. Its natural ablations (bits versus readability,
+model-specific versus portable) are the representation program's research agenda arriving
+as analysis. And the project is lower risk with crisper claims, building credibility and
+infrastructure before the more exploratory work. The one caution to carry: the
+compression-optimal representation and the representation program's artifacts are different
+objects, so qualitative findings about one (what it looks like, whether it is readable) will
+not transfer — the machinery and the measurements will.
+
+### Positioning against prior art
+
+Related-work attributions below are unverified leads pending a literature pass; see §4.
+
+Four nearby clusters, distinguished by what each does with the intermediate.
+Natural-language intermediates in code — explain-then-translate for cross-language
+translation, self-debugging lines where the model reasons in NL before returning to code —
+treat the intermediate as ephemeral scaffolding: generated, consumed once, never measured or
+optimized. NL-bottleneck representations (the bottleneck-for-grading work; effectively the
+concept-bottleneck lineage with free text) treat the representation as the object but
+statically — a few hand-written prompts, no optimization loop. LLM-driven prompt optimization
+(DSPy/COPRO, OPRO, ProTeGi, TextGrad) has the loop but aims it at task instructions rather
+than representations. Round-trip correctness work uses the exact code-to-NL-to-code loop
+with tests, but purely as an evaluation metric for models. The LLM-as-compressor literature
+supplies the compression baselines.
+
+The gap statement: everyone uses NL intermediates, some treat them as representations,
+nobody learns them. This literature is also feasibility evidence, not just positioning —
+unoptimized intermediates already carry enough information to translate, debug, and grade,
+so the open bet is whether optimizing the channel buys abstraction and control. The
+differentiating claims to defend: an optimized representation beats a sensibly hand-prompted
+one (else this is explain-then-translate with extra steps), and — for the broader program —
+one representation serves multiple downstream uses (else it is scaffolding, not a
+representation).
+
+### Current status (as of 2026-07-11)
+
+The inner loop is implemented: encode → deterministic extraction → decode → test evaluation →
+compression accounting, model-agnostic via OpenRouter. Fixed choices: HumanEval as the
+dataset; the HumanEval-Explain "describe this code" prompt as the baseline. The budget is
+expressed as a compression ratio against the source with docstring and comments stripped
+(the docstring being effectively the original task prompt), converted to a per-sample token
+target. Budgets are soft — overage is scored rather than failed — so budget-pressure phrasing
+functions as a knob on the correctness–compression tradeoff. Extraction is deterministic
+string processing, frozen as part of the codec specification; anything model-based would
+leak decoder capability into the harness and muddy attribution. HumanEval's `check()` has
+been split into independent per-test outcomes (pending a two-minute audit that the split
+tests are order-independent, with no shared mutable state).
+
+Observed landscape: the cheapest OpenRouter models sit at roughly 80–95%+ pass at generous
+ratios, with a sharp step-function cliff to zero below a threshold ratio — and the zeros are
+refusals ("that's too small"), i.e., compliance failures rather than capability failures.
+This step structure drives the census design in §3.
+
+## 2. Doability and impact
+
+### Overall doability: **high** for Phases 1–2 (inner loop exists; API-only), **medium** for the headline claim
+
+The harness, per-test evaluation, and budget sweep already run. The census (TLC-1) and the
+simple optimizer (TLC-2) are bounded API spend on cheap models. Risks to the headline:
+HumanEval functions are tiny, so zstd-class baselines are weak on them and the claim must be
+made against LLM arithmetic coding with explicit bit accounting (including how the shared
+decoder prompt is counted); the guarantee is test-relative; OpenRouter provider
+nondeterminism must be pinned; and prompt-space optimization may plateau before the bits
+claim clears the strong baseline.
+
+### Per-direction impact
+
+- **TLC-1–TLC-3 (compression).** A clean "beat lossless" result on code with a
+  functional-equivalence distortion is a workshop paper on its own; the optimizer comparison
+  (TLC-3) adds a reachability finding about prompt-space search that reviewers in the
+  prompt-optimization line will care about.
+- **TLC-opt-1/2 (cross-task, cross-model robustness).** Tests whether the representation is
+  a representation rather than scaffolding; the per-model hyper-optimization variant is the
+  compression question restated.
+- **TLC-opt-3 (controllability).** Cheap once the harness exists; mostly demonstrations.
+- **TLC-opt-4 (factored function/style).** Highest ceiling and highest risk; the third
+  anti-leakage term is load-bearing and its metric is unresolved (§4).
+
+## 3. Infrastructure build sequence
+
+### TLC-1 — Phase 1: the census
+
+Purpose: establish where optimization has signal and what sampling buys, before optimizing
+anything. Binary outcomes make variance mean-determined (σ² = p(1−p)), so intensive sampling
+everywhere would spend most of its budget confirming zeros and ones. Structure: a coarse
+ratio sweep at n = 2–3 per point to bracket each problem's cliff, using bisection to locate
+critical ratios at logarithmic cost, then concentrated high-n sampling only near the cliffs.
+Worst-case standard error is 0.5/√n — n = 25 buys roughly ±10 points, n = 100 buys ±5 — and
+is needed only where pass probabilities are interior. The distribution of critical ratios
+across problems is the landscape map and sets tier placement: a mid tier where the baseline
+passes roughly 30–60% (maximum sensitivity), and an aggressive tier below most cliffs where
+the baseline scores near zero but the zeros are refusal-driven — compliance headroom that
+prompt optimization should recover first. Cliffs are prompt-dependent, so coarse mapping
+happens under the baseline for the record and fine mapping under a reasonable prompt.
+
+Deliverables:
+
+1. **Power table.** Minimum detectable score difference versus samples per candidate, plus
+   kill thresholds for racing (stop paying for a candidate whose interval cannot reach the
+   incumbent).
+2. **Encoder/decoder variance decomposition.** k encodings × m decodings on a few problems,
+   determining sample allocation and whether caching one encoder output per candidate is
+   statistically sound or a lucky-draw bias. Problem-to-problem heterogeneity likely
+   dominates the aggregate, which is the formal justification for paired evaluation.
+3. **Stratified training subset.** Problems whose cliffs sit near the operating tiers, plus a
+   few refusal-zeros retained for compliance signal; harness and test bugs quarantined and
+   fixed before optimization (or the optimizer learns to route around them); held-out set
+   frozen now. Beware regression to the mean when selecting on noisy estimates —
+   characterize with more samples than feels necessary.
+4. **Failure-taxonomy base rates per tier.** Every sample logged as one of {refused,
+   extraction/format failure, does not run, tests fail, pass}. This predicts how much early
+   optimizer gain will be compliance recovery and is the raw material for the
+   diagnosis-driven optimizer later.
+5. **Frozen baseline Pareto curve with confidence bands.** The reference all later results
+   report against, and the noise floor determining which score differences the LLM
+   optimizer is allowed to be shown.
+6. **Stationarity check.** Run-to-run drift on identical inputs; decide provider pinning.
+   OpenRouter serves same-name models at different quantizations across providers, and
+   temperature-zero is not deterministic — without pinning, every cross-day comparison
+   inherits that confound.
+
+**Metrics discipline.** Binary all-tests pass@1 is the confirmatory top-line metric — the
+claim is functional equivalence, and pass@1 is the only practical and meaningful choice at
+current model quality. The per-test fraction is shaping and screening: a within-problem
+ordering signal for racing, and denser optimizer feedback where binary is flat (the
+aggressive tier), where "passes 70%, failing empty-input cases" is actionable and "0%" is
+not. It is never a cross-problem aggregate — HumanEval problems have few, uneven, correlated
+tests, so the fraction is coarse and not comparable across problems — and never the sole
+optimization target, since optimizing it directly Goodharts toward main-path-only
+representations while stubs pass odd tests by luck. Standard reward-shaping discipline:
+guide and screen with the fraction, confirm and report on binary. Log per-test identity
+vectors rather than counts — they enable McNemar-style paired comparisons on exactly which
+tests flipped between candidates, and they feed diagnosis. Decompose as P(runnable) ×
+E[fraction | runnable] so compliance failures do not pollute the quality signal; expect
+zero-inflated bimodality rather than a smooth gradient. Alongside token counts, log
+zstd-compressed byte sizes of both representation and stripped source — the claim is
+ultimately in bits, and token orderings do not always survive the conversion.
+
+### TLC-2 — Phase 2: simple optimizer
+
+A COPRO-style propose–evaluate–select loop over the encoder prompt only. This arm is
+permanent, not throwaway: it is the null that any smarter optimizer must beat, and its
+failure transcripts are the design input for the diagnosis arm. Before automating, a few
+human-as-optimizer rounds — whatever information I need in order to improve the prompt by
+hand is exactly what the automated loop must be shown.
+
+**Initialization as an arm, not an anxiety.** A baseline (the comparison point for reported
+results) and a seed (an optimizer hyperparameter) are different roles; the fixed baseline
+constrains the first and is silent on the second. Two arms: the primary seeds from the
+baseline prompt, which is attribution-clean — the entire delta from baseline to optimized
+belongs to the loop ("we took prior work's prompt and optimization took it from X to Y").
+The secondary seeds from a task-aligned prompt ("produce a representation from which another
+model can reconstruct the function"), measuring the method's ceiling and initialization
+sensitivity, since a misaligned seed burns early budget rediscovering the task. Convergence
+of the two arms to similar prompts and scores means the search escapes its initialization
+basin — the reachability question from §1 in production form; divergence is a reportable
+finding and the justification for smarter optimizers. The anchoring risk lives mostly in the
+meta-prompt, not the seed: the meta-prompt states the true objective (maximize
+reconstruction pass rate under budget R) regardless of what the incumbent prompt looks like,
+and at the aggressive tier the baseline's own refusal record pushes proposals out of
+description-space — with the caveat that a flat-zero incumbent provides no differential
+signal, so whether the optimizer makes the conceptual leap there is itself worth watching.
+
+**Run hygiene.** Paired evaluation on identical problem sets; encoder-output caching as
+licensed by the variance decomposition; adaptive allocation (screen candidates cheaply,
+spend samples on survivors, one high-n validation of the final top-k). Show the optimizer
+only differences above the noise floor, or print explicit intervals — LLM optimizers
+confidently narrate causal stories about pure noise. Watch for proposal mode collapse (later
+candidates degenerating into paraphrases of the incumbent) and for overfitting to the
+training subset (periodic held-out validation; early-stop the optimization itself). Decide
+the scalarization of (pass, measured length) explicitly per tier rather than presenting a
+wobbling multi-objective.
+
+**Pilot.** Aggressive tier × 10–15 bracket-mapped problems × low n × cheap inner models × a
+strong outer model with full transcripts. This is simultaneously the first real
+optimization run, the pipeline shakedown, and the cheap venue for A/B-ing outer-loop
+optimizer models.
+
+### TLC-3 — Phase 3: optimizer comparison
+
+Arms at equal budget on the shared frozen validation set: blind propose–select (the Phase 2
+null); trajectory-in-context (OPRO-style, conditioning on the history of prompt–score
+pairs); and diagnosis-driven (consuming the failure taxonomy, per-test vectors, and failure
+transcripts — ProTeGi/TextGrad-flavored, or fully agentic with the harness as a tool). The
+comparison is itself a finding: how much feedback structure does prompt-space search need?
+It is also the degeneracy/reachability question made operational — whether richer feedback
+changes which equilibria the search can reach.
+
+### Standing instrumentation and decisions
+
+Always on: copy-detection metrics between source and representation; per-sample failure
+taxonomy; per-test identity vectors; token and zstd-byte accounting; provider and version
+pinning per the stationarity check. Decided: pass@1; extraction frozen as deterministic
+codec spec; soft budgets scored by measured length; held-out set frozen at census time.
+Open: per-tier scalarization of the (pass, length) objective; how the eventual bits-level
+claim frames its guarantee (test-relative equivalence, stochastic decompression) against
+lossless baselines.
+
+---
+
+## 4. External assessments and origin notes
+
+Dated notes from the external conversation this doc was promoted from, recorded for
+consolidation — not decisions. Related-work claims in quoted text are unverified unless a
+citation is given; Danielle's prompts are logged verbatim in `../danielle-inputs.md`.
+
+### Origin notes — moved from `topics/staging/text-latent-code-autoencoder.md`
+
+### 2026-07-11 — the idea as played back
 
 > You want representation-space benefits (latent dynamics, style manipulation) without weight
 > updates, so you'd build an autoencoder where encoder and decoder are both frozen frontier
@@ -18,7 +354,7 @@ material (round-trip correctness, DSPy, OPRO, TextGrad, LLMLingua, gist tokens) 
 > learnable object is the harness — the prompts — optimized by an LLM outer loop against
 > round-trip reconstruction, scored by test pass rate.
 
-## The assessment (near-verbatim)
+### The assessment (near-verbatim)
 
 **Bottleneck.** "Without some constraint on the latent representation — length budget, schema
 restrictions, forbidding code tokens — the degenerate solution is just the code itself, which
@@ -61,7 +397,7 @@ DeepMind, ICML 2024); LLM-as-optimizer frameworks (DSPy, OPRO, TextGrad); prompt
 (LLMLingua); gist tokens (skipped as it involves training). Claimed novelty: "treating the
 optimized intermediate representation itself as a learned latent space."
 
-## 2026-07-11 — Point 1, the degenerate solution (discussed point by point)
+### 2026-07-11 — Point 1, the degenerate solution (discussed point by point)
 
 **Danielle's position.** Pure copy-through is not what frozen LLMs do: "if you're using LMs as
 the encoder and the decoder, they're actually incredibly strongly biased away from just
@@ -111,7 +447,7 @@ longest-common-substring between input and representation) as the optimizer runs
 nothing, doesn't shape the solution, and converts 'worry about degeneracy' into 'watch a
 number.'"
 
-## 2026-07-11 — Point 2, the objective vs. the style goal
+### 2026-07-11 — Point 2, the objective vs. the style goal
 
 **Danielle's position.** The pass-rate objective targets the general-purpose case; style
 transfer would build on it. Sketch: a two-part representation (function F, style S) where
@@ -159,7 +495,7 @@ classical setup never did, and ... an LLM optimizer with semantic priors makes e
 that space tractable. ... the fact that we could sketch three plausible designs in one
 exchange is itself evidence for the plausibility argument."
 
-## 2026-07-11 — Point 3, "this isn't quite an embedding"
+### 2026-07-11 — Point 3, "this isn't quite an embedding"
 
 **Danielle's position.** "Embedding" is a deliberately handwavy parallel, but LLM input/output
 space "probably is actually a lot more structured than just, like, arbitrary whatever" — the
@@ -198,7 +534,7 @@ and if you're right, they should form a better-organized vector space than embed
 the raw code — clustering by function rather than surface. Cheap to check, and it converts
 this whole dispute into a measurement."
 
-## 2026-07-11 — Point 4, prior art to position against
+### 2026-07-11 — Point 4, prior art to position against
 
 **Claude's initial map (unverified).** Round-trip correctness (attributed to Allamanis et al.,
 DeepMind) — the same code→NL→code loop with tests, used purely as an LLM evaluation metric;
@@ -236,7 +572,7 @@ explain-then-translate with extra steps), and that one representation serves mul
 downstream uses (otherwise it's scaffolding, not a representation). Those two comparisons
 are the entire defense of the gap."
 
-## 2026-07-11 — Two interest categories: representation exploration vs. beating lossless compression
+### 2026-07-11 — Two interest categories: representation exploration vs. beating lossless compression
 
 **Danielle's framing.** Her own interest: "exploring what types of representations you can
 make and what you can do with them, and how you can control them." Left alone she would
@@ -295,7 +631,7 @@ research agenda.
 Baseline note (unverified): "beat lossless" should be defined against LLM arithmetic coding
 (Delétang et al., "Language Modeling Is Compression"; LLMZip), not only gzip/zstd.
 
-## 2026-07-11 — Compression project: implementation state and initial experiment design
+### 2026-07-11 — Compression project: implementation state and initial experiment design
 
 **State as of 2026-07-11 (Danielle).** A solid implementation of the inner loop exists:
 encode → decode → test evaluation → compression evaluation of the intermediate, runnable
@@ -371,7 +707,7 @@ the compression claim.
 the convincing baseline is LLM + arithmetic coding, and bit accounting must decide how to
 count the shared decoder prompt.
 
-## 2026-07-11 — Sequencing the first measurements; the cliff structure
+### 2026-07-11 — Sequencing the first measurements; the cliff structure
 
 **Danielle's decisions and observations.** pass@1 is the metric — cost-wise the only one that
 makes sense, and "language models are so good that, at this point, what are we doing if
@@ -434,7 +770,7 @@ always survive the conversion" (code compresses well; dense natural language may
 exactly the miniature pilot from before — your first real optimization run and the pipeline
 shakedown in one."
 
-## 2026-07-11 — Baseline vs. seed: where to start the optimization
+### 2026-07-11 — Baseline vs. seed: where to start the optimization
 
 **Danielle's decision point.** The lab's constraints: HumanEval (agreed suboptimal — "the
 original code is so short that, what are we even really measuring?") and the original
@@ -480,7 +816,7 @@ the reachability question from point 1, answered empirically. Divergence means
 initialization sensitivity is real, which is both a reportable finding and the justification
 for the diagnosis-driven arm later."
 
-## 2026-07-11 — Recap of conclusions; what the large-n phase must output
+### 2026-07-11 — Recap of conclusions; what the large-n phase must output
 
 **Danielle's recap (confirmed accurate).** Many design decisions become arms of the
 experiment. First need: "a regime where there is the potential for optimization, and a
@@ -532,7 +868,7 @@ that design the diagnosis arm. Nothing there is throwaway."
 Danielle's interests, the lab's compression interest, and the plan for pursuing the
 compression goal first — the natural seed for this topic's project doc if promoted.
 
-## 2026-07-11 — Fractional test pass rate as a second signal
+### 2026-07-11 — Fractional test pass rate as a second signal
 
 **Danielle's observation.** The binary argument made her realize she also has per-test pass
 percentage: "binary pass rate is the relevant top-line metric but it feels like test pass rate
@@ -569,7 +905,7 @@ failure — if your fraction comes from that, it's 'position of first failing as
 (censored), not independent per-test outcomes. Verify the asserts run individually before
 trusting the metric."
 
-## 2026-07-11 — Per-test outcomes confirmed; dividends and caveat
+### 2026-07-11 — Per-test outcomes confirmed; dividends and caveat
 
 **Danielle:** the HumanEval `check()` function has already been split into its individual
 asserts, so per-test outcomes are real.
@@ -589,7 +925,7 @@ the suite — the cross-problem aggregate belongs to binary." Micro-check: "make
 tests are order-independent (no shared mutable state from the original sequential block)."
 With that, "the census design is fully specified."
 
-## Open questions
+### Open questions (running)
 
 - Bottleneck: now framed as *optional* and itself an experimental variable — does
   prompt-space optimization reach the smuggling equilibrium at all? Track with a
@@ -629,5 +965,3 @@ With that, "the census design is fully specified."
   objective); log per-test outcomes; decompose P(runnable) × E[fraction | runnable]; verify
   asserts run independently (done — `check()` split); log per-test vectors for McNemar-style
   pairing; fraction is within-problem only; audit order-independence of the split tests.
-
-**Waiting on:** the remaining points of the point-by-point discussion; a promotion decision.
