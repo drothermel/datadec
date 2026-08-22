@@ -248,6 +248,22 @@ Steps 0–4c (Stage 1) have no dependency on branches and should be done early; 
 Dated, attributed notes from external review conversations, recorded for consolidation — not
 decisions. Only notes about this project are kept here.
 
+### 2026-08-22 — the training-side mirror: token selection and reweighting objectives
+
+From Danielle's SciSpace review of CE alternatives for training (record in
+`../topics/reference/training-objective-alternatives-literature.md`). TOK asks which
+tokens training moves and whether movement concentrates on high-entropy tokens; a whole
+objective family asks the converse — which tokens training *should* weight — and
+answers with the same statistics TOK measures: predictive entropy (MiLe), reference-model
+excess loss (Rho-1 "not all tokens"), value-at-risk on per-token loss (ESLM), gradient
+utility (VCORE), and multi-token prediction's implicit upweighting of "choice-point"
+tokens. Two uses: (1) related work — TOK's Stage-1 headline ("movement concentrates on
+tokens of class X") is the descriptive counterpart of these prescriptions and should
+cite them; (2) a cheap observational test — Rho-1's excess-loss score and TOK's
+per-token movement are both computable on the released checkpoints, so "do the tokens
+Rho-1 would select coincide with the tokens DataDecide training actually moves?" is a
+T0 analysis with no new training. Unverified beyond the agent summaries.
+
 ### 2026-08-21 — two "top-N by workshop-paper likelihood × speed" lists
 
 - **Ranked #5 in a top-5 list (Stage 1 only).** "The TOK-obs-2 → TOK-obs-4 ladder. TOK-obs-2

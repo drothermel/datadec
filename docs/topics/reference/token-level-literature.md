@@ -9,6 +9,13 @@ split, loss-trajectory taxonomies, and the RLVR "forking tokens" results are its
 
 ---
 
+## 2026-08-22 — pointer: token-reweighting training objectives
+
+The objectives that select or reweight tokens during training (Rho-1, MiLe, ESLM, TALR,
+VCORE, multi-token prediction) are accumulated in
+`training-objective-alternatives-literature.md`; this file stays with token-level
+measurement and movement.
+
 ## 2026-08-18 — mapping tokens into river vs. wall, and how the mapping moves (from the Research Trajectory page)
 
 Prompt context (Danielle): Wen et al. describe "highly deterministic tokens (facts, knowledge)

@@ -3010,6 +3010,24 @@ source, and the "architecture-independent" mislabel flagged), dated notes in
 (bits-per-byte column for the PPL tables), and a pointer in
 [topics/reference/small-scale-evaluation-metrics-literature.md](topics/reference/small-scale-evaluation-metrics-literature.md).
 
+### 2026-08-22 — SciSpace literature review: alternatives to CE loss for LLM training
+
+> I want you to do a literature review of modifications to, or alternatives to Cross
+> Entropy Loss for LLM pretraining or finetuning. Examples include completely differently
+> training objectives, as well as modifications such as reweighting the loss from certain
+> tokens to be more important. I do not want you to include any commonly studied RLHF
+> methods, unless they are applied to pretraining.
+
+Applied: `INDEX.md` in `~/drotherm/data/convo-artifacts/2026/scispace-alts-to-CE-loss-llm-pretraining-agent-artifacts-zip_e225323f-208b-41a7-abd2-1ce72571fd27_1787425213/` (report md/tex/pdf; the 10 parsed papers mapped to stems;
+further full texts; the mostly off-topic arXiv folder flagged; merged CSVs with
+objective/mechanism columns; RLHF leakage and missing canon listed).
+
+Routed to: [topics/reference/training-objective-alternatives-literature.md](topics/reference/training-objective-alternatives-literature.md)
+(new reference topic, RLHF-adjacent entries removed), a dated note in
+[potential-projs/token-movement.md](potential-projs/token-movement.md) §4 (token
+selection objectives as TOK's mirror; a T0 coincidence test), and a pointer in
+[topics/reference/token-level-literature.md](topics/reference/token-level-literature.md).
+
 ### Post-intake decisions — 2026-08-22 (data-layer conversation)
 
 > 1. I think data-card/ validation work should be its own project doc, so b as you say.
