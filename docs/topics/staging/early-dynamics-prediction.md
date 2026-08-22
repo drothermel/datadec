@@ -1,5 +1,12 @@
 # Early dynamics predict model performance — forecasting DataDecide outcomes from the first 10% of training
 
+**DataDecide link.** This proposal runs entirely on the DataDecide suite (25 recipes × 14
+sizes × 3 seeds, per-checkpoint perplexity + OLMES) — the same data every `T0`/`T1` project
+in `potential-projs/` uses — so if promoted it serves the program's "how" pillar
+(measurement at small scale / early time) and the "independent variable" pillar (recipe
+effects). The recipe-family CV scheme below is reusable by any leave-recipe-out design on
+DataDecide.
+
 **Kind:** staging. Candidate exits: a standalone project doc (it is a complete proposal with a
 draft paper), or absorption into tiny-scale measurement (`TINY`) / trajectory statistics
 (`TRJ`) as a prediction arm. Gate: Danielle's decision on whether this July-2025 direction is

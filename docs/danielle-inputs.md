@@ -1650,3 +1650,8 @@ Follow-up in the same review sequence (prompt not provided; Danielle notes the G
 file cannot be recovered). Recorded in
 [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md) ("a
 recipe-family scheme for leave-family-out CV"), with a correction to its family-size claim.
+
+> this is related to the datadecide dataset, huh, we should note that link
+
+Applied: DataDecide link and pillar relevance added to the early-dynamics staging header;
+index row updated.
