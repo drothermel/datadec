@@ -112,6 +112,21 @@ Dated notes from external conversations and the staging topic this doc was promo
 recorded for consolidation — not decisions. Related-work claims in quoted text are
 unverified unless a citation is given.
 
+### 2026-08-22 — distillation as the post-training arm: what the literature settles and what it leaves open
+
+From Danielle's SciSpace review of LLM distillation (record in
+`../topics/reference/distillation-literature.md`). Three things for the harness: (1) the
+objective question is settled enough to fix a default — reverse KL (MiniLLM) or a
+skew/JSD variant for the KL-to-teacher readout, with an explicit CE/LM term; (2) the
+review confirms there is no published controlled comparison of "distil from the base
+teacher, then post-train the student" vs. "distil from the post-trained teacher" — the
+MIC-opt design that runs both on the same student and reads movement is unclaimed
+territory, and it is the apex question in miniature; (3) the evidence that KD beats
+scratch only in data-limited regimes (BERT-scale) means the distillation-quality confound
+listed in §2 needs a from-scratch control at the same token budget, not only a no-op
+distillation. Missing canon to cite before any of this is written: distillation scaling
+laws (2502.08606), on-policy GKD (2306.13649), DistiLLM (2402.03898).
+
 ### Origin notes — moved from `topics/staging/movement-microscope.md`
 
 ## 2026-08-18 — Response (from the Research Trajectory page)

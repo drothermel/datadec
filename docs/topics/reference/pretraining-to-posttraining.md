@@ -12,6 +12,13 @@ all descend from it.
 
 ---
 
+## 2026-08-22 — pointer: distillation from pre- vs. post-trained teachers
+
+Danielle's six-question distillation review (`distillation-literature.md`) found no
+controlled comparison of distilling a student from a base teacher then post-training it
+vs. distilling from the post-trained teacher directly — this file's question with a
+teacher in the loop, and an open design.
+
 ## 2026-08-22 — pointer: midtraining toward a target suite
 
 The forward-run version of this file's question — deliberately pretraining or

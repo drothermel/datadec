@@ -2964,6 +2964,29 @@ condensed) and a dated note in
 (syntheticity/rephrasing feature; collapse references), with a pointer in
 [topics/reference/data-featurization-literature.md](topics/reference/data-featurization-literature.md).
 
+### 2026-08-22 — SciSpace literature review: distillation in LLMs (six questions)
+
+> I want you to do a literature review of distillation in LLMs, focusing on the following
+> areas: 1) the size of the teacher and student, potentially including scaling laws, 2)
+> the objective to use for the distillation loss, and how to combine it with CE loss or
+> other losses, 3) repetition of logits in distillation compared to repetition of raw data
+> tokens in pretraining, 4) what conditions lead to distillation performing better than
+> training from scratch, 5) the difference between distilling from pre-trained vs.
+> post-trained models and 6) the difference in performance between distilling from a
+> pre-trained teacher and then doing post-training, versus only distilling from a
+> post-trained teacher.
+
+Applied: `INDEX.md` in `~/drotherm/data/convo-artifacts/2026/scispace-llm-distillation-agent-artifacts-zip_deb5ff94-1238-4180-81b2-62dc9cedad35_1787424886/` (report md/tex/pdf with figure manifests; on-topic vs.
+off-topic split of the 34 downloaded PDFs; merged CSVs with question-aligned columns;
+missing canon and the duplicated reference block noted).
+
+Routed to: [topics/reference/distillation-literature.md](topics/reference/distillation-literature.md)
+(new reference topic: per-question condensation with evidence quality), a dated note in
+[potential-projs/movement-microscope.md](potential-projs/movement-microscope.md) §4
+(distillation arm defaults; the unclaimed sequential-vs-direct comparison; from-scratch
+control), and a pointer in
+[topics/reference/pretraining-to-posttraining.md](topics/reference/pretraining-to-posttraining.md).
+
 ### Post-intake decisions — 2026-08-22 (data-layer conversation)
 
 > 1. I think data-card/ validation work should be its own project doc, so b as you say.
