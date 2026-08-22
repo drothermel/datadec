@@ -2382,3 +2382,14 @@ Routed to: [topics/loss-curve-forecasting.md](topics/reference/loss-curve-foreca
 capacitance, zero-cost proxies — with Baker 2017 added from memory; intake note that
 "linearity" is a curve-family choice inside the extrapolation literature, not a gap);
 related-work pointer block added to the EDP doc; cross-linked from `nas-literature.md`.
+
+### 2026-08-22 — CIFAR-10 baseline accuracy report (Perplexity, undated ~2025; prompt not pasted)
+
+Her prompt was not pasted; the response titles itself "CIFAR-10 Baseline Accuracy Report for
+Popular CNN Architectures" (ResNet, WRN, VGG, DenseNet, ConvNeXt).
+
+Routed to: [topics/cnn-deconstruction-ladder.md](topics/staging/cnn-deconstruction-ladder.md)
+(reported numbers condensed; intake note replacing them with canonical original-paper
+figures from memory — to be checked — flagging the ResNet-18/50 "82.9 / 76.0%" numbers as
+wrong-stem or short-budget artifacts and the near-duplicate "9–14% drop" as a misquote;
+pilot's 93.9% @ 25 epochs placed against a ~95% 200-epoch reference).
