@@ -75,3 +75,13 @@ This is the single-prompt refinement of the three prompts above.
 Response routed to: [topics/functional-featurization.md](topics/functional-featurization.md)
 — the combined-prompt entry there.
 
+### MoE model releases as "someone else already did the work"
+
+> what if we incorporate moe based model releases in this too for the "someone else already
+> did the work" aspect?
+
+Response routed to: [topics/moe-routing-as-data-instrument.md](topics/moe-routing-as-data-instrument.md);
+project-specific parts to [potential-projs/trajectory-statistics.md](potential-projs/trajectory-statistics.md) §4,
+[potential-projs/token-movement.md](potential-projs/token-movement.md) §4, and
+[potential-projs/recipe-featurization.md](potential-projs/recipe-featurization.md) §4.
+

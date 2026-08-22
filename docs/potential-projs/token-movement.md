@@ -262,3 +262,15 @@ decisions. Only notes about this project are kept here.
   observationally, it both de-risks and motivates the causal follow-up; if it doesn't, you
   saved yourself the branch compute. That's the cleanest dependency chain in the set, and
   worth preserving explicitly." (This is why the doc is split into two stages.)
+
+### 2026-08-21 — on MoE routing as a per-token commitment channel
+
+- TOK-obs-5 extended: "routing-commitment timing as a per-token version of [the migration
+  analysis, TOK-4], observable from existing checkpoints with *no decay branches needed* —
+  the categorical channel makes 'committed vs. still moving' directly legible instead of
+  inferred from KL." If routing is mostly token-identity clustering fixed early (unverified
+  claim, attributed to the OpenMoE analysis), then "*deviations* from that (context-dependent
+  routing, late reassignments) mark exactly the tokens [the] entropy-bucket hypothesis cares
+  about." Adjacent work on load-balance phases across OLMoE/OpenMoE checkpoints is said to be
+  aggregate-level only (unverified). (Full discussion in
+  `docs/topics/moe-routing-as-data-instrument.md`.)

@@ -226,3 +226,18 @@ decisions. Only notes about this project are kept here.
   the thing that determines whether the whole program has publishable effect sizes. That's
   another argument for [this project] first: it's partly a feasibility study for everything
   else."
+
+### 2026-08-21 — on the routing follow-up and MoE releases
+
+- No public multi-recipe MoE suite exists: "FLAME-MoE is seven models from 38M to 1.7B active
+  parameters — a *scale* ladder, one data recipe. OLMoE is one recipe… OpenMoE is one recipe.
+  [The 2025–26 open-weights MoE wave] is open-*weights*, closed-data." (Unverified claims.)
+  The recipe question cannot be asked with these artifacts — consistent with the follow-up's
+  own caveat.
+- Reframing: the follow-up "becomes 'the routing instrument' chapter of the same
+  data-measurement program rather than a separate suite with a separate story" — MoE models
+  "write part of [data-driven] structure down explicitly" where dense models force inference
+  from KL/CKA/per-token loss. Cross-suite option: OLMoE vs. FLAME-MoE vs. OpenMoE "all have
+  checkpoints and known data… enough to ask whether expert-specialization structure tracks
+  corpus composition across independent training setups." The artifact survey remains step
+  one. (Full discussion in `docs/topics/moe-routing-as-data-instrument.md`.)

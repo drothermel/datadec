@@ -151,3 +151,14 @@ decisions. Only notes about this project are kept here.
   R² "is a race you lose to people with a thousand internal ablations"; the contribution has
   to be the public artifact, the theory link, or the dynamics angle.
 
+### 2026-08-21 — on MoE releases as extra outcome data
+
+- Against using MoE releases to enlarge the REC-3 outcome table: "it adds architecture as a
+  confound without adding recipe variation, and n stays tiny. One model per data point, with
+  architecture, tokenizer, and scale all varying between releases, is a worse supervised
+  problem than DataDecide, not a better one."
+- For: expert assignment as "a data fingerprint" — "does the expert decomposition recover your
+  intrinsic features (domain composition, frequency bands, determinism profile)?" This
+  "strengthens the case for building [the] reference-model scorer and corpus-feature
+  extractors first (they're what routing gets joined *to*)." (Full discussion in
+  `docs/topics/moe-routing-as-data-instrument.md`.)
