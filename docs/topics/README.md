@@ -19,3 +19,4 @@ directory only holds live, unresolved material.
 | Topic | What it is waiting on |
 |---|---|
 | [functional-featurization.md](functional-featurization.md) | A decision on whether it becomes its own project or the second act of token-level movement / annealed readouts; the branch-run logging spec must be frozen before any branch runs either way |
+| [beyond-datadecide-data-measurement.md](beyond-datadecide-data-measurement.md) | Whether the program is reframed as "data measurement → training dynamics" with DataDecide as its first instrument-validation study; which open sub-regions (cross-suite transfer, midtraining data, measured data cards) become projects |

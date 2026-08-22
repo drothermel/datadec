@@ -138,3 +138,16 @@ decisions. Only notes about this project are kept here.
 - **n = 25 (reviewer 2).** "The family-contrast/dose-response framing is the right answer and
   should back-propagate everywhere recipes are compared" — i.e. REC-d is a program-level
   design pattern, not just this project's.
+
+### 2026-08-21 — reviewer 2, on generalizing beyond DataDecide
+
+- REC-a's finding "almost certainly generalizes. Public datasets' stated compositions vs.
+  measured compositions is unglamorous, highly citable, and nobody's job. A 'measured data
+  cards' effort across the major public corpora is the WIMBD sequel that hasn't been written."
+- Cross-suite transfer of the REC-3 map (DCLM pool, FineWeb ablations, RegMix's small models)
+  "is cheap once the extractors exist and directly attacks the n=25 problem by pooling suites."
+- Framing: this project "becomes the first instrument-validation study in a program
+  ['data measurement → training dynamics'] rather than the whole program." Pure predictive
+  R² "is a race you lose to people with a thousand internal ablations"; the contribution has
+  to be the public artifact, the theory link, or the dynamics angle.
+
