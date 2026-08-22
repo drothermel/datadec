@@ -293,6 +293,9 @@ Context column = the ~80 characters preceding the ID in the topic, as a memory a
 | 2310.19791 | LILO — learning interpretable libraries by compressing and documenting code | `code-compression-literature` | agent-supplied | TLC | |
 | 2212.04596 | babble — library learning with e-graphs and anti-unification | `code-compression-literature` | agent-supplied | TLC | |
 | 2503.13992 | The KoLMogorov Test — compression by code generation | `code-compression-literature` | agent-supplied | TLC | |
+| physics/0004057 | Tishby, Pereira & Bialek — The information bottleneck method | `text-latent-code-autoencoder` §4 | agent-supplied | TLC | |
+| 1612.00410 | Alemi et al. — Deep Variational Information Bottleneck (OpenReview HyxQzBceg; ID Claude-supplied) | `text-latent-code-autoencoder` §4 | Claude-added | TLC | |
+| 1807.03748 | van den Oord et al. — Contrastive Predictive Coding / InfoNCE | `text-latent-code-autoencoder` §4 | agent-supplied | TLC | |
 
 Rows: 208 (181 agent-supplied, 27 Claude-added, 5 named without ID).
 

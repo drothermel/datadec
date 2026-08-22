@@ -3466,3 +3466,29 @@ syntax-directed / AST / bytecode compression, Boffa 2025, program reduction,
 superoptimization, library learning, background-only clusters, Python tooling; the gap
 statement); TLC §4 note (ladder, lossless competitors on the rate axis, TLC as a reducer
 with an NL representation); litreview plan subdomain C seeds; eight ledger rows.
+
+### Undated (intake 2026-08-22) — information bottleneck → proxies for the TLC objective (three turns)
+
+> I'm thinking through the goal of representation learning from the perspective of an
+> information bottleneck. And there I know one formulation is that you minimize the mutual
+> information between the input and the representation while maximizing something else,
+> which represents maximizing the information in the representation relevant to the target
+> task, but I don't remember the actual equation in terms of information theory. What is it?
+
+> And the theory is that if you learn a representation that optimizes this it will be the
+> most useful for solving the task generally because you have removed all distractor info
+> right?
+
+> Ok great, so now, I'm interested in using an encoder-decoder setup to encode a Python
+> program into a representation and then to decode the representation into a function that
+> passes the same tests as the original function, aiming for a proxy for behavioral
+> equivalence.
+> I'm looking for a proxy for mutual information if the encoder and decoder are frozen
+> pretrained language models and the intermediate representation is natural language. I'm
+> not even sure how I'd measure the "mutual info" between the input function and the output
+> function, let alone how I'd do that between language and function
+
+Routed: TLC §4 note (IB objective; relevance variable = test-suite signature, not source;
+proxies — description length −log p_LM(r) for I(X;R), smoothed K-sample pass probability
+for I(R;Y_T), leakage incl. log p_D(x|r), InfoNCE lower bound; Behavioral Bottleneck
+Score; two cautions on K and on which LM prices the rate); three ledger rows.

@@ -346,6 +346,60 @@ Dated notes from the external conversation this doc was promoted from, recorded 
 consolidation — not decisions. Related-work claims in quoted text are unverified unless a
 citation is given; Danielle's prompts are logged verbatim in `../danielle-inputs.md`.
 
+### 2026-08-22 — the information-bottleneck reading, and proxies for the two mutual informations
+
+Danielle, thinking through representation learning as an information bottleneck, asked
+for the objective (min I(X;Z) − β I(Z;Y); constrained form min I(X;Z) s.t. I(Z;Y) ≥ C;
+sufficient → minimal sufficient statistic; Tishby–Pereira–Bialek physics/0004057), confirmed
+the "removes distractor information" intuition with its caveat (irrelevance is relative to
+Y *and the training distribution*; spurious correlations that predict Y survive), and then
+put the project to it verbatim: "I'm interested in using an encoder-decoder setup to encode
+a Python program into a representation and then to decode the representation into a
+function that passes the same tests as the original function, aiming for a proxy for
+behavioral equivalence. I'm looking for a proxy for mutual information if the encoder and
+decoder are frozen pretrained language models and the intermediate representation is
+natural language. I'm not even sure how I'd measure the 'mutual info' between the input
+function and the output function, let alone how I'd do that between language and
+function." Response, condensed; the formal choices are worth adopting as the project's
+statement of its objective.
+
+- **Reframe the relevance variable.** Not I(X; X̂) — that rewards source identity — but
+  I(R; Y_T) where X = source, R = the NL representation, X̂ = decoded function, and
+  Y_T(X) = (X(t₁), …, X(t_m)) the *test-suite signature*. Objective: min I(X;R) − β I(R;Y_T).
+- **Why exact MI is the wrong target here.** MI is a property of random variables under a
+  distribution, not of one program and one sentence; neural IB work uses variational
+  bounds (Deep VIB, arXiv 1612.00410) for the same reason. So proxies:
+  - *I(X;R)* → description length of R: token/byte length, or better −log p_LM(r). With a
+    deterministic encoder and discrete R, I(X;R) = H(R), so description length is the
+    operational stand-in — this is the rate axis §1 already uses.
+  - *I(R;Y_T)* → behavioral reconstruction: sample K decodes from the frozen decoder,
+    q̂_T(x,r) = (1 + #{x̂_k passes T_x}) / (2 + K), loss −log q̂_T. The smoothing avoids
+    infinite loss at zero passes. This is the pass-rate / pass@k proxy (Codex 2107.03374).
+  - *Leakage* → a term that penalizes copying the implementation into R: copy rate,
+    identifier overlap, and most interestingly **log p_D(x | r)** — if the frozen decoder
+    can reconstruct the exact original source from r, r carries too much implementation
+    detail for a behavioral abstraction. This is the formal version of the copy-detection
+    signals §1 ("instrument rather than design") already logs.
+  - *MI-like relevance* → InfoNCE over a batch: s(r_i, y_j) = how well r_i predicts
+    behavior y_j (decode from r_i, run against tests/signature of x_j); log N − L_NCE as a
+    contrastive lower-bound proxy for I(R;Y_T) (CPC, arXiv 1807.03748). Requires negatives
+    whose signatures differ — functions with the same test behaviour are positives, which
+    is the invariance-objective idea in §1 arriving from the other direction.
+- **Proposed scalar:** Behavioral Bottleneck Score = log q̂_T(x,r) − λ·L_NL(r) −
+  γ·Leak(x,r), higher is better.
+- **Key design choice:** the target variable must be behaviour under a sufficiently rich
+  test distribution, otherwise the bottleneck rewards "the exact code is: …".
+
+What this adds to the doc: §1's rate–distortion framing and the degeneracy policy are one
+objective — rate = −log p_LM(r), distortion = −log q̂_T, and leakage = log p_D(x|r) prices
+smuggling in the decoder's own units rather than by n-gram overlap. Two cautions
+(Claude-added): the per-sample estimate q̂_T is exactly the small-n pass-rate estimation
+problem recorded in the estimation toolkit (`../topics/reference/
+estimation-and-calibration-methods.md`), so K and its interval belong in the census power
+table; and −log p_LM(r) depends on which LM prices the representation — it should be the
+decoder, or a fixed public LM declared as a prior, for the same fairness reason as the
+dictionary rule in the baseline suite.
+
 ### 2026-08-22 — the correctness ladder and the classical code-compression precedents (Pro-mode search)
 
 A four-turn conversation (record in `../topics/reference/code-compression-literature.md`,
