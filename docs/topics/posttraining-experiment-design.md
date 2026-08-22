@@ -110,3 +110,13 @@ demo vs. k) on existing checkpoints. Recorded in [icl-as-posttraining.md](icl-as
 - A publishable piece on its own: "a modest meta-analysis of 'how often does the
   incumbent's advantage survive serious re-tuning'" over the field's natural experiments.
 See [../research-hypothesis.md](../research-hypothesis.md).
+
+---
+
+## 2026-08-18 — the instrument-first ordering
+
+The movement-microscope design ([movement-microscope.md](movement-microscope.md)) is the
+fully worked version of "interrogate whether 'no movement' was real or a metric artifact":
+noise floor (including a continued-pretraining control) → guaranteed-effect calibration
+(memorization, distillation with KL-to-teacher as a ground-truth axis, within-reach tasks)
+→ decomposition by layer, token bucket, and direction → recipe movement profiles.

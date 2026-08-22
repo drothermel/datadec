@@ -370,3 +370,15 @@ effect buckets, or watching that mapping change over training?
   mechanism, a dataset-featurization result (the 'determinism profile'… now measured
   causally), and a candidate explanation for *when* annealed vs. unannealed evals disagree."
   Paper list in `docs/topics/token-level-literature.md`.
+
+### 2026-08-18 — the post-training twins of TOK-obs-4 and TOK-4 (from the Research Trajectory page)
+
+- Movement-microscope Stage 3: "per-token KL sliced by the determinism/entropy buckets —
+  does SFT at small scale only move the high-entropy 'hillside' tokens, echoing the RLVR
+  forking-token result?… The token-bucket slice is the one I'd bet on being interesting…
+  pure inference over checkpoints you already have." Same instrument as TOK-obs-4 with the
+  base model as the reference point.
+- Stage 4: "post-train all 25 recipes identically and compare *movement profiles* — not
+  outcomes… Recipe-dependent movement profiles at matched final loss would be your original
+  thesis, demonstrated below the elicitation threshold." The post-training counterpart of
+  TOK-4's cross-recipe migration. See `docs/topics/movement-microscope.md`.

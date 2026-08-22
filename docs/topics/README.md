@@ -48,6 +48,7 @@ directory only holds live, unresolved material.
 | [frozen-body-transfer-audit.md](frozen-body-transfer-audit.md) | A forward-citation sweep of arXiv 2107.12460, then a promotion decision (gaps G5/G6): LR-tuning re-audit with the reservoir null; elicitation-ceiling measurement of what a frozen interface can reach |
 | [reset-response-stage-probe.md](reset-response-stage-probe.md) | Whether checkpoint tomography is promoted and adds this as its fifth probe (gap G7) |
 | [reset-effects-many-seed-lm.md](reset-effects-many-seed-lm.md) | Whether the Zaidi-style many-seed / tuned-regularization replication stands alone or becomes a requirement in the other reset topics (gap G8) |
+| [movement-microscope.md](movement-microscope.md) | Whether the four-stage post-training movement study (noise floor → calibrated sensitivity → decomposition → recipe movement profiles) becomes a project or folds into token-level movement / post-training design |
 | [nonstationarity-accounting.md](nonstationarity-accounting.md) | Whether "non-stationarity accounting" becomes the thesis-level framing (see candidate program framings in the potential-projs README); its case study has moved to the MoE movement project |
 
 Absorbed on 2026-08-21 into project docs: `moe-analysis-program` and

@@ -286,3 +286,13 @@ decisions. Only notes about this project are kept here.
   tokens at different loss are different controls, and you'll want both, since 'recipe A
   reaches this loss faster' and 'recipe A has better [signature] at this loss' are separable
   claims." The pairing utility should emit both pair types.
+
+### 2026-08-18 — a control to add to the noise floor (from the Research Trajectory page)
+
+- The movement-microscope design's null distribution for post-training movement includes,
+  "crucially, *continued pretraining on the same pretraining data* for the same token
+  budget as the post-training would use." TRJ-6's floors (seed variance, windowed
+  replicates, item bootstrap) are the between-checkpoint analogue; the token-exposure
+  control is the piece to add when the floor is used to judge any intervention that adds
+  training. "Movement that doesn't exceed seed-noise-plus-token-exposure isn't movement."
+  See `docs/topics/movement-microscope.md`.

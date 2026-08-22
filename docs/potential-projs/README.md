@@ -379,3 +379,13 @@ Full text for each: `recipe-featurization.md` §4 (first),
   (The same conversation also contained advice about managing Danielle's adviser; that
   material is disregarded at her direction and not recorded.)
 
+### 2026-08-18 — sensitivity as the object of study (from the Research Trajectory page)
+
+- "Instead of asking 'did our intervention work?' (a hypothesis test), ask 'what does
+  movement even look like in these models?' (an instrument-building question)… the
+  unpressured version treats sensitivity itself as the object of study, so every null is a
+  data point on a detection-limit curve… Stages 1–3 produce publishable artifacts (a
+  noise-floor atlas, a metric dose-response benchmark, a movement decomposition) regardless
+  of what Stage 4 finds." Staging topic:
+  [../topics/movement-microscope.md](../topics/movement-microscope.md).
+

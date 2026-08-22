@@ -733,3 +733,17 @@ aligned barriers; stitching / linear-map residuals; CKA caveat);
 [topics/reinit-and-transfer-literature.md](topics/reinit-and-transfer-literature.md)
 (stitching as the embedding-reset experiment as measurement).
 
+### Toggle 21 — 2026-08-18 22:32 (how an unpressured researcher would explore DataDecide movement)
+
+> ok, now, for trying to identify movement of the pretrained data decide models at small
+> scales (beyond the proxy metrics they've already identified), how would you suggest a
+> different researcher with no external pressure might explore the space?
+
+Routed to: new staging topic [topics/movement-microscope.md](topics/movement-microscope.md)
+(Stages 1–4); [potential-projs/trajectory-statistics.md](potential-projs/trajectory-statistics.md)
+§4 (continued-pretraining control for the noise floor);
+[potential-projs/token-movement.md](potential-projs/token-movement.md) §4 (post-training
+twins of TOK-obs-4 / TOK-4);
+[topics/posttraining-experiment-design.md](topics/posttraining-experiment-design.md); the
+potential-projs README program-level notes.
+
