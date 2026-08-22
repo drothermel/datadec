@@ -1,6 +1,6 @@
 # Paper finding validation report
 
-- Run ID: `20260821-dd-parsed-v2`
+- Run ID: `20260821-dd-parsed-v3`
 - Run format: 2
 - Scientific source: persisted `targets.json`, `attempts.json`, and `plot-series.json` only.
 
@@ -13,8 +13,8 @@ Sensitivity attempts and metadata discrepancies are excluded.
 | reproduced | 27 |
 | approximately_reproduced | 3 |
 | directionally_consistent | 4 |
-| not_reproduced | 6 |
-| not_assessable_from_dd_parsed | 31 |
+| not_reproduced | 5 |
+| not_assessable_from_dd_parsed | 32 |
 | descriptive_only | 8 |
 
 ## Family: headline\_single\_scale
@@ -30,7 +30,6 @@ Sensitivity attempts and metadata discrepancies are excluded.
 | DD-0011 | dd-0011-preceding-common-complete-1 | sensitivity | "decision\_accuracy approximately 0.80" | 0.7977777777777778 | -0.00222222222222 | approximately_reproduced |
 | DD-0011 | dd-0011-preceding-common-complete-2 | sensitivity | "decision\_accuracy approximately 0.80" | 0.7999999999999999 | -1.11022302463e-16 | approximately_reproduced |
 | DD-0164 | dd-0164-default | default | "decision accuracy increases with compute" | {"ols\_slope\_per\_compute\_decade":0.08189161736753775,"point\_count":272,"satisfied":true,"spearman":0.9670062043073044} | — | reproduced |
-| DD-0165 | dd-0165-default | default | "intermediate and final checkpoints match at equal compute" | {"matched\_pair\_count":0,"matched\_pairs":\[\],"minimum\_accuracy\_difference":-1.0,"minimum\_allowed\_difference":-0.0033333333333333335,"satisfied":false} | — | not_reproduced |
 | DD-0169 | dd-0169-default | default | "aggregate decision accuracy increases approximately linearly in log compute" | {"plot\_series\_id":"dd-0169-paper-analog","point\_count":272} | — | descriptive_only |
 | DD-0356 | dd-0356-default | default | "annotation = 25 datasets; 150M predictor; 1B target; approximately 80%" | {"decision\_accuracy":0.8033333333333333,"satisfied":true,"threshold":0.8} | — | approximately_reproduced |
 | DD-0356 | dd-0356-comparison-accuracy-threshold-grid-1 | sensitivity | "annotation = 25 datasets; 150M predictor; 1B target; approximately 80%" | {"decision\_accuracy":0.8033333333333333,"satisfied":true,"threshold":0.75} | — | approximately_reproduced |
@@ -47,7 +46,6 @@ Sensitivity attempts remain separate comparison rows; full predicates, diagnosti
 | DD-0010 | dd-0010-strong-baseline-v1 v1 | mmlu-subject-macro-v1, olmes-task-macro-v1, recipe-ranking-v1, unordered-pair-accuracy-v1 | rows=9900; denominator=900; ties=0/0 | 69369, 37500 | none | none |
 | DD-0011 | approximately-one-point-v1 v1 | mmlu-subject-macro-v1, olmes-task-macro-v1, recipe-ranking-v1, unordered-pair-accuracy-v1 | rows=9900; denominator=900; ties=0/0 | 69369, 37500 | none | none |
 | DD-0164 | dd-0164-positive-compute-trend-v1 v1 | mmlu-subject-macro-v1, olmes-task-macro-v1, recipe-ranking-v1, unordered-pair-accuracy-v1 | rows=1346400; denominator=None; ties=0/0 | 272 selections; 55 unique steps; range=1250..69369 | none | none |
-| DD-0165 | dd-0165-compute-equivalent-v1 v1 | mmlu-subject-macro-v1, olmes-task-macro-v1, recipe-ranking-v1, unordered-pair-accuracy-v1 | rows=1346400; denominator=None; ties=0/0 | 272 selections; 55 unique steps; range=1250..69369 | none | none |
 | DD-0169 | nonempty-paper-plot-v1 v1 | mmlu-subject-macro-v1, olmes-task-macro-v1, recipe-ranking-v1, unordered-pair-accuracy-v1 | rows=1346400; denominator=None; ties=0/0 | 272 selections; 55 unique steps; range=1250..69369 | none | dd-0169-paper-analog |
 | DD-0356 | dd-0356-annotation-v1 v1 | mmlu-subject-macro-v1, olmes-task-macro-v1, recipe-ranking-v1, unordered-pair-accuracy-v1 | rows=9900; denominator=900; ties=0/0 | 69369, 37500 | none | dd-0356-paper-analog |
 
@@ -243,6 +241,7 @@ These targets lack a default assessable result in the persisted bundle.
 
 | Claim | Family | Paper target | Recorded reason | Missing groups |
 | --- | --- | --- | --- | --- |
+| DD-0165 | headline\_single\_scale | "intermediate and final checkpoints match at equal compute" | No exact-compute intermediate/final checkpoint pairs exist in the selected dd\_parsed surface.; Predicates and sensitivity grids are versioned in paper\_validation.toml.; +1 more | 1: checkpoint\_pair=exact\_compute\_intermediate\_to\_final |
 | DD-0017 | math\_code | "MBPP: decision\_accuracy \> 0.80 at percent\_target\_compute = 0.01 using continuous likelihood proxy" | The required math/code evaluation results are absent from dd\_parsed.; The required observation is absent from dd\_parsed. | 1: math/code evaluation results |
 | DD-0018 | math\_code | "HumanEval: decision\_accuracy \> 0.80 at percent\_target\_compute = 0.01 using continuous likelihood proxy" | The required math/code evaluation results are absent from dd\_parsed.; The required observation is absent from dd\_parsed. | 1: math/code evaluation results |
 | DD-0213 | math\_code | "code-task Correct Prob decision accuracy exceeds Accuracy at small scales" | The required math/code evaluation results are absent from dd\_parsed.; The required observation is absent from dd\_parsed. | 1: math/code evaluation results |
@@ -300,9 +299,9 @@ Metadata comparisons are descriptive and are excluded from empirical outcome cou
 ## Traceability appendix
 
 - Run format: 2
-- Run ID: `20260821-dd-parsed-v2`
-- Started: `2026-08-21T22:20:16.991419+00:00`
-- Completed: `2026-08-21T22:25:39.218039+00:00`
+- Run ID: `20260821-dd-parsed-v3`
+- Started: `2026-08-22T00:05:46.713748+00:00`
+- Completed: `2026-08-22T00:11:01.854381+00:00`
 - Code trace: not recorded
 - Runtime trace: {"dependency\_lock\_sha256":"5dc6ebf818a0fb66c5ced319f87774078762aabbb4f88628d3353efaad429d54","implementation":"CPython","platform":"macOS-26.5.2-arm64-arm-64bit","python\_version":"3.12.5"}
 
@@ -311,5 +310,5 @@ Metadata comparisons are descriptive and are excluded from empirical outcome cou
 | Input | olmes\_aggregate | `2141844814f8d0e9aa6d9db77c94575e932bd1a7a878fe97579865110e9d06a7` |
 | Input | scaling\_evaluations | `ada3d942f2324115fa7f2ce101313bb3fad8a138563969e39bf75e07d3454ac4` |
 | Bundle | targets.json | `074918ed9c72ecb6434e7ccdccb19df31d08a7975bbe707a05cca38a184de1da` |
-| Bundle | attempts.json | `df75b15b5d01187d1b55a9dfd3970b87f07af1d390fdc4057d2abc0b7d7dea9f` |
+| Bundle | attempts.json | `d191c6e9961351785ff42219fccff74619c1f63d1efcb98574b64f2fac973946` |
 | Bundle | plot-series.json | `d0db7f503ae0307e76d8903637e58e19ad9ad114842f01f3c59c8aaa89a78b47` |
