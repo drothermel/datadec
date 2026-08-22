@@ -24,11 +24,11 @@ directory only holds live, unresolved material.
 
 | Topic | What it is waiting on |
 |---|---|
-| [functional-featurization.md](functional-featurization.md) | A decision on whether it becomes its own project or the second act of token-level movement / annealed readouts; the branch-run logging spec must be frozen before any branch runs either way |
-| [beyond-datadecide-data-measurement.md](beyond-datadecide-data-measurement.md) | Whether the program is reframed as "data measurement → training dynamics" with DataDecide as its first instrument-validation study; which open sub-regions (cross-suite transfer, midtraining data, measured data cards) become projects |
-| [checkpoint-tomography.md](checkpoint-tomography.md) | A prior-art pass (devinterp / WSD follow-up literature) and a decision on whether the four-probe battery becomes the flagship framing that wraps annealed readouts, landscape geometry, token-level movement, and functional featurization |
-| [moe-routing-as-data-instrument.md](moe-routing-as-data-instrument.md) | The FLAME-MoE routing-log survey (still open); whether the routing follow-up is reframed as a "read data structure out of the model" instrument joined to corpus features |
-| [moe-recipe-suite.md](moe-recipe-suite.md) | Whether to run a data-varied, architecture-fixed MoE suite on the Slicing-and-Dicing repo (a project candidate), and separately whether the two "why" analyses go into that paper's rebuttal. The "reweighting" it references is now in `../portfolio-rankings.md` (Tier 1, #2). Sweep final checkpoints confirmed available (HF upload pending) |
-| [moe-analysis-program.md](moe-analysis-program.md) | A program-level decision on the MoE line (sweep reanalysis → reroute-vs-rewrite → interventional data typing) vs. the dense DataDecide line; dedup against the two other MoE topics |
-| [small-scale-measurement-science.md](small-scale-measurement-science.md) | Whether "measurement science of LM training at academic scale" becomes the lab-level framing; the per-window realized-mixture audit (open gate) and a stratified-sampling loader as project candidates |
-| [nonstationarity-accounting.md](nonstationarity-accounting.md) | Whether "non-stationarity accounting" becomes the thesis-level framing; the frozen-routing case study (commitment-timing vs. stability knobs, reset test, suppressor annealing, two-timescale knob) and the per-expert input-drift diagnostic as project candidates |
+| [checkpoint-tomography.md](checkpoint-tomography.md) | A prior-art pass (devinterp / WSD follow-up literature) and a decision on whether the four-probe battery becomes the flagship instrument framing wrapping annealed readouts, landscape geometry, token-level movement, and functional featurization |
+| [nonstationarity-accounting.md](nonstationarity-accounting.md) | Whether "non-stationarity accounting" becomes the thesis-level framing (see candidate program framings in the potential-projs README); its case study has moved to the MoE movement project |
+
+Absorbed on 2026-08-21 into project docs: `moe-analysis-program` and
+`moe-routing-as-data-instrument` → `moe-partitions.md` / `moe-movement.md`;
+`moe-recipe-suite` → `moe-recipe-suite.md`; `small-scale-measurement-science` →
+`tiny-scale-measurement.md`; `functional-featurization` → `functional-featurization.md`;
+`beyond-datadecide-data-measurement` → `recipe-featurization.md` §4 and REC-11.

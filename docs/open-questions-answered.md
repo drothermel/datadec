@@ -125,7 +125,7 @@ PY
 (https://arxiv.org/abs/2605.11689; Danielle third author) retained and obtainable? Gates the
 sweep-reanalysis idea (taxonomy invariance across configs / seeds / balancing mechanisms via
 cross-model expert matching) and the use of the sweep as a matched-loss comparison across
-architectures — see `docs/topics/moe-analysis-program.md` and `docs/topics/moe-recipe-suite.md`.
+architectures — see `docs/potential-projs/moe-partitions.md` and `docs/potential-projs/moe-recipe-suite.md`.
 
 **Answer (confirmed with the collaborator who ran the sweep, 2026-08-21).** All **final**
 checkpoints exist. One of the two will upload them to Hugging Face fairly soon. The
@@ -154,6 +154,6 @@ experiments will log intermediates.
   reconstructing data order from the OLMo training configuration (deterministic ordering)
   and summing per-source tokens per window for every run. Gates every timing/curriculum
   claim built on DataDecide (including the stage-dependent data-value ideas in
-  `docs/topics/functional-featurization.md`) and is itself a candidate audit paper — the
+  `docs/potential-projs/functional-featurization.md`) and is itself a candidate audit paper — the
   time-resolved extension of REC-a.
 

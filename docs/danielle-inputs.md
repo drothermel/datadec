@@ -18,7 +18,7 @@ verbatim; add them here if recovered.
 > dataset featurization/analysis on these super large pretrain (or midtrain/posttrain, etc)
 > dataset and their impacts. would you agree or not?
 
-Response routed to: [topics/beyond-datadecide-data-measurement.md](topics/beyond-datadecide-data-measurement.md);
+Response routed to: [potential-projs/recipe-featurization.md](potential-projs/recipe-featurization.md);
 project-specific parts to [potential-projs/recipe-featurization.md](potential-projs/recipe-featurization.md) §4.
 
 ### Chunked datasets, contribution types, and stage-dependent effects
@@ -32,7 +32,7 @@ project-specific parts to [potential-projs/recipe-featurization.md](potential-pr
 > metrics or the loss landscape when they're applied at different stages in training. Um,
 > that's more what I was imagining. is that a thing?
 
-Response routed to: [topics/functional-featurization.md](topics/functional-featurization.md)
+Response routed to: [potential-projs/functional-featurization.md](potential-projs/functional-featurization.md)
 (the origin entry); project-specific parts to
 [potential-projs/wsd-suite.md](potential-projs/wsd-suite.md) §4 and
 [potential-projs/landscape-geometry.md](potential-projs/landscape-geometry.md) §4.
@@ -72,7 +72,7 @@ current landscape; the ideas are useful nonetheless.
 > contrast to some of the existing ideas?
 
 This is the single-prompt refinement of the three prompts above.
-Response routed to: [topics/functional-featurization.md](topics/functional-featurization.md)
+Response routed to: [potential-projs/functional-featurization.md](potential-projs/functional-featurization.md)
 — the combined-prompt entry there.
 
 ### MoE model releases as "someone else already did the work"
@@ -80,7 +80,7 @@ Response routed to: [topics/functional-featurization.md](topics/functional-featu
 > what if we incorporate moe based model releases in this too for the "someone else already
 > did the work" aspect?
 
-Response routed to: [topics/moe-routing-as-data-instrument.md](topics/moe-routing-as-data-instrument.md);
+Response routed to: [potential-projs/moe-partitions.md](potential-projs/moe-partitions.md);
 project-specific parts to [potential-projs/trajectory-statistics.md](potential-projs/trajectory-statistics.md) §4,
 [potential-projs/token-movement.md](potential-projs/token-movement.md) §4, and
 [potential-projs/recipe-featurization.md](potential-projs/recipe-featurization.md) §4.
@@ -94,7 +94,7 @@ project-specific parts to [potential-projs/trajectory-statistics.md](potential-p
 > which id consider a win. but its lacking interesting analysis, im more interested in the
 > analysis than the full empirical grid sweep for future projects.
 
-Response routed to: [topics/moe-recipe-suite.md](topics/moe-recipe-suite.md) (only section 2
+Response routed to: [potential-projs/moe-recipe-suite.md](potential-projs/moe-recipe-suite.md) (only section 2
 of the response was captured; it references an earlier "reweighting" of directions that is
 also not captured); project-specific part to
 [potential-projs/wsd-suite.md](potential-projs/wsd-suite.md) §4.
@@ -115,10 +115,10 @@ also not captured); project-specific part to
 > the future I'd like to do something with more interesting analysis instead of just a large
 > grid sweep.
 
-Response routed to: [topics/moe-analysis-program.md](topics/moe-analysis-program.md);
+Response routed to: [potential-projs/moe-partitions.md](potential-projs/moe-partitions.md);
 project-specific parts to [potential-projs/trajectory-statistics.md](potential-projs/trajectory-statistics.md) §4
 and [potential-projs/token-movement.md](potential-projs/token-movement.md) §4; the
-sweep-reanalysis idea is also noted in [topics/moe-recipe-suite.md](topics/moe-recipe-suite.md).
+sweep-reanalysis idea is also noted in [potential-projs/moe-recipe-suite.md](potential-projs/moe-recipe-suite.md).
 
 ### Slicing-and-Dicing checkpoints — availability (Danielle's own note)
 
@@ -128,8 +128,8 @@ sweep-reanalysis idea is also noted in [topics/moe-recipe-suite.md](topics/moe-r
 > them we can get intermediate logs, etc.
 
 Recorded in: [open-questions-answered.md](open-questions-answered.md) (as a resolved gate),
-[topics/moe-analysis-program.md](topics/moe-analysis-program.md), and
-[topics/moe-recipe-suite.md](topics/moe-recipe-suite.md).
+[potential-projs/moe-partitions.md](potential-projs/moe-partitions.md), and
+[potential-projs/moe-recipe-suite.md](potential-projs/moe-recipe-suite.md).
 
 ### IRT as a full-conference paper
 
@@ -156,7 +156,7 @@ Item 1 of a three-item response. Routed to:
 
 Item 3 of the same three-item response (items: IRT full-conference path; Slicing-and-Dicing
 repo; this). Routed to:
-[topics/small-scale-measurement-science.md](topics/small-scale-measurement-science.md);
+[potential-projs/tiny-scale-measurement.md](potential-projs/tiny-scale-measurement.md);
 the sampling-nonstationarity point to
 [potential-projs/recipe-featurization.md](potential-projs/recipe-featurization.md) §4 and an
 open gate in [open-questions-answered.md](open-questions-answered.md); the synthesis to the
@@ -187,12 +187,12 @@ potential-projs README program-level notes.
 > extensions/alternatives?
 
 The expanded form of the previous prompt, from the other conversation. Routed to:
-[topics/small-scale-measurement-science.md](topics/small-scale-measurement-science.md)
+[potential-projs/tiny-scale-measurement.md](potential-projs/tiny-scale-measurement.md)
 (second entry); project-specific parts to
 [potential-projs/irt-reanalysis.md](potential-projs/irt-reanalysis.md) §4,
 [potential-projs/trajectory-statistics.md](potential-projs/trajectory-statistics.md) §4,
 [potential-projs/recipe-featurization.md](potential-projs/recipe-featurization.md) §4;
-tiny-MoE part to [topics/moe-analysis-program.md](topics/moe-analysis-program.md); the
+tiny-MoE part to [potential-projs/moe-partitions.md](potential-projs/moe-partitions.md); the
 Drosophila composition point to the potential-projs README program-level notes.
 
 ### Non-stationarity in MoE routing, and as a cross-cutting subthread
@@ -211,7 +211,7 @@ Drosophila composition point to the potential-projs README program-level notes.
 
 Routed to: [topics/nonstationarity-accounting.md](topics/nonstationarity-accounting.md);
 the frozen-routing experiments also noted in
-[topics/moe-analysis-program.md](topics/moe-analysis-program.md); the endogenous
+[potential-projs/moe-partitions.md](potential-projs/moe-partitions.md); the endogenous
 self-curriculum point to [potential-projs/token-movement.md](potential-projs/token-movement.md) §4;
 the accounting framing to the potential-projs README program-level notes.
 
@@ -249,6 +249,6 @@ observations into the potential-projs README program-level notes.
 
 Response routed to: [portfolio-rankings.md](portfolio-rankings.md) (whole); P1/P2/P3 entries
 to the IRT, recipe-featurization, and annealed-readouts §4s; P4 to
-[topics/moe-analysis-program.md](topics/moe-analysis-program.md); the shared-foundation
+[potential-projs/moe-partitions.md](potential-projs/moe-partitions.md); the shared-foundation
 starting recommendation to the potential-projs README program-level notes.
 

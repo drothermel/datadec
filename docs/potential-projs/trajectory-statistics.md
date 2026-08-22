@@ -240,7 +240,7 @@ decisions. Only notes about this project are kept here.
   from KL/CKA/per-token loss. Cross-suite option: OLMoE vs. FLAME-MoE vs. OpenMoE "all have
   checkpoints and known data… enough to ask whether expert-specialization structure tracks
   corpus composition across independent training setups." The artifact survey remains step
-  one. (Full discussion in `docs/topics/moe-routing-as-data-instrument.md`.)
+  one. (Full discussion in `docs/potential-projs/moe-partitions.md`.)
 
 ### 2026-08-21 — on an MoE dual of the drift/diffusion decomposition
 
@@ -253,7 +253,7 @@ decisions. Only notes about this project are kept here.
   early training rerouting-dominated, late training rewriting-dominated, per-layer crossover
   as a commitment clock. Frozen-router branches as the causal control. TRJ-moe-1's
   reverting/persistent flip split "slots directly in here." (Full discussion in
-  `docs/topics/moe-analysis-program.md`.)
+  `docs/potential-projs/moe-partitions.md`.)
 
 ### 2026-08-21 — on tiny-scale measurement
 
@@ -261,7 +261,7 @@ decisions. Only notes about this project are kept here.
   drift/diffusion SNR table [TRJ-1] tells you which metrics carry signal down there" — the
   instruments for the 10–150M range, where "most benchmark items sit at chance, accuracy is
   quantized into a few reachable values, and seed variance swamps treatment effects." (Full
-  discussion in `docs/topics/small-scale-measurement-science.md`.)
+  discussion in `docs/potential-projs/tiny-scale-measurement.md`.)
 
 ### 2026-08-21 — positions in three ranked lists (full lists in `docs/portfolio-rankings.md`)
 

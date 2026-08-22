@@ -41,6 +41,12 @@ Known finding this immediately surfaces: mixture labels are shard-file fractions
 
 **REC-8 · Per-task feature maps.** Which features predict which tasks; whether code / math / knowledge tasks load on different intrinsic statistics.
 
+**REC-9 · Realized-exposure audit (time-resolved REC-a).** Reconstruct the actual token-stream order for each run from the OLMo training configuration (deterministic ordering) and plot realized source composition as a function of training position, per scale. Two failure modes: the run's time-averaged mixture deviating from nominal (bias) and within-run compositional drift (non-stationarity — an unintended curriculum). If drift is material, small-scale recipe comparisons are partially confounded with data order, and the confound shrinks with scale.
+
+**REC-10 · Order-effect intervention.** Retrain 10–50M models on the same recipe with stratified vs. sequential sampling, ten-plus seeds; measure the order effect directly against a noise floor. Outcome-robust: material drift is a confound finding about a widely used suite; no drift is a validation. A stratified-sampling data loader is the concrete artifact.
+
+**REC-11 · Cross-suite transfer.** Re-fit the REC-3 feature→outcome map on other controlled suites (DCLM runs, FineWeb ablations, RegMix's small models) and test whether relationships fit on DataDecide transfer; pooling suites attacks n = 25. Prefer dynamics targets (schedule sensitivity, emergence timing, noise levels) over endpoints.
+
 ---
 
 ## 2. Doability and impact
@@ -76,6 +82,9 @@ Risks are statistical, not engineering:
 | **REC-6 annealed targets** | medium; depends on annealed outcomes existing | medium | Makes the paper schedule-aware; a clean "feature importance shifts once you anneal" result would be notable. |
 | **REC-7 MPL-parameter targets** | high; the MPL fit is T0 | medium | Compact targets with a physical interpretation; the fit itself is cheap. |
 | **REC-8 per-task maps** | high; cheap once REC-3 exists | medium | Interpretable and practically useful; cheap once REC-3 exists. |
+| **REC-9 realized-exposure audit** | high; analysis over REC-a machinery + OLMo data order | medium-high | Corrects "the recipe" as an intervention; a candidate explanation for small-scale mispredictions. |
+| **REC-10 order-effect intervention** | medium; tiny training, many seeds | medium-high (→ high if the effect is large) | Two-sided result; "proxy-scale data decisions are confounded with data order" would be disruptive. |
+| **REC-11 cross-suite transfer** | medium; multi-suite ingest | medium-high | Fixes n = 25 by pooling; irreducibly correlational. |
 
 ### 2.3 Recommended framing
 
@@ -98,7 +107,10 @@ Each step produces something usable on its own and is reused by later per-token 
 4. **Intrinsic feature extractors (REC-1).** Pure functions over sampled text/tokens: duplication, lengths, compression ratio, Zipf/burstiness/TTR, diversity coefficient. *Reused by:* REC-3.
 5. **Reference-model token scorer (REC-2).** Per-token entropy/logprob from one or two open reference models at several context lengths; emits per-recipe profile curves. *Reused by:* any entropy-bucketed per-token analysis — the single most shared piece after the sampler.
 6. **Feature–outcome analysis (REC-3, REC-5).** Family-contrast and dose-response analyses, baselines, figures. Analysis code, not infrastructure.
-7. **Annealing targets (REC-4), only if continuing.** Multi-power-law correction over released loss curves (analytic); then, if the A-layer is pursued, checkpoint-merging utility and decay-branch harness feed REC-4 as additional targets.
+7. **Data-order reconstruction (REC-9).** From the OLMo `DataDecide` configs, rebuild the per-run token-stream order and join to the REC-a manifest to emit realized composition per training window and per scale.
+8. **Stratified-sampling loader + tiny retrain harness (REC-10).** 10–50M runs, many seeds, deterministic order, stratified vs. sequential arms.
+9. **Multi-suite ingest (REC-11)**, following the repo's download → preprocess → typed parquet pattern.
+10. **Annealing targets (REC-4), only if continuing.** Multi-power-law correction over released loss curves (analytic); then, if the A-layer is pursued, checkpoint-merging utility and decay-branch harness feed REC-4 as additional targets.
 
 Steps 1–3 are the commit-worthy foundation and take roughly the first week; 4–5 are a second week; 6 is the paper. Step 7 is deferred and belongs to the annealing project.
 
@@ -139,17 +151,76 @@ decisions. Only notes about this project are kept here.
   should back-propagate everywhere recipes are compared" — i.e. REC-d is a program-level
   design pattern, not just this project's.
 
-### 2026-08-21 — on generalizing beyond DataDecide
+### 2026-08-21 — on generalizing beyond DataDecide (full response)
 
-- REC-a's finding "almost certainly generalizes. Public datasets' stated compositions vs.
+"Yes, with an important qualification: the space is real, but it's unevenly occupied, and the
+crowded parts are exactly the ones that are easiest to do. So agreement, but the value depends
+on picking the right sub-region."
+
+**Where it's crowded.** "Descriptive corpus statistics as an end in themselves — WIMBD
+basically planted that flag for the big public pretraining corpora (duplication,
+contamination, toxicity, length distributions across C4, Pile, Dolma, etc.).
+Quality-filtering ablations are also well-tilled: DCLM and FineWeb are essentially large
+empirical programs on 'which filter produces which outcome.' And mixture optimization (DoReMi,
+RegMix, data mixing laws) covers the 'predict the best weights' version. A paper whose
+contribution is 'we computed features on big datasets' or 'we found that dedup and quality
+filtering matter' lands in a saturated area."
+
+**The structural bottleneck, and why DataDecide mattered.** "Featurization is cheap;
+*outcomes* are expensive. The whole reason your featurizing proposal works is that someone
+else paid for 25 recipes × 14 scales × 3 seeds. Outside DataDecide, your options for the
+outcome side are: other controlled suites (DCLM's runs, FineWeb ablations, RegMix's 1000+
+small models — these exist and are underused as supervised problems in exactly your sense),
+observational model zoos (hundreds of open models, but confounded provenance — data,
+architecture, and scale all vary at once), or training your own (compute-bound). This is the
+real constraint on the generalized version of the idea, and it's worth being clear-eyed that
+'featurize datasets and predict impacts' is really 'assemble (corpus, outcome) pairs,' which
+is a data-collection problem more than an analysis problem."
+
+**Where the genuinely open space is.**
+
+- *Features that predict dynamics, not endpoints.* "Nearly all existing work maps features →
+  final benchmark scores. Your determinism-profile → annealing-response idea generalizes:
+  which data properties predict schedule sensitivity, emergence timing, noise levels,
+  forgetting rates, susceptibility to churn. Nobody has a public map of that, and it's
+  theory-motivated rather than fishing."
+- *Cross-suite transfer of feature→outcome maps.* "Does a relationship fit on DataDecide hold
+  on the DCLM pool or FineWeb ablations? A feature that predicts across suites is a finding;
+  one that doesn't is an important negative about how contingent all these results are. This
+  is cheap once the extractors exist and directly attacks the n=25 problem by pooling suites."
+- *Midtraining/annealing data.* "This is the most practically hot and least publicly
+  systematized area. Everyone post-MiniCPM knows you put 'high quality' data in the decay
+  phase; what 'high quality' measurably *is*, and whether the right decay data is a function
+  of the stable-phase data, is mostly folklore plus internal lab knowledge. A controlled
+  featurization-plus-ablation study here would get read by practitioners immediately. The
+  catch: fewer public controlled suites exist, so you'd likely need some training compute —
+  though decay branches are cheap, which is exactly the [annealed-readouts / WSD-suite]
+  machinery."
+- *Post-training data.* "Also underdeveloped publicly, but different in character:
+  instruction/preference/RLVR datasets are small enough that per-example influence methods
+  (datamodels-style) become feasible, and the interesting features are things like difficulty
+  distributions, response-length confounds, and diversity — not Zipf exponents. It's arguably
+  a different field with the same slogan, and the confound structure (data interacts strongly
+  with the base model) makes clean claims harder."
+- *The measurement layer itself.* "Your [realized-composition] finding — labels ≠ realized
+  token shares — almost certainly generalizes. Public datasets' stated compositions vs.
   measured compositions is unglamorous, highly citable, and nobody's job. A 'measured data
   cards' effort across the major public corpora is the WIMBD sequel that hasn't been written."
-- Cross-suite transfer of the REC-3 map (DCLM pool, FineWeb ablations, RegMix's small models)
-  "is cheap once the extractors exist and directly attacks the n=25 problem by pooling suites."
-- Framing: this project "becomes the first instrument-validation study in a program
-  ['data measurement → training dynamics'] rather than the whole program." Pure predictive
-  R² "is a race you lose to people with a thousand internal ablations"; the contribution has
-  to be the public artifact, the theory link, or the dynamics angle.
+
+**One honest caution.** "The frontier labs do versions of this internally at scales and with
+outcome data you can't match, and don't publish. That means the academic contribution has to
+be either the *public artifact* (measured features + outcomes anyone can build on), the
+*theory link* (determinism/geometry-style mechanistic features, which labs have less incentive
+to care about), or the *dynamics angle*. Pure predictive performance — 'our features predict
+benchmark scores with R²=X' — is a race you lose to people with a thousand internal
+ablations."
+
+**Framing.** "Agree, and I'd frame the generalized program as 'data measurement → training
+dynamics,' not 'data features → benchmark scores.' The DataDecide work then becomes the first
+instrument-validation study in a program rather than the whole program — which is also a much
+better story for a thesis or grant than a single-suite reanalysis."
+
+---
 
 ### 2026-08-21 — on MoE releases as extra outcome data
 
@@ -161,7 +232,7 @@ decisions. Only notes about this project are kept here.
   intrinsic features (domain composition, frequency bands, determinism profile)?" This
   "strengthens the case for building [the] reference-model scorer and corpus-feature
   extractors first (they're what routing gets joined *to*)." (Full discussion in
-  `docs/topics/moe-routing-as-data-instrument.md`.)
+  `docs/potential-projs/moe-partitions.md`.)
 
 ### 2026-08-21 — on a time-resolved REC-a (per-window realized mixture)
 

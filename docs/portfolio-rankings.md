@@ -7,6 +7,35 @@ still stands alone. Recorded for consolidation, not decisions.
 
 Related-work claims in quoted text are unverified (see `potential-projs/README.md`).
 
+## Crosswalk — every project's position in each list
+
+One row per project (current names); columns are the four lists below. "—" means not
+listed; "component" means explicitly demoted to a section of another paper. Labels are the
+lists' own (expected impact / ceiling; scoop risk).
+
+| Project | 6–12-month flagship list | Workshop-sized top 10 | Full-conference top 10 (expected / ceiling) | Four projects from two subs (scoop risk) |
+|---|---|---|---|---|
+| Annealed readouts (ANN) | Tier 1 #1 (with TOK + REC determinism link; GEO-opt-3 folded in) | #4 (T0 half) | #5 "How Much of Your Checkpoint Suite Is Schedule Artifact?" (high / high) | P3, speed 3 (**high**) |
+| Token-level movement (TOK) | Tier 1 #1 (mechanism + thesis halves) | #8 (Stage 1) | #9 "Which Tokens Does the Cooldown Fix?" (high / very high) | — |
+| Recipe featurization (REC) | determinism link folded into #1; cross-suite Tier 2 #3; data card Tier 3 component | #1 (data card), #7 (realized-exposure audit) | #2 "What Is Actually in DataDecide" (med-high / med-high→high) | P2, speed 2 (medium) |
+| IRT reanalysis (IRT) | Tier 2 #4 (months 1–2 insurance paper) | #2 | #1 "The Psychometrics of Pretraining Suites" (med-high / high) | P1, speed 1 (med-high); recommended start |
+| Trajectory drift/diffusion (TRJ) | Tier 3 component | #3 | #3 "Anatomy of the Noise Term" (med-high / high) | — |
+| Loss-landscape geometry (GEO) | Tier 3 component (GEO-opt-3 inside #1) | — | — | — |
+| WSD retrain suite (WSD) | Tier 2 #5 (background enabler) | — | — | — |
+| MoE partitions (PART) | (sweep not yet discussed) | #6 | #4 "One Partition, Many Architectures" (high / high) | P4 sub A, speed 4 (**low**) |
+| MoE movement (MOVE) | — | #9 (Stage 1), #10 (Stage 2) | #7 "Reroute or Rewrite?" (high / high); #8 "Does MoE Training Suppress Its Own Non-Stationarity?" (med-high / very high) | P4 sub B + causal arm |
+| MoE recipe suite (MSUITE) | Tier 1 #2 "Does the data choose the experts?" | tiny-MoE floor cut | — | — |
+| Tiny-scale measurement (TINY) | — | #5 (decision-reliability frontier) | #6 "Measuring Learning Where Benchmarks Can't See" (medium / med-high) | P1 sub B (frontier) |
+| Functional featurization (FUNC) | — | cut (second-act) | #10 "The Functional Types of Pretraining Data" (high / highest) | — |
+
+Recurring observations across the lists: speed and ceiling are close to inverted; speed and
+scoop risk run together (the T0 DataDecide papers are races; the sweep- and stack-dependent
+work is protected); and every new direction consumes the same shared instruments (noise
+floor, IRT θ, held-out token set + per-token logging, reference scorer, branch runner,
+results store).
+
+---
+
 ---
 
 ## 2026-08-21 — Objective: strongest outcome from a 6–12-month effort; "really strong" main-conference paper possible depending on results

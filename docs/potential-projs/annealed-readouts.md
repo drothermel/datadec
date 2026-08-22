@@ -145,8 +145,8 @@ Ordered so each step is usable on its own and later steps reuse earlier ones.
    checkpoint variant (raw checkpoints, merged checkpoints, branch starts and endpoints),
    stored as compact arrays keyed by (checkpoint variant, held-out-set version). Branch
    endpoints also save their weights. Cheap to add now; expensive to retrofit later because
-   it would mean re-running branches. *An identical spec appears in Annealed readouts, WSD retrain suite, and
-   Token-level movement; keep them in sync.*
+   it would mean re-running branches. *An identical spec appears in Annealed readouts, WSD retrain suite, Token-level
+   movement, MoE movement, MoE recipe suite, and Functional featurization; keep them in sync.*
    Enables ANN-opt-4 and per-token analyses of branch endpoints.
 4. **Checkpoint-merging tool (ANN-1).** Sliding-window weighted averaging with configurable
    window and weight curve; expert-agnostic (dense models only); outputs a checkpoint that the

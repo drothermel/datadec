@@ -1,26 +1,110 @@
-# Small-scale measurement science — rigorous LM-training experiments at ≤150M
+# Tiny-scale measurement — how small can you measure, and what can you do down there?
 
-**Status:** topic (staging). Candidate exits: a lab-level program framing ("measurement
-science of language-model training at academic scale") that wraps the existing projects; and
-concrete project candidates — a per-window realized-mixture audit (see
-[../open-questions-answered.md](../open-questions-answered.md), open items), a
-stratified-sampling data loader, and RL / elicitation / multi-model experiments on synthetic
-task families with replicates.
+**One-line pitch.** At 10M–150M the standard eval stack collapses: most items sit at chance,
+accuracy is quantized, seed variance swamps treatment effects. "How do you detect a training
+or hyperparameter signal at all" is the research question. Measure the decision-reliability
+frontier — how far down the scale ladder reliable decision signal survives as a function of
+measurement method — derive an eval that works at tiny scale from the IRT fit, and use the
+resulting fast, replicated substrate for elicitation, post-training, and RL experiments with
+confidence intervals.
 
-**Question posed (Danielle, 2026-08-21).** How far can models be pushed at really small
-scales (≤150M, e.g. in DataDecide); how to even measure a training or hyperparameter-fitting
-signal there; the suspicion that DataDecide's small per-recipe sampling fraction produces
-real nonstationarity or misses the intended percentages unless sampling is stratified
-throughout training; and whether this is a space that lets academic labs, dynamics-focused
-science, and local model runners benefit even if big labs don't care — with elicitation, RL,
-multi-component systems, and experiments with confidence intervals all feasible because the
-models run so fast. See [../danielle-inputs.md](../danielle-inputs.md).
+IDs: TINY-1–TINY-3, TINY-opt-1–TINY-opt-4.
 
-Related-work claims below are unverified (see [README.md](README.md)).
+**Scope rule.** Ask dynamics / mechanism / measurement questions (plausibly scale-portable,
+checkable on a scale ladder), not capability-emergence questions.
+
+Compute tiers: **T0** = analysis of published tables only; **T1** = forward passes with
+existing checkpoints; **T1+** = checkpoint merging plus re-running evals; **T2** = short
+continued-training branches; **T3** = new pretraining runs.
 
 ---
 
-## 2026-08-21 — Response (item 3 of a three-item answer, plus its synthesis)
+## 1. What the project involves
+
+### Core experiment (T0 / T1)
+
+1. **Decision-reliability frontier (TINY-1).** Decision accuracy vs. compute curves over
+   DataDecide's size ladder where the *treatment is the measurement method*: accuracy vs.
+   likelihood margins vs. IRT θ vs. IRT-selected item subsets. The frontier — the smallest
+   scale at which decisions reliably predict 1B rankings, per method — is the artifact.
+2. **IRT-derived tiny-scale eval (TINY-2).** From a fitted item-response model on the
+   per-instance tables: select items whose difficulty brackets the tiny-model θ range, score
+   with likelihood margins, report θ with standard errors instead of accuracy. Report the
+   effective test length of standard suites at each size.
+3. **Minimum detectable effect per scale (TINY-3).** Pooled seed variance and
+   trajectory-window replicates per metric and size; which metrics carry signal at 10–90M.
+
+### Optional directions
+
+- **TINY-opt-1: Capability-per-parameter under distribution narrowing.** The systematic
+  version of TinyStories/BabyLM-style results: capability as a function of distribution
+  breadth, measured with TINY-2 instruments.
+- **TINY-opt-2: IRT-scheduled RL.** On synthetic/formal task families (algorithmic tasks,
+  controlled grammars, arithmetic curricula): pick tasks whose difficulty puts the pass rate
+  in the informative band and advance the ladder as θ moves. RL training experiments with
+  error bars.
+- **TINY-opt-3: Multi-component systems.** Factorial designs over system configurations with
+  confidence intervals.
+- **TINY-opt-4: Design decisions tuned for larger models.** Which optimizer/schedule/
+  architecture defaults are wrong at 10–50M (speedrun-style evidence), measured against the
+  noise floor.
+
+---
+
+## 2. Doability and impact
+
+### Overall doability: TINY-1–3 **high** (analysis over existing tables); options **medium** (iteration-heavy)
+
+- Per-instance tables exist at 4M/20M/60M/90M (one seed each) and 150M–1B (three seeds);
+  aggregate tables at all 14 sizes with three seeds (see
+  `docs/open-questions-answered.md`). Seed-variance estimates below 150M need pooled
+  floors.
+- The compelling TINY-1 wants the IRT fit first; a simpler-metrics version can be written
+  standalone.
+- RL/post-training at 10–50M: the binding constraint is reward signal (~0% pass rate gives
+  no gradient); natural tasks mostly will not elicit; synthetic families will. Several
+  design loops likely before clean signal.
+- External validity is the standard reviewer attack; mitigations are the scale ladder and
+  claims about the training process rather than the artifact.
+
+### Per-direction workshop-paper impact
+
+| Direction | Impact | Rationale |
+|-----------|--------|-----------|
+| TINY-1 frontier | **Medium-high** | Robust to outcome; clear constituency in academic-compute work. |
+| TINY-2 derived eval | Medium-high | A practical instrument people adopt. |
+| TINY-3 MDE per scale | Medium (supporting) | Every later tiny-scale claim needs it. |
+| TINY-opt-1 narrowing | Medium | Systematizes folklore; risk of drifting toward capability claims. |
+| TINY-opt-2 IRT-scheduled RL | Medium-high if it works | "Unlocks RL at scales where naive reward gives zero gradient." |
+| TINY-opt-3 factorials | Medium | Methodological demonstration. |
+| TINY-opt-4 defaults | Medium | Practical for local-model users. |
+
+---
+
+## 3. Infrastructure build sequence
+
+1. **Outcome table with full structure** (recipe × scale × seed × step × task; accuracy and
+   continuous metrics; pairwise-decision helpers).
+2. **Response-matrix builder + IRT fit** (binary and margin models; θ with standard errors;
+   item parameters). Tested on synthetic matrices.
+3. **Noise-floor module** (pooled seed variance, windowed replicates, item bootstrap) per
+   metric and size.
+4. **Frontier analysis (TINY-1)** and **item-selection / derived-eval construction (TINY-2)**.
+5. **Tiny training harness** (10–50M, many seeds, deterministic data order) for the optional
+   directions; synthetic task-family generators and an RL loop for TINY-opt-2.
+
+
+---
+
+## 4. External assessments
+
+Dated, attributed-by-date notes from external review conversations, recorded for
+consolidation — not decisions. Only notes about this project are kept here. Related-work
+claims in quoted text are unverified.
+
+### 2026-08-21 — origin: small-scale science (two responses)
+
+*First response:*
 
 "This space is real and growing — BabyLM, the nanoGPT-speedrun culture, small-scale-proxy
 work (using tiny models to predict large-model training instabilities), and DataDecide itself
@@ -37,21 +121,6 @@ the obstacle. That's [the trajectory noise floor], [IRT's] θ-precision, and the
 are too noisy at this scale, and small scale is where you can afford the replicates to
 validate the instruments."
 
-**The stratified-sampling observation is a paper on its own.** "You're right about the
-mechanism: if a recipe specifies source proportions but sampling draws a small fraction of
-each corpus without per-window stratification, the realized mixture in any given training
-window can drift from nominal — so every run has an implicit, unintended curriculum, and
-'the recipe' as an intervention is not what anyone thinks it is. This is the time-resolved
-extension of [the realized-composition finding] (labels ≠ realized token shares, now
-per-window rather than in aggregate). It's checkable: OLMo-style training logs data order
-deterministically, so you can reconstruct the realized mixture per window for every
-DataDecide run and measure the nonstationarity directly. If it's substantial, it (a) is a
-standalone audit paper in the same vein as [the data card] but with dynamics implications,
-(b) confounds every timing/curriculum claim built on these suites including your own U_c(t)
-program — so you need to know regardless — and (c) motivates a concrete artifact: a
-stratified-sampling data loader as the fix, which is exactly the kind of contribution the
-small-scale-science community adopts."
-
 **RL / elicitation / multi-component systems at ≤150M.** "Viable, with one honest constraint
 — the capability floor means questions must be about dynamics, optimization, measurement,
 and data, not capabilities. RLVR on natural tasks mostly won't elicit anything at 150M; on
@@ -64,7 +133,7 @@ training process rather than the artifact."
 
 **Synthesis: one lab thesis.** "Your three items aren't three directions — they're one lab
 thesis. The small-scale platform generates the model populations that IRT requires as
-respondents; the MoE repo [see moe-analysis-program.md] is a validated apparatus already
+respondents; the MoE repo [see moe-partitions.md / moe-movement.md] is a validated apparatus already
 sitting in that scale range with a categorical observable dense models lack; and the probe
 battery + noise-floor work is the shared instrument suite. 'Measurement science of
 language-model training at academic scale' is a coherent identity that big labs structurally
@@ -73,11 +142,7 @@ will never be their incentive. It's yours if you want it."
 
 ---
 
-## 2026-08-21 — Response (to the expanded version of the question: 10M–150M, elicitation and post-training, dense vs. MoE at tiny scale)
-
-"When I line it up against everything above, it isn't really a fourth program. It's two
-things at once: the *practical payoff* of your measurement program, and the *experimental
-substrate* the other programs need anyway."
+*Second response:*
 
 **The measurement question is the deep one.** "At 10–50M, the standard eval stack collapses:
 most benchmark items sit at chance, accuracy is quantized into a few reachable values, and
@@ -100,38 +165,6 @@ the treatment is the measurement stack (accuracy vs. margins vs. θ vs. IRT-sele
 subsets). If IRT-based measurement moves the reliable-decision floor from 150M to 30M, that's
 a headline with an obvious constituency (everyone doing academic-compute data/hpm work), and
 it's mostly analysis over tables you already have plus modest tiny-model evals."
-
-**The non-stationarity catch: two failure modes and an intervention.** "A 10M-scale run
-consumes a small percent of most of these corpora, so the *realized exposure* of that
-specific run — not the recipe's nominal composition, not even the shard-level token masses
-you already corrected — depends entirely on shard ordering and sampling implementation. Two
-distinct failure modes: the run's time-averaged mixture deviating from nominal (a bias), and
-within-run compositional drift (non-stationarity — effectively an unintended curriculum).
-Your [realized-composition] manifest machinery makes both auditable: reconstruct the actual
-token stream order for the small-scale runs and plot realized composition as a function of
-training position, per scale. If there's material drift, every small-scale recipe comparison
-in the suite is partially confounded with data *order*, and the confound shrinks with scale —
-which would itself be a candidate explanation for why small-scale decisions sometimes
-mispredict large-scale ones. And the interventional follow-up is cheap at exactly this
-scale: retrain 10–50M models with stratified vs. sequential sampling of the same recipe, n=10
-seeds, and measure the order effect directly. Note the connection to your plasticity thread:
-order effects *are* critical-period phenomena, and small models with proportionally huge
-compositional drift are where they'd bite hardest."
-
-**Tiny MoEs: the sweep's natural downward extrapolation.** "You found total-parameter
-benefits persisting to 128:1 ratios and optimal expert size depending only on active params
-— both invite the question of where those laws break as active scale shrinks. There are
-concrete mechanisms that should impose a floor: each expert sees roughly budget/E tokens, so
-at tiny scale experts fall below their own critical data threshold; the router itself is a
-small model that has to learn a useful partition, and the routing-shallowness problem
-(assignments collapsing to token-ID/frequency clustering) plausibly worsens as capacity
-drops. So the question 'does a 5M-active, 500M-total MoE beat a 5M dense model, and does its
-routing learn anything non-trivial' has real stakes for the local-model audience *and* feeds
-the MoE analysis program: the taxonomy-realness question acquires a scale axis, and the
-failure mode of routing at tiny scale is informative about what routing is doing at normal
-scale. Your hpm guidance from the sweep is what makes this credible — the classic failure of
-tiny-scale comparisons is that one arm is mistuned, and you're one of few groups holding
-validated small-scale MoE hyperparameters."
 
 **Elicitation and post-training: the specialist frontier, with IRT as curriculum.** "The
 honest prior art here is TinyStories and the BabyLM line on one side (restrict the task
@@ -185,7 +218,7 @@ program looks like from the inside."
 
 ---
 
-## 2026-08-21 — Positions in the ranked lists (full lists in `../portfolio-rankings.md`)
+### 2026-08-21 — positions in ranked lists (full lists in `docs/portfolio-rankings.md`)
 
 - Decision-reliability frontier: **workshop-sized #5** ("robust to outcome (the frontier is
   the artifact, wherever it sits)… its clock effectively starts after [IRT]").

@@ -128,7 +128,7 @@ decisions. Only notes about this project are kept here.
 - The interpolation/barrier tooling here has a further use: testing "whether late-injected
   [data] components land the model somewhere geometrically different than early-injected
   ones. That last question, component timing → landscape position, is as far as I can tell
-  completely unoccupied." (Full discussion in `docs/topics/functional-featurization.md`.)
+  completely unoccupied." (Full discussion in `docs/potential-projs/functional-featurization.md`.)
 
 ### 2026-08-21 — on short-branch landscape probes
 

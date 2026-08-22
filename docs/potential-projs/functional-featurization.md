@@ -1,16 +1,150 @@
 # Functional featurization — data types defined by training response
 
-**Status:** topic (staging). Not yet a project doc. Candidate exits: its own project, or the
-second act of token-level movement / annealed readouts.
-
-**Idea in one line.** Replace *intrinsic* featurization (properties of the text) with
+**One-line pitch.** Replace *intrinsic* featurization (properties of the text) with
 *functional* featurization (properties of the text's effect on a model, conditioned on where
-the model is in training). A chunk's type is defined by its response profile; quality stops
-being a descriptor and becomes an operator.
+the model is in training). Perturb the data stream from an intermediate checkpoint, log a
+response vector, and type chunks by how they move the model at each stage. The output is a
+component × stage × measurement tensor — the measured version of every lab's midtraining
+stage table — and the generalizing claim is which measurable corpus properties predict a
+component's response curve.
+
+IDs: FUNC-1–FUNC-5, FUNC-opt-1–FUNC-opt-5.
+
+**Dependencies.** A decay-branch runner, the held-out token set with per-token logging, the
+reference-model scorer, and a frozen branch schedule policy. The response-vector logging
+spec must be frozen *before* any branch runs by any project, because annealing branches can
+double as the first cells of this tensor only if they log the right things.
+
+**Confound to check first.** If DataDecide's realized per-window source mixture drifts from
+nominal, every run has an implicit curriculum that confounds stage-dependent claims (open
+gate in `docs/open-questions-answered.md`).
+
+Compute tiers: **T0** = analysis of published tables only; **T1** = forward passes with
+existing checkpoints; **T1+** = checkpoint merging plus re-running evals; **T2** = short
+continued-training branches; **T3** = new pretraining runs.
 
 ---
 
-## 2026-08-21 — Response to "is that a thing?" (the origin of this topic)
+## 1. What the project involves
+
+### Core experiment (T2)
+
+1. **A-priori type taxonomy for the pilot (FUNC-1).** Code, math, high-determinism prose,
+   high-entropy dialogue, instruction-formatted, synthetic reasoning traces; chunked
+   candidate pool, stratified by leaf corpus; functional features (entropy profile,
+   instruction-likeness, reasoning density) attached to every chunk. Include the pair most
+   likely to separate (e.g. high-determinism code vs. high-entropy dialogue) at an early vs.
+   a late-stable stage to learn the effect size first.
+2. **Local mixture-perturbation branches (FUNC-2).** From checkpoints at 2–3 (later 4–6)
+   stages: replace an ε fraction of the ongoing stream with type X, vary ε, estimate the
+   derivative of the trajectory with respect to composition at that operating point (the
+   "data Jacobian"); the ε=0 continuation is the built-in baseline. Pure-type far-field
+   branches are the large-dose anchor of the dose-response curve, not the primary
+   measurement.
+3. **Durable-movement filter (FUNC-3).** Every treatment branch gets a schedule-neutralizing
+   readout at its endpoint (short decay or checkpoint merge) to separate durable from
+   transient response; the annealing project is the control arm (schedule as treatment,
+   data fixed).
+4. **Response vector (FUNC-4).** *Frozen minimum, logged at every branch endpoint:* per-token
+   loss on the held-out set, and saved endpoint weights. *Readouts computed later from
+   those:* Δ per-token loss by entropy bucket and domain; Δθ from an IRT fit; weight-space
+   direction of the branch projected onto the run's river direction vs. orthogonal;
+   interpolation barrier to the untreated continuation at matched tokens; representation
+   effective rank. *Requires an extra run:* learning speed on a fixed probe task fine-tuned
+   from the endpoint.
+5. **Surrogate ladder (FUNC-5).** Single-step gradient alignment of type-X batches against
+   held-out losses (cheapest) → short ε-branches (middle) → full branches (ground truth);
+   validate each tier against the next on a subset, then scale the cheapest validated tier.
+   Calibrate branch length against readout SNR early.
+
+### Optional directions
+
+- **FUNC-opt-1: Discovered taxonomy.** Cluster chunks by response vector; the rank of the
+  response tensor (chunk × stage × measurement) is the headline question. Long-game
+  motivation rather than a first-paper pitch at DataDecide scale.
+- **FUNC-opt-2: Plasticity cost by data type.** Which types spend plasticity and which
+  preserve or restore it, by stage.
+- **FUNC-opt-3: Component × timing map (U_c(t)).** Inject one component per branch at 4–6
+  points along a base recipe; per-token response, task-family deltas, durable-vs-transient
+  split; the measured stage table.
+- **FUNC-opt-4: MoE variant.** Expert-level update attribution (how much of type-X's effect
+  lands outside its own experts), reroute-vs-rewrite response per (type × stage), modular
+  plasticity (colonize under-used experts vs. overwrite committed ones).
+- **FUNC-opt-5: Intrinsic features → response profile.** The featurization regression with
+  n = chunks rather than n = 25 recipes.
+
+---
+
+## 2. Doability and impact
+
+### Overall doability: **medium-low** — second-act by construction
+
+- Consumes the branch runner, logging harness, held-out set, reference scorer, and ideally
+  the annealing results that fix the branch schedule policy.
+- Cost: 1/16 of run length per cell caps the taxonomy at ~6–10 types × 4–6 stages at
+  DataDecide scale; shorter branches are plausible with per-token readouts; the surrogate
+  ladder is what makes the full tensor affordable (core, not mitigation).
+- Biggest scientific risk: at 150M–1B, stage × type interactions may be small relative to
+  the generic shift transient and seed noise. The local ε design protects; a null under it
+  is a real but less exciting result. Fully powered versions belong at 10–50M with many
+  seeds.
+- Curriculum-learning prior among reviewers: the defense is that this measures
+  stage-dependent data value with causal probes, agnostic about whether any curriculum
+  beats random.
+- Literature positioning should be stated narrowly: recipe × stage × response profile on an
+  open suite.
+
+### Per-direction workshop-paper impact
+
+| Direction | Impact | Rationale |
+|-----------|--------|-----------|
+| Core (FUNC-1–5) | **High if effects exist; ceiling the highest in the portfolio** | "How many functional kinds of data are there, and when does each act" reframes data curation. |
+| FUNC-5 surrogate ladder alone | Medium-high | "When do gradient surrogates predict short-horizon training response, as a function of stage" stands alone as a methods paper. |
+| FUNC-opt-1 discovered taxonomy | Very high (conditional) | Any rank answer is interesting; underpowered at small grids. |
+| FUNC-opt-2 plasticity cost | High | Cited by pretraining-data and continual-learning communities. |
+| FUNC-opt-3 U_c(t) map | High | First public map of its kind even at 5 components × 4 timings. |
+| FUNC-opt-4 MoE variant | High | Sparsity localizes attribution; the residual measures modularity. |
+| FUNC-opt-5 features → response | Medium-high | Fixes n=25 by moving supervision to chunk level. |
+
+---
+
+## 3. Infrastructure build sequence
+
+1. **Held-out token set.** Choose a held-out token set once and freeze it: fixed, versioned token
+   sequences with a manifest; stratified across domains and across the DataDecide leaf
+   corpora; sized so that each domain × entropy-bucket cell has enough tokens to estimate
+   mean per-token loss drop within a set tolerance, while keeping one forward pass per
+   checkpoint cheap. Per-token loss on it is a standard output of the eval harness for every
+   checkpoint variant (raw checkpoints, merged checkpoints, branch starts and endpoints),
+   stored as compact arrays keyed by (checkpoint variant, held-out-set version). Branch
+   endpoints also save their weights. Cheap to add now; expensive to retrofit later because
+   it would mean re-running branches. *An identical spec appears in Annealed readouts, WSD retrain suite, Token-level
+   movement, MoE movement, MoE recipe suite, and Functional featurization; keep them in sync.*
+2. **Results store + eval harness.** Load any checkpoint; run the eval suite and perplexity evals; store results
+   keyed by (run, step) plus a `variant` field (`raw`, `merged:<cfg>`, `branch:<cfg>`), in the
+   same table schema as the processed OLMES tables so results slot into existing accessors.
+3. **Decay-branch / continuation runner** with a mixture-perturbation option (replace an ε
+   fraction of the stream with a chunk pool), configurable decay at the endpoint, per-token
+   logging, endpoint weights saved.
+4. **Chunk pool + taxonomy tooling**: chunking, leaf-corpus stratification, functional
+   features (reference-model entropy profile, instruction-likeness, reasoning density).
+5. **Gradient-alignment surrogate** (single-step influence of a batch on held-out losses).
+6. **Response-vector readouts** from saved weights: bucketed Δloss, IRT Δθ, river-direction
+   projection, barrier to untreated continuation, effective rank; probe-task fine-tune
+   harness.
+7. **Pilot** (two types × two stages × seeds) → calibrate branch length and surrogate tiers
+   → scale.
+
+
+---
+
+## 4. External assessments
+
+Dated, attributed-by-date notes from external review conversations, recorded for
+consolidation — not decisions. Only notes about this project are kept here. Related-work
+claims in quoted text are unverified.
+
+### 2026-08-21 — origin: response to "is that a thing?" (the origin of this topic)
 
 **Question posed (Danielle).** Not high-level descriptors like "quality"; instead chunk the
 datasets, identify different types of contributions, look at how they are distributed, and
@@ -93,7 +227,7 @@ paper."
 
 ---
 
-## 2026-08-21 — Response to the combined prompt (beyond DataDecide + chunk types + 1/16-run branches)
+### 2026-08-21 — response to the combined prompt (beyond DataDecide + chunk types + 1/16-run branches)
 
 The combined prompt is in [../danielle-inputs.md](../danielle-inputs.md). The three
 entries above are its step-by-step precursors.
@@ -210,7 +344,7 @@ one. I'd want the pilot to deliberately include the pair most likely to separate
 high-determinism code vs. high-entropy dialogue, at an early vs. late-stable stage) so you
 learn the effect size before committing to the full tensor."
 
-### Same date — pushback recorded in the planning session
+### 2026-08-21 — pushback recorded in the planning session
 
 - The response vector as listed is six instruments with six validation burdens. The only
   irreversible logging decision is **saving endpoint weights** (plus per-token losses on the
@@ -229,16 +363,43 @@ learn the effect size before committing to the full tensor."
 
 ---
 
-## 2026-08-21 — Confound to check first
+### 2026-08-21 — the MoE version of the branch-probe design
 
-If DataDecide's realized per-window source mixture drifts from nominal (small sampling
-fractions, no per-window stratification), "every run has an implicit, unintended curriculum"
-— which "confounds every timing/curriculum claim built on these suites including your own
-U_c(t) program." Open gate in [../open-questions-answered.md](../open-questions-answered.md).
 
----
+"Take the ε-mixture-perturbation design [see functional-featurization.md] and re-run it
+mentally on an MoE. The response vector gains channels that are qualitatively sharper than
+anything dense:"
 
-## 2026-08-21 — Position in the ranked lists (full lists in `../portfolio-rankings.md`)
+- **Expert-level update attribution.** "When you continue training on type-X-enriched data,
+  the sparsity localizes the gradient: only the experts that type-X tokens route to get
+  meaningful updates. Data attribution — which in dense models requires influence-function
+  machinery — partially falls out of the architecture. 'Which parameters does this data move'
+  has a first-order answer you can read off the routing table, and the interesting
+  measurement is the *residual*: how much of type-X's effect lands outside its own experts
+  (via the shared expert, attention, and router updates). That residual is a direct measure
+  of how modular the model's knowledge actually is."
+- **Reroute-vs-rewrite response.** "For each (data type × stage) cell, does the treatment
+  mostly reassign tokens or mostly rewrite experts in place? A crisp hypothesis: early-stage
+  treatments reroute, late-stage treatments rewrite, and the stage at which a data type can
+  no longer trigger rerouting is a *plasticity boundary* — measured categorically, not
+  through effective-rank proxies."
+- **Modular plasticity.** "The continual-learning angle gets an MoE-specific twist: plasticity
+  may be a per-expert resource rather than a global one. Does new-distribution data get
+  absorbed by colonizing under-utilized experts (cheap, non-interfering) or by overwriting
+  committed ones (expensive, interfering)? This connects to a practical lever the field
+  actually uses — expert resetting/addition for domain adaptation — but nobody has measured
+  the underlying absorption dynamics during ordinary pretraining. A 'which data types
+  colonize vs. overwrite, at which stages' map is both a science result and a midtraining
+  design guide."
+
+"And the river-valley reading is natural: router saturation is basin commitment made visible,
+persistent routing flips are river movement in a categorical channel, reverting flips are
+wall oscillation ([the routing follow-up's TRJ-moe-1], which slots directly in here), and the
+[TOK-obs-5] hypothesis — high-entropy tokens keep flipping after low-entropy tokens' routes
+freeze — is the MoE twin of the dense program's single most interesting figure. The two would
+make each other far more credible if they land together."
+
+### 2026-08-21 — positions in ranked lists (full lists in `docs/portfolio-rankings.md`)
 
 **Deliberately cut** from the workshop-sized list ("remain your strongest *eventual* papers
 but are second-act by construction"). **Full-conference #10, "The Functional Types of

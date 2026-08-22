@@ -122,8 +122,8 @@ work proceeds.
    checkpoint variant (raw checkpoints, merged checkpoints, branch starts and endpoints),
    stored as compact arrays keyed by (checkpoint variant, held-out-set version). Branch
    endpoints also save their weights. Cheap to add now; expensive to retrofit later because
-   it would mean re-running branches. *An identical spec appears in Annealed readouts, WSD retrain suite, and
-   Token-level movement; keep them in sync.*
+   it would mean re-running branches. *An identical spec appears in Annealed readouts, WSD retrain suite, Token-level
+   movement, MoE movement, MoE recipe suite, and Functional featurization; keep them in sync.*
 6. **Pilot on one recipe, one size, one seed** end to end, including WSD-opt-1 on two branch
    points, to freeze the schedule design.
 7. **Scale out** to the chosen recipe subset; then WSD-opt-3 cosine twins; then WSD-opt-5 as idle
@@ -147,7 +147,7 @@ decisions. Only notes about this project are kept here.
   creep; it's the point." A branch at step t with a data component injected at some mixing
   weight "is a causal probe of [the component's value as a function of training time] — a
   factorial component × injection-time experiment where each cell costs ~10% of a training
-  run, not a full run." (Full discussion in `docs/topics/functional-featurization.md`.)
+  run, not a full run." (Full discussion in `docs/potential-projs/functional-featurization.md`.)
 
 ### 2026-08-21 — on an MoE sibling of this suite
 
@@ -157,7 +157,7 @@ decisions. Only notes about this project are kept here.
   follow-up that "varies data at fixed architecture and reads out routing/expert
   specialization" would be the MoE counterpart of this suite, with its main risk ("standing up
   MoE training infra") already removed. (Full discussion in
-  `docs/topics/moe-recipe-suite.md`.)
+  `docs/potential-projs/moe-recipe-suite.md`.)
 
 ### 2026-08-21 — positions in three ranked lists (full lists in `docs/portfolio-rankings.md`)
 

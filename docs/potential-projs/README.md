@@ -22,6 +22,11 @@ Each document has the same three parts:
 | [Trajectory drift/diffusion](trajectory-statistics.md) (`TRJ`) | What lives inside the checkpoint-to-checkpoint "noise" term: directional drift vs. mean-reverting diffusion, and does diffusion track the learning rate? | none | T0 | Strong; checkpoint spacing confirmed adequate |
 | [IRT reanalysis](irt-reanalysis.md) (`IRT`) | Do recipes differ along one latent axis or many, and which items behave differently across recipes at matched ability? | none | T0 | Strongest standalone bet |
 | [Recipe featurization](recipe-featurization.md) (`REC`) | What is actually in the DataDecide recipes, and which measurable data properties explain which task-level differences? | none | T0/T1 | Yes, GPU-free |
+| [MoE partitions](moe-partitions.md) (`PART`) | Is the token taxonomy a property of the data or the architecture? Expert-matching across the Slicing-and-Dicing sweep with shallow-routing and load-balancing controls | none (sweep checkpoints exist) | T1 | Yes — either outcome strong |
+| [MoE movement](moe-movement.md) (`MOVE`) | Stage 1: does training move an MoE by rerouting or rewriting, per layer over time? Stage 2: does the stability apparatus freeze the router, and does that cost loss? | Stage 1 own dense-checkpoint runs; Stage 2 interventions | T1 then T3 | Stage 1 standalone; Stage 2 very high ceiling |
+| [MoE recipe suite](moe-recipe-suite.md) (`MSUITE`) | Does the data choose the experts? Small MoEs on 4–6 DataDecide recipes at fixed architecture, routing logged | full retrain (subset) | T3 | Resource + mechanism paper |
+| [Tiny-scale measurement](tiny-scale-measurement.md) (`TINY`) | How far down the scale ladder does reliable decision signal survive, as a function of measurement method; what can be done at 10–50M with replicates? | none for core; small for options | T0/T1 | Yes; options iteration-heavy |
+| [Functional featurization](functional-featurization.md) (`FUNC`) | What are the functional types of pretraining data — chunks typed by how they move a model at each training stage? | mixture-perturbation branches | T2 | Second-act; highest ceiling |
 
 Compute tiers: **T0** = analysis of published tables only; **T1** = forward passes with
 existing checkpoints; **T1+** = checkpoint merging plus re-running evals; **T2** = short decay
@@ -30,7 +35,8 @@ branches from existing checkpoints; **T3** = new pretraining runs.
 Source inventories: [../refs/lr-schedule-wsd-synthesis.md](../refs/lr-schedule-wsd-synthesis.md)
 (ANN, WSD, GEO, TOK Stage 2), [../refs/research-trajectory-synthesis.md](../refs/research-trajectory-synthesis.md)
 (TRJ, IRT, TOK Stage 1), and [../dataset-analysis-idea-map.md](../dataset-analysis-idea-map.md)
-(REC).
+(REC); the MoE, tiny-scale, and functional-featurization docs were promoted from
+[../topics/](../topics/) on 2026-08-21 and carry their origin notes in their §4.
 
 Resolved gate checks and open questions (with the code used to answer them) are logged in
 [../open-questions-answered.md](../open-questions-answered.md). The recipe-featurization
@@ -126,7 +132,7 @@ stand on their own. This applies equally to every §4 section.
   shared instrument suite. 'Measurement science of language-model training at academic
   scale' is a coherent identity that big labs structurally won't compete with — not because
   they can't, but because n=20-seed experiments on 150M models will never be their
-  incentive." Full text in [../topics/small-scale-measurement-science.md](../topics/small-scale-measurement-science.md).
+  incentive." Full text in [../tiny-scale-measurement.md](tiny-scale-measurement.md).
 - Tiny models as the program's *Drosophila*: "Every design… that's compute-gated at
   DataDecide scale — the (data × schedule) factorial, the ε-perturbation response tensor, the
   stage × type plasticity map, the reroute-vs-rewrite causal controls — becomes fully powered
@@ -178,4 +184,19 @@ stand on their own. This applies equally to every §4 section.
   that simultaneously *starts* three projects and *runs their gates*." Recommended start: IRT
   as primary, the data card in the background, and (now done) confirming the MoE sweep
   checkpoints exist.
+
+### Candidate program framings (recorded, not chosen)
+
+Three names have been proposed for the program as a whole. Each is a different emphasis over
+the same projects.
+
+| Framing | One-line pitch | Naturally wraps |
+|---|---|---|
+| **Data measurement → training dynamics** | Featurize data by what it does to training (schedule sensitivity, emergence timing, noise, forgetting), not by endpoint scores; DataDecide is the first instrument-validation study | REC, FUNC, ANN, TOK, PART |
+| **Measurement science of LM training at academic scale** | Cheapness converts into replicates, factorial designs, and confidence intervals; the measurement problem at 10–150M is the research question; tiny models as the program's Drosophila | TRJ, IRT, TINY, ANN, MSUITE, FUNC |
+| **Non-stationarity accounting** | Every thread is a non-stationarity thread (exogenous: schedule, data order, midtraining; endogenous: routing, gradient-weighted self-curriculum); account for how much each source injects and what each stabilizer suppresses | ANN, REC-9/10, TOK, MOVE, FUNC |
+
+Full text for each: `recipe-featurization.md` §4 (first),
+`tiny-scale-measurement.md` §4 (second),
+`../topics/nonstationarity-accounting.md` (third).
 

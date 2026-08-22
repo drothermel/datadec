@@ -103,8 +103,8 @@ river-valley mechanism in one figure and yields a principled recipe for low-nois
    checkpoint variant (raw checkpoints, merged checkpoints, branch starts and endpoints),
    stored as compact arrays keyed by (checkpoint variant, held-out-set version). Branch
    endpoints also save their weights. Cheap to add now; expensive to retrofit later because
-   it would mean re-running branches. *An identical spec appears in Annealed readouts, WSD retrain suite, and
-   Token-level movement; keep them in sync.*
+   it would mean re-running branches. *An identical spec appears in Annealed readouts, WSD retrain suite, Token-level
+   movement, MoE movement, MoE recipe suite, and Functional featurization; keep them in sync.*
 2. **Per-token decay-responsiveness (TOK-3).** For each branch, the per-token loss drop from
    branch start to branch endpoint. High drop = wall token at that point in training; ~zero
    drop = already at the river.
@@ -200,8 +200,8 @@ project and the T1 harness is reused by Stage 2.
    checkpoint variant (raw checkpoints, merged checkpoints, branch starts and endpoints),
    stored as compact arrays keyed by (checkpoint variant, held-out-set version). Branch
    endpoints also save their weights. Cheap to add now; expensive to retrofit later because
-   it would mean re-running branches. *An identical spec appears in Annealed readouts, WSD retrain suite, and
-   Token-level movement; keep them in sync.*
+   it would mean re-running branches. *An identical spec appears in Annealed readouts, WSD retrain suite, Token-level
+   movement, MoE movement, MoE recipe suite, and Functional featurization; keep them in sync.*
    Freeze it before any branch runs.
 2. **Checkpoint + eval harness with per-token loss logging.** Load any (recipe, size, seed,
    step) DataDecide checkpoint; run the DataDecide task suite and perplexity evals; store
@@ -273,7 +273,7 @@ decisions. Only notes about this project are kept here.
   routing, late reassignments) mark exactly the tokens [the] entropy-bucket hypothesis cares
   about." Adjacent work on load-balance phases across OLMoE/OpenMoE checkpoints is said to be
   aggregate-level only (unverified). (Full discussion in
-  `docs/topics/moe-routing-as-data-instrument.md`.)
+  `docs/potential-projs/moe-partitions.md`.)
 
 ### 2026-08-21 — on TOK-obs-5 as the MoE twin of TOK-obs-4
 
@@ -284,7 +284,7 @@ decisions. Only notes about this project are kept here.
   taxonomy claim only about the residual structure" — the reference-entropy scorer "is
   exactly the right covariate set for this"; and the load-balancing objective "actively
   pushes routing toward uniformity," confounding observed assignments. (Full discussion in
-  `docs/topics/moe-analysis-program.md`.)
+  `docs/potential-projs/moe-partitions.md`.)
 
 ### 2026-08-21 — on endogenous non-stationarity
 

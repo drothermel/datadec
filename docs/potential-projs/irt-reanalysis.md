@@ -198,7 +198,7 @@ pitch is rigor and science rather than large-lab adoption?
   `docs/open-questions-answered.md`).
 - IRT as curriculum: "'IRT-scheduled RL for small models' — pick tasks whose difficulty puts
   the model's pass rate in the informative band, advance the ladder as θ moves." (Full
-  discussion in `docs/topics/small-scale-measurement-science.md`.)
+  discussion in `docs/potential-projs/tiny-scale-measurement.md`.)
 
 ### 2026-08-21 — positions in three ranked lists (full lists in `docs/portfolio-rankings.md`)
 
