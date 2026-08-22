@@ -10,7 +10,7 @@ being a descriptor and becomes an operator.
 
 ---
 
-## 2026-08-21 — Reviewer 2, answering "is that a thing?" (the origin of this topic)
+## 2026-08-21 — Conversation 1, answering "is that a thing?" (the origin of this topic)
 
 **Question posed (Danielle).** Not high-level descriptors like "quality"; instead chunk the
 datasets, identify different types of contributions, look at how they are distributed, and
@@ -93,7 +93,10 @@ paper."
 
 ---
 
-## 2026-08-21 — Reviewer 2, reacting to a proposal to branch 1/16-of-a-run on pure data types
+## 2026-08-21 — Conversation 2, answering the combined prompt (beyond DataDecide + chunk types + 1/16-run branches)
+
+The combined prompt is in [../danielle-inputs.md](../danielle-inputs.md). This response was
+also the "functional featurization" report captured at the start of consolidation.
 
 **Where it sits relative to existing literature.** "The nearest neighbors are data attribution
 (influence functions, datamodels/TRAK) and mixture optimization (DoReMi, RegMix). But both
