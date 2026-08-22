@@ -1877,3 +1877,19 @@ transfer to features compared across rows — Danielle's intuition holds there.
 Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
 ("Pruned feature set and Danielle's normalisation plan"), with the answer (signed-log for
 diffs; slopes/R² untransformed; optional log10 of learning rates) and intake notes.
+
+### Early-dynamics, z-scoring implementation and unseen buckets — 2025-07 (intake 2026-08-22)
+
+> Does this look like the correct way to calculate zscore aka normalize the features
+> (assuming the correct log has already been applied prior to this function call:
+> [`zscore_by_param` groupby-`params` implementation] Note "params" is the model size
+> feature column.
+
+> so since I'm going to be evaluating generalization across bucket sizes then my eval set
+> will be all unseen buckets. so then I guess I'd want to use the next closest
+> normalization? it seems this type of scaling will inherently make this type of
+> generalization harder
+
+Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
+("Z-scoring implementation, and the unseen-bucket problem"); resolves the earlier open
+question, with a note that global z-scoring is a no-op for LightGBM.

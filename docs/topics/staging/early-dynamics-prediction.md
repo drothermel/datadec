@@ -717,6 +717,32 @@ duplicate `total_tokens_billions`; and it keeps `log1p` for perplexity levels (h
 for ppl ≫ 1, but then the `xlogylog` slopes — fit on `log` — and the `log1p`-transformed
 levels are on slightly different transforms; unify to plain `log` for perplexity).
 
+### 2025-07 — Z-scoring implementation, and the unseen-bucket problem (resolved)
+
+**Danielle's `zscore_by_param`** (groupby `params` = model size; per-column mean/std;
+`transform` with `x.name` as the group key). **Answer:** correct as written; tighten with
+`std(ddof=0)`, `.replace(0, 1)` against constant columns, precompute group stats once, pass
+`means/stds` as lambda defaults. Then a `BucketZScaler` fit-on-train / transform-anywhere
+class (caches per-bucket μ, σ; raises on unseen buckets; save/load).
+
+**Danielle's realisation.** "Since I'm going to be evaluating generalization across bucket
+sizes then my eval set will be all unseen buckets … it seems this type of scaling will
+inherently make this type of generalization harder." **Answer:** yes — per-bucket z-scoring
+inserts a systematic shift when test rows are normalised with another bucket's (or no)
+statistics, and trees read that shift as a feature change. Three options: **A** global
+z-score (μ, σ over all training rows); **B** log-only, no z-score; **C** fit μ(size),
+σ(size) as smooth functions of log(size) on training buckets and extrapolate (linear
+regression per column). Recommended default: A, then B if generalisation is poor; sanity
+checks — scaled-column histograms on the new bucket centred near 0; unseen-bucket rows
+still hit top splits; val-vs-test RMSE gap ≤ ~10%. (`StandardScaler` usage note appended.)
+
+*Intake note.* For LightGBM, option A is a per-feature affine map and therefore a no-op
+for tree splits — A and B give identical models; the choice only matters once the GP
+baseline enters. The real decision is per-bucket (rank-changing) normalisation vs. none:
+under the scale-generalisation axis, drop it (B) and carry `size_log`, or use C if
+size-normalised inputs are wanted. This closes the "per-size z-scoring under held-out
+sizes" open question below.
+
 ## Open questions
 
 - Is this still live (July 2025 draft; DataDecide scaling-law baselines have since been
@@ -729,9 +755,9 @@ levels are on slightly different transforms; unify to plain `log` for perplexity
 - Unresolved disagreements across reviews: full 16-point + slopes feature set vs. a
   four-feature minimal slice first; two heads vs. one LambdaMART. (Decided in the third
   thread: CV axis = model scale; targets = Pile-val perplexity + MMLU correct prob.)
-- Per-size z-scoring under held-out *sizes*: how to normalise rows of sizes absent from
-  training (extrapolate μ_s/σ_s vs. drop the per-size normalisation in the scale-axis
-  design and rely on `size_log`).
+- Per-size z-scoring under held-out sizes — resolved 2025-07: drop per-bucket
+  normalisation for the scale axis (log-only + `size_log`), or extrapolate μ(size), σ(size);
+  global z-scoring is a no-op for trees.
 - Any-step setting: confirm the feature window stays fixed at S₀ (see intake note); decide
   τ grid (K = 3 {33, 66, 100%} per the first review, or {25, 50, 75, 100%}).
 - Promote, absorb into `TINY` as an option, or archive. If promoted, source the static
