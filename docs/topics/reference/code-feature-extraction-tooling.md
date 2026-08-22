@@ -22,8 +22,9 @@ Any of these wants a fixed-schema, no-training feature extractor for Python stri
 
 **The brief (Danielle's own document; on file at
 `../../refs/deep-research/2026-07-03-report2-code-features-brief.md`).** Report 2 of a
-series governed by two companion documents (Deep Research Session Guidelines; Text and
-Code Analysis Deep Research Guidelines — not on file). Its contract, condensed:
+series governed by two companion documents, both copied alongside it:
+`../../refs/deep-research/2026-07-03-deep-research-guidelines-fable-v0.md` and
+`../../refs/deep-research/2026-07-03-text-and-code-analysis-guidelines-fable-v0.md`. Its contract, condensed:
 
 - Objective: a *landscape survey* of methods, libraries, and research artifacts that
   take source code (Python among the inputs; not Python-exclusive) and produce named
