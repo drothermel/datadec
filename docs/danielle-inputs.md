@@ -1807,3 +1807,21 @@ one LambdaMART head; naive extrapolation baselines; clip before logit; average s
 splitting). Recorded in
 [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md) ("Third
 distinct review"), with cross-review disagreements listed in the open questions.
+
+### Early-dynamics, third-review thread responses 21–22 — 2025-07 (intake 2026-08-22)
+
+> The narrow slice approach seems great, why target the pile perplexity instead of eg MMLU,
+> a downstream metric? Perhaps I can very slightly expand the goal to predicting one
+> perplexity value and one downstream task?
+> I want to do the generalization across model scale if I have to choose one.
+> And finally, can you provide more detail about the proposed super simple baselines (sanity
+> checks)?
+
+> Excellent! Given the new plan, please layout exactly the steps I should follow to
+> implement from scratch to the meeting deliverables we just described. For each step,
+> provide the code snippets that I will use.
+
+Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
+("Responses 21–22"); her axis/target decisions recorded in the open questions; code kept
+out of the doc (structure only) with intake notes on the stub split and placeholder
+runtime figures.

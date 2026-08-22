@@ -520,6 +520,47 @@ overstate the canonical dataset (≈ 350 rows per metric, 8 family folds + 7 siz
 the structural advice (one axis, one target, minimal features, naive baselines, seed
 handling) stands regardless.
 
+## 2025-07 — Responses 21–22 (third-review thread): targets, baselines, implementation plan
+
+**Danielle's decisions/questions.** Likes the narrow slice; why Pile perplexity rather than
+a downstream metric — expand slightly to one perplexity + one downstream task? **Chooses
+generalisation across model scale** as the single CV axis. Asks for detail on the simple
+baselines, then for a from-scratch step list with code.
+
+**Why Pile perplexity first (condensed).** Continuous, monotone, low cross-seed variance
+(claimed 2–4% vs. ≥8% for MMLU at small scale), one value per checkpoint, cheap, and
+correlated with many downstream tasks after log-transform — it validates the whole pipeline
+in under an hour before touching noisier downstream metrics. Extension: add
+`mmlu_cp_final` (correct prob, not accuracy) with the same logit/clip handling; predict it
+from early MMLU curves, or cross-metric via stacking (predicted late Pile perplexity as one
+extra feature). Scale axis: train ≤ 20M → test ≥ 60M, then expand. Report RMSE, ρ, decision
+accuracy; binomial CIs for MMLU.
+
+**Simple baselines (all stateless).** Train-set mean (detects leakage / unlearnable task);
+repeat-last-value of the early window ("no further improvement"); two-point linear
+extrapolation in tokens; log-log power-law extrapolation `y = a·T^b` fit on the early
+window; random ranking (decision accuracy ≈ 50%). Decision accuracy via
+`itertools.combinations` pairwise hit-rate — "a model with lower RMSE can still mis-rank the
+best run."
+
+**Implementation plan (structure only; code in the conversation).** `src/{io, features,
+baselines, splitters, train, eval, plots}.py` + `meeting_run.py`. Steps: load curves to a
+long (run, metric, tokens, value) frame + metadata; early-window mask `tokens ≤ min(2e9,
+0.10·T_total)`; EDA log-log line plots; `summarise_one` features — start/end value,
+relative improvement, log-log OLS exponent, trend slope, variance of first differences, 16
+log-grid interpolated values; `scale_split` at 20M; baselines; LightGBM regressor wrapper
+(starter params); RMSE + decision accuracy; loop over {pile_ppl, mmlu_cp}; scatter and
+SHAP bar plots; pack deliverables. Post-meeting: replace the train-as-validation stub with
+a real 10% held-out split; add the two extrapolation baselines; sweep early-window
+fractions.
+
+*Intake notes.* The sketch fits with `val = train` (acknowledged as a stub — early stopping
+then does nothing); `tokens_last` is referenced but not stored; the "<25 min on one A100 for
+~3k rows" and "peak RAM 6 GB" figures are placeholders, not measurements; the "ρ ≈ 0.7–0.9,
+Table 3 of your notes" claim references the unrecoverable Gemini notes. The baseline set
+(mean / repeat-last / linear / power-law / random) is the durable content here and aligns
+with the oracle-ladder habit of reporting a floor row.
+
 ## Open questions
 
 - Is this still live (July 2025 draft; DataDecide scaling-law baselines have since been
@@ -530,8 +571,8 @@ handling) stands regardless.
 - Whether the target should be the annealed (`ANN`) readout rather than the raw final
   checkpoint.
 - Unresolved disagreements across reviews: full 16-point + slopes feature set vs. a
-  four-feature minimal slice first; two heads vs. one LambdaMART; which single target and
-  CV axis to lead with.
+  four-feature minimal slice first; two heads vs. one LambdaMART. (Decided in the third
+  thread: CV axis = model scale; targets = Pile-val perplexity + MMLU correct prob.)
 - Any-step setting: confirm the feature window stays fixed at S₀ (see intake note); decide
   τ grid (K = 3 {33, 66, 100%} per the first review, or {25, 50, 75, 100%}).
 - Promote, absorb into `TINY` as an option, or archive. If promoted, source the static
