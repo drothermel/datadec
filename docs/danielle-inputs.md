@@ -818,7 +818,7 @@ rate, aiming at representation-space benefits (latent dynamics, style manipulati
 weight updates.
 
 Routed to: new staging topic
-[topics/text-latent-code-autoencoder.md](topics/staging/text-latent-code-autoencoder.md)
+[potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md) (then a staging topic; promoted 2026-08-22)
 (not project-specific; not program-level).
 
 > ok, so we're actually collecting potential projects wide and far, they don't have to have
@@ -871,7 +871,7 @@ Claude presented its pushback points one at a time so Danielle could respond to 
 > exploring how same or different it is is actually a big part of why this would be an
 > interesting question. Does that make sense?
 
-Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-code-autoencoder.md)
+Routed to: [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md) (then a staging topic; promoted 2026-08-22)
 ("Point 1" section and revised open questions).
 
 ### Text-latent code autoencoder, Point 2 (objective vs. style goal) — conversation 2026-07-11, intake 2026-08-22
@@ -913,7 +913,7 @@ Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-c
 > illustrative examples for why I believe it's plausible and could be useful. So designing
 > the loss function specifically isn't where we are in the discussion yet.
 
-Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-code-autoencoder.md)
+Routed to: [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md) (then a staging topic; promoted 2026-08-22)
 ("Point 2" section; loss-design detail kept as leads, marked as beyond the motivation stage).
 
 ### Text-latent code autoencoder, Point 3 (not quite an embedding) — conversation 2026-07-11, intake 2026-08-22
@@ -941,7 +941,7 @@ Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-c
 > their surface talking about just, like, natural language. Um, does that make sense? again,
 > at a high level. Like, we're not talking about detailed details.
 
-Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-code-autoencoder.md)
+Routed to: [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md) (then a staging topic; promoted 2026-08-22)
 ("Point 3" section; new open question on borrowed geometry + the embedder check).
 
 ### Text-latent code autoencoder, Point 4 (prior art) — conversation 2026-07-11, intake 2026-08-22
@@ -967,7 +967,7 @@ Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-c
 > language model. of these pieces individually has been done, but I haven't really seen
 > anything that does all of them together.
 
-Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-code-autoencoder.md)
+Routed to: [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md) (then a staging topic; promoted 2026-08-22)
 ("Point 4" section; prior-art map flagged as needing a literature pass).
 
 ### Text-latent code autoencoder — two interest categories — conversation 2026-07-11, intake 2026-08-22
@@ -1002,7 +1002,7 @@ Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-c
 > and cons of those different types of hypotheses, but also how they might be similar or
 > different.
 
-Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-code-autoencoder.md)
+Routed to: [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md) (then a staging topic; promoted 2026-08-22)
 ("Two interest categories" section). The lab's compression goal is recorded as a project
 framing; the response's "research agenda smuggled in as analysis" phrasing was rewritten as
 a plain sequencing point.
@@ -1072,7 +1072,7 @@ a plain sequencing point.
 > are of the outer loop LLM optimist before trying to actually use it for my problem because
 > I feel like my problem is pretty complex. What do you think about all of this?
 
-Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-code-autoencoder.md)
+Routed to: [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md) (then a staging topic; promoted 2026-08-22)
 ("Compression project: implementation state and initial experiment design"). Lab decisions
 (HumanEval only; compression goal) kept as project facts; adviser commentary omitted.
 
@@ -1114,7 +1114,7 @@ Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-c
 > that I have something to base my intuition on. And I think that that's really… these are
 > the questions I'm trying to answer.
 
-Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-code-autoencoder.md)
+Routed to: [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md) (then a staging topic; promoted 2026-08-22)
 ("Sequencing the first measurements; the cliff structure").
 
 ### Text-latent code autoencoder — baseline vs. seed — conversation 2026-07-11, intake 2026-08-22
@@ -1146,7 +1146,7 @@ Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-c
 > types of prompts that actually might optimize performance. Um, so what do you think about
 > this trade off?
 
-Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-code-autoencoder.md)
+Routed to: [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md) (then a staging topic; promoted 2026-08-22)
 ("Baseline vs. seed"). The response's closing advice on what to say to the adviser was
 dropped; the baseline constraint is recorded as a project fact.
 
@@ -1182,7 +1182,7 @@ dropped; the baseline constraint is recorded as a project fact.
 > than just validate the optimization loop. Would you say that this fairly accurately
 > captures what we've discussed and concluded.
 
-Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-code-autoencoder.md)
+Routed to: [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md) (then a staging topic; promoted 2026-08-22)
 ("Recap of conclusions; what the large-n phase must output").
 
 ### Text-latent code autoencoder — fractional test pass rate — conversation 2026-07-11, intake 2026-08-22
@@ -1192,7 +1192,7 @@ Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-c
 > binary pass rate is the relevant top line metric but it feels like test pass rate is
 > useful signal too? And that had variance right?
 
-Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-code-autoencoder.md)
+Routed to: [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md) (then a staging topic; promoted 2026-08-22)
 ("Fractional test pass rate as a second signal").
 
 ### Text-latent code autoencoder — per-test split confirmed — conversation 2026-07-11, intake 2026-08-22
@@ -1202,7 +1202,7 @@ Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-c
 
 > Yes, please. For the document.
 
-Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-code-autoencoder.md)
+Routed to: [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md) (then a staging topic; promoted 2026-08-22)
 ("Per-test outcomes confirmed; dividends and caveat"). The requested document follows as a
 separate intake.
 
