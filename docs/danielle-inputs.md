@@ -1286,3 +1286,16 @@ distilled into [topics/multi-answer-qa-literature.md](topics/reference/multi-ans
 
 Routed to: [topics/multi-answer-qa-literature.md](topics/reference/multi-answer-qa-literature.md)
 ("Cleaner datasets: verification over enumeration").
+
+### Wikipedia downloads under a storage budget — conversation 2026-08-16
+
+> Interesting. Okay. So if right now I wanted to download Wikipedia-related data, but I had
+> a limited amount of storage space, then what are my options in terms of kind of where I
+> would download it, what level of granularity is there, like metadata and then the actual
+> text, and what sizes are these? And then is it possible to download like just some
+> percentage, some shards, or is it like you download the whole thing and then you can
+> split it up yourself? Let's assume that I just want one date of Wikipedia, and it can be
+> a current date or like very recent, or it can be historical.
+
+Routed to: [topics/wiki-qa-sharding.md](topics/staging/wiki-qa-sharding.md) ("Downloading
+Wikipedia under a storage budget").

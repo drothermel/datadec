@@ -89,6 +89,59 @@ and supporting-fact F1; p50/p95 end-to-end latency; storage/QPS/compute imbalanc
 replication factor and update amplification. Central objective: "Expected number of physical
 shards required to recover a high-recall evidence set, subject to storage and QPS balance."
 
+## 2026-08-16 — Downloading Wikipedia under a storage budget
+
+**Danielle's question.** With limited storage, where to download Wikipedia data, at what
+granularity (metadata vs. text), what sizes, and whether one can download a percentage /
+some shards or must download everything and split locally. One date only (recent or
+historical).
+
+**Response (near-verbatim, condensed; sizes as stated for August 2026 enwiki, unverified).**
+Headline: "some official datasets are physically sharded and individual shards can be
+downloaded. But those shards are generally contiguous page-ID ranges — not random, topical,
+or graph-coherent subsets."
+
+*Main options (compressed sizes).* Titles only: `all-titles-in-ns0.gz` 109 MB (`all-titles.gz`
+382 MB, all namespaces). Page metadata: `page.sql.gz` 2.41 GB + `redirect.sql.gz` 185 MB +
+`page_props.sql.gz` 458 MB. **Link graph:** `page` + `linktarget` + `pagelinks` + `redirect`
+≈ 11.0 GB (no bodies); + `categorylinks.sql.gz` 2.51 GB. Current article wikitext:
+`pages-articles.xml.bz2` 25.55 GB; multistream + index 26.67 GB + 284 MB (independently
+decompressible streams, pieces ~50–625 MB). All public namespaces: `pages-meta-current`
+46.31 GB. New "MediaWiki Content Current" export: 45.68 GB across 19 page-ID-range shards of
+~1.2–2.8 GB. Kiwix ZIM (rendered HTML): `mini` 12 GB (intros + infoboxes), `nopic` 49 GB,
+`maxi` 115 GB; topical/popularity subsets (top selection intro-only 316 MB, top no-images
+2.1 GB, top-1M no-images 16 GB, physics 304 MB, …). **Structured Wikipedia Parquet**
+(huggingface `wikimedia/structured-wikipedia`): sharded, streamable; abstracts, descriptions,
+QIDs, sections, infoboxes, tables, citations, lists — DuckDB/Polars can scan selected
+columns/files remotely. Wikidata: truthy RDF 43.25 GB / full JSON 102.67 GB.
+
+*Wikitext caveat.* `pages-articles` is wikitext (templates, infobox markup, refs, Lua-dependent
+rendering), not clean prose; stream the bz2 into an extractor and write compressed
+JSONL/Parquet — "a nominally 26 GB download can require well over 100 GB of working space"
+if fully decompressed.
+
+*Four meanings of "10%".* (1) 10% of physical files — yes, but page-ID ranges correlate with
+creation time, so not representative, and links point outside the subset. (2) Representative
+random 10% — no official download; stream once and `retain if hash(snapshot_date, page_id)
+mod 100 < 10` for stable, nested 1/5/10/20% samples (possibly filterable remotely over
+Parquet). (3) Topical subset — Kiwix publishes them; fine for bounded collections, awkward as
+canonical QA-ingestion input. (4) **Graph-coherent subset — not provided; download the ~11 GB
+graph tables, pick seeds, build the subset (categories, link neighborhoods, PageRank,
+communities, or the QA workload), then fetch chosen articles by ID/title. "That is likely the
+appropriate route for the sharding project."**
+
+*Budget ladder.* <1 GB: titles/metadata, Kiwix topical, remote Parquet scans. ~3 GB: Kiwix
+top no-images or a few XML shards. ~12–15 GB: Kiwix `mini` or the link graph without text.
+~27 GB: `pages-articles` (minimum for complete current wikitext). ~40 GB: `pages-articles` +
+core link graph (~36.6 GB). ~50 GB: Kiwix `nopic` or all-namespace XML. ≥100 GB: Kiwix with
+images or full Wikidata (plus much more working space).
+
+*Reproducible single date.* Use a dated directory (e.g. `enwiki/20260801/`), not `latest`;
+download all tables from the same snapshot; keep checksums and filenames; record whether
+raw wikitext, rendered HTML, or an extractor was used. Server holds recent months only
+(Feb–Aug 2026 at the time); older snapshots via Internet Archive per Wikimedia's
+"Finding older xml dumps" guidance. One date ⇒ no need for the revision-history dump.
+
 ## Open questions
 
 - What the surrounding MAQA system needs (latency target, shard count, update
@@ -96,5 +149,7 @@ shards required to recover a high-recall evidence set, subject to storage and QP
   at all.
 - Verify the gap claim and the tool/paper citations above.
 - Whether this is a project in itself or infrastructure for another one.
+- Data plan: graph tables (~11 GB) first for subset construction; `pages-articles` multistream
+  or Structured Wikipedia Parquet for text; pinned dated snapshot.
 
 **Waiting on:** further excerpts from the MAQA Next Steps page; a promotion decision.
