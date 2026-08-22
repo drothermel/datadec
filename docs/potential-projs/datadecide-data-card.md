@@ -125,7 +125,7 @@ and the compute-/loss-matched pairing utility.
 ### 2026-08-22 — a published downstream consumer of DataDecide to track
 
 From Danielle's SciSpace literature review on small-scale evaluation metrics
-(record in `../topics/reference/small-scale-evaluation-metrics-literature.md`; Danielle-supplied ID arXiv 2605.18607; author list unresolved across the two review versions). Patel et al. 2026 use the 25 DataDecide corpora and the 1B target
+(record in `../topics/reference/small-scale-evaluation-metrics-literature.md`; arXiv 2605.18607, Patel, Reddy, Mosbach & Bahdanau — Mila/ServiceNow, not AI2 as one review version claimed). Patel et al. 2026 use the 25 DataDecide corpora and the 1B target
 rankings as a data-selection benchmark and report beating the suite's own proxies
 (decision accuracy > 0.85 at ~10⁻⁵ target compute). For the data card this is (1) a
 consumer whose numbers can be re-derived from the validated tables — a second

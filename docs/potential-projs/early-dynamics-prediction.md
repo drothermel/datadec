@@ -149,7 +149,7 @@ quoted from the reviews are unverified; Danielle's prompts are logged verbatim i
 ### 2026-08-22 — training-time forecasting prior art: Patel et al. 2026 and NeuNeu
 
 From Danielle's SciSpace literature review on small-scale evaluation metrics
-(record in `../topics/reference/small-scale-evaluation-metrics-literature.md`; Danielle-supplied ID arXiv 2605.18607; author list unresolved across the two review versions). Two results sit directly on EDP's question for LMs: (1) Patel et al.
+(record in `../topics/reference/small-scale-evaluation-metrics-literature.md`; arXiv 2605.18607, Patel, Reddy, Mosbach & Bahdanau — Mila/ServiceNow, not AI2 as one review version claimed). Two results sit directly on EDP's question for LMs: (1) Patel et al.
 extrapolate downstream accuracy along the OLMo-3-7B checkpoint trajectory over an 18×
 compute horizon using token-level proxies, at roughly half the RMSE of loss-based
 baselines — one architecture, one scale; (2) NeuNeu / "Neural Neural Scaling Laws"

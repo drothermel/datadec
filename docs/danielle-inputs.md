@@ -2904,7 +2904,14 @@ knowledge-vs-reasoning decomposition as the comparison to reproduce on the sweep
 > crucial information.
 
 (pasted: version 1 as markdown, version 2 as a LaTeX document with a 34-row comparison
-table. No artifact bundle path was given for this one.)
+table.)
+
+> then the artifact bundle: `scispace-eval-of-llms-agent-artifacts-zip_e11a0b3d-…`
+
+Applied: `INDEX.md` in `~/drotherm/data/convo-artifacts/2026/scispace-eval-of-llms-agent-artifacts-zip_e11a0b3d-f220-45af-9d38-6a50581427b3_1787424353/` (seed paper PDF + cropped figures, both review rounds,
+insight extraction, 32 downloaded PDFs, search CSVs). The seed paper PDF settled the
+author list: Patel, Reddy, Mosbach, Bahdanau — version 2's AI2 author list was
+fabricated; corrected in the reference topic and the four §4 notes.
 
 Routed to: [topics/reference/small-scale-evaluation-metrics-literature.md](topics/reference/small-scale-evaluation-metrics-literature.md)
 (new reference topic: the seed paper condensed, the landscape by theme, intake notes on

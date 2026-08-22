@@ -6,8 +6,10 @@ frontier, EDP, DCARD). Entries are dated. Paper characterizations are a SciSpace
 identifiers unverified unless Danielle-supplied. Sibling: `loss-curve-forecasting.md`
 (curve extrapolation), `evaluation-methodology-literature.md`.
 
-**Artifacts:** no bundle path was given for this one at intake (2026-08-22); if it
-exists, index it per the standing rule and add the path here.
+**Artifacts on disk:** `~/drotherm/data/convo-artifacts/2026/scispace-eval-of-llms-agent-artifacts-zip_e11a0b3d-f220-45af-9d38-6a50581427b3_1787424353/` — the seed paper PDF and its cropped figures, both review
+rounds (markdown, LaTeX, PDF), the intermediate insight extraction, 32 downloaded
+full-text PDFs, and ~30 search CSVs. **`INDEX.md` inside the folder is the file-level
+index.**
 
 ---
 
@@ -25,8 +27,9 @@ exists, index it per the standing rule and add the path here.
 > evaluation metrics, key results, followup questions, potential weaknesses, and any other
 > crucial information.
 
-**The seed paper (Danielle-supplied ID: arXiv 2605.18607, "Forecasting Downstream
-Performance of LLMs With Proxy Metrics", 2026).** As described across the two versions:
+**The seed paper (Danielle-supplied ID: arXiv 2605.18607v1, 18 May 2026, "Forecasting
+Downstream Performance of LLMs With Proxy Metrics" — Arkil Patel, Siva Reddy, Marius
+Mosbach, Dzmitry Bahdanau; Mila/McGill and ServiceNow Research; PDF in the bundle).** As described across the two versions:
 a library of 80 proxy metrics = 10 token-level core statistics (cross-entropy, top-k
 accuracy for k∈{1,2,3,5}, entropy, rank, reciprocal rank, margin, wrong-confidence) × 8
 weighting schemes, all computed from a single forward pass of the candidate model over
@@ -90,11 +93,10 @@ baselines. Stated limitation: forecasting shown on one architecture/scale.
 
 **Intake notes.**
 
-- **Author lists for the seed paper conflict across versions** (v1: "A. Patel, S. Reddy,
-  M. Mosbach, D. Bahdanau"; v2: "Patel, Magnusson, Groeneveld, Walsh, Soldaini, Tafjord,
-  … Hajishirzi"). The v2 list is the DataDecide/OLMo author set, which fits the content
-  (DataDecide corpora, OLMo-3-7B) but is exactly what an agent would hallucinate for
-  that content. Resolve from the arXiv page before citing.
+- **Version 2 fabricated the seed paper's author list** ("Patel, Magnusson, Groeneveld,
+  Walsh, Soldaini, Tafjord, … Hajishirzi" — the DataDecide/OLMo team, plausible given
+  the content and wrong). The PDF in the bundle gives Patel, Reddy, Mosbach, Bahdanau;
+  version 1 had it right. A clean example of content-driven author hallucination.
 - **v2's bibliography has swapped or fabricated entries** that the table and text cite as
   if correct: `gao2021framework` is cited as lm-evaluation-harness but the entry is The
   Pile; `luo2025scaling` cited as code-LLM scaling laws but the entry is WizardCoder;

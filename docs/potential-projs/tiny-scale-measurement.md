@@ -115,7 +115,7 @@ claims in quoted text are unverified.
 ### 2026-08-22 — the incumbent proxy for small-scale decisions: Patel et al. 2026
 
 From Danielle's SciSpace literature review on small-scale evaluation metrics
-(record in `../topics/reference/small-scale-evaluation-metrics-literature.md`; Danielle-supplied ID arXiv 2605.18607; author list unresolved across the two review versions). "Forecasting Downstream Performance of LLMs With Proxy Metrics" builds
+(record in `../topics/reference/small-scale-evaluation-metrics-literature.md`; arXiv 2605.18607, Patel, Reddy, Mosbach & Bahdanau — Mila/ServiceNow, not AI2 as one review version claimed). "Forecasting Downstream Performance of LLMs With Proxy Metrics" builds
 80 proxies (10 token-level statistics × 8 weightings) from one forward pass over
 expert-written solutions and, on DataDecide's 25 corpora, reports decision accuracy
 > 0.85 for the 1B target at ~10⁻⁵ of target compute using frequency-weighted top-5

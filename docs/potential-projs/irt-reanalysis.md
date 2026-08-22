@@ -142,7 +142,7 @@ decisions. Only notes about this project are kept here.
 ### 2026-08-22 — frontier baseline from the literature: token-level proxies over expert trajectories
 
 From Danielle's SciSpace literature review on small-scale evaluation metrics
-(record in `../topics/reference/small-scale-evaluation-metrics-literature.md`; Danielle-supplied ID arXiv 2605.18607; author list unresolved across the two review versions). Patel et al. 2026 rank models with a RankSVM over 80 token-level proxies
+(record in `../topics/reference/small-scale-evaluation-metrics-literature.md`; arXiv 2605.18607, Patel, Reddy, Mosbach & Bahdanau — Mila/ServiceNow, not AI2 as one review version claimed). Patel et al. 2026 rank models with a RankSVM over 80 token-level proxies
 computed on expert solutions (Spearman 0.81 vs. 0.36 for cross-entropy; 0.33 for
 rBridge) and rank DataDecide corpora at 10⁻⁵ of target compute. For the
 decision-reliability frontier this is the strongest published proxy to beat alongside
