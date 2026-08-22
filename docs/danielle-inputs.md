@@ -1323,3 +1323,10 @@ BM25 to vectors at Wikipedia scale").
 
 Routed to: [topics/wiki-qa-sharding.md](topics/staging/wiki-qa-sharding.md) ("LanceDB alone:
 pros, cons, how far it goes"); index-plan open question revised.
+
+### Qdrant solution — conversation 2026-08-16
+
+> ok, so then, what would a solution with qdrant look like?
+
+Routed to: [topics/wiki-qa-sharding.md](topics/staging/wiki-qa-sharding.md) ("A Qdrant-based
+solution").

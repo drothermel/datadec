@@ -272,6 +272,58 @@ construction, retrieval research and a credible single-machine demonstrator." Mi
 when query concurrency exceeds one machine, sophisticated lexical/ranking behavior is
 needed, or automatic distributed sharding/HA is required.
 
+## 2026-08-16 — A Qdrant-based solution
+
+**Danielle's question.** What would a solution with Qdrant look like?
+
+**Response (near-verbatim, condensed; product claims unverified).** Qdrant as the *serving*
+index: one point per passage (~100–250 words, bounded by section/paragraph), with multiple
+named representations on the same point — dense embedding, BM25 sparse vector (IDF
+modifier so Qdrant maintains document-frequency statistics), optional ColBERT multivector
+for late-interaction reranking — and a payload (passage_id, article_id, title, section, text
+or reference, char offsets, wikidata_qid, snapshot, graph_community, page_rank,
+is_disambiguation). One versioned collection per snapshot (e.g. `enwiki_2026_08_01_e5_v1`)
+with an atomic alias `enwiki_current`; Parquet remains the canonical corpus. Create payload
+indexes (article_id, wikidata_qid, snapshot, graph_community, is_disambiguation) *before*
+bulk ingestion because they affect the filtered vector index.
+
+*First stage.* Dense and sparse prefetch (~500 each) → RRF as the top-level query (on a
+distributed collection fusion must be top-level so it merges globally rather than per
+shard) → `query_points_groups` by `article_id` (e.g. 100 articles × best 3 passages) — "you
+can retrieve 100 distinct articles while retaining the best two or three passages from
+each," which is what multi-answer QA needs. Weighted RRF or learned fusion once a dev set
+exists.
+
+*Reranking.* Simpler: top 100–300 fused passages → external cross-encoder (comparable to
+IR research systems). Native: third named vector `colbert` with HNSW `m=0` (rerank-only),
+pipeline BM25 500 + dense 500 → RRF 200 → MaxSim → top 30; multivectors cost considerably
+more storage.
+
+*Link graph.* Compute communities, PageRank, redirects, adjacency outside Qdrant; store
+`graph_community`, `page_rank`, maybe a compact neighbor list in payload; use for routing,
+filtering, expansion, reranking. Two-stage expansion: unrestricted hybrid → top 10–30
+article IDs → one-hop neighbors from an external adjacency table → search/rerank passages in
+that article set → merge. **Use `graph_community` as metadata, not the physical shard key,
+initially** — "querying the wrong subset causes catastrophic recall loss"; custom shard keys
+suit few partitions with nearly every query specifying its partition (Qdrant recommends
+low-cardinality shard keys; physical shards carry overhead).
+
+*Storage.* Original dense vectors on disk; HNSW in RAM if affordable; scalar/binary
+quantization after measuring recall loss (quantized in memory, originals on disk for
+rescoring an oversampled set); passage text in payload only if convenience justifies
+duplication; 2–4 shards per machine to start, then benchmark.
+
+*How far.* Qdrant alone: sparse BM25-like, dense ANN, hybrid fusion, metadata/subset filters,
+article grouping, ColBERT-style reranking, quantization, disk-backed storage, sharding,
+replication, online serving. External: parsing and passage construction, embedding
+generation, link-graph construction and algorithms, cross-encoder/LLM reranking, canonical
+storage and analytical scans, QA evaluation. "I would favor Qdrant when the endpoint is a
+continuously available, horizontally scalable retrieval service. I would favor LanceDB when
+the corpus is mainly an offline research artifact that I want to inspect, transform, and
+version like a columnar dataset." First implementation: one collection, one point per
+passage, `dense + bm25`, RRF, article grouping, external cross-encoder, communities as
+payload only — "leaving each additional component independently measurable."
+
 ## Open questions
 
 - What the surrounding MAQA system needs (latency target, shard count, update
@@ -285,7 +337,9 @@ needed, or automatic distributed sharding/HA is required.
   graph-coherent subset can be fetched without the full download.
 - Index plan: Pyserini BM25 reference → LanceDB as the single-machine stack (one table,
   `graph_partition` as an indexed filter column; graph features computed offline) → Vespa
-  only if concurrency, ranking expressiveness, or HA demand it; section-level passages with title/section prefix; RRF first;
+  only if concurrency, ranking expressiveness, or HA demand it (Qdrant is the alternative
+  serving-first choice: named dense+sparse(+ColBERT) vectors, RRF, article grouping,
+  community as payload not shard key); section-level passages with title/section prefix; RRF first;
   article-level diversification for multi-answer readers.
 
 **Waiting on:** further excerpts from the MAQA Next Steps page; a promotion decision.
