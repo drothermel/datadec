@@ -125,7 +125,7 @@ class _Error:
     rows: int
     absolute_percent: float
     released_relative_percent: float
-    actual_relative_percent: float
+    paper_formula_relative_percent: float
 
 
 @dataclass(frozen=True, slots=True)
@@ -372,7 +372,7 @@ def _error(
     released = tuple(
         error / abs(p) for error, p in zip(absolute, predicted, strict=True)
     )
-    actual_relative = tuple(
+    paper_formula_relative = tuple(
         error / a for error, a in zip(absolute, actual, strict=True)
     )
     if any(
@@ -390,11 +390,21 @@ def _error(
             len(rows),
             _mean(absolute) * 100,
             _mean(released) * 100,
-            _mean(actual_relative) * 100,
+            _mean(paper_formula_relative) * 100,
         ),
         (),
         rows,
     )
+
+
+def _adjudicate_error(
+    *, released_display_match: bool, paper_formula_match: bool
+) -> ValidationOutcome:
+    if not released_display_match:
+        return ValidationOutcome.NOT_REPRODUCED
+    if paper_formula_match:
+        return ValidationOutcome.REPRODUCED
+    return ValidationOutcome.DIRECTIONALLY_CONSISTENT
 
 
 def _selection(
@@ -678,6 +688,13 @@ def _evaluate(
     denominator = None
     target_ties = predicted_ties = 0
     holds = False
+    outcome_override: ValidationOutcome | None = None
+    result_diagnostics = list(diagnostics)
+    result_limitations = [
+        "Predictions and released errors are author-derived aggregates; the upstream fits were not rerun.",
+        "Released rel_error_stacked uses prediction as denominator, while paper line 330 states target.",
+        "Predicates and sensitivity grids are read from paper_validation.toml.",
+    ]
 
     if claim_id in _ERROR_CLAIMS:
         family, expected_relative, expected_absolute = _ERROR_CLAIMS[claim_id]
@@ -688,27 +705,46 @@ def _evaluate(
             computed: object = {"setup_family": family, "row_count": 0}
         else:
             denominator = summary.rows
-            holds = (
+            released_display_match = (
                 round(summary.released_relative_percent, 1) == expected_relative
                 and round(summary.absolute_percent, 1) == expected_absolute
+            )
+            paper_formula_match = (
+                round(summary.paper_formula_relative_percent, 1) == expected_relative
+            )
+            outcome_override = _adjudicate_error(
+                released_display_match=released_display_match,
+                paper_formula_match=paper_formula_match,
             )
             computed = {
                 "setup_family": family,
                 "row_count": summary.rows,
                 "released_relative_error_percent": summary.released_relative_percent,
-                "paper_denominator_relative_error_percent": summary.actual_relative_percent,
+                "paper_formula_relative_error_percent": summary.paper_formula_relative_percent,
                 "absolute_error_percent": summary.absolute_percent,
                 "displayed_released_relative_error_percent": round(
                     summary.released_relative_percent, 1
                 ),
-                "displayed_paper_denominator_relative_error_percent": round(
-                    summary.actual_relative_percent, 1
+                "displayed_paper_formula_relative_error_percent": round(
+                    summary.paper_formula_relative_percent, 1
                 ),
                 "displayed_absolute_error_percent": round(summary.absolute_percent, 1),
-                "released_relative_denominator": "absolute_prediction",
-                "paper_stated_relative_denominator": "actual_or_target",
+                "released_relative_denominator": "prediction",
+                "paper_formula_relative_denominator": "target",
                 "relative_error_denominator_discrepancy": True,
+                "released_display_match": released_display_match,
+                "paper_formula_match": paper_formula_match,
             }
+            result_diagnostics.extend(
+                (
+                    f"released_display_match={str(released_display_match).lower()}",
+                    f"paper_formula_match={str(paper_formula_match).lower()}",
+                )
+            )
+            if released_display_match and not paper_formula_match:
+                result_limitations.append(
+                    "The displayed table is regenerated from the author-derived rel_error_stacked column, whose prediction denominator is inconsistent with the paper method; it is not reproduced under the paper-stated target-denominator formula."
+                )
     else:
         rows.append(selections["decision"])
         missing += [*target_missing, *decision_missing]
@@ -902,6 +938,8 @@ def _evaluate(
     outcome = (
         ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED
         if missing_groups
+        else outcome_override
+        if outcome_override is not None
         else ValidationOutcome.REPRODUCED
         if holds
         else ValidationOutcome.NOT_REPRODUCED
@@ -928,12 +966,8 @@ def _evaluate(
         target_ties=target_ties,
         predicted_ties=predicted_ties,
         outcome=outcome,
-        diagnostics=diagnostics,
-        limitations=(
-            "Predictions and released errors are author-derived aggregates; the upstream fits were not rerun.",
-            "Released rel_error_stacked uses absolute prediction as denominator, while paper line 330 states actual or target.",
-            "Predicates and sensitivity grids are read from paper_validation.toml.",
-        ),
+        diagnostics=tuple(result_diagnostics),
+        limitations=tuple(result_limitations),
         plot_series_ids=() if series is None or missing_groups else (series.id,),
     )
 
@@ -1106,7 +1140,7 @@ def run_scaling_law_attempts(
         f"incompatible_five_parameter_target_maximum_absolute_difference={incompatible_difference}",
         "predictions=stacked_pred",
         "released_relative_error_denominator=absolute_prediction",
-        "paper_line_330_relative_error_denominator=actual_or_target",
+        "paper_line_330_relative_error_denominator=target",
     )
     results, series_values = [], []
     for attempt in attempts:

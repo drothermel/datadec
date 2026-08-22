@@ -125,7 +125,30 @@ def test_error_summary_persists_both_relative_denominators() -> None:
     assert summary is not None
     assert summary.absolute_percent == pytest.approx(10.0)
     assert summary.released_relative_percent == pytest.approx(20.0)
-    assert summary.actual_relative_percent == pytest.approx(100 / 6)
+    assert summary.paper_formula_relative_percent == pytest.approx(100 / 6)
+
+
+@pytest.mark.parametrize(
+    ("released_display_match", "paper_formula_match", "expected"),
+    (
+        (True, False, ValidationOutcome.DIRECTIONALLY_CONSISTENT),
+        (True, True, ValidationOutcome.REPRODUCED),
+        (False, False, ValidationOutcome.NOT_REPRODUCED),
+        (False, True, ValidationOutcome.NOT_REPRODUCED),
+    ),
+)
+def test_error_adjudication_requires_released_and_paper_formula_matches(
+    released_display_match: bool,
+    paper_formula_match: bool,
+    expected: ValidationOutcome,
+) -> None:
+    assert (
+        scaling._adjudicate_error(
+            released_display_match=released_display_match,
+            paper_formula_match=paper_formula_match,
+        )
+        is expected
+    )
 
 
 def test_error_summary_rejects_a_released_denominator_change() -> None:
@@ -268,7 +291,8 @@ def test_real_scaling_aggregate_smoke() -> None:
     assert sum(result.role is AttemptRole.DEFAULT for result in results) == 20
     assert Counter((result.role, result.outcome) for result in results) == Counter(
         {
-            (AttemptRole.DEFAULT, ValidationOutcome.REPRODUCED): 14,
+            (AttemptRole.DEFAULT, ValidationOutcome.REPRODUCED): 6,
+            (AttemptRole.DEFAULT, ValidationOutcome.DIRECTIONALLY_CONSISTENT): 8,
             (AttemptRole.DEFAULT, ValidationOutcome.NOT_REPRODUCED): 6,
             (AttemptRole.SENSITIVITY, ValidationOutcome.REPRODUCED): 1,
             (AttemptRole.SENSITIVITY, ValidationOutcome.NOT_REPRODUCED): 3,
@@ -297,14 +321,32 @@ def test_real_scaling_aggregate_smoke() -> None:
         (42.9, 42.3),
         (230.8, 65.4),
     )
-    for claim, expected in zip(range(301, 309), displayed, strict=True):
+    paper_formula_displayed = (4.9, 5.2, 5.2, 5.6, 5.9, 28.9, 85.1, 64.4)
+    for claim, expected, expected_paper_formula in zip(
+        range(301, 309), displayed, paper_formula_displayed, strict=True
+    ):
         result = by_id[f"dd-{claim:04d}-default"]
-        assert result.outcome is ValidationOutcome.REPRODUCED
+        assert result.outcome is ValidationOutcome.DIRECTIONALLY_CONSISTENT
         assert result.computed_value["relative_error_denominator_discrepancy"] is True
+        assert result.computed_value["released_relative_denominator"] == "prediction"
+        assert result.computed_value["paper_formula_relative_denominator"] == "target"
+        assert result.computed_value["released_display_match"] is True
+        assert result.computed_value["paper_formula_match"] is False
         assert (
             result.computed_value["displayed_released_relative_error_percent"],
             result.computed_value["displayed_absolute_error_percent"],
         ) == expected
+        assert (
+            result.computed_value["displayed_paper_formula_relative_error_percent"]
+            == expected_paper_formula
+        )
+        assert "released_display_match=true" in result.diagnostics
+        assert "paper_formula_match=false" in result.diagnostics
+        assert any(
+            "not reproduced under the paper-stated target-denominator formula"
+            in limitation
+            for limitation in result.limitations
+        )
     assert by_id["dd-0119-default"].computed_value[
         "best_vs_baseline_advantage"
     ] == pytest.approx(0.0233333333333333)
