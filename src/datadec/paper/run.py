@@ -23,11 +23,9 @@ from datadec.paper.models import (
     ClaimRegistry,
     ContentIdentity,
     MetadataDiscrepancy,
-    PaperClaim,
     PaperTarget,
     PaperValidationContract,
     PlotSeries,
-    RowSelection,
     RuntimeTrace,
     ValidationOutcome,
 )
@@ -46,7 +44,6 @@ _VALIDATION_CONFIG_PATH = "configs/paper_validation.toml"
 _CLAIMS_PATH = "docs/paper/claims.toml"
 _DEPENDENCY_LOCK_PATH = "uv.lock"
 _PATH_PARAMETER = re.compile(r"\{[A-Za-z_][A-Za-z0-9_]*\}")
-_EMPTY_SHA256 = hashlib.sha256(b"").hexdigest()
 _ADAPTER_IMPORTS: Mapping[AnalysisId, tuple[str, str]] = {
     AnalysisId.SINGLE_SCALE: (
         "datadec.paper.verifiers.single_scale",
@@ -67,6 +64,10 @@ _ADAPTER_IMPORTS: Mapping[AnalysisId, tuple[str, str]] = {
     AnalysisId.SCALING_LAW: (
         "datadec.paper.verifiers.scaling",
         "run_scaling_law_attempts",
+    ),
+    AnalysisId.MATH_CODE: (
+        "datadec.paper.verifiers.math_code",
+        "run_math_code_attempts",
     ),
 }
 
@@ -313,38 +314,6 @@ def _paper_targets(registry: ClaimRegistry) -> tuple[PaperTarget, ...]:
     )
 
 
-def _non_assessable_result(claim: PaperClaim) -> AttemptResult:
-    if (
-        claim.supporting_outcome is not ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED
-        or claim.non_assessable_reason is None
-    ):
-        raise ValueError(f"claim {claim.id} is not declared non-assessable")
-    return AttemptResult(
-        attempt_id=f"{claim.id.lower()}-not-assessable",
-        claim_id=claim.id,
-        role=AttemptRole.DEFAULT,
-        comparison_rule_id="not-assessable-from-dd-parsed-v1",
-        comparison_rule_version=1,
-        transformation_ids=("confirm-dd-parsed-surface-absence-v1",),
-        row_selections=(
-            RowSelection(
-                logical_table_id="unavailable_math_code_evaluations",
-                columns=("task",),
-                predicates=(),
-                local_parquet_sha256=_EMPTY_SHA256,
-                selected_row_count=0,
-                selected_key_sha256=_EMPTY_SHA256,
-            ),
-        ),
-        target_value=claim.paper_target,
-        computed_value=None,
-        missing_groups=("math/code evaluation results",),
-        outcome=ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED,
-        diagnostics=(claim.non_assessable_reason,),
-        limitations=("The required observation is absent from dd_parsed.",),
-    )
-
-
 def _load_analysis_adapters() -> Mapping[AnalysisId, AnalysisAdapter]:
     adapters: dict[AnalysisId, AnalysisAdapter] = {}
     for analysis_id, (module_name, function_name) in _ADAPTER_IMPORTS.items():
@@ -541,11 +510,6 @@ def run_validation(
         attempts.extend(analysis_attempts)
         plot_series.extend(analysis_series)
 
-    attempts.extend(
-        _non_assessable_result(claim)
-        for claim in surface.registry.claims
-        if claim.supporting_outcome is ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED
-    )
     current_identities = {
         item.table_id: _input_identity(item.table_id, item.paths, surface.data_root)
         for item in surface.inputs

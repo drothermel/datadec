@@ -24,8 +24,8 @@ _PRIMARY_OUTCOMES = (
     ValidationOutcome.DESCRIPTIVE_ONLY,
 )
 _COMPARISON_HEADER = (
-    "| Claim | Attempt | Role | Paper target | Computed result | Difference | Outcome |\n"
-    "| --- | --- | --- | --- | --- | ---: | --- |\n"
+    "| Claim | Attempt | Role | Evidence | Paper target | Computed result | Difference | Outcome |\n"
+    "| --- | --- | --- | --- | --- | --- | ---: | --- |\n"
 )
 
 
@@ -107,7 +107,8 @@ def _comparison_row(target: PaperTarget, attempt: AttemptResult) -> str:
     )
     return (
         f"| {_escape(target.claim_id)} | {_escape(attempt.attempt_id)} | "
-        f"{attempt.role.value} | {_json_cell(target.value)} | "
+        f"{attempt.role.value} | {attempt.evidence_level.value} | "
+        f"{_json_cell(target.value)} | "
         f"{_compact_json_cell(attempt.computed_value)} | {difference} | "
         f"{attempt.outcome.value} |\n"
     )
@@ -192,7 +193,7 @@ def _render_unassessable(
         if default is None:
             rows.append(
                 f"| {_escape(target.claim_id)} | {_escape(target.family)} | "
-                f"{_json_cell(target.value)} | No attempt result persisted | — |\n"
+                f"— | {_json_cell(target.value)} | No attempt result persisted | — |\n"
             )
             continue
         reason_parts = (*default.diagnostics, *default.limitations)
@@ -204,14 +205,15 @@ def _render_unassessable(
         )
         rows.append(
             f"| {_escape(target.claim_id)} | {_escape(target.family)} | "
-            f"{_json_cell(target.value)} | {_escape(reason)} | "
+            f"{default.evidence_level.value} | {_json_cell(target.value)} | "
+            f"{_escape(reason)} | "
             f"{_escape(missing)} |\n"
         )
     return (
         "## Unassessable from dd_parsed\n\n"
         "These targets lack a default assessable result in the persisted bundle.\n\n"
-        "| Claim | Family | Paper target | Recorded reason | Missing groups |\n"
-        "| --- | --- | --- | --- | --- |\n"
+        "| Claim | Family | Evidence | Paper target | Recorded reason | Missing groups |\n"
+        "| --- | --- | --- | --- | --- | --- |\n"
         f"{''.join(rows)}\n"
     )
 
@@ -321,7 +323,11 @@ def render_report(bundle: AnalysisBundle) -> str:
         f"- Run ID: `{_escape(bundle.manifest.run_id)}`\n"
         f"- Run format: {bundle.manifest.run_format}\n"
         "- Scientific source: persisted `targets.json`, `attempts.json`, and "
-        "`plot-series.json` only.\n\n"
+        "`plot-series.json` only.\n"
+        "- `lower_level_rows` findings are recomputed from normalized rows. "
+        "`author_derived_aggregate` findings verify downstream arithmetic or "
+        "comparisons against supplied aggregates; they are not independent fit "
+        "or evaluation reruns.\n\n"
         "## Default primary outcome summary\n\n"
         "Sensitivity attempts and metadata discrepancies are excluded.\n\n"
         "| Outcome | Count |\n"

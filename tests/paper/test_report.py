@@ -16,6 +16,7 @@ from datadec.paper.models import (
     CheckpointSelection,
     ClaimKind,
     ContentIdentity,
+    EvidenceLevel,
     MetadataDiscrepancy,
     NamedCount,
     PaperTarget,
@@ -84,12 +85,14 @@ def _attempt(
     diagnostics: tuple[str, ...] = (),
     limitations: tuple[str, ...] = (),
     missing_groups: tuple[str, ...] = (),
+    evidence_level: EvidenceLevel = EvidenceLevel.LOWER_LEVEL_ROWS,
 ) -> AttemptResult:
     return AttemptResult(
         attempt_id=attempt_id,
         claim_id=claim_id,
         role=role,
         parent_attempt_id=parent,
+        evidence_level=evidence_level,
         comparison_rule_id="approximately-80-percent",
         comparison_rule_version=2,
         transformation_ids=("macro-average-mmlu", "pairwise-decisions"),
@@ -141,6 +144,7 @@ def _bundle() -> AnalysisBundle:
         diagnostics=("required task observations are absent",),
         limitations=("training is outside validation scope",),
         missing_groups=("task=missing",),
+        evidence_level=EvidenceLevel.AUTHOR_DERIVED_AGGREGATE,
     )
     return AnalysisBundle(
         manifest=_manifest(),
@@ -181,16 +185,19 @@ def test_report_is_deterministic_and_covers_finding_contract() -> None:
         "## Unassessable from dd_parsed"
     )
     assert (
-        "| DD-0001 | dd-0001-default | default | 0.8 | "
+        "| DD-0001 | dd-0001-default | default | lower_level_rows | 0.8 | "
         "0.8033333333333333 | 0.00333333333333 | reproduced |"
     ) in report
     assert "dd-0001-preceding-1" in report
     assert "Sensitivity attempts remain separate comparison rows" in report
+    assert "author_derived_aggregate" in report
+    assert "not independent fit or evaluation reruns" in report
     assert "approximately-80-percent v2" in report
     assert "macro-average-mmlu, pairwise-decisions" in report
     assert "rows=12; denominator=900; ties=2/1" in report
     assert "| 37500 |" in report
     assert "DD-0002" in report and "task=missing" in report
+    assert "| DD-0002 | b-family | author_derived_aggregate |" in report
     assert "DD-0003" in report and "No attempt result persisted" in report
     assert "## Metadata discrepancies" in report
     assert "description differs; not an empirical outcome" in report
@@ -217,7 +224,7 @@ def test_report_uses_persisted_results_without_input_reads_or_recomputation(
 
     report = render_report(bundle)
 
-    assert "| 0.8 | 999 | 123.456 | reproduced |" in report
+    assert "| lower_level_rows | 0.8 | 999 | 123.456 | reproduced |" in report
 
 
 def test_render_bundle_outputs_returns_report_and_named_valid_svg_bytes() -> None:
