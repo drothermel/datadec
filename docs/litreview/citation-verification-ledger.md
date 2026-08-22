@@ -234,6 +234,13 @@ Context column = the ~80 characters preceding the ID in the topic, as a memory a
 | 2509.25196 | APRIL — RL prompt optimization for frozen code generators ("decoder half") | `nl-bottleneck-prior-art` | agent-supplied | TLC | |
 | 2509.06239 | Proof2Silicon — RL prompt optimization for frozen LLM synthesis ("decoder half") | `nl-bottleneck-prior-art` | agent-supplied | TLC | |
 | 2412.07992 | Concept Bottleneck LLMs — text concepts as bottleneck for classification | `nl-bottleneck-prior-art` | agent-supplied | TLC | |
+| 2405.18392 | Hägele et al. — WSD/cooldown scaling laws, (1-sqrt) decay (annealing report 2) | `schedules-and-annealing-literature` | agent-supplied | ANN, WSD | |
+| 2404.06395 | MiniCPM — decay-phase gradient dynamics, WSD (annealing report 2) | `schedules-and-annealing-literature` | agent-supplied | ANN, WSD | |
+| 2406.17557 | FineWeb / FineWeb-Edu (annealing report 2) | `schedules-and-annealing-literature` | agent-supplied | ANN, WSD | |
+| 2412.08905 | Phi-4 technical report — synthetic data, decontamination (annealing report 2) | `schedules-and-annealing-literature` | agent-supplied | ANN, WSD | |
+| 2412.02595 | Nemotron-CC — ensemble classifiers, synthetic rephrasing (annealing report 2) | `schedules-and-annealing-literature` | agent-supplied | ANN, WSD | |
+| 2412.17743 | YuLan-Mini — context extension during annealing (annealing report 2) | `schedules-and-annealing-literature` | agent-supplied | ANN, WSD | |
+| 2503.17793 | benchmark contamination survey, 1–45% rates (annealing report 2) | `schedules-and-annealing-literature` | agent-supplied | ANN, WSD | |
 
 Rows: 208 (181 agent-supplied, 27 Claude-added, 5 named without ID).
 

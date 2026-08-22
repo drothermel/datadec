@@ -386,6 +386,20 @@ redoing some pretraining with WSD?
   requires the expert-alignment step from MoE partitions (PART-4). See
   `docs/topics/reference/moe-literature.md`.
 
+### 2026-08-22 — decay-phase gradient statistics as an instrument (from a second annealing-data report)
+
+A browsing report on annealing data quality (record in
+`../topics/reference/schedules-and-annealing-literature.md`, second entry; figures
+unverified) attributes to MiniCPM (arXiv 2404.06395) a description of the decay phase:
+weights move less than in the stable phase while loss falls faster, gradient norm
+diminishes, and the cosine similarity between consecutive updates turns predominantly
+positive — directed descent into a basin rather than exploration. If that holds, the
+decay-branch runner can log the same three statistics per branch at DataDecide scale, which
+gives a mechanism-level companion to the ranking-stability readouts: a branch whose updates
+are not yet consistently aligned has not "read out" yet. Also the citation for the decay
+shape: Hägele et al. 2405.18392 (1-sqrt cooldown vs. linear). Keep in sync with the WSD
+suite's decay-shape note.
+
 ### 2026-08-22 — absorbed from the post-training experiment-design topic: ANN-opt-8
 
 - **ANN-opt-8: Late-window cross-family intervention.** Take OLMo, Pythia, SmolLM, Llama,

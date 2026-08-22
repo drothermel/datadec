@@ -144,3 +144,72 @@ DataDecide cosine tail is doing to rankings), the WSD suite's decay-branch data 
 functional featurization (`FUNC`) — TREC's "receptivity valley" is a candidate explanation
 for stage-dependent chunk effects. Verify TREC (2509.25380) and PDPC before building on
 them.
+
+## Undated (~2025; intake 2026-08-22) — Annealing-data report, second answer to the same question
+
+**Danielle's prompt (verbatim).** "I want to better understand the recent research around
+data quality as it affects LLM annealing, especially changing data from pre-training to the
+annealing stage. Please find one or two recent papers and visualize their results in an
+interactive educational app/document to guide me through understanding this content. I'm
+a phd student so target your level of depth to that."
+
+**Response.** A long browsing report ("based on analysis of key papers from 2024–2025,
+including Llama 3, MiniCPM, FineWeb, and Phi-4") with inline links; the interactive app it
+refers to at the end was not passed. Substantial overlap with the Oct-2025 survey entry
+above (Llama 3 annealing numbers, 10–20% budget, scale attenuation); only what is new or
+different is kept here. **All figures and attributions are the respondent's and
+unverified**; the report also carries a large amount of unsourced editorial (e.g. "20–40%
+improvements", "50–70% less compute", "3–5× infrastructure returns", "10–20 experimental
+runs", "2–3% from (1-sqrt) over linear") that is dropped rather than re-checked.
+
+*Papers it leans on (links as given).*
+- **Hägele et al. 2024, arXiv 2405.18392** ("scaling laws and compute-optimal training
+  beyond fixed training durations"): WSD/constant-LR + cooldown; the (1-sqrt) cooldown
+  f = 1 − √((n − (N − N_decay))/N_decay) reported as beating linear decay; cooldown as a
+  way to reuse one run for many endpoints. *The one source here not already on file.*
+- **MiniCPM, arXiv 2404.06395**: gradient dynamics across the decay phase — weights move
+  less than in the stable phase, loss drops faster, gradient norm falls, cosine similarity
+  between consecutive updates turns predominantly positive (consistent directed progress
+  vs. exploratory); "loss drop in decay ≈ a 5× larger model"; decay-branch reuse for
+  data–model scaling laws at linear rather than quadratic cost. Report also attributes to
+  it a "curvature increases / first-order directional derivative decays with the LR,
+  second-order only slightly up" description (the link given for that is Hägele).
+- **Llama 3** (Meta PDF mirror): 8B GSM8K +24%, MATH +6.4%, 405B negligible; final-40B
+  annealing as a data-valuation tool — same facts as the survey above.
+- **FineWeb / FineWeb-Edu, arXiv 2406.17557**: educational-value classifier
+  (Snowflake-arctic-embed-m + linear head, 460k Llama-3-70B-Instruct annotations, keep
+  score ≥3, ~82% F1), 1.3T tokens from 15T, quoted +12% MMLU / +24% ARC; ~6,000 H100 hours
+  to classify; heuristic filter ablations (duplicate-line fraction, short-line proportion).
+- **Phi-4, arXiv 2412.08905**: synthetic data throughout and especially late; multi-agent
+  generation, self-revision, rejection sampling, execution/proof verification; multiple
+  epochs over synthetic data; decontamination incl. MinHash fuzzy + semantic; post-cutoff
+  AMC-10/12 as contamination-proof evaluation. "One million math problems × eight verified
+  solutions ≈ 30B tokens" is cited to a *Phi-4-mini-flash-reasoning* model card, not the
+  paper.
+- **Nemotron-CC, arXiv 2412.02595**: ensemble quality classifiers (Mistral-based,
+  Nemotron-340B, DCLM) and synthetic rephrasing of high-quality segments.
+- **YuLan-Mini, arXiv 2412.17743**: context extension 4K→32K during annealing at constant
+  token batch; topic-based recall and cross-lingual synthetic generation.
+- Contamination survey, arXiv 2503.17793: 1–45% contamination across benchmarks,
+  inflation up to 14% C-Eval / 7% HellaSwag (report's numbers).
+
+*Errors and drift.*
+- **PDPC is misattributed** to "the YuLan-Mini team" with a Phi-4 link; PDPC is arXiv
+  2501.13126 (survey entry above) and the "+8.1% MMLU/CMMLU" belongs to it. The expansion
+  "Preference Data-aware Preference Curriculum" is the respondent's; PD = perplexity
+  difference.
+- The "data-quality gradient" proportions (web 50%→20%, synthetic 5%→35%, math 8%→20%)
+  are presented as a cross-model pattern but carry a Llama 3 link; no model reports them
+  in that form. Treat as illustrative, not data.
+- The "annealing should begin when validation loss plateaus … monitor gradient norm and
+  curvature" guideline, the tiered filtering thresholds by model size, and the
+  environmental/"democratizing" sections are editorial.
+- Sources include a Reddit thread and a blog mirror of the Llama 3 PDF; cite the papers.
+
+**Relevance here.** Two new things beyond the survey entry: (1) Hägele et al. 2405.18392 is
+the citation for the decay-shape choice in the WSD suite (`WSD`) and for decay-branch reuse
+as the cost model behind annealed readouts (`ANN`); (2) MiniCPM's decay-phase gradient
+statistics (norm falls, consecutive-update cosine turns positive) are a concrete
+measurement the decay-branch runner can reproduce at DataDecide scale — a candidate ANN
+instrument, noted in `../../potential-projs/annealed-readouts.md` §4. Both unverified
+against the papers.

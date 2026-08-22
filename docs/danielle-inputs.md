@@ -3144,3 +3144,18 @@ and gate item 1 (Danielle's read, with GenDLN); four IDs added to the citation l
 Applied: recorded as her read in the TLC §4 note and the prior-art reference entry; LBM
 half of plan gate item 1 closed (GenDLN remains); positioning = nearest named framework in
 §2, not a baseline.
+
+### Undated (~2025; intake 2026-08-22) — annealing data quality, interactive-app request (second answer)
+
+> I want to better understand the recent research around data quality as it affects LLM
+> annealing, especially changing data from pre-training to the annealing stage. Please find
+> one or two recent papers and visualize their results in an interactive educational
+> app/document to guide me through understanding this content. I'm a phd student so target
+> your level of depth to that.
+
+The answer is a long browsing report (Llama 3, MiniCPM, Hägele et al., FineWeb-Edu, Phi-4,
+Nemotron-CC, YuLan-Mini); the interactive app it mentions was not passed. Routed:
+[topics/reference/schedules-and-annealing-literature.md](topics/reference/schedules-and-annealing-literature.md)
+(new entry, condensed to what the Oct-2025 survey entry lacks; PDPC misattribution and
+unsourced editorial numbers flagged); short ANN §4 note on decay-phase gradient statistics as
+a decay-branch instrument; seven IDs added to the citation ledger.
