@@ -26,7 +26,11 @@ from datadec.paper.models import (
     ValidationOutcome,
 )
 from datadec.paper.output_transaction import replace_output_set
-from datadec.paper.report import render_bundle_outputs, render_report
+from datadec.paper.report import (
+    _compact_json_cell,
+    render_bundle_outputs,
+    render_report,
+)
 
 _SHA_A = "a" * 64
 _SHA_B = "b" * 64
@@ -225,6 +229,26 @@ def test_report_uses_persisted_results_without_input_reads_or_recomputation(
     report = render_report(bundle)
 
     assert "| lower_level_rows | 0.8 | 999 | 123.456 | reproduced |" in report
+
+
+def test_compact_json_cell_keeps_denominator_discrepancy_visible() -> None:
+    value = {
+        "released_relative_error_percent": 230.80877955632104,
+        "paper_denominator_relative_error_percent": 64.3872145727109,
+        "displayed_released_relative_error_percent": 230.8,
+        "displayed_paper_denominator_relative_error_percent": 64.4,
+        "absolute_error_percent": 65.36898720839734,
+        "released_relative_denominator": "absolute_prediction",
+        "paper_stated_relative_denominator": "actual_or_target",
+        "relative_error_denominator_discrepancy": True,
+    }
+
+    rendered = _compact_json_cell(value)
+
+    assert "released\\_relative\\_error\\_percent" in rendered
+    assert "paper\\_denominator\\_relative\\_error\\_percent" in rendered
+    assert "230.80877955632104" in rendered
+    assert "64.3872145727109" in rendered
 
 
 def test_render_bundle_outputs_returns_report_and_named_valid_svg_bytes() -> None:

@@ -55,7 +55,7 @@ def _json_cell(value: object) -> str:
     return _escape(_json(value))
 
 
-def _compact_json_cell(value: object, *, limit: int = 240) -> str:
+def _compact_json_cell(value: object, *, limit: int = 600) -> str:
     rendered = _json(value)
     if len(rendered) <= limit:
         return _escape(rendered)
