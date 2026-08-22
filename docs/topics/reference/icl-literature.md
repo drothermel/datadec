@@ -125,3 +125,23 @@ hypothesis frame as the thing to measure: where does a tiny update beat tuned el
 and does the balance shift with scale? Both papers need verification before use; the third
 example should be replaced by a real source (e.g. vendor LoRA + few-shot guidance) if it is
 ever cited.
+
+**Follow-up — soft prompts revisited (same conversation).** Danielle's question: before ICL
+"was really a thing," prompt tuning meant *learning embeddings* to prompt models that could
+not yet follow natural language well; is Context Tuning "kind of returning to something like
+that," and are there modern approaches that combine natural-language context with tuned
+pieces — embeddings, or token combinations "that don't necessarily mean as much for humans,
+but are more meaningful for the agents"? Response (content-free; condensed): yes, a revival
+of soft prompts with a modern twist — hybrid prompting that mixes human-readable
+instructions with learned tokens/embeddings as "subtle cues," "certain recent research
+papers" — **no papers or systems named**. Treat as a prompt for a real literature pass, not
+as findings.
+
+*Danielle-flagged lead.* The question itself is a good one for the elicitation-ceiling
+framing: soft-prompt / learned-token steering (Lester et al. prompt tuning; prefix tuning;
+P-tuning lineages) vs. natural-language ICL is a continuum of "how many tuned parameters
+does elicitation get," and where a frozen body's reachable content saturates along that
+continuum is exactly the ICL-elicitability ceiling question. Candidate lit-pass: modern
+hybrids of NL context + learned tokens (e.g. gist/compression tokens, learned
+tool/format tokens, optimized non-readable prompt strings from discrete prompt
+optimisation) — unverified, to be searched.

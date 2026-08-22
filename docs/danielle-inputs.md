@@ -1905,3 +1905,21 @@ question, with a note that global z-scoring is a no-op for LightGBM.
 
 Routed to: [topics/icl-literature.md](topics/reference/icl-literature.md) (dated entry with
 a quality caveat — the third example is unsourced).
+
+> Interesting. So, I remember before in-context learning was really a thing, then there was
+> this investigation in the idea of trying to learn embeddings, like prompt, I mean, I guess
+> it's prompt tuning is what it was called then, but that has a meaning now, but trying to
+> learn embeddings that you could use to prompt your models to get the results that you
+> wanted before the models were strong enough to be able to understand human language,
+> natural language so incredibly well. And so, I guess I wonder for something like the
+> context tuning for in-context optimization, whether this is kind of returning to
+> something kind of like that, and whether there are other examples of modern approaches
+> that are kind of similar to that, where it's a combination of natural language in the
+> in-context prompt, and then also like pieces that are tuned, whether that's like
+> embeddings or like word combinations that don't necessarily mean as much for humans, but
+> are more meaningful for the agents that they're being prompted with, would currently
+> exist in that direction.
+
+Routed to: [topics/icl-literature.md](topics/reference/icl-literature.md) (follow-up under
+the same entry; response content-free, question recorded as a Danielle-flagged lead for a
+lit pass).
