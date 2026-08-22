@@ -417,6 +417,58 @@ near-duplicates in train, and "accuracy drops by 9–14%" when removed.
   accuracy from the original paper, `pytorch-cifar`, or airbench at the *same* budget, not
   from surveys like this one.
 
+### Undated (~2025) — Choosing optimizer arms for the ladder (Perplexity, four questions)
+
+Danielle's prompts (verbatim):
+
+> What optimizers besides Adam W and SGD M are frequently used when training CNN based
+> vision models
+
+> If I had to choose between RMSProp and AMSGrad to test alongside SGD-M and ADAM-W to get
+> a sense of different optimization dynamics of training CNN based vision architectures
+> based on optimizer selection, which should I choose and why?
+
+> Is AMSGrad implemented in pytorch?
+
+> Is RMSProp implemented in pytorch
+
+So the ladder's optimizer rung was being designed as a small *arm set* — SGD-M and AdamW
+plus one or two contrasting optimizers — chosen for **different optimization dynamics**,
+not for best accuracy.
+
+**Responses (condensed).** (1) A blog-sourced list: RMSprop, AdaGrad, AdaDelta, Adam,
+AdaMax, AMSGrad, Nadam, RAdam, AdaBelief, diffGrad, AdaNorm, plus cyclic LR/momentum,
+YellowFin, and RPROP variants, each with a one-line blurb. (2) Recommends **AMSGrad** over
+RMSProp: "stronger convergence guarantees," "less sensitive to learning rate," "escaping
+poor local minima," "one-line modification"; against RMSProp: no momentum by default, no
+bias correction, "less effective with batch normalization." (3) `torch.optim.Adam(...,
+amsgrad=True)` — correct. (4) `torch.optim.RMSprop` with `alpha`, `momentum`, `centered`
+— correct.
+
+**Intake notes.**
+
+- The "frequently used" list is wrong about practice. For CNN image classification the
+  optimizers actually in use are SGD-M (dominant in every recipe paper), AdamW (the
+  ConvNeXt / modern-recipe default), RMSProp (the TensorFlow Inception/EfficientNet
+  lineage), LARS/LAMB (large-batch), and more recently Lion, Adan, and SAM-as-wrapper;
+  AdaGrad/AdaDelta/AdaMax/diffGrad/AdaNorm/RPROP are not "frequently used" for vision.
+- **The AMSGrad recommendation is poor for the stated goal.** AMSGrad's max-of-second-moment
+  fix addresses a convergence counterexample (Reddi et al. 2018); in practice its
+  trajectories are nearly indistinguishable from Adam's on image classification, so it adds
+  an arm with almost no dynamical contrast to AdamW — the opposite of what Danielle asked
+  for. The "escapes local minima," "less LR-sensitive," and "RMSProp is less effective with
+  BN" claims are unsupported. If the question is *different dynamics*, the contrasting arms
+  are: RMSProp (a genuinely different preconditioner history — no bias correction, and the
+  optimizer that trained EfficientNet), **Lion** (sign-based update — categorically different
+  step geometry), **SAM** wrapped around SGD-M (different objective, not just different
+  preconditioner), and optionally LARS for a layer-wise-scaled arm. A minimal contrast set
+  is {SGD-M, AdamW, Lion, SAM-SGD}; {SGD-M, AdamW, RMSProp} is the historically faithful
+  set for a ladder that also reproduces old recipes.
+- Whatever arm set is chosen, each arm needs its own LR sweep at the ladder's budget
+  (the mid-ladder `lr-0.05` confound above is what happens otherwise); compare at
+  tuned-LR-per-arm, and record the eNTK / sharpness readouts (`../reference/ntk-literature.md`)
+  per arm — those are where "different dynamics" would actually show.
+
 ## Intake notes (scoping response)
 
 - The response ignored "ask questions first" and answered at the level of **architectures**,

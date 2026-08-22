@@ -2445,3 +2445,21 @@ spec, the per-epoch slope/R² results, the cluster follow-up, the CIFAR-10 basel
 source lists were silently not written by the commits that logged them. All were
 reconstructed and written in this commit; the inputs-log entries above now point at real
 sections.
+
+### 2026-08-22 — Optimizer arms for the CNN ladder (Perplexity, undated ~2025; four prompts)
+
+> What optimizers besides Adam W and SGD M are frequently used when training CNN based
+> vision models
+
+> If I had to choose between RMSProp and AMSGrad to test alongside SGD-M and ADAM-W to get
+> a sense of different optimization dynamics of training CNN based vision architectures
+> based on optimizer selection, which should I choose and why?
+
+> Is AMSGrad implemented in pytorch?
+
+> Is RMSProp implemented in pytorch
+
+Routed to: [topics/cnn-deconstruction-ladder.md](topics/staging/cnn-deconstruction-ladder.md)
+(arm-set design recorded; intake note that the "frequently used" list misstates practice
+and the AMSGrad recommendation gives almost no dynamical contrast to AdamW — Lion / SAM /
+RMSProp are the contrasting arms; per-arm LR sweeps required; PyTorch answers correct).
