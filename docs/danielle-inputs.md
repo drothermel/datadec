@@ -2343,3 +2343,14 @@ Routed to: [topics/cnn-deconstruction-ladder.md](topics/staging/cnn-deconstructi
 the slope sign is almost certainly misread by the agent, that the window result is the real
 finding, that R² indexes slowness here, and that seeds were treated as independent); EDP
 lineage note updated to point at it. The expiring S3 links were not stored.
+
+> me: "Within your findings about the correlation of smoothness with accuracy or the
+> correlation of linearity / early loss fit line slope with linearity, are there different
+> clusters of hpms that behave differently from each other? For example, on the smoothness
+> vs accuracy plot it seems that there are clusters, do they correspond to specific hpms?"
+
+Routed to: the same staging section (slope-bin table recorded; it settles the sign —
+fastest early decline ↔ highest accuracy, monotone across bins — and shows the clusters
+are augmentation regime × a mid-ladder LR change, not "methodology"; redo list extended;
+n mismatch between analyses flagged). Second attached file noted:
+`epoch_metrics_long_format.csv`. EDP lineage note updated with the resolved direction.

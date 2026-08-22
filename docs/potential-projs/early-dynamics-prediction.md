@@ -171,10 +171,12 @@ CIFAR-10 runs before the July 2025 DataDecide draft. The "early findings" quoted
 trace to a June 2025 analysis now recorded in `../topics/staging/cnn-deconstruction-ladder.md`
 ("Second attempt, with per-epoch data"): on ~34 runs of 25 epochs, the 4-epoch validation-loss
 slope correlated with final accuracy at |r| = 0.71, falling to 0.36 for the full-curve slope,
-and curve R² correlated at r ≈ −0.4. The slope's sign convention was never resolved (the
-agent read a faster early decline as predicting *worse* accuracy, which is likely a sign
-misread), and the statistics treat seeds as independent; treat it as a CIFAR-scale pilot
-showing the *early window carries the most signal*, not as a directional result.
+and curve R² correlated at r ≈ −0.4. The sign resolves from the
+follow-up's slope-bin table: most-negative slopes (fastest early decline) have the highest
+final accuracy, monotonically — the agent's "faster decline predicts worse" reading was a
+sign misread. The statistics treat seeds as independent and the later rungs changed LR
+mid-ladder, so treat it as a CIFAR-scale pilot showing that the early window carries the
+most signal in the intuitive direction, confounded with LR.
 The "RMSE strongest single predictor" line is also ambiguous (RMSE of what fit?) and
 matches the later residual-vs-RMSE confusion flagged in the 2025-07 review thread.
 
