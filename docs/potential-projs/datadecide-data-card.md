@@ -122,6 +122,26 @@ and the compute-/loss-matched pairing utility.
 
 ## 4. External assessments
 
+### 2026-08-22 — metric-definition provenance is a data-card item
+
+A conversation reconstructing the OLMES metric columns from citations and two released
+rows (record: `../topics/reference/datadecide-data-pipeline.md`, last entry) established
+only one thing firmly — `correct_prob = exp(sum_logits_corr)`, checked on data — and
+produced several plausible-but-unverified definitions (unconditional normalization as a
+probability *difference* rather than the log-ratio; `correct_choice` as binary vs. gold
+index; per-char probabilities as probability ÷ length rather than a per-character
+geometric mean; the bpb byte-count and log-base conventions). None of these are answerable
+from the paper; they are answerable from the oe-eval / OLMES implementation and from
+`instances.parquet`. So: **DCARD-1(e) — metric definitions pinned to the evaluation
+code**, one line per column with the formula, the scoring rule it belongs to, and whether
+the aggregate is rebuildable from instance details (`configs/olmes.toml` already records
+`bits_per_byte_corr` as the one that is not). This is the column-level companion to the
+existing ledger entries and the thing `TaskEvalMetrics` in
+`src/datadec/data/ingest/metrics.py` should cite in its docstrings. Candidate also for
+DCARD-4's card text. Danielle's own reading in that conversation — `predicted_index_*`,
+`correct_choice`, and the `uncond_*` columns are per-item building blocks, not reportable
+metrics — is the first row of that table.
+
 ### 2026-08-22 — report the PPL tables in bits per byte
 
 From Danielle's SciSpace review of CE/NLL alternatives (record in

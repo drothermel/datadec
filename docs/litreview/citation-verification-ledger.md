@@ -283,6 +283,8 @@ Context column = the ~80 characters preceding the ID in the topic, as a memory a
 | 2512.00319 | RL-Struct — dense schema-derived rewards | `structured-output-literature` | agent-supplied | ELI, IRT | |
 | 2604.14862 | Schema key wording as an instruction channel | `structured-output-literature` | agent-supplied | ELI, IRT | |
 | 2510.07248 | PA-Tool — adapting tool/schema names to small models | `structured-output-literature` | agent-supplied | ELI, IRT | |
+| 2504.11393 | DataDecide (Magnusson et al. 2025) — metric definitions cited from the HTML version | `datadecide-data-pipeline` | agent-supplied | DCARD, TINY | |
+| 2407.21072 | length-normalization / multiple-choice scoring paper cited for acc_raw vs. per-length accuracies — title unknown | `datadecide-data-pipeline` | agent-supplied | DCARD | |
 
 Rows: 208 (181 agent-supplied, 27 Claude-added, 5 named without ID).
 

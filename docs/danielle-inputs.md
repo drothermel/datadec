@@ -3315,3 +3315,45 @@ Routed: new [topics/reference/structured-output-literature.md](topics/reference/
 restated; base-vs-instruction-tuned prediction for ELI-2; SLOT as a tiny-model wrapper
 class); IRT §4 pointer for IRT-10's expected direction; thirteen IDs to the ledger. The
 tiny-components systems interest has no project doc — left in the reference topic.
+
+### Undated (intake 2026-08-22) — the OLMES metric columns in DataDecide (eight turns)
+
+> I'm using the DataDecide dataset which evaluates on the OLMES evaluation tasks. There are
+> a bunch of different metrics reported and I'm not sure how to interpret them. Can you
+> provide a breakdown (cited) of what each of these metrics might be and different ways
+> that people might calculate them (if there isn't one standard)? [column list]
+
+> So would it be accurate to describe: predicted_index_raw / predicted_index_uncond /
+> predicted_index_per_byte / per_char / per_token / correct_choice as being primarily values
+> that were likely used on a per-question level to generate the more interesting metrics
+> (the probs, logits, bits per byte, accuracy, etc)? Additionally, of all the metrics, which
+> are possible to compute directly from other metrics provided?
+
+> If we have the sum_logits_corr, can we exponentiate to get the prob_corr?
+
+> so norm_correct_prob = correct_prob / total_prob ?
+
+> Does it seem like the uncond_correct_prob_* and uncond_total_prob are building blocks (at
+> the per-question level) to compute other metrics or are they likely actual metrics we're
+> trying to extract?
+
+> so is acc_uncond the only real metric computed with the uncond_* building blocks? why is
+> there a _per_char and _per_token if there is only acc_uncond?
+
+> Would it be possible to consider uncond_correct_prob as an additional possible proxy
+> metric?
+
+> Is it possible that "correct_prob" would have a different performance as a ranking metric
+> than "sum_logits_correct"?
+
+> ok, and then "uncond_total_prob" is again just the aggregate of a value that was only
+> useful during per-question computations of other values, right? Can you also explain
+> bits_per_byte_correct a bit more? How is it calculated, what does it mean intuitively,
+> how should I think about it?
+
+Routed: [topics/reference/datadecide-data-pipeline.md](topics/reference/datadecide-data-pipeline.md)
+(new entry: what was settled — `correct_prob = exp(sum_logits_corr)` checked on data; what
+is a guess — uncond as a difference, `correct_choice` binary vs. index, per-char as ÷ length,
+bpb conventions; repo facts from `metrics.py` and `configs/olmes.toml`); DCARD §4 —
+**DCARD-1(e) metric definitions pinned to the evaluation code**; TINY §4 — exp-related
+proxies counted once, `uncond_correct_prob` as a candidate once defined; two ledger rows.

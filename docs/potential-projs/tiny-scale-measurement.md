@@ -120,6 +120,21 @@ Dated, attributed-by-date notes from external review conversations, recorded for
 consolidation — not decisions. Only notes about this project are kept here. Related-work
 claims in quoted text are unverified.
 
+### 2026-08-22 — two small points for the which-loss axis from the OLMES metric walkthrough
+
+From Danielle's metric-column conversation (record:
+`../topics/reference/datadecide-data-pipeline.md`, last entry). (1) `correct_prob` and
+`sum_logits_corr` are exp-related (checked on released rows), so as *ranking* metrics they
+are one metric; they differ only for regression-style prediction, where the log form is
+the better-behaved one — TINY-opt-5's candidate list should not count them twice.
+(2) Danielle proposed `uncond_correct_prob` — the correct option's likelihood with the
+answer-string prior removed — as an additional continuous proxy candidate; the response
+endorsed it on the paper's "continuous beats discrete at small scale" finding, but no
+evidence was offered. It is cheap to add to the TINY-opt-5 sweep once its exact definition
+is pinned from the evaluation code (the conversation's definition is a guess; see the
+DCARD note on metric provenance). The per-char variants are per-character geometric
+means, not probability ÷ length, which matters for how they are interpreted on the axis.
+
 ### 2026-08-22 — the "which loss" axis: what the loss-alternative literature offers
 
 From Danielle's SciSpace review of CE/NLL alternatives for evaluation (record in

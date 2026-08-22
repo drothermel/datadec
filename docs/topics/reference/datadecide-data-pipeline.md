@@ -442,3 +442,65 @@ compute-matched pairing fix, two-act ANN-4, predicate-liveness guard →
   `main` (`docs/paper-validation-report.md`), not on this branch.
 - "Track B / Track D / A3 / B1 / B5 / D4" labels again belong to the plan not on file;
   mapped by content to IRT, ANN, TRJ-3.
+
+## Undated (intake 2026-08-22) — the OLMES metric columns, as reconstructed in a cited-browsing conversation
+
+**Danielle's question.** A cited breakdown of every metric column in the DataDecide OLMES
+results (`primary_metric`, `no_answer`, `correct_choice`; `sum_logits_corr` and per-char /
+per-token; `total_prob*`; `bits_per_byte_corr`; `acc_raw/uncond/per_byte/per_char/
+per_token`; `uncond_*`; `norm_correct_prob*`; `correct_prob*`; `predicted_index_*`;
+`margin*`), and the ways each might be computed. Eight turns.
+
+**What the response settled (its claims; verified only where marked).**
+- Family structure: five scoring rules for picking an option — raw sum of log-probs,
+  unconditional-normalized, per-byte, per-char, per-token — each yielding a
+  `predicted_index_*` and an `acc_*`; continuous companions `correct_prob*`,
+  `norm_correct_prob*` (correct option's share of probability mass over the options,
+  per item), `total_prob*` (mass on all options; the paper reads it as domain exposure),
+  `margin*` (correct minus best incorrect), `bits_per_byte_corr`.
+- `predicted_index_*` and `correct_choice` are per-item building blocks for the `acc_*`
+  columns (Danielle's reading; response agreed).
+- `correct_prob = exp(sum_logits_corr)` — **checked against two rows of the released
+  HF results in the conversation** (−33.2023 → 9.71e-6; −34.7956 → 5.74e-6). Hence
+  identical rankings, different magnitudes for regression.
+- `norm_correct_prob` is a per-item ratio P(correct | ctx) / Σ_options P(option | ctx)
+  averaged over items — *not* the ratio of the aggregate `correct_prob` to `total_prob`.
+- `uncond_*` columns are per-item building blocks for `acc_uncond`; the per-char /
+  per-token `uncond` variants have no matching `acc_uncond_per_*` column.
+- Danielle's proposals: `uncond_correct_prob` as an additional continuous proxy
+  candidate (response endorsed); `uncond_total_prob` as an aggregate of a value only
+  useful per item (response agreed).
+- `bits_per_byte_corr` explained as −log₂ P(correct) / bytes(correct).
+
+**Errors and unverifiable claims to resolve from the oe-eval source, not from this record.**
+- `uncond_correct_prob = P(correct | ctx) − P(correct)` (subtraction of probabilities) is
+  the response's guess. The lm-eval / OLMES unconditional normalization is a *log-ratio*
+  log P(ans | ctx) − log P(ans | unconditional context); what the column actually stores
+  (ratio, difference, or the conditional-on-uncond quantity) must be read from code.
+- `correct_choice` is called "binary" in the first turn and then used as the gold *index*
+  in `acc_raw = mean(predicted_index_raw == correct_choice)`. The repo's schema types it
+  as a float; which it is matters for every reconstruction.
+- "`correct_prob_per_char = correct_prob / char_length`" is wrong in general: per-char
+  scoring in OLMES divides the *log*-probability by length (a per-character geometric
+  mean), so `correct_prob_per_char = exp(sum_logits_corr / chars)`, not a probability
+  divided by a length. Same for per-token and for the `uncond`/`norm` variants.
+- The bpb check ("if the answer was ~8.7 bytes, 17.4/8.7 ≈ 2.0 ✓") is circular — the byte
+  length was inferred from the result. Also note OLMES bpb uses log₂ of the per-byte
+  quantity; whether the column uses natural-log conversion and which byte count
+  (continuation only, with/without leading space) is a code question.
+- "Missing `acc_uncond_per_*` is an inconsistency or incomplete implementation" — more
+  likely the metric code emits every probability variant mechanically and only the
+  accuracy rules the paper uses; not evidence of a bug.
+- Citations: the DataDecide arXiv (2504.11393) and COLM PDF, OLMES (NAACL Findings 2025),
+  the EleutherAI multiple-choice-normalization post, 2407.21072 (length-normalization
+  paper, unverified), plus Stack Overflow / LinkedIn / Substack / CodeSignal filler;
+  the bpb section's citations are generic, none to the OLMES implementation.
+
+**Repo facts that bear on this.** `src/datadec/data/ingest/metrics.py` is the typed
+column schema (`TaskEvalMetrics`; `correct_choice: float`); `configs/olmes.toml` lists
+the reproducible aggregate columns and records
+`not_reproducible_from_details = ["bits_per_byte_corr"]` — so the repo already checks
+which aggregates can be rebuilt from `instances.parquet`, and bpb is the one that cannot,
+consistent with it needing byte counts the details do not carry. No metric-definition
+document exists in the repo; this conversation is not a substitute for one (see
+`../../potential-projs/datadecide-data-card.md` §4, metric-definition provenance).
