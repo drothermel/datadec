@@ -51,6 +51,27 @@ entropy. No training.
   different pretraining corpora show different rates at which tokens move
   from "still changing" to "settled"?
 
+- **F2 — Flips by token entropy (FLAME-MoE).** Bucket tokens by
+  reference-model entropy and test whether high-entropy tokens keep flipping
+  experts long after low-entropy tokens' routes have frozen. Needs a
+  reference-model scoring pass over the logged tokens (T1).
+  *Moved from the former standalone Track F doc (`moe-routing.md`); the
+  routing-flip core (F1/F3) lives in Track A. Prerequisite, restated here:*
+  - **Ingest FLAME-MoE artifacts.** Routing logs (per token, per layer,
+    top-k expert ids across checkpoints), eval results, checkpoint metadata
+    and schedules. Verify format and coverage first; this determines the
+    tier. FLAME-MoE (38M–1.7B active, 64 experts, top-8) releases
+    checkpoints, routing logs, and evals.
+  - Doability is dominated by ingest uncertainty. Everything hinges on what
+    the released routing logs actually contain: which checkpoints, how many
+    tokens, whether token identities are recoverable (needed for F2 and for
+    per-token flip tracking across checkpoints rather than aggregate
+    histograms). If logs are aggregate-only, per-token flip tracking
+    requires recomputing routing from checkpoints (T1, and a new
+    model-loading path distinct from DataDecide's). Also a separate suite
+    with its own training recipe and data, so it does not share
+    DataDecide's recipe axis; the "recipe" question cannot be asked here.
+
 ## 2. Doability and impact
 
 **Doability: E2 high; E1/E4 medium.** E2 is a join and a groupby on existing
@@ -72,6 +93,7 @@ DataDecide-final ensemble).
 | E3 layerwise drift | Medium | Nice descriptive result; crowded literature on representation dynamics. |
 | Low-noise eval construction | **High if E4 holds** | Practical deliverable the Signal-and-Noise authors would care about. |
 | Cross-recipe migration | Medium-high | Thesis-relevant; needs matched-loss pairing and more checkpoints. |
+| F2 flips by entropy (FLAME-MoE) | **High if positive** | Sharp, unasked question; the MoE counterpart to the token-level movement project's headline figure. |
 
 **Likely paper shape.** E2 + E1 + E4 with the eval-construction corollary.
 Standalone workshop paper if E4 is positive; otherwise the T0 part (E2)
@@ -96,3 +118,11 @@ folds into the trajectory or IRT project and the T1 harness is reused later.
 7. **Optional: CKA/linear-map drift (E3)** using hidden states from the same
    forward passes — capture activations in step 5 to avoid a second pass.
 8. **Optional: weighted-eval construction** and variance comparison.
+9. **Optional: F2 (FLAME-MoE).** Artifact survey — inspect FLAME-MoE
+   release: routing-log schema, checkpoint coverage, token recoverability,
+   eval table format; decide T0 vs. T1 from this alone. Ingest — download →
+   preprocess → typed parquet following the repo's existing pattern; routing
+   logs as a long table (checkpoint, layer, token id/position, expert ids).
+   Reference-model scoring of logged tokens and bucket analysis. Routing
+   recomputation path (MoE checkpoint loader + forward hooks) only if the
+   logs are insufficient.

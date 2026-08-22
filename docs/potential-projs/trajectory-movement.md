@@ -53,6 +53,51 @@ trajectories already in `data/processed/`, each row carrying `lr_at_step`,
   ladder; does the drift-to-diffusion ratio improve with scale, and does it
   do so uniformly across tasks?
 
+### Follow-up: routing dynamics as a movement channel (FLAME-MoE)
+
+*Moved from the former standalone Track F doc (`moe-routing.md`). Its F2
+direction (flips by token entropy) lives in Track E. Note the label
+collision: Track A's own "F3" above is the scale ladder; the routing
+follow-up's "F3" below is the dense control ladder.*
+
+**One-line pitch.** Dense-model movement between checkpoints is continuous
+drift that has to be extracted from KL or CKA. Mixture-of-experts models
+expose a *categorical* channel — per-token expert assignments — and
+FLAME-MoE (38M–1.7B active, 64 experts, top-8) releases checkpoints, routing
+logs, and evals. Apply the drift/diffusion lens to routing flips: flips that
+revert are wall oscillation, flips that persist are river movement, and
+per-layer saturation curves are cumulative-commitment plots. A dense control
+from DataDecide at matched active parameters separates "MoE" from "small."
+
+**Compute tier.** T0 after ingest, if the released routing logs cover the
+checkpoints and tokens needed. T1 if routing must be recomputed from
+checkpoints over a probe corpus.
+
+Core:
+
+- **Ingest FLAME-MoE artifacts.** Routing logs (per token, per layer, top-k
+  expert ids across checkpoints), eval results, checkpoint metadata and
+  schedules. Verify format and coverage first; this determines the tier.
+- **F1 — Routing-flip drift/diffusion.** For each layer and checkpoint pair,
+  compute per-token assignment flip rates; separate reverting flips (t →
+  t+1 → back at t+2) from persistent ones; compute router saturation
+  (overlap of top-k at step t with top-k at the final checkpoint) per layer
+  over training. Fit the same drift/diffusion decomposition used for dense
+  eval trajectories.
+- **F3 — Dense control ladder.** Run the dense drift/diffusion decomposition
+  on DataDecide models at matched active parameter counts so each MoE
+  finding has an "is this MoE or just small models" comparison.
+
+Optional:
+
+- **Commitment timing.** Per-layer saturation timestamps as a "commitment
+  clock": deeper layers are reported to saturate faster; quantify, and
+  relate to the schedule (`lr_at_step` equivalent for FLAME-MoE runs).
+- **Routing vs. eval movement.** Does routing-flip mass predict eval-metric
+  movement between the same checkpoints, and does it do so better than the
+  dense proxies?
+- **Scale ladder.** Repeat across the seven FLAME-MoE sizes.
+
 ## 2. Doability and impact
 
 **Doability: high, with one gate.** The gate is temporal resolution: if
@@ -66,6 +111,17 @@ Secondary risks: (i) three seeds is thin for per-recipe variance — pool and
 state the limitation; (ii) drift is not constant over a cosine run, so the
 model must allow a time-varying trend (windowed fits).
 
+**Routing follow-up doability: medium, dominated by ingest uncertainty.**
+Everything hinges on
+what the released routing logs actually contain: which checkpoints, how many
+tokens, whether token identities are recoverable (needed for F2 and for
+per-token flip tracking across checkpoints rather than aggregate
+histograms). If logs are aggregate-only, per-token flip tracking requires
+recomputing routing from checkpoints (T1, and a new model-loading path
+distinct from DataDecide's). Also a separate suite with its own training
+recipe and data, so it does not share DataDecide's recipe axis; the
+"recipe" question cannot be asked here.
+
 **Impact per direction:**
 
 | Direction | Impact | Why |
@@ -77,9 +133,20 @@ model must allow a time-varying trend (windowed fits).
 | A3 matched-loss signatures | **High if positive** | Direct thesis demonstration; risk of null at these scales. |
 | A5 resolution transfer | Low (enabling) | Only matters if the gate fails. |
 | F3 scale ladder | Medium | Natural figure, limited novelty. |
+| *Routing follow-up:* F1 routing drift/diffusion + saturation | **Medium-high** | Novel framing of existing logs; router saturation is known, reverting-vs-persistent decomposition is not. |
+| *Routing follow-up:* F3 dense control | Medium (supporting) | Required for credibility; not a result alone. |
+| *Routing follow-up:* Commitment timing | Medium | Largely confirms published observations with better statistics. |
+| *Routing follow-up:* Routing vs. eval movement | Medium-high | Practical: routing as a cheap, high-signal movement detector. |
+| *Routing follow-up:* Scale ladder | Medium | Good figure, limited novelty. |
 
 **Likely paper shape.** A6 + A1 + A4 as the core ("what lives inside the
 noise term"), A2 as the headline figure, A3 as the high-variance bonus.
+
+**Routing follow-up paper shape.** F1 + F3 as the core, F2 (Track E) as the
+headline if the logs support it. A real workshop paper, but one that stands
+apart from the DataDecide line: it shares methodology with the trajectory
+project, not data or story. Worth doing if the drift/diffusion machinery
+already exists and the ingest proves cheap; otherwise defer.
 
 ## 3. Infrastructure sequence
 
@@ -104,3 +171,21 @@ noise term"), A2 as the headline figure, A3 as the high-variance bonus.
    trajectories.
 
 Steps 1–4 form the minimum paper; 5 and 6 are independent add-ons.
+
+Routing follow-up sequence (after the steps above):
+
+1. **Artifact survey.** Inspect FLAME-MoE release: routing-log schema,
+   checkpoint coverage, token recoverability, eval table format. Decide
+   T0 vs. T1 from this alone.
+2. **Ingest.** Download → preprocess → typed parquet following the repo's
+   existing pattern; routing logs as a long table (checkpoint, layer, token
+   id/position, expert ids); evals into the same trajectory schema used for
+   DataDecide so the dense accessors work unchanged.
+3. **Flip and saturation metrics (F1).** Per-layer flip rates with
+   reverting/persistent split; saturation vs. final checkpoint; feed into
+   the drift/diffusion decomposition module (shared with the trajectory
+   project; build it there if it does not exist yet).
+4. **Dense control (F3).** Run the same decomposition on DataDecide models
+   at matched active parameters using the existing processed tables.
+5. **Optional: routing recomputation path** (MoE checkpoint loader +
+   forward hooks) only if the logs are insufficient.

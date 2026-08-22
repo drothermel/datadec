@@ -33,10 +33,16 @@ factored out. Idea IDs (`A1`, `B3`, …) match the synthesis.
 | [trajectory-movement.md](trajectory-movement.md) | Track A — Drift/diffusion in eval trajectories | T0 | Strong; gated on checkpoint spacing |
 | [schedule-confound.md](schedule-confound.md) | Track D — Annealing-confound correction | T0 / T1+ | Good section; standalone only if merging works |
 | [token-item-movement.md](token-item-movement.md) | Track E — Token/item-level movement | T0 / T1 | Best single figure; needs inference harness |
-| [moe-routing.md](moe-routing.md) | Track F — FLAME-MoE routing dynamics | T0 after ingest | Novel but decoupled from DataDecide |
 
 Track C (dataset featurization) is considered separately and intentionally
 omitted here.
+
+Track F (FLAME-MoE routing dynamics) is no longer standalone: its routing-flip
+core (survey, ingest, F1, F3, commitment timing, routing-vs-eval, scale ladder)
+is a follow-up inside [trajectory-movement.md](trajectory-movement.md), and F2
+(flips by token entropy) is an optional direction in
+[token-item-movement.md](token-item-movement.md). Each restates its own
+prerequisites.
 
 Compute tiers: **T0** = analysis of published tables only; **T1** = forward
 passes with existing checkpoints; **T1+** = checkpoint merging plus re-running
