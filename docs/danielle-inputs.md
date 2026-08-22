@@ -1893,3 +1893,15 @@ diffs; slopes/R² untransformed; optional log10 of learning rates) and intake no
 Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
 ("Z-scoring implementation, and the unseen-bucket problem"); resolves the earlier open
 question, with a note that global z-scoring is a no-op for LightGBM.
+
+### Lightweight adaptation + ICL examples — undated (intake 2026-08-22)
+
+> Can you do a little bit of an extended search, so like it's fine if it takes a while to
+> get maybe like to look through the different examples and then choose three examples of
+> this from either like research papers like from archive or benchmarks or strong maybe
+> like blogs from companies that talk about how that version of very lightweight
+> fine-tuning or adaptation along with in-context learning is being done and what the
+> learnings are?
+
+Routed to: [topics/icl-literature.md](topics/reference/icl-literature.md) (dated entry with
+a quality caveat — the third example is unsourced).

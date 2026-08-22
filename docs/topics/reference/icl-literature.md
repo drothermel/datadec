@@ -98,3 +98,30 @@ pretraining-scale question recapitulated inside a single forward pass."
   and a few key heads; propagation largely linear (early rotation, later scaling).
 - The weight-space sense of "task vector" (Ilharco et al.'s task arithmetic and its
   gradient interpretation) is collected in `task-vectors.md`.
+
+## Undated (intake 2026-08-22) — Lightweight adaptation + in-context learning hybrids
+
+**Danielle's request.** An extended search for three examples — arXiv papers, benchmarks,
+or strong company blogs — of "very lightweight fine-tuning or adaptation along with
+in-context learning" and what the learnings are.
+
+**Response (condensed; weak — two paper pointers and one unsourced claim).**
+1. *Context Tuning for In-Context Optimization* (arXiv 2507.04221, 2025): optimise the
+   context/prompt given to the model rather than its parameters — a lightweight tuning of
+   the input that improves few-shot adaptation with frozen weights.
+2. *You Only Fine-tune Once: Many-Shot In-Context Fine-Tuning for Large Language Models*
+   (title as given; no ID): one lightweight fine-tuning run on a representative example
+   set, then rely on in-context learning for subsequent tasks.
+3. "Industry blog posts" about adding a small trainable adapter (LoRA) and then using
+   in-context examples on top for efficient personalisation — **no source named**; treat as
+   unsupported.
+
+Stated learning: a small adapter plus in-context examples gets much of full fine-tuning's
+benefit at a fraction of the cost.
+
+**Relevance.** These are the "weight-update vs. elicitation" middle ground that the ICL
+elicitability project (`../../potential-projs/icl-elicitability.md`) and the research
+hypothesis frame as the thing to measure: where does a tiny update beat tuned elicitation,
+and does the balance shift with scale? Both papers need verification before use; the third
+example should be replaced by a real source (e.g. vendor LoRA + few-shot guidance) if it is
+ever cited.
