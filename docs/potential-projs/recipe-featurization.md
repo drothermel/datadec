@@ -346,6 +346,19 @@ deterministic tokens)? Has it been done?
   deterministic, so you'd want the profile computed before and after dedup to separate
   'structured domain' from 'duplicated corpus.'"
 
+### 2026-08-22 — own-mixture held-out CE as a reconstructed training-loss analog
+
+Follow-on from the same conversation: for each recipe, hold out a sample of its own
+mixture drawn via the REC-a manifest/sampler and forward-pass the released checkpoints
+over it. This gives an own-mixture held-out cross-entropy at checkpoint cadence — the
+closest well-defined analog of training loss (minus batch noise and the moving-mixture
+confound) — and as a by-product the cross-loss matrix (every recipe's model on every
+recipe's mixture) that REC's similarity features want. Candidate fourth provenance-ledger
+entry: training loss is absent from the released artifacts except sparsely at 150M–1B in
+the scaling-law ladder CSVs; whether the authors could supply more is unconfirmed
+(Danielle is checking). The response's broader thesis candidate: "DataDecide is an eval
+suite being used as a training-dynamics suite; here is what it takes to make that valid."
+
 ### 2026-08-22 — The data-card thesis as a pattern of three divergences
 
 From a conversation reviewing the `datadec` repository state (record in

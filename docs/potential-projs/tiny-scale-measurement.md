@@ -112,6 +112,22 @@ Dated, attributed-by-date notes from external review conversations, recorded for
 consolidation — not decisions. Only notes about this project are kept here. Related-work
 claims in quoted text are unverified.
 
+### 2026-08-22 — the "DataDecide-dense" substrate
+
+From a conversation on the data layer (record in
+`../topics/reference/datadecide-data-pipeline.md`). Three needs were observed to
+triangulate on one artifact: this project's need for a powered small-scale substrate,
+the order-effect reruns in recipe featurization, and the 5–10-checkpoint sparsity of the
+released 4M–8M runs. Proposed object: a few recipes × the 2–4 smallest scales × 10+
+seeds with dense checkpointing and full logging (training loss, executed LR schedule,
+data-order manifest, per-token held-out losses on a frozen probe set), emitting the
+results store's existing schema. Its first result is the reproduction-gap measurement
+(faithful rerun vs. published checkpoint, relative to seed variance), which licenses
+treating retrained variants as commensurable with the released suite. Scope caution from
+the response: it is a substrate for TINY, REC's interventional arm, and MPL/LR
+validation — not a larger retraining suite. Design doc (recipes, scales, seeds, cadence,
+logging spec) suggested as worth writing now; not started.
+
 ### 2026-08-21 — origin: small-scale science (two responses)
 
 *First response:*

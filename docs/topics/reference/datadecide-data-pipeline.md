@@ -163,3 +163,92 @@ confirmed" caveat is the accurate statement of their status.
   check; record as such.
 - Danielle's "maybe even asked the paper authors" is hedged; the data-card narrative
   should only claim author correspondence if the emails can be found.
+
+---
+
+## 2026-08-22 — No training loss from the authors; sparse small-scale checkpoints; the "DataDecide-dense" retrain idea (same conversation, two turns)
+
+**Danielle (verbatim, turn 1):**
+
+> ok, the one thing the authors said they could not provide was actual loss metrics across
+> the runs. we only have the perplexity measures and accuracy measures for each checkpoint.
+> does that become an issue?
+
+**Danielle (verbatim, turn 2):**
+
+> lets not treat "the authors could not provide training loss" as a fact yet, I have to
+> double check to be sure I'm not misremembering. but reconstructing the missing quantity
+> sounds like a good idea. also, especially the much smaller models have very few
+> checkpoints (like 4-10) which was an issue back when I was trying to predict final values
+> from early curve sections. I'm not sure if it will be an issue here but those are
+> conveniently also the scales that it would be very doable to retrain some examples.
+> thoughts?
+
+**Status of the "no training loss" claim:** unconfirmed by Danielle's own account. One
+repo fact bears on it: `processed/scaling-law/checkpoint-losses.parquet` carries a
+`train_cross_entropy` column plus four validation cross-entropies (c4_en, dolma common
+crawl, pile, wikitext-103), but they are populated for only 16% of rows — none at any size
+≤ 90M, 7–22% of rows at 150M–750M, 79% at 1B (22 of 25 recipes appear). So some
+training-loss values *were* released (in the scaling-law ladder CSVs), just not at the
+checkpoint cadence or the scales where they would matter most. The exact finding for the
+data card ("not logged" vs. "logged but not released" vs. "released partially") is still
+Danielle's to pin down.
+
+**Response 1, condensed:** held-out cross-entropy (what the PPL tables are) substitutes
+for training loss almost everywhere and is better for matched-loss pairing across
+recipes, since training loss is measured on each recipe's own mixture. Where it bites:
+MPL fitting — conceptually fine on held-out CE, but the PPL table is thin per run, so fit
+with partial pooling across seeds and scales, check what the scaling-law checkpoint-loss
+table actually records (see above), and use the planned truncated-curve validation as
+go/no-go; and any forensics needing per-batch training loss (spike detection, data-order
+effects in the original runs) is unavailable. Recovery option: reconstruct own-mixture
+held-out CE at checkpoint cadence by forward-passing released checkpoints over a held-out
+sample of each recipe's mixture drawn with the REC-a manifest/sampler; this is the closest
+analog of training loss, is embarrassingly parallel, and yields the cross-loss matrix
+(every recipe's model on every recipe's mixture) as a by-product. Meta-point: "no training
+loss" would be a fourth provenance-ledger entry, and the data-card thesis becomes
+"DataDecide is an eval suite being used as a training-dynamics suite; here is what it
+takes to make that valid" — every reconstruction (LR via MPL, own-mixture CE, realized
+composition) is a contribution under it.
+
+**Response 2, condensed:** verify first, because the data card must state the finding
+exactly. Sparse checkpoints and forward-pass reconstruction fix *different* problems:
+reconstruction changes *what* is measured per checkpoint; it cannot create temporal
+resolution. With 4–10 checkpoints, the drift/diffusion decomposition is dead at those
+scales (dynamics claims live at dense-save scales; small scales get endpoint statistics),
+adjacent-checkpoint item flips stop meaning "churn," and per-run MPL fits are
+impossible (pooling becomes the method); IRT and the decision-reliability frontier are
+mostly fine. Hence **DataDecide-dense**: a few recipes (spanning the outcome range plus one
+within-family pair) × the 2–4 smallest scales × many seeds (10+), dense checkpointing, and
+everything the original suite lacks logged — true training loss, the LR schedule as
+executed, the realized data-order manifest, per-token held-out losses on a frozen probe
+set. One campaign discharges five obligations: temporal resolution at small scale; the
+P2 order-effect experiment if sampling strategy is an arm; ground-truth validation of the
+LR derivations and the MPL; real many-seed noise floors; and the training-config parity
+check that the suite docs already list as the gate for any training work. The parity gap
+(faithful reproduction vs. published run, relative to seed variance) is a reproducibility
+result in its own right. Cautions: freeze the logging spec (cadence: log-spaced early,
+uniform late; probe corpus; per-token outputs; manifest format) before the first real run
+and emit the results store's existing schema; keep scope disciplined — it is P2's
+interventional arm, P3's validation arm, and the tiny-scale substrate, not a larger
+retraining project. Sequence it after the pure-T0 work is moving, but write the design doc
+now.
+
+**Intake notes.**
+
+- Response 2 calls checkpoint-spacing statistics "the only unchecked gate left." That
+  gate was answered 2026-08-21 in `../../open-questions-answered.md` (4M: 6 steps, 6M: 5,
+  8M: 10; ~1,000–1,300-step spacing from 8M to 530M; 1B coarsest at ~2,500). Danielle's
+  "4–10" recollection matches the table. The potential-projs README's TRJ row says
+  "checkpoint spacing confirmed adequate" — true for ≥ 8M, and the sub-10M exception is
+  exactly what this turn is about.
+- The 750M aggregate OLMES table is truncated at step 26,250 while the instance table is
+  complete (same file); any per-scale density claim should use the instance-derived view.
+- "Cosine" as the schedule family is consistent with `wsd-suite.md` ("its original cosine"
+  schedule); not re-verified here.
+- Response 1's "ppl table ~23k rows → a few dozen points per run" is arithmetic on the
+  README's 22,709 PPL rows and the spacing table; consistent.
+- Literature claims in the responses (MPL developed on dense train/val logs; cooldown
+  drops conventionally shown on validation loss) are unverified.
+- The "Project B" referenced in response 2 maps to the WSD / MoE recipe suites (both list
+  "training config parity" as step 1); inferred.

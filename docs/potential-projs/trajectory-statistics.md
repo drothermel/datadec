@@ -197,6 +197,23 @@ Routing follow-up sequence (after the steps above):
 Dated, attributed notes from external review conversations, recorded for consolidation — not
 decisions. Only notes about this project are kept here.
 
+### 2026-08-22 — small-scale density and a retrain substrate
+
+From a conversation on the data layer (record in
+`../topics/reference/datadecide-data-pipeline.md`). Two points for this doc: (a) at
+4M–8M the released runs have 5–10 checkpoints, so the drift/diffusion decomposition
+cannot be fit per run there — dynamics claims live at the dense-save scales, small scales
+get endpoint statistics only (this sharpens the 2026-08-21 spacing answer, not reverses
+it); (b) a small heavily-instrumented many-seed retrain of a few recipes at the 2–4
+smallest scales ("DataDecide-dense": dense checkpoints, true training loss, executed LR
+schedule, data-order manifest, per-token probe losses) would restore density there and
+give TRJ-6 real many-seed noise floors instead of the 3-seed pooled version. Not a
+prerequisite for the T0 work; a candidate infrastructure investment shared with the
+tiny-scale and recipe-featurization projects. Also noted: training loss appears in the
+scaling-law checkpoint-loss table only for 150M–1B and sparsely; held-out CE is the
+working "loss" for matched-loss pairing (TRJ-3), which is arguably the better definition
+across recipes anyway.
+
 ### 2026-08-21 — two "top-N by workshop-paper likelihood × speed" lists
 
 - **Ranked #1 in a top-3 list.** "Pure T0 on data you already have parsed. The methods are

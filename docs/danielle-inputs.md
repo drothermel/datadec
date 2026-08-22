@@ -2575,6 +2575,31 @@ and checkpoint-config spot-check ideas; the "24 in frame" miscount flagged) and 
 note in [potential-projs/recipe-featurization.md](potential-projs/recipe-featurization.md)
 §4 (the three-divergences framing for the data-card paper).
 
+### 2026-08-22 — Training loss availability; sparse small-scale checkpoints; retrain idea (same conversation, two turns)
+
+> ok, the one thing the authors said they could not provide was actual loss metrics across
+> the runs. we only have the perplexity measures and accuracy measures for each checkpoint.
+> does that become an issue?
+
+> lets not treat "the authors could not provide training loss" as a fact yet, I have to
+> double check to be sure I'm not misremembering. but reconstructing the missing quantity
+> sounds like a good idea. also, especially the much smaller models have very few
+> checkpoints (like 4-10) which was an issue back when I was trying to predict final values
+> from early curve sections. I'm not sure if it will be an issue here but those are
+> conveniently also the scales that it would be very doable to retrain some examples.
+> thoughts?
+
+Routed to: [topics/reference/datadecide-data-pipeline.md](topics/reference/datadecide-data-pipeline.md)
+(third entry; the "no training loss" claim held as unconfirmed per Danielle, with the one
+repo fact — `train_cross_entropy` exists in the scaling-law checkpoint-loss table but only
+sparsely at 150M–1B; the "only unchecked gate" remark corrected against the 2026-08-21
+spacing answer) and dated notes in
+[potential-projs/trajectory-statistics.md](potential-projs/trajectory-statistics.md) §4
+(small-scale density), [potential-projs/tiny-scale-measurement.md](potential-projs/tiny-scale-measurement.md)
+§4 ("DataDecide-dense" substrate), and
+[potential-projs/recipe-featurization.md](potential-projs/recipe-featurization.md) §4
+(own-mixture CE reconstruction; fourth ledger entry, unconfirmed).
+
 ### Post-intake decisions — 2026-08-22 (third pass)
 
 > (1) promote (2) I did run a few versions of this, I think we need a new section that
