@@ -256,3 +256,9 @@ decisions. Only notes about this project are kept here.
   (checkpoint loader, probe corpus, reference scorer) is exactly what [annealed readouts,
   landscape geometry, and Stage 2 here] need next."
 - Reviewer 1 did not rank Stage 1 or Stage 2 in its top 3.
+
+- **Structure (reviewer 1).** "The observational/causal pairing is your best long-game
+  structure. [Stage 1] now, [Stage 2] later once the branch runner exists. If TOK-obs-4 holds
+  observationally, it both de-risks and motivates the causal follow-up; if it doesn't, you
+  saved yourself the branch compute. That's the cleanest dependency chain in the set, and
+  worth preserving explicitly." (This is why the doc is split into two stages.)

@@ -215,3 +215,14 @@ decisions. Only notes about this project are kept here.
   analysis) could be paired with this paper, since "they share the trajectory accessor and the
   noise floor."
 - Checkpoint-spacing gate: resolved (see `docs/open-questions-answered.md`).
+
+- **Overlap (reviewer 1).** TRJ-3 matched-loss signatures and IRT recipe-DIF "are close enough
+  that reviewers will ask why you need both" — decide which instrument makes the
+  beyond-final-performance claim first.
+- **n = 25 (reviewer 2).** TRJ-3 "currently treat[s] 25 recipes as exchangeable"; prefer
+  within-family comparisons along a measured dose (the family-contrast framing from recipe
+  featurization).
+- **Feasibility role (reviewer 1).** "The noise-floor module isn't just reusable hygiene; it's
+  the thing that determines whether the whole program has publishable effect sizes. That's
+  another argument for [this project] first: it's partly a feasibility study for everything
+  else."

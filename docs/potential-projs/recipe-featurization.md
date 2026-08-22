@@ -134,3 +134,7 @@ decisions. Only notes about this project are kept here.
   Per-source attribution (REC-5) needs only REC-a + the outcome table. This is the highest
   certainty-per-week item on the list; the determinism profile (REC-2) is the stretch goal,
   not the core."
+
+- **n = 25 (reviewer 2).** "The family-contrast/dose-response framing is the right answer and
+  should back-propagate everywhere recipes are compared" — i.e. REC-d is a program-level
+  design pattern, not just this project's.

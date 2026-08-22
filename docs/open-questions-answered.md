@@ -118,3 +118,15 @@ print(c.sql("""
 """).fetchall())
 PY
 ```
+
+---
+
+## Open — not yet checked
+
+- **Loss-curve coverage in the scaling-law table.** Does
+  `processed/scaling-law/checkpoint-losses.parquet` cover every recipe × size × seed at
+  reasonable resolution? Gates the multi-power-law fit (ANN-5, REC-7).
+- **FLAME-MoE routing-log contents.** Which checkpoints, how many tokens, whether token
+  identities are recoverable. Gates the routing follow-up (TRJ-moe-1/3) and TOK-obs-5
+  entirely; decides T0 vs. T1 for them.
+

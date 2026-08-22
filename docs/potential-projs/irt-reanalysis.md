@@ -132,3 +132,13 @@ decisions. Only notes about this project are kept here.
   2PL fit."
 - Per-instance coverage gate: resolved — all 25 recipes × 66 tasks, 3 seeds at 150M–1B, 1 seed
   below 150M (see `docs/open-questions-answered.md`).
+
+- **Overlap (reviewer 1).** "IRT's recipe-DIF (IRT-3) and drift/diffusion's matched-loss
+  signatures are close enough that reviewers will ask why you need both" — decide which
+  instrument makes the beyond-final-performance claim first.
+- **Nulls (reviewer 1).** IRT-1's null is "a genuine substantive claim"; a null IRT-3 at 150M
+  "is ambiguous between 'recipes are one-dimensional' and 'these scales are too small to see
+  it,' and reviewers will pick the boring interpretation."
+- **n = 25 (reviewer 2).** IRT-3 "currently treat[s] 25 recipes as exchangeable"; prefer
+  within-family comparisons along a measured dose (the family-contrast framing from recipe
+  featurization).

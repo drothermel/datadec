@@ -188,3 +188,10 @@ decisions. Only notes about this project are kept here.
 - **Grid targeting (both reviewers).** Use the T0 results from the trajectory and IRT projects
   to choose schedule-sensitive recipes and steps before branching, in addition to the MPL-fit
   selection in ANN-5.
+
+- **Nulls (reviewer 1).** The merging-on-cosine result (ANN-1) and the flip analysis (ANN-6)
+  are listed among the "shakier" either-outcome claims: "distinguish nulls that are
+  informative from nulls that are merely reportable."
+- **Competition (reviewer 2).** The Signal-and-Noise / DataDecide authors "are the obvious
+  people to do [the T0 reanalysis] themselves"; ship the T0 half fast and consider them as
+  collaborators on the branch grid, "where your infrastructure investment is the moat."
