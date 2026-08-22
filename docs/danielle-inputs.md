@@ -1306,3 +1306,12 @@ Wikipedia under a storage budget").
 
 Routed to: [topics/wiki-qa-sharding.md](topics/staging/wiki-qa-sharding.md) ("Link graph from
 Structured Wikipedia"); data-plan open question revised.
+
+### Index stack at Wikipedia scale — conversation 2026-08-16
+
+> great, next, the best approach to implement indices ranging from bm25 to vector indices
+> used to be to use pyserini, but there must be newer better options now that still work at
+> wikipedia scale?
+
+Routed to: [topics/wiki-qa-sharding.md](topics/staging/wiki-qa-sharding.md) ("Index stack:
+BM25 to vectors at Wikipedia scale").

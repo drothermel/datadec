@@ -175,6 +175,53 @@ from Structured Wikipedia. You get a snapshot-aligned corpus and graph, link con
 QA-aware weighting, and avoid maintaining two substantially different ingestion pipelines.
 Use the SQL graph only as a completeness check."
 
+## 2026-08-16 — Index stack: BM25 to vectors at Wikipedia scale
+
+**Danielle's question.** Pyserini used to be the best way to implement indices from BM25 to
+vector indexes; what are the newer, better options that still work at Wikipedia scale?
+
+**Response (near-verbatim, condensed; tool claims unverified).** "Pyserini has not really
+been displaced as a research baseline ... What has improved is the set of unified engines
+that can serve BM25, vectors, filtering, hybrid fusion, and reranking from one corpus."
+Short recommendation: research baseline — Pyserini; single-machine experimentation —
+LanceDB; serious hybrid serving / complex ranking — Vespa; conventional distributed search
+ops — OpenSearch; vector-centric with some lexical — Qdrant or Milvus.
+
+*Options.* Pyserini (Lucene BM25 + Faiss; client-side hybrid). LanceDB (native BM25,
+disk-oriented vector indexes, built-in hybrid/reranking; demonstrated FTS over 41M Wikipedia
+docs; operationally light). Vespa (field-aware BM25, sparse WAND, filtered HNSW, dense,
+metadata features, multi-stage phased ranking incl. ONNX cross-encoder over global top
+results — "most capable if you want to experiment with retrieval architecture"). OpenSearch
+(Lucene BM25, Lucene/Faiss HNSW and IVF, hybrid pipelines with normalization/fusion; recent
+on-disk vector search and quantization; "safer organizational choice"). Qdrant (BM25 as
+sparse vectors, HNSW + quantization, dense+sparse+multivector). Milvus (native BM25 since 2.5,
+weighted/RRF hybrid). ColBERT/PLAID (late-interaction multivectors, usually after first-stage
+retrieval).
+
+*Proposed implementation.* One canonical Parquet corpus; indexes are disposable derived
+artifacts. Passage schema: passage_id, article_id, title, section_heading, section_path,
+text, wikidata_qid, **graph_partition**, outgoing_page_ids, embedding, snapshot_date. Use
+sections / paragraph groups rather than fixed overlapping token windows; prepend
+`Title > Section > Subsection` when embedding and indexing. Four retrieval profiles over the
+same passage IDs: BM25 (title/heading/body fields with boosts); dense (one quantized
+embedding per passage); hybrid (500–1,000 candidates each, fused by RRF — raw BM25 + cosine
+are not on the same scale; tune a weighted fusion once held-out QA data exists); reranked
+hybrid (top 50–200 via cross-encoder or ColBERT-style). For multi-answer QA, group or
+diversify results by article before the reader, "otherwise the top 20 results can become 15
+nearly identical passages from one long article."
+
+*Scale.* ~7M article records are easy; passages are the problem (tens of millions of
+vectors). 40M × 768-d ≈ 123 GB float32 / 61 GB float16 / 31 GB int8 before HNSW overhead.
+Quantize; consider 384-d; measure ANN recall against exact Faiss on a sample; don't store
+multiple embedding models in the serving index; consider article-level retrieval then
+section-level scoring if storage is tight.
+
+*Specific choice.* Structured Wikipedia → section-level Parquet; Pyserini BM25 as the
+reference baseline; LanceDB for rapid BM25+dense hybrid experiments; Vespa once
+distributed serving, graph-partition filters, richer ranking features, or online reranking
+are needed (skip LanceDB and go straight to Vespa if the goal is already a durable
+multi-node service).
+
 ## Open questions
 
 - What the surrounding MAQA system needs (latency target, shard count, update
@@ -186,5 +233,8 @@ Use the SQL graph only as a completeness check."
   corpus + graph with link context); SQL `pagelinks` only as a completeness check; pinned
   dated snapshot. Verify the dataset's link schema and whether it is sharded such that a
   graph-coherent subset can be fetched without the full download.
+- Index plan: Pyserini BM25 reference → LanceDB hybrid experiments → Vespa for
+  partition-filtered serving; section-level passages with title/section prefix; RRF first;
+  article-level diversification for multi-answer readers.
 
 **Waiting on:** further excerpts from the MAQA Next Steps page; a promotion decision.
