@@ -56,8 +56,9 @@ strategy, performance estimation — the last "often the most computationally ex
   LC-Net; Baker et al. 2017 "Accelerating NAS using performance prediction" — which fits
   regressors on *early partial training curves* plus architecture features to predict final
   accuracy) is the same method as the loss-slope study and EDP, applied to architectures
-  instead of data recipes. All of these are from memory and unverified; they are the
-  related-work list an EDP paper must cite and differentiate from. The differentiator is
+  instead of data recipes. All of these are from memory and unverified; together with the learning-curve-extrapolation
+  table in `loss-curve-forecasting.md` they are the related-work list an EDP paper must cite
+  and differentiate from. The differentiator is
   the axis being varied (data recipe / pretraining choices vs. architecture) and the
   target (downstream benchmark scores across scales vs. in-distribution accuracy).
 - A caution these papers established that applies to EDP: zero-cost proxies' rank

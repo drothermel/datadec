@@ -2368,3 +2368,17 @@ Routed to: new [topics/nas-literature.md](topics/reference/nas-literature.md) (s
 condensed; intake note that the performance-estimation half — zero-cost proxies and
 learning-curve extrapolation — is the closest prior art to EDP and the loss-slope study,
 with the specific papers to check, and the top-k rank-collapse caution).
+
+### 2026-08-22 — Related work for early-linearity prediction (Perplexity, two rounds, ~2025)
+
+Her prompt (verbatim):
+
+> I'm interested in using the linearity of the early epochs of a loss curve to predict
+> final performance of a model. Specifically when training cnn based vision models of cifar
+> 10. What related work exists for this?
+
+Routed to: [topics/loss-curve-forecasting.md](topics/reference/loss-curve-forecasting.md)
+(round 1 empty; round 2's reading list tabulated — Domhan 2015, LC-PFN, Ding 2024, neural
+capacitance, zero-cost proxies — with Baker 2017 added from memory; intake note that
+"linearity" is a curve-family choice inside the extrapolation literature, not a gap);
+related-work pointer block added to the EDP doc; cross-linked from `nas-literature.md`.

@@ -138,3 +138,48 @@ evidence for linearity. The only citations worth following for EDP are arXiv 241
 (early stabilization of larger models — relevant to "how early is early enough") and AdaGC
 2502.11034 (loss-spike handling, relevant to cleaning early-window features); both
 unverified.
+
+## Undated (~2025) — Related work for early-curve-linearity → final performance (two search rounds)
+
+Danielle's question (verbatim):
+
+> I'm interested in using the linearity of the early epochs of a loss curve to predict
+> final performance of a model. Specifically when training cnn based vision models of cifar
+> 10. What related work exists for this?
+
+**Round 1** (general web search) found nothing: tutorials, a high-school journal
+hyperparameter study, and a StackOverflow thread; concluded "no established body of work
+… formally uses this property to predict final model performance." Zero content beyond
+the (correct) observation that practitioners read early curves informally.
+
+**Round 2** (academic search) found the actual literature. Identifier-bearing citations,
+unverified but plausible:
+
+| Line | Work | What it does | Why it matters here |
+|---|---|---|---|
+| Learning-curve extrapolation | Domhan, Springenberg & Hutter 2015 (IJCAI; "Speeding up automatic hyperparameter optimization of DNNs by extrapolation of learning curves") | Fits an ensemble of parametric curve families (power law, sigmoidal, …) to a partial curve, predicts the asymptote; CIFAR-10 CNNs among the testbeds; RMSE 0.25 / 0.19 / 0.11 after 10 / 40 / 60 epochs (per the response) | The direct ancestor of "fit something to early epochs, predict the end." Their features are the fitted-asymptote, not slope/linearity of a linear-in-log-x fit — that is the differentiator, such as it is |
+| | Klein et al. 2017 (LC-Net / Bayesian NN over curves); Baker et al. 2017 ("Accelerating NAS using performance prediction") | Regress final accuracy on early partial curve + config/architecture features | Baker et al. is the closest methodological match to the loss-slope study and EDP (regressor over early-curve features + configuration features) — not cited by either round; from memory, verify |
+| | LC-PFN — Adriaensen et al., NeurIPS 2023 (arXiv 2310.20447) | Transformer pre-trained on millions of synthetic curves; Bayesian extrapolation in one forward pass; "10,000× faster than MCMC" | The modern extrapolation baseline any early-window predictor should be compared against |
+| | Ding et al. 2024 (arXiv 2412.15554) | Architecture-aware neural ODE for learning-curve prediction (MLPs and CNNs) | Shows the trend toward conditioning curve prediction on the configuration — EDP's recipe-conditioning is the same move on a different axis |
+| Early-dynamics proxies | Neural capacitance — Jiang et al. (arXiv 2201.04194; Nat. Commun. 2024) | Converts the net to a line graph on edges, derives a "capacitance" metric from early-training synaptic dynamics; validated on CIFAR-10 model selection | A non-curve early-dynamics predictor; closest in spirit to "mathematical properties of early training" |
+| Zero-cost proxies | ICLR blog-track 2022 survey; AZ-NAS, CVPR 2024 (arXiv 2403.19232); FreeREA, WACV 2023 | Scores at init or after minimal training; assembling proxies raises rank correlation | See `nas-literature.md` — the init-time end of the same spectrum |
+| Training dynamics → reliability | an OpenReview paper on selective prediction from intermediate-checkpoint instability | Uses prediction instability across training to decide what to abstain on | Tangential; instance-level rather than run-level |
+
+Round 2's gap statement: none "specifically isolate and leverage the linearity
+characteristic of early loss curves as a primary predictive feature"; it proposes
+quantifying linearity, correlating it with final accuracy across architectures, building
+lightweight predictors, and combining with zero-cost proxies — and notes the observation-window
+trade-off (Domhan), noise in early epochs (LC-PFN's motivation), and architecture dependence
+(Ding).
+
+Intake note: round 2 is the useful one and its reading list is the EDP related-work core,
+together with the NAS-side proxies in `nas-literature.md`. Two corrections to its gap
+claim: (1) "linearity" as a feature is not a gap in any interesting sense — it is one
+particular curve-family choice inside the extrapolation literature (a linear-in-log-x fit
+is the log-law member of Domhan's family), so the honest framing is "we use a deliberately
+crude fit family and ask how early its slope carries signal," not "nobody has looked at
+linearity"; (2) the pilot result in `../staging/cnn-deconstruction-ladder.md` already shows
+early *slope* predicts and high R² indexes slowness, which is a point against linearity
+per se being the useful feature. The real differentiators for EDP remain the axis varied
+(data recipe, across scales) and the target (downstream benchmark scores, ranking/decision
+metrics), not the feature.

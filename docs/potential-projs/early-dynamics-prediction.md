@@ -906,6 +906,15 @@ under the scale-generalisation axis, drop it (B) and carry `size_log`, or use C 
 size-normalised inputs are wanted. This closes the "per-size z-scoring under held-out
 sizes" open question below.
 
+### Related-work pointers (added 2026-08-22)
+
+The prior-art lines for "early curve → final performance" are collected in
+`../topics/reference/loss-curve-forecasting.md` (learning-curve extrapolation: Domhan 2015,
+Baker 2017, LC-PFN 2023, Ding 2024; neural capacitance) and `../topics/reference/nas-literature.md`
+(zero-cost proxies: TE-NAS, NASWOT, AZ-NAS). EDP's differentiators are the axis varied (data
+recipe across scales) and the targets (downstream benchmark scores; ranking/decision metrics),
+not the curve feature itself.
+
 ### Open questions (carried from staging)
 
 - Is this still live (July 2025 draft; DataDecide scaling-law baselines have since been
