@@ -330,3 +330,14 @@ resolution-refinement across granularities, where training movement lives, and t
 frozen-router/thaw causal arm." "**Speed: fourth**… **Scoop risk: low** — the sweep is the
 moat… **Expected impact: high. Ceiling: high**, with an option on very-high if the causal arm
 shows suppressed routing adaptivity costs quality." The recommended day-one action — confirm the sweep's checkpoints survive — is done.
+
+### 2026-08-22 — functional task identity across architectures (citation supplied by Danielle)
+
+- Theseus (Rinaldi et al., ICML 2026; arXiv 2602.12952) transports task updates "across
+  heterogeneous-width models" by characterizing "a task update by the functional effect it
+  induces on intermediate representations" and solving "a functional matching problem on
+  observed activations… after aligning representation spaces via orthogonal Procrustes
+  analysis." The same move — define identity functionally on activations, not
+  parametrically — is what PART-4's expert matching across expert counts and granularities
+  needs; Procrustes alignment of expert output spaces is a concrete starting point. See
+  `docs/topics/task-vectors.md`.

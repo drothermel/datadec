@@ -379,3 +379,26 @@ gradient-approximation arc and the task/function/state-vector family); the ranke
 measurement protocol to [topics/icl-as-posttraining.md](topics/icl-as-posttraining.md); one
 line to the potential-projs README program-level notes.
 
+---
+
+## 2026-08-22 — Danielle-supplied citations (during toggle intake)
+
+> so this made me think of paper I saw previously that was quite interesting with a bit of a
+> different take on task vectors: Editing Models with Task Arithmetic (Ilharco et al., ICLR
+> 2023, arXiv 2212.04089). And then as I was looking for that paper I saw these that we
+> should add to the task vector literature (the first citation about icl mainly I think) and
+> anywhere else that they are relevant: On Task Vectors and Gradients (arXiv 2508.16082);
+> Understanding Task Vectors in In-Context Learning (arXiv 2506.09048); Transporting Task
+> Vectors across Different Architectures without Training (ICML 2026, arXiv 2602.12952);
+> Task Vectors, Learned Not Extracted (ICLR 2026, arXiv 2509.24169); Task Vector
+> Quantization for Memory-Efficient Model Merging (arXiv 2503.06921).
+
+Routed to: new reference topic [topics/task-vectors.md](topics/task-vectors.md); ICL-side
+papers to [topics/icl-literature.md](topics/icl-literature.md) and protocol refinements to
+[topics/icl-as-posttraining.md](topics/icl-as-posttraining.md);
+[potential-projs/functional-featurization.md](potential-projs/functional-featurization.md)
+§4 (task arithmetic as readout; first-epoch gradient as surrogate-ladder support;
+quantized deltas for storage);
+[potential-projs/moe-partitions.md](potential-projs/moe-partitions.md) §4 (Theseus's
+functional task identity as the model for cross-granularity expert matching).
+

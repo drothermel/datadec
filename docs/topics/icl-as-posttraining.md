@@ -144,3 +144,14 @@ chapter of the same question. See [warmstarting-decomposition.md](warmstarting-d
    control that the founding papers skipped).
 
 Paper references for each in [icl-literature.md](icl-literature.md).
+
+---
+
+## 2026-08-22 — refinements to protocol statistic #4 (task-vector geometry), from Danielle's citations
+
+- Extracted ICL task vectors fail on high-rank mappings (Dong et al., arXiv 2506.09048) —
+  choose ICL tasks whose mapping rank is within reach, or inject multiple vectors.
+- Learned task vectors (Yang et al., ICLR 2026) are more accurate and position/layer
+  flexible than extracted ones, and come with a mechanistic account (OV circuits, key
+  heads, linear propagation) — a candidate for the "task-vector geometry" measurement that
+  is less extraction-method-dependent. See `task-vectors.md`.

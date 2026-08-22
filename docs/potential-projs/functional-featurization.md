@@ -413,3 +413,20 @@ from [annealed readouts], the response-vector spec, and the powered tiny-scale s
 central risk… has only a modest pivot (the surrogate-validation study stands alone as a
 methods paper). **Expected impact: high** if the effects exist. **Ceiling: the highest on
 the list**… it's the paper the previous nine were quietly building toward."
+
+### 2026-08-22 — task-vector literature relevant to FUNC-4 and FUNC-5 (citations supplied by Danielle)
+
+- **Weight-space direction of a branch = a task vector.** Ilharco et al.'s task arithmetic
+  (ICLR 2023) treats the fine-tuned-minus-pretrained delta as a composable direction;
+  negation and addition give a readout for whether two data types' effects add, cancel, or
+  interfere.
+- **Surrogate-ladder support.** Zhou et al., *On Task Vectors and Gradients* (arXiv
+  2508.16082): a one-epoch task vector "is exactly equivalent to the negative gradient of
+  the loss, scaled by the learning rate," and "the first-epoch gradient dominates the
+  finetuning trajectory in both norm and direction." This is direct evidence that the
+  cheapest tier (single-step gradient alignment) can stand in for short branches — with the
+  bound degrading as the branch lengthens.
+- **Storage.** Task vectors "exhibit a narrow weight range, enabling low precision
+  quantization" (Kim et al., arXiv 2503.06921) — branch endpoints could be saved as
+  quantized deltas from the branch point.
+- Full entries in `docs/topics/task-vectors.md`.

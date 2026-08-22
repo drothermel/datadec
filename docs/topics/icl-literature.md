@@ -84,3 +84,17 @@ ICL?
 **Thought.** "The field's best ICL measurement is a loss curve over context position, fit
 with power laws, complete with emergence thresholds and proxy-metric debates — your
 pretraining-scale question recapitulated inside a single forward pass."
+
+---
+
+## 2026-08-22 — ICL task vectors: emergence, limitations, learned variants (citations supplied by Danielle)
+
+- Dong et al., *Understanding Task Vectors in In-Context Learning: Emergence, Functionality,
+  and Limitations* (arXiv 2506.09048) — the Linear Combination Conjecture (task vectors as
+  linear combinations of the demonstrations); emergence in linear transformers on
+  triplet-formatted prompts; predicted and confirmed failure on high-rank mappings.
+- Yang et al., *Task Vectors, Learned Not Extracted* (ICLR 2026; arXiv 2509.24169) — directly
+  trained task vectors outperform extracted ones; mechanism via attention-head OV circuits
+  and a few key heads; propagation largely linear (early rotation, later scaling).
+- The weight-space sense of "task vector" (Ilharco et al.'s task arithmetic and its
+  gradient interpretation) is collected in `task-vectors.md`.
