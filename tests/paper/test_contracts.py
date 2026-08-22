@@ -349,8 +349,21 @@ def test_newly_assessable_attempts_have_exact_evidence_and_inputs() -> None:
         for claim_id in scaling_claim_ids | math_code_claim_ids
     )
     assert attempts["DD-0165"].evidence_level is EvidenceLevel.LOWER_LEVEL_ROWS
+    frontier_claim_ids = {
+        "DD-0013",
+        "DD-0054",
+        "DD-0180",
+        "DD-0181",
+        "DD-0192",
+        "DD-0368",
+    }
     assert all(
-        {item.table_id for item in attempts[claim_id].inputs} == {"cheap_decisions"}
+        {item.table_id for item in attempts[claim_id].inputs}
+        == (
+            {"cheap_decisions", "olmes_aggregate"}
+            if claim_id in frontier_claim_ids
+            else {"cheap_decisions"}
+        )
         for claim_id in scaling_claim_ids
     )
 

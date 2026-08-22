@@ -885,7 +885,10 @@ claim_id = "DD-0013"
 default = true
 evidence_level = "author_derived_aggregate"
 analysis_id = "scaling_law"
-inputs = [{ table_id = "cheap_decisions", columns = ["task", "mix", "metric", "setup", "step_1_y", "step_2_y", "stacked_y", "step_1_pred", "step_2_pred", "stacked_pred", "abs_error_step_1", "abs_error_step_2", "abs_error_stacked", "rel_error_stacked"] }]
+inputs = [
+  { table_id = "cheap_decisions", columns = ["task", "mix", "metric", "setup", "step_1_y", "step_2_y", "stacked_y", "step_1_pred", "step_2_pred", "stacked_pred", "abs_error_step_1", "abs_error_step_2", "abs_error_stacked", "rel_error_stacked"] },
+  { table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] },
+]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["default"]
 task_ids = ["paper-olmes-tasks"]
@@ -901,7 +904,10 @@ claim_id = "DD-0054"
 default = true
 evidence_level = "author_derived_aggregate"
 analysis_id = "scaling_law"
-inputs = [{ table_id = "cheap_decisions", columns = ["task", "mix", "metric", "setup", "step_1_y", "step_2_y", "stacked_y", "step_1_pred", "step_2_pred", "stacked_pred", "abs_error_step_1", "abs_error_step_2", "abs_error_stacked", "rel_error_stacked"] }]
+inputs = [
+  { table_id = "cheap_decisions", columns = ["task", "mix", "metric", "setup", "step_1_y", "step_2_y", "stacked_y", "step_1_pred", "step_2_pred", "stacked_pred", "abs_error_step_1", "abs_error_step_2", "abs_error_stacked", "rel_error_stacked"] },
+  { table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] },
+]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["default"]
 task_ids = ["paper-olmes-tasks"]
@@ -934,7 +940,10 @@ claim_id = "DD-0180"
 default = true
 evidence_level = "author_derived_aggregate"
 analysis_id = "scaling_law"
-inputs = [{ table_id = "cheap_decisions", columns = ["task", "mix", "metric", "setup", "step_1_y", "step_2_y", "stacked_y", "step_1_pred", "step_2_pred", "stacked_pred", "abs_error_step_1", "abs_error_step_2", "abs_error_stacked", "rel_error_stacked"] }]
+inputs = [
+  { table_id = "cheap_decisions", columns = ["task", "mix", "metric", "setup", "step_1_y", "step_2_y", "stacked_y", "step_1_pred", "step_2_pred", "stacked_pred", "abs_error_step_1", "abs_error_step_2", "abs_error_stacked", "rel_error_stacked"] },
+  { table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] },
+]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["default"]
 task_ids = ["paper-olmes-tasks"]
@@ -951,7 +960,10 @@ claim_id = "DD-0181"
 default = true
 evidence_level = "author_derived_aggregate"
 analysis_id = "scaling_law"
-inputs = [{ table_id = "cheap_decisions", columns = ["task", "mix", "metric", "setup", "step_1_y", "step_2_y", "stacked_y", "step_1_pred", "step_2_pred", "stacked_pred", "abs_error_step_1", "abs_error_step_2", "abs_error_stacked", "rel_error_stacked"] }]
+inputs = [
+  { table_id = "cheap_decisions", columns = ["task", "mix", "metric", "setup", "step_1_y", "step_2_y", "stacked_y", "step_1_pred", "step_2_pred", "stacked_pred", "abs_error_step_1", "abs_error_step_2", "abs_error_stacked", "rel_error_stacked"] },
+  { table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] },
+]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["default"]
 task_ids = ["paper-olmes-tasks"]
@@ -983,7 +995,10 @@ claim_id = "DD-0192"
 default = true
 evidence_level = "author_derived_aggregate"
 analysis_id = "scaling_law"
-inputs = [{ table_id = "cheap_decisions", columns = ["task", "mix", "metric", "setup", "step_1_y", "step_2_y", "stacked_y", "step_1_pred", "step_2_pred", "stacked_pred", "abs_error_step_1", "abs_error_step_2", "abs_error_stacked", "rel_error_stacked"] }]
+inputs = [
+  { table_id = "cheap_decisions", columns = ["task", "mix", "metric", "setup", "step_1_y", "step_2_y", "stacked_y", "step_1_pred", "step_2_pred", "stacked_pred", "abs_error_step_1", "abs_error_step_2", "abs_error_stacked", "rel_error_stacked"] },
+  { table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] },
+]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["default"]
 task_ids = ["paper-olmes-tasks"]
@@ -1177,7 +1192,10 @@ claim_id = "DD-0368"
 default = true
 evidence_level = "author_derived_aggregate"
 analysis_id = "scaling_law"
-inputs = [{ table_id = "cheap_decisions", columns = ["task", "mix", "metric", "setup", "step_1_y", "step_2_y", "stacked_y", "step_1_pred", "step_2_pred", "stacked_pred", "abs_error_step_1", "abs_error_step_2", "abs_error_stacked", "rel_error_stacked"] }]
+inputs = [
+  { table_id = "cheap_decisions", columns = ["task", "mix", "metric", "setup", "step_1_y", "step_2_y", "stacked_y", "step_1_pred", "step_2_pred", "stacked_pred", "abs_error_step_1", "abs_error_step_2", "abs_error_stacked", "rel_error_stacked"] },
+  { table_id = "olmes_aggregate", columns = ["data", "params", "seed", "step", "task", "compute", "primary_metric"] },
+]
 recipe_ids = ["paper-25-recipes"]
 seed_ids = ["default"]
 task_ids = ["paper-olmes-tasks"]
