@@ -1825,3 +1825,21 @@ Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-p
 ("Responses 21–22"); her axis/target decisions recorded in the open questions; code kept
 out of the doc (structure only) with intake notes on the stub split and placeholder
 runtime figures.
+
+### Early-dynamics, implementation state and three questions — 2025-07 (intake 2026-08-22)
+
+> Awesome, so I've extracted all of the following features for each (model size, dataset)
+> pair: [131-column feature list — schema recorded in the topic doc] […]
+> I intend to use the following initial params for training GBDT: [LightGBM regressor
+> params — recorded in the topic doc]
+> And I intend to test generalization over an expanding window of model sizes. I've created
+> a train vs eval set, and within train I've made it possible to select a 10% val set to do
+> hpm tuning.
+> Then, I need to decide: Which gbdt hpms to tune, I assume its fine to tune them once and
+> then use them going forward? Which of the features should I be normalizing via "Z-score
+> Per Model Size Bucket" after applying `log(ppl + 1e-8)` for all perplexity scale
+> features? And is there anything else I need to do to prepare my features to use for
+> training the gbdt?
+
+Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
+("Implementation state: extracted features and training setup"); answer to follow.

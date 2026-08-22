@@ -561,6 +561,43 @@ Table 3 of your notes" claim references the unrecoverable Gemini notes. The base
 (mean / repeat-last / linear / power-law / random) is the durable content here and aligns
 with the oracle-ladder habit of reporting a floor row.
 
+## 2025-07 — Implementation state: extracted features and training setup (Danielle)
+
+**Feature schema** extracted per (model size, dataset) pair, 131 columns:
+- *Three early windows* — `warmup_*`, `early_lr_decay_*`, `full_early_*` — each with: number
+  of steps; first/last value; first–last difference and slope; for each of four fit types
+  (`xlogylog`, `xlinylin`, `xlogylin`, `xlinylog`) the slope, R², p-value, RMSE, CI
+  lower/upper, std err; window mean and std. (35 columns per window.)
+- *Architecture / schedule*: `d_model`, `n_layers`, `n_heads`, `mlp_ratio`, `warmup_perc`,
+  `warmup_steps`, `lr_decay_steps`, `lr_max`, `lr_final`, `batch_size`, `total_steps`,
+  `total_tokens`, `total_tokens_billions`.
+- *Recipe-level* (hand-assigned per dataset): `pct_code`, `pct_common_crawl`,
+  `pct_social_media`, `mean_doc_length_tokens`, `duplicate_rate_pct`,
+  `quality_filter_strength`, `is_mixed_dataset`, `num_sources_mixed`,
+  `educational_content_score`.
+
+**Training setup.** LightGBM regressor with the merged starter params (`num_leaves=512`,
+`learning_rate=0.05`, `min_data_in_leaf=20`, `feature_fraction=0.9`,
+`bagging_fraction=0.8`, `bagging_freq=1`, `max_bin=255`, `min_gain_to_split=0.01`,
+`device_type='cuda'`, seed to set), `n_estimators=10_000`, `early_stopping_rounds=50` on a
+validation RMSE. Generalisation axis: expanding window over model sizes; a train/eval split
+exists, with an optional 10% validation slice inside train for hyper-parameter tuning.
+
+**Her open questions (2025-07).** Which GBDT hyper-parameters to tune, and is tuning once
+then reusing them fine? Which features get "z-score per model-size bucket" after
+`log(ppl + 1e-8)` for perplexity-scale features? Anything else needed to prepare features
+for the GBDT?
+
+*Intake notes.* (1) The per-window fit statistics (p-value, CI bounds, std err) are
+deterministic functions of slope/R²/n and of each other — heavily redundant for a tree
+model; harmless, but SHAP importance will be diluted across them. (2) Several schedule
+columns (`warmup_perc`, `warmup_steps`, `lr_decay_steps`, `total_steps`, `total_tokens`,
+`total_tokens_billions`) are functions of model size under DataDecide's fixed per-size
+configs, so they are collinear with `d_model`/`n_layers` — fine for trees, but they make
+"size" identifiable many ways, which matters for the held-out-size design. (3) The
+recipe-level columns are hand-assigned estimates; `REC` would replace them with measured
+properties.
+
 ## Open questions
 
 - Is this still live (July 2025 draft; DataDecide scaling-law baselines have since been
