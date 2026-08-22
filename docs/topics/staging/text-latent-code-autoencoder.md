@@ -569,6 +569,26 @@ failure — if your fraction comes from that, it's 'position of first failing as
 (censored), not independent per-test outcomes. Verify the asserts run individually before
 trusting the metric."
 
+## 2026-07-11 — Per-test outcomes confirmed; dividends and caveat
+
+**Danielle:** the HumanEval `check()` function has already been split into its individual
+asserts, so per-test outcomes are real.
+
+**Response (near-verbatim).** "You have per-test identity, not just counts — that's the
+diagnosis arm's raw material. ... 'all candidates at this tier fail the empty-input and
+negative-number cases' is exactly the transcript-level signal the smarter optimizer
+consumes, and it's also how you distinguish 'representation dropped an edge case' from
+'decoder misread the format.' Log per-test pass/fail vectors, not just the fraction — the
+vectors also enable McNemar-style paired comparisons between candidates on exactly which
+tests flipped." Caveat: "test counts per problem are small and wildly uneven. HumanEval
+averages ~7–8 asserts, some problems have 3, and the tests weren't designed as independent
+probes — several often hammer the same behavior. So the fraction is coarse ..., correlated
+within a problem, and not comparable across problems as an absolute number. Treat it as a
+within-problem ordering signal for racing and feedback, not as a quantity to average across
+the suite — the cross-problem aggregate belongs to binary." Micro-check: "make sure the split
+tests are order-independent (no shared mutable state from the original sequential block)."
+With that, "the census design is fully specified."
+
 ## Open questions
 
 - Bottleneck: now framed as *optional* and itself an experimental variable — does
@@ -607,6 +627,7 @@ trusting the metric."
   baseline Pareto curve with bands; OpenRouter provider stationarity check.
 - Fractional test pass rate: screening/shaping signal only (binary remains the reported
   objective); log per-test outcomes; decompose P(runnable) × E[fraction | runnable]; verify
-  asserts run independently rather than first-failure-censored.
+  asserts run independently (done — `check()` split); log per-test vectors for McNemar-style
+  pairing; fraction is within-problem only; audit order-independence of the split tests.
 
 **Waiting on:** the remaining points of the point-by-point discussion; a promotion decision.

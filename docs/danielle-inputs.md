@@ -1194,3 +1194,14 @@ Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-c
 
 Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-code-autoencoder.md)
 ("Fractional test pass rate as a second signal").
+
+### Text-latent code autoencoder — per-test split confirmed — conversation 2026-07-11, intake 2026-08-22
+
+> Ah, yes. No. I split the human eval test, um, out into its subcomponent, so I have
+> individual tests, um, from the check function.
+
+> Yes, please. For the document.
+
+Routed to: [topics/text-latent-code-autoencoder.md](topics/staging/text-latent-code-autoencoder.md)
+("Per-test outcomes confirmed; dividends and caveat"). The requested document follows as a
+separate intake.
