@@ -2204,3 +2204,46 @@ intake notes: response answered at architecture level rather than building-block
 ignored "ask questions first," mixes top-1/top-5 figures, and its Adam-as-standard claim is
 wrong for CNN classification). The Desktop top-5 file was folded in rather than copied to
 `refs/` (it is short and fully represented).
+
+### 2026-08-22 — CNN recipe fact-finding (Perplexity, undated; 15 short questions)
+
+Her prompts (verbatim, in order):
+
+> did the original resnet paper use batch norm or dropout or weight decay or none of the above
+
+> What data augmentations did the original resnet paper use?
+
+> Does the resnet paper use multiple filter sizes or only 3x3 filters?
+
+> what about resnet18
+
+> Did Google LeNet use dropout? What data augmentation did it use?
+
+> Did Google LeNet (Inception) use weight decay?
+
+> Did VGG use weight decay, dropout, ReLU?
+
+> What were the main contributions of AlexNet to training vision models? What were the
+> baseline comparisons for each of these things?
+
+> Was "Local Response Normalization (LRN)" used in VGG or Google LeNet (Inception)?
+
+> Did the resnet paper use AdamW or SGD with momentum?
+
+> did VGG use overlapping pooling?
+
+> was adamW introduced before or after Cutmix
+
+> Was AdamW generally used with a cosine annealing schedule or a step lr schedule?
+
+> Is it standard to train vision cnn based models with BCE instead of CE loss?
+
+> Did Inception use Color Jitter?
+
+> are cifar-10 images black and white?
+
+Routed to: [topics/cnn-deconstruction-ladder.md](topics/staging/cnn-deconstruction-ladder.md)
+as a recipe fact table with a verification column (ResNet augmentation answer incomplete —
+missing scale aug and PCA color; GoogLeNet augmentation shaky; BCE answer dated), plus an
+intake note that the ladder must fix a modern recipe and vary one block per rung rather
+than reproduce each paper's full historical recipe.

@@ -79,7 +79,36 @@ time to convergence, final val accuracy, "training loss smoothness," FLOPs/param
 performance; datasets: CIFAR-10/100 for iteration, ImageNet subset for scale, MNIST for the
 LeNet baseline.
 
-## Intake notes
+## Undated — Recipe fact-finding for the ladder rungs (Perplexity Q&A; condensed)
+
+A run of short factual questions about which training-recipe components each classic paper
+actually used — the raw material for defining the ladder's rungs so that each ablation
+matches a real historical configuration. The response's answers are tabulated below with a
+verification column; the originals are blog/StackOverflow-sourced, and several are
+incomplete or wrong (marked). **Verify against the papers before encoding a rung.**
+
+| Paper | Component | Response's answer | Check |
+|---|---|---|---|
+| ResNet (He et al. 2015) | BN | yes — after each conv, before activation | correct |
+| ResNet | dropout | no | correct |
+| ResNet | weight decay | yes, 1e-4 | correct (momentum 0.9) |
+| ResNet | optimizer | SGD + momentum, not AdamW | correct |
+| ResNet | augmentation | random 224 crop from 256-resized image, flip, per-pixel mean subtraction | **incomplete** — the paper uses scale augmentation (shorter side sampled in [256, 480]), random crop, flip, per-pixel mean subtraction, *and* AlexNet-style PCA color augmentation; the "resize to 256" recipe is the evaluation/single-crop pipeline, not the training one |
+| ResNet | filter sizes | 7×7 stem; 3×3 basic blocks (ResNet-18/34); 1×1–3×3–1×1 bottlenecks (50+) | correct |
+| GoogLeNet (Inception v1) | dropout | yes, 0.4 before the final linear layer | correct (auxiliary heads used 0.7) |
+| GoogLeNet | weight decay | yes, value unspecified | plausible; the paper does not state it — unverified |
+| GoogLeNet | LRN | yes, early layers | correct (two LRN layers in the stem) |
+| GoogLeNet | augmentation | "random cropping, horizontal flipping, PCA color augmentation" | **shaky** — the paper describes crops of 8–100% of image area with aspect ratio in [3/4, 4/3] plus photometric distortions (Howard 2013), and says the exact recipe varied across the ensemble; the response first said "color jitter," then reversed to PCA color aug; neither is quoted from the paper |
+| LeNet-5 (1998) | dropout / augmentation | no dropout; shifting and simple geometric distortions | plausible; the 1998 paper's distortion experiments are on an augmented MNIST — unverified detail |
+| VGG (2014) | weight decay / dropout / ReLU | 5e-4 WD; dropout 0.5 in first two FC layers; ReLU everywhere | correct |
+| VGG | LRN | tested in config A-LRN, no gain, dropped | correct |
+| VGG | pooling | non-overlapping 2×2 stride 2 | correct |
+| AlexNet (2012) | contributions vs. baselines | depth (8 layers), ReLU vs. tanh/sigmoid, dropout in FC, overlapping 3×3/s2 pooling, LRN, two-GPU training, crop/flip/PCA color aug; 15.3% vs. 26.2% top-5 error | figures correct; "baselines were 1–2 conv layers" is a caricature (Ciresan et al. 2011–12 had deeper GPU CNNs); dropout was Hinton et al. 2012, popularized rather than introduced by AlexNet |
+| AdamW | date vs. CutMix | AdamW late 2017 (Loshchilov & Hutter); CutMix 2019 | correct |
+| AdamW | schedule convention | both cosine and step used; "no single default" | content-free; in practice cosine (often with warmup) dominates AdamW usage |
+| CNN classification | BCE vs. CE | CE is standard; BCE for binary/multi-label | correct as stated — but note BCE for single-label ImageNet is a real modern recipe (e.g., ResNet strikes back, Wightman et al. 2021; unverified here), so "not standard" is dated |
+| CIFAR-10 | color | RGB, 32×32 | correct |
+
 
 - The response ignored "ask questions first" and answered at the level of **architectures**,
   whereas Danielle asked for **building blocks** "including things like residual connections,
@@ -102,6 +131,13 @@ LeNet baseline.
   literature (`../reference/landscape-literature.md`) already has measurements to compare
   against (sharpness, mode connectivity, loss-surface smoothing by skips/BN — Li et al.
   2018 visualizations; unverified here, check before citing).
+- The rung definitions this Q&A was feeding: the classic recipes differ on *several* axes
+  at once (optimizer, WD value, dropout placement, LRN vs. BN, pooling overlap, augmentation
+  set, schedule). A clean ladder must hold the training recipe fixed at a modern baseline
+  (SGD+momentum, WD, cosine, crop/flip) and vary one block per rung, rather than reproducing
+  each paper's full historical recipe — otherwise rung differences are confounded exactly
+  the way the research hypothesis (`../../research-hypothesis.md`) says cross-era
+  comparisons are.
 - The loss-slope study (EDP lineage) was the first analysis run on this ladder's
   infrastructure; if the ladder is revived, the early-window-features → final-accuracy
   question can be asked per rung, which would make it a CNN-scale replication setting for
