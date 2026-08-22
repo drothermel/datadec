@@ -3261,3 +3261,16 @@ Routed: third entry in
 diagnostic split; leave-one-facet-out validation); IRT §4 note on what transfers to the
 DataDecide fit (facets, the diagnostic table for IRT-8, validation for IRT-3); TLC §4
 pointer since the 4 × 8 shape matches the census. Dataset not named.
+
+> Okay, now say that the samples in the dataset are code generation instructions, and so for
+> each generation, then I can evaluate an entire test set on that generation. And so I could
+> either aggregate the test performance into a binary pass-fail, or I could produce an
+> aggregate, like average pass-fail, or I could treat each sample test case as its own thing.
+> How would that change the approach, and how should I reason about which of these to do?
+
+(Continuation of the difficulty-estimation conversation.) Routed: continuation of the third
+entry in [topics/reference/estimation-and-calibration-methods.md](topics/reference/estimation-and-calibration-methods.md)
+(three response definitions as three constructs; full-pass primary / fractional secondary /
+test-level diagnostic with a generation random effect; test-suite-density caveat;
+per-instruction report); TLC §4 note recording the tension with TLC's fractional-score choice
+and the near-miss score as an optimizer signal.

@@ -448,6 +448,23 @@ tokens-per-solved-problem metric — the published analog of this project's opti
 accounting). The SciSpace search CSVs on disk are a seeded candidate list for the full
 prior-art pass (still parked).
 
+### 2026-08-22 — full-pass vs. fractional test score as the response: a design tension
+
+A follow-up in the estimation conversation (record in
+`../topics/reference/estimation-and-calibration-methods.md`, third entry, continuation)
+argues that for code generation the **all-pass outcome should be the primary difficulty
+and success measure**, the fractional test score a secondary partial-credit measure, and
+per-test outcomes a diagnostic layer with a generation-level random effect. Its case
+against fractional-as-primary: the average tracks test-suite density (many near-duplicate
+easy tests vs. a few edge cases) and one bug fails many correlated tests. This project
+chose the fractional score as a signal precisely because all-pass is too coarse for an
+optimizer (2026-07-11). Both can be true: report full-pass as the headline and the
+fractional score — or better, a requirement-grouped score, and the near-miss score
+"test-pass rate given not full pass" — as the optimizer's ordering signal. Whether
+HumanEvalPack-style suites are balanced enough for the raw fraction to be honest is a
+census question; log per-test outcomes so the choice can be revisited. Recorded as a
+tension, not a decision.
+
 ### 2026-08-22 — item difficulty from the census matrix (pointer)
 
 If the census is run as several models × several prompts per problem, the matrix supports a

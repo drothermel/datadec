@@ -231,3 +231,44 @@ response = correctness.
   prompt sensitivity per item is a direct estimate of "format-limited" vs. "hard".
 - Which dataset this is was not stated; 4 models × 8 prompts matches the TLC/ELI census
   shape (`TLC`).
+
+### Continuation — when each generation is scored by a whole test suite
+
+**Danielle's follow-up.** The samples are code-generation instructions; each generation
+runs an entire test set, so the response could be binary all-pass, the average pass
+fraction, or one response per test case. How does that change the approach, and how to
+reason about which to use?
+
+**Response (condensed).** Two measurement layers now (instruction-level, test-case-level),
+and the three choices estimate *different constructs*:
+
+| Response | Model | "Difficulty" means | Role |
+|---|---|---|---|
+| all-pass z_ij | Rasch / many-facet on z | difficulty of a fully correct solution | **primary** (matches user-facing outcome and pass/fail benchmarks); coarse — 19/20 = 0/20 |
+| passed-count c_ij ~ Binomial(K_i, p_ij), logit p = θ_j − b_i | beta-binomial / overdispersed (tests within a generation are correlated) | difficulty of partial behavioural coverage | **secondary**; separates "almost solved" from "fundamentally failed" when full-pass rates are sparse |
+| per-test y_ijk, logit P = θ_j − b_i − t_ik + u_ij | hierarchical; **u_ij generation-level random effect is mandatory** | which requirements / edge cases are hard | **diagnostic** only; never naive independent items |
+
+Why the average pass fraction is dangerous on its own: it measures **test-suite density**
+— 90 easy format tests + 10 logic tests vs. 10 edge-case tests — and one bug fails 50
+correlated tests. Fixes: group tests by requirement and average group scores; weight tasks
+equally, not tests; hierarchical nesting; report full-pass and partial side by side.
+
+Per-instruction report proposed: full-pass difficulty; partial-credit difficulty; mean
+test-pass rate; mean test-pass rate *given not full pass* (near-miss vs. catastrophic);
+failure concentration (variance of per-test pass rates within the task); prompt
+sensitivity; model sensitivity; interval width. Illustration: three tasks at 10% full-pass
+with 85% / 50% / 20% mean test-pass are three different kinds of hard.
+
+Decision questions: does 90% of tests passed count as mostly correct? (no → full-pass
+primary); are tests balanced across requirements? (no → requirement-group aggregation);
+do tasks have different test counts? (yes → count outcome per task-generation, equal
+task weights, or nesting).
+
+**Intake notes.**
+- This is the same "the program is the independent unit" rule from the first entry,
+  now inside the response model: u_ij is the formal version.
+- `TLC` chose the fractional test score as its response (2026-07-11 §4, "fractional test
+  pass rate as a second signal"); this turn argues full-pass primary + fractional
+  secondary, with the density caveat. Noted in TLC §4 as a design tension, not a change.
+- The conditional near-miss score (pass rate given not full pass) is also a natural
+  *optimizer* signal for TLC-2/ELI: it orders failures, which all-pass cannot.
