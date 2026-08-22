@@ -1716,3 +1716,21 @@ Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-p
 
 Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
 ("Tenth response: transform the targets too?").
+
+### Early-dynamics draft review, eleventh response (training method) — 2025-07 (intake 2026-08-22)
+
+> Excellent! Next lets talk about the training method, a few questions:
+> "1. Spearman ρ / Kendall τ for ranking. 2. Calibration (ECE) for value prediction." - How?
+> Why?
+> "Pairwise-ranking objective (lambdarank) for ranking tasks instead of manual binary
+> classification." - Is this different than using something like lambdamart for training
+> the regression target version?
+> "Fixed 16 equispaced points (log-time spacing) per metric. Works well with 512-leaf GBDTs
+> and avoids variable-length feature vectors" - why?
+> "GBDT with LightGBM, 512 leaves, learning-rate 0.05, early-stopping 50 rounds on val NDCG;
+> lambda-rank objective for pairwise tasks; regression MSE for scalar targets." - are these
+> what youd recommend I start with?
+
+Routed to: [topics/early-dynamics-prediction.md](topics/staging/early-dynamics-prediction.md)
+("Eleventh response: training method details"), with an intake note on the leaf-count
+setting vs. dataset size.

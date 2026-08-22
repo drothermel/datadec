@@ -320,6 +320,41 @@ inverse needed for NDCG/τ. Sanity ballparks quoted (unverified): log-perplexity
 → ≤ 0.07, Spearman ρ > 0.85. GPs may prefer raw targets later (they model heteroscedastic
 noise differently).
 
+## 2025-07 — Eleventh response: training method details
+
+**Danielle's questions.** Spearman/Kendall and ECE — how and why? Is `lambdarank` different
+from LambdaMART for the regression target? Why 16 log-spaced points? Are the quoted LightGBM
+settings the right starting point?
+
+**Response (condensed).**
+- *Metrics.* Spearman ρ / Kendall τ between predicted and true final metric: order matters
+  for pruning; invariant to monotone transforms; comparable across perplexity and
+  correct_prob. ECE for regression: bin `y_pred` into ~15 equal-count bins, compare mean
+  prediction vs. mean truth per bin, ECE = Σ |gap| × bin fraction — exposes systematic
+  optimism for large models / pessimism for small ones. "ρ/τ tell you ordering quality;
+  ECE tells you numerical trustworthiness."
+- *Objectives.* `lambdarank` (LightGBM's LambdaMART): pairwise lambdas from the NDCG
+  gradient, pairs sampled on the fly (no O(n²) materialisation), ties get zero pair weight;
+  the label can simply be the target value. Pointwise regression (MSE) when the numeric
+  value is needed (calibration, curves). Hand-rolled binary win/loss is dominated by
+  `lambdarank`. Train two heads off the same feature matrix.
+- *16 log-time-spaced points.* Trees need a rectangular matrix (no variable-length
+  sequences); log spacing samples densely where curves change fast and sparsely where they
+  flatten, and makes feature importance interpretable ("point 7 ≈ 30k tokens"). Recipe:
+  `grid = exp(linspace(log(0.01·T), log(T), 16))`, `np.interp`; 16 × 11 metrics = 176
+  features.
+- *Starter hyper-parameters.* `num_leaves=512`, `learning_rate=0.05`,
+  `feature_fraction=0.9`, `bagging_fraction=0.8, bagging_freq=1`, `min_data_in_leaf=20`,
+  `early_stopping_rounds=50` on validation NDCG (ranker) or RMSE (regressor),
+  `n_estimators` large. Later: small Optuna sweep over {num_leaves, lr, min_data_in_leaf};
+  monotone constraint (final perplexity decreasing in size); CatBoost as a Phase-2 baseline
+  for high-cardinality categoricals.
+
+*Intake note.* `num_leaves=512` with `min_data_in_leaf=20` on ~130–350 training rows (see
+the corrected counts above) cannot actually grow 512 leaves — effective depth will be
+bounded by `min_data_in_leaf`; treat the setting as harmless rather than tuned. The
+"16 × 11 metrics" count also predates the choice to subsample recipes/metrics.
+
 ## Open questions
 
 - Is this still live (July 2025 draft; DataDecide scaling-law baselines have since been
