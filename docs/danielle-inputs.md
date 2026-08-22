@@ -2394,8 +2394,16 @@ figures from memory — to be checked — flagging the ResNet-18/50 "82.9 / 76.0
 wrong-stem or short-budget artifacts and the near-duplicate "9–14% drop" as a misquote;
 pilot's 93.9% @ 25 epochs placed against a ~95% 200-epoch reference).
 
-> (follow-up: "CIFAR-10 Baseline/Vanilla Model Accuracy Source Links" — the report's
-> citation list)
+Her query for the source-links list (supplied afterwards, verbatim):
+
+> CIFAR-10 "baseline" OR "vanilla" accuracy
+> model:(resnet OR wrn OR vgg OR denseNet OR convnext)
+> report:(test accuracy OR error rate)
+> site:arxiv.org OR site:github.com
+>
+> Show the raw list of source links only (no summary)
+
+(The response titled itself "CIFAR-10 Baseline/Vanilla Model Accuracy Source Links".)
 
 Routed to: the same staging section as a compact unvetted source list (arXiv IDs and
 GitHub repos only); noted that the only original-author source is `KaimingHe/resnet-1k-layers`
