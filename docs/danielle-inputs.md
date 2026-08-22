@@ -1364,3 +1364,16 @@ general comparison, per Danielle's emphasis); project application in
 Routed to: [topics/retrieval-storage-tooling.md](topics/reference/retrieval-storage-tooling.md)
 (general analysis) and [topics/wiki-qa-sharding.md](topics/staging/wiki-qa-sharding.md)
 (the proposed stack).
+
+### Entity linking beyond string matching — conversation 2026-08-16
+
+> ok, so then we were actually acting on text chunks from wikipedia and doing entity linking
+> via string matching because we wanted every mention in a given page not just the first
+> link. and we wanted an approach that could plausibly work with any arbitrary corpa without
+> wikipedias linking. string matching was unsurprisingly very not fun, though
+> computationally it seemed cheaper than running an expensive model over all if wikipedia,
+> but i feel like there must now be a better option?
+
+Routed to: new reference topic
+[topics/entity-linking-at-scale.md](topics/reference/entity-linking-at-scale.md); pointer
+added in [topics/wiki-qa-sharding.md](topics/staging/wiki-qa-sharding.md).

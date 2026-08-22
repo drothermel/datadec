@@ -341,6 +341,11 @@ VSS as the sole Wikipedia-scale vector index.
 
 ## 2026-08-16 — Entity-based candidate fetch: the stack to build now
 
+How the entity mentions themselves get produced (replacing string matching with a
+ReLiK/ReFinED cascade plus lexical proposals and document propagation) is recorded in
+`../reference/entity-linking-at-scale.md`; its page-level aggregate table is the input to
+the `entities` sparse vector below.
+
 Context and the general analysis (sparse-retrieval reframing, CSR/mmap, LMDB/RocksDB,
 head-entity strategies) are in `../reference/retrieval-storage-tooling.md`. Danielle's
 earlier project fetched candidates from question entities over an entity-ID graph and hit
