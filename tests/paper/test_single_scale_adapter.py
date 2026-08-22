@@ -123,6 +123,25 @@ def test_single_scale_adapter_persists_headline_and_aggregate_series(
     assert aggregate_result.outcome is ValidationOutcome.DESCRIPTIVE_ONLY
     assert aggregate_result.plot_series_ids == (aggregate.id,)
 
+    equivalence = next(
+        item for item in attempts if item.attempt_id == "dd-0165-default"
+    )
+    assert equivalence.outcome is ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED
+    assert equivalence.computed_value == {
+        "matched_pairs": [],
+        "matched_pair_count": 0,
+        "minimum_accuracy_difference": None,
+        "minimum_allowed_difference": -0.0033333333333333335,
+        "satisfied": False,
+    }
+    assert equivalence.missing_groups == (
+        "checkpoint_pair=exact_compute_intermediate_to_final",
+    )
+    assert equivalence.diagnostics == (
+        "No exact-compute intermediate/final checkpoint pairs exist in the selected "
+        "dd_parsed surface.",
+    )
+
     tolerance_sensitivities = {
         item.attempt_id: item
         for item in attempts

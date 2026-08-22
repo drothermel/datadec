@@ -1197,6 +1197,7 @@ def _qualitative_result(
     computed_value: dict[str, object],
     outcome: ValidationOutcome,
     diagnostics: tuple[str, ...],
+    missing_groups: tuple[str, ...] = (),
     plot_series_ids: tuple[str, ...] = (),
 ) -> AttemptResult:
     attempt = _attempt(contract, attempt_id)
@@ -1218,6 +1219,7 @@ def _qualitative_result(
         exclusions=evidence.exclusions,
         target_ties=evidence.target_ties,
         predicted_ties=evidence.predicted_ties,
+        missing_groups=missing_groups,
         outcome=outcome,
         diagnostics=diagnostics,
         limitations=(
@@ -1375,10 +1377,30 @@ def _single_scale_qualitative_attempts(
                         "accuracy_difference": difference,
                     }
                 )
-    minimum_observed = min(
-        (float(match["accuracy_difference"]) for match in matches), default=-1.0
+    minimum_observed = (
+        min(float(match["accuracy_difference"]) for match in matches)
+        if matches
+        else None
     )
-    equivalent = bool(matches) and minimum_observed >= minimum_difference
+    equivalent = minimum_observed is not None and minimum_observed >= minimum_difference
+    if minimum_observed is None:
+        outcome = ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED
+        missing_groups = ("checkpoint_pair=exact_compute_intermediate_to_final",)
+        diagnostics = (
+            "No exact-compute intermediate/final checkpoint pairs exist in the "
+            "selected dd_parsed surface.",
+        )
+    else:
+        outcome = (
+            ValidationOutcome.REPRODUCED
+            if equivalent
+            else ValidationOutcome.NOT_REPRODUCED
+        )
+        missing_groups = ()
+        diagnostics = (
+            f"Found {len(matches)} exact-compute intermediate/final matches; "
+            f"minimum accuracy difference={minimum_observed:.12g}.",
+        )
     results.append(
         _qualitative_result(
             registry=registry,
@@ -1392,14 +1414,9 @@ def _single_scale_qualitative_attempts(
                 "minimum_allowed_difference": minimum_difference,
                 "satisfied": equivalent,
             },
-            outcome=(
-                ValidationOutcome.REPRODUCED
-                if equivalent
-                else ValidationOutcome.NOT_REPRODUCED
-            ),
-            diagnostics=(
-                f"Found {len(matches)} exact-compute intermediate/final matches; minimum accuracy difference={minimum_observed:.12g}.",
-            ),
+            outcome=outcome,
+            diagnostics=diagnostics,
+            missing_groups=missing_groups,
         )
     )
     return tuple(results), tuple(series)
