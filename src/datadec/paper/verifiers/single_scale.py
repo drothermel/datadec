@@ -298,8 +298,6 @@ def _olmes_input(contract: PaperValidationContract) -> tuple[Path, tuple[str, ..
         table = next(item for item in contract.inputs if item.id == _OLMES_TABLE_ID)
     except StopIteration as error:
         raise ValueError("validation contract has no olmes_aggregate input") from error
-    if "published-results" in Path(table.path).parts:
-        raise ValueError("single-scale validation cannot read published-results")
     return Path(table.path), table.columns
 
 
@@ -1957,7 +1955,7 @@ def run_single_scale_attempts(
     contract: PaperValidationContract,
     input_identities: Mapping[str, ContentIdentity],
 ) -> tuple[tuple[AttemptResult, ...], tuple[PlotSeries, ...]]:
-    """Run the implemented aggregate OLMES format-2 validation attempts."""
+    """Run the implemented aggregate OLMES format-3 validation attempts."""
     del repository_root
     observations, digest, columns = _load_observations(
         data_root=data_root,
@@ -2034,7 +2032,7 @@ def run_per_task_attempts(
     contract: PaperValidationContract,
     input_identities: Mapping[str, ContentIdentity],
 ) -> tuple[tuple[AttemptResult, ...], tuple[PlotSeries, ...]]:
-    """Run the implemented per-task OLMES format-2 validation attempt."""
+    """Run the implemented per-task OLMES format-3 validation attempt."""
     del repository_root
     observations, digest, columns = _load_observations(
         data_root=data_root,

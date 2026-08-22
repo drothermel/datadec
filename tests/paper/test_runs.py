@@ -82,7 +82,7 @@ def _create(runs_root: Path, run_id: str = "run-001"):  # type: ignore[no-untype
     )
 
 
-def test_format_two_bundle_has_exact_canonical_files(tmp_path: Path) -> None:
+def test_format_three_bundle_has_exact_canonical_files(tmp_path: Path) -> None:
     bundle = _create(tmp_path)
     run_directory = tmp_path / "run-001"
 
@@ -93,7 +93,13 @@ def test_format_two_bundle_has_exact_canonical_files(tmp_path: Path) -> None:
         "plot-series.json",
     }
     manifest = orjson.loads((run_directory / "manifest.json").read_bytes())
-    assert manifest["run_format"] == 2
+    assert manifest["run_format"] == 3
+    assert (
+        orjson.loads((run_directory / "attempts.json").read_bytes())["attempts"][0][
+            "evidence_level"
+        ]
+        == "lower_level_rows"
+    )
     assert set(manifest) == {
         "attempts_identity",
         "code_trace",
@@ -196,7 +202,7 @@ def test_load_detects_content_tampering(tmp_path: Path, filename: str) -> None:
 def test_load_detects_manifest_tampering(tmp_path: Path) -> None:
     _create(tmp_path)
     path = tmp_path / "run-001" / "manifest.json"
-    path.write_bytes(path.read_bytes().replace(b'"run_format":2', b'"run_format":3'))
+    path.write_bytes(path.read_bytes().replace(b'"run_format":3', b'"run_format":2'))
 
     with pytest.raises(ValueError):
         load_analysis_bundle(tmp_path, "run-001")

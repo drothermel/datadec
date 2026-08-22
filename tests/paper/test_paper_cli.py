@@ -51,7 +51,7 @@ def test_validate_command_reports_static_and_input_counts(monkeypatch) -> None: 
     assert result.stdout == "validated 3 claims, 2 empirical targets, 3 input tables\n"
 
 
-def test_run_command_reports_format_two_identity(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+def test_run_command_reports_format_three_identity(monkeypatch) -> None:  # type: ignore[no-untyped-def]
     monkeypatch.setattr(
         cli,
         "run_validation",
@@ -66,7 +66,7 @@ def test_run_command_reports_format_two_identity(monkeypatch) -> None:  # type: 
     )
 
     assert result.exit_code == 0
-    assert result.stdout == "created format-2 run first-run\n"
+    assert result.stdout == "created format-3 run first-run\n"
 
 
 def test_render_command_is_a_thin_bundle_renderer(monkeypatch) -> None:  # type: ignore[no-untyped-def]

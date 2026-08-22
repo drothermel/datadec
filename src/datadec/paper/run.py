@@ -420,6 +420,7 @@ def _validate_adapter_results(
         rule = rules[spec.comparison_rule_id]
         if (
             result.claim_id != spec.claim_id
+            or result.evidence_level is not spec.evidence_level
             or result.comparison_rule_id != rule.id
             or result.comparison_rule_version != rule.version
             or result.transformation_ids != spec.transformation_ids
@@ -498,7 +499,7 @@ def run_validation(
     adapter_registry: Mapping[AnalysisId, AnalysisAdapter] | None = None,
     metadata_comparator: MetadataComparator | None = None,
 ) -> AnalysisBundle:
-    """Run every configured analysis and persist one complete format-2 bundle."""
+    """Run every configured analysis and persist one complete format-3 bundle."""
     started_at = datetime.now(timezone.utc)
     surface = validate_repository(root, data_dir)
     adapters = (

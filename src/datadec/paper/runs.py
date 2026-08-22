@@ -240,7 +240,7 @@ def create_analysis_bundle(
     code_trace: CodeTrace | None = None,
     runtime_trace: RuntimeTrace | None = None,
 ) -> AnalysisBundle:
-    """Persist one immutable format-2 analysis bundle."""
+    """Persist one immutable format-3 analysis bundle."""
     _validate_run_id(run_id)
     ordered_inputs = _ordered_unique(
         input_identities, key=lambda value: value.id, description="input identities"
@@ -347,7 +347,7 @@ def _load_payload(
 
 
 def load_analysis_bundle(runs_root: str | Path, run_id: str) -> AnalysisBundle:
-    """Load a format-2 bundle and verify canonical bytes, identities, and links."""
+    """Load a format-3 bundle and verify canonical bytes, identities, and links."""
     _validate_run_id(run_id)
     run_directory = Path(runs_root).resolve(strict=True) / run_id
     mode = run_directory.lstat().st_mode
@@ -355,7 +355,7 @@ def load_analysis_bundle(runs_root: str | Path, run_id: str) -> AnalysisBundle:
         raise ValueError("run path must be a non-symlink directory")
     entries = {path.name for path in run_directory.iterdir()}
     if entries != _BUNDLE_FILENAMES:
-        raise ValueError("run directory must contain exactly the four format-2 files")
+        raise ValueError("run directory must contain exactly the four format-3 files")
 
     manifest_bytes = _read_regular_file(run_directory, _MANIFEST_FILENAME)
     manifest = AnalysisManifest.model_validate_json(manifest_bytes)

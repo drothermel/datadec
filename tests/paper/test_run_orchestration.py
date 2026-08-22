@@ -70,6 +70,7 @@ def _result_for_spec(
         attempt_id=spec.id,
         claim_id=spec.claim_id,
         role=AttemptRole.DEFAULT,
+        evidence_level=spec.evidence_level,
         comparison_rule_id=rule.id,
         comparison_rule_version=rule.version,
         transformation_ids=spec.transformation_ids,
@@ -155,8 +156,11 @@ def test_repository_validation_covers_current_static_and_input_surface(
         == 79
     )
     assert len(surface.supporting_dispositions) == 376
-    assert len(surface.inputs) == 2
+    assert len(surface.inputs) == 5
     assert set(surface.input_identities) == {
+        "cheap_decisions",
+        "new_eval_decision_accuracy",
+        "new_eval_means",
         "olmes_aggregate",
         "scaling_evaluations",
     }
@@ -196,7 +200,7 @@ def test_validation_code_has_structural_author_result_and_parameter_update_denia
     assert "fit(" not in compact
 
 
-def test_run_creates_79_empirical_results_including_11_declared_absences(
+def test_run_creates_79_executable_empirical_results(
     surface: run_module.ValidationSurface,
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -222,7 +226,7 @@ def test_run_creates_79_empirical_results_including_11_declared_absences(
         metadata_comparator=lambda root, registry: (discrepancy,),
     )
 
-    assert bundle.manifest.run_format == 2
+    assert bundle.manifest.run_format == 3
     assert len(bundle.targets) == 79
     assert len(bundle.attempts) == 79
     assert bundle.metadata_discrepancies == (discrepancy,)
@@ -231,7 +235,7 @@ def test_run_creates_79_empirical_results_including_11_declared_absences(
             attempt.outcome is ValidationOutcome.NOT_ASSESSABLE_FROM_DD_PARSED
             for attempt in bundle.attempts
         )
-        == 11
+        == 0
     )
     assert all(
         attempt.missing_groups
@@ -371,6 +375,29 @@ def test_configured_plot_series_are_required(
         )
 
 
+def test_adapter_result_evidence_must_match_attempt_spec(
+    surface: run_module.ValidationSurface,
+) -> None:
+    specs = tuple(
+        spec
+        for spec in surface.contract.attempts
+        if spec.analysis_id is AnalysisId.SCALING_LAW
+    )
+    results = tuple(_result_for_spec(spec, surface) for spec in specs)
+    mismatched = results[0].model_copy(update={"evidence_level": "lower_level_rows"})
+
+    with pytest.raises(ValueError, match="differs from its static contract"):
+        run_module._validate_adapter_results(
+            analysis_id=AnalysisId.SCALING_LAW,
+            registry=surface.registry,
+            contract=surface.contract,
+            results=(mismatched, *results[1:]),
+            plot_series=tuple(
+                series for spec in specs for series in _series_for_spec(spec)
+            ),
+        )
+
+
 def test_not_assessable_plot_attempt_may_omit_configured_series(
     surface: run_module.ValidationSurface,
 ) -> None:
@@ -446,6 +473,7 @@ def test_closed_format_strings_are_exact() -> None:
         "proxy_metrics",
         "noise_spread",
         "scaling_law",
+        "math_code",
     }
     assert {outcome.value for outcome in ValidationOutcome} == {
         "reproduced",

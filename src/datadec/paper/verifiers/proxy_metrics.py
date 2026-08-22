@@ -2766,7 +2766,7 @@ def run_proxy_metrics_attempts(
     contract: PaperValidationContract,
     input_identities: Mapping[str, ContentIdentity],
 ) -> tuple[tuple[AttemptResult, ...], tuple[PlotSeries, ...]]:
-    """Run the objectively specified proxy-metric format-2 attempts."""
+    """Run the objectively specified proxy-metric format-3 attempts."""
     del repository_root
     contexts = _contexts(registry, contract, AnalysisId.PROXY_METRICS)
     if not contexts:
@@ -2926,7 +2926,7 @@ def run_noise_spread_attempts(
     contract: PaperValidationContract,
     input_identities: Mapping[str, ContentIdentity],
 ) -> tuple[tuple[AttemptResult, ...], tuple[PlotSeries, ...]]:
-    """Run the objectively specified noise/spread format-2 attempts."""
+    """Run the objectively specified noise/spread format-3 attempts."""
     del repository_root
     contexts = _contexts(registry, contract, AnalysisId.NOISE_SPREAD)
     if not contexts:

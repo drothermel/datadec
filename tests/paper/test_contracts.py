@@ -22,6 +22,8 @@ from datadec.paper import (
     ComparisonPredicate,
     ComparisonRule,
     ContentIdentity,
+    EvidenceLevel,
+    InputTableSpec,
     MeasureValue,
     PaperClaim,
     PlotPoint,
@@ -59,6 +61,7 @@ def _attempt(**updates: Any) -> dict[str, Any]:
         "claim_id": "DD-0001",
         "default": True,
         "analysis_id": AnalysisId.SINGLE_SCALE,
+        "evidence_level": EvidenceLevel.LOWER_LEVEL_ROWS,
         "inputs": (AttemptInput(table_id="olmes", columns=("recipe", "score")),),
         "transformation_ids": ("rank", "compare"),
         "comparison_rule_id": "approx-v1",
@@ -119,15 +122,28 @@ def test_validation_vocabulary_is_exact() -> None:
         "proxy_metrics",
         "noise_spread",
         "scaling_law",
+        "math_code",
     }
+    assert {level.value for level in EvidenceLevel} == {
+        "lower_level_rows",
+        "author_derived_aggregate",
+    }
+    assert (
+        ComparisonParameterName.COMPUTE_LOG10_BIN_WIDTH.value
+        == "compute_log10_bin_width"
+    )
+    assert (
+        ComparisonParameterName.FRONTIER_DIFFERENCE_MAXIMUM.value
+        == "frontier_difference_maximum"
+    )
+    assert ComparisonParameterName.PREDICTED_TIE_CREDIT.value == "predicted_tie_credit"
 
 
 def test_current_validation_config_declares_all_assessable_defaults() -> None:
-    config_path = _REPOSITORY_ROOT / "configs/paper_validation.toml"
     contract = load_paper_validation_contract()
 
     assert config_file("paper_validation.toml").is_file()
-    assert len(contract.attempts) == 68
+    assert len(contract.attempts) == 79
     assert all(attempt.default for attempt in contract.attempts)
     assert all(
         attempt.id == f"{attempt.claim_id.lower()}-default"
@@ -153,7 +169,66 @@ def test_current_validation_config_declares_all_assessable_defaults() -> None:
     assert contract.outputs.runs_root == "data/paper-validation/runs"
     assert contract.outputs.report == "docs/paper-validation-report.md"
     assert contract.outputs.figures_root == "docs/paper/validation-figures"
-    assert "published-results" not in config_path.read_text()
+    inputs = {item.id: item for item in contract.inputs}
+    assert {
+        input_id: (item.path, item.remote_path, item.columns)
+        for input_id, item in inputs.items()
+        if item.evidence_level is EvidenceLevel.AUTHOR_DERIVED_AGGREGATE
+    } == {
+        "cheap_decisions": (
+            "processed/published-results/cheap_decisions_stacked_rc_pred_all.parquet",
+            "published-results/cheap_decisions_stacked_rc_pred_all.parquet",
+            (
+                "task",
+                "mix",
+                "metric",
+                "setup",
+                "step_1_y",
+                "step_2_y",
+                "stacked_y",
+                "step_1_pred",
+                "step_2_pred",
+                "stacked_pred",
+                "abs_error_step_1",
+                "abs_error_step_2",
+                "abs_error_stacked",
+                "rel_error_stacked",
+            ),
+        ),
+        "new_eval_decision_accuracy": (
+            "processed/published-results/new_eval_intermediates/davidh_new_evals_decision_accuracy.parquet",
+            "published-results/new_eval_intermediates/davidh_new_evals_decision_accuracy.parquet",
+            (
+                "size",
+                "task",
+                "target_ranking",
+                "logits_per_byte_corr",
+                "logits_per_char_corr",
+                "primary_score",
+            ),
+        ),
+        "new_eval_means": (
+            "processed/published-results/new_eval_intermediates/davidh_new_evals_means_df.parquet",
+            "published-results/new_eval_intermediates/davidh_new_evals_means_df.parquet",
+            (
+                "size",
+                "task",
+                "primary_score",
+                "logits_per_byte_corr",
+                "logits_per_char_corr",
+            ),
+        ),
+    }
+    assert all(
+        item.evidence_level is EvidenceLevel.LOWER_LEVEL_ROWS
+        for input_id, item in inputs.items()
+        if input_id
+        not in {
+            "cheap_decisions",
+            "new_eval_decision_accuracy",
+            "new_eval_means",
+        }
+    )
 
     with pytest.raises(ValidationError, match="frozen"):
         contract.outputs.report = "other.md"
@@ -207,6 +282,10 @@ def test_qualitative_attempts_use_frozen_typed_rules() -> None:
     assert clustering.parameter(
         ComparisonParameterName.SILHOUETTE_MINIMUM
     ).sensitivity_grid == (0.15, 0.25, 0.35)
+    compute_equivalence = rules[attempts["dd-0165-default"].comparison_rule_id]
+    assert compute_equivalence.parameter(
+        ComparisonParameterName.COMPUTE_LOG10_BIN_WIDTH
+    ).sensitivity_grid == (0.05, 0.1, 0.2)
     noise_improvement = attempts["dd-0057-default"]
     assert set(noise_improvement.sensitivity_ids) >= {
         "dd-0057-preceding-common-complete-1",
@@ -228,6 +307,161 @@ def test_qualitative_attempts_use_frozen_typed_rules() -> None:
             if value != parameter.default
         }
         assert expected_ids <= set(attempt.sensitivity_ids)
+
+
+def test_newly_assessable_attempts_have_exact_evidence_and_inputs() -> None:
+    contract = load_paper_validation_contract()
+    attempts = {attempt.claim_id: attempt for attempt in contract.attempts}
+    scaling_claim_ids = {
+        "DD-0013",
+        "DD-0054",
+        "DD-0119",
+        "DD-0180",
+        "DD-0181",
+        "DD-0189",
+        "DD-0192",
+        *(f"DD-{claim:04d}" for claim in range(301, 309)),
+        "DD-0311",
+        "DD-0312",
+        "DD-0330",
+        "DD-0368",
+        "DD-0369",
+    }
+    math_code_claim_ids = {
+        "DD-0017",
+        "DD-0018",
+        "DD-0213",
+        "DD-0221",
+        "DD-0222",
+        "DD-0224",
+        "DD-0225",
+        "DD-0226",
+        "DD-0227",
+        "DD-0413",
+        "DD-0414",
+    }
+    newly_assessable = scaling_claim_ids | {"DD-0165"} | math_code_claim_ids
+
+    assert len(newly_assessable) == 32
+    assert newly_assessable <= attempts.keys()
+    assert all(
+        attempts[claim_id].evidence_level is EvidenceLevel.AUTHOR_DERIVED_AGGREGATE
+        for claim_id in scaling_claim_ids | math_code_claim_ids
+    )
+    assert attempts["DD-0165"].evidence_level is EvidenceLevel.LOWER_LEVEL_ROWS
+    assert all(
+        {item.table_id for item in attempts[claim_id].inputs} == {"cheap_decisions"}
+        for claim_id in scaling_claim_ids
+    )
+
+
+def test_new_scaling_and_math_code_rules_freeze_audited_thresholds() -> None:
+    contract = load_paper_validation_contract()
+    attempts = {attempt.claim_id: attempt for attempt in contract.attempts}
+    rules = {rule.id: rule for rule in contract.comparison_rules}
+
+    def parameter(claim_id: str, name: ComparisonParameterName) -> ComparisonParameter:
+        return rules[attempts[claim_id].comparison_rule_id].parameter(name)
+
+    for claim_id in {"DD-0013", "DD-0054", "DD-0180", "DD-0181", "DD-0368"}:
+        assert (
+            parameter(
+                claim_id, ComparisonParameterName.FRONTIER_DIFFERENCE_MAXIMUM
+            ).default
+            == 0.0
+        )
+    assert parameter(
+        "DD-0119", ComparisonParameterName.MARKED_GAP_MINIMUM
+    ).sensitivity_grid == (0.02, 0.05)
+    for claim_id in {"DD-0311", "DD-0330"}:
+        assert parameter(
+            claim_id, ComparisonParameterName.OVERLAP_RANGE_MAXIMUM
+        ).sensitivity_grid == (0.005, 0.01)
+    assert parameter(
+        "DD-0369", ComparisonParameterName.PREDICTED_TIE_CREDIT
+    ).sensitivity_grid == (0.0, 0.5)
+    for claim_id in {"DD-0017", "DD-0018"}:
+        assert parameter(
+            claim_id, ComparisonParameterName.ACCURACY_THRESHOLD
+        ).sensitivity_grid == (0.75, 0.8, 0.85)
+        assert (
+            parameter(claim_id, ComparisonParameterName.MAXIMUM_SCALE_PERCENT).default
+            == 0.01
+        )
+    for claim_id in {"DD-0213", "DD-0226"}:
+        assert (
+            parameter(claim_id, ComparisonParameterName.MARKED_GAP_MINIMUM).default
+            == 0.0
+        )
+    assert (
+        parameter("DD-0221", ComparisonParameterName.STRONG_BASELINE_THRESHOLD).default
+        == 0.75
+    )
+    assert (
+        parameter("DD-0222", ComparisonParameterName.TRIVIAL_TOLERANCE).default == 0.05
+    )
+    assert rules[attempts["DD-0224"].comparison_rule_id].threshold_grid == (
+        0.025,
+        0.05,
+        0.1,
+    )
+    assert (
+        parameter("DD-0225", ComparisonParameterName.STRONG_BASELINE_THRESHOLD).default
+        == 0.75
+    )
+    assert parameter(
+        "DD-0227", ComparisonParameterName.ACCURACY_THRESHOLD
+    ).sensitivity_grid == (0.75, 0.8, 0.85)
+    assert (
+        parameter(
+            "DD-0413", ComparisonParameterName.NONTRIVIAL_ACCURACY_THRESHOLD
+        ).default
+        == 0.6
+    )
+    assert (
+        parameter("DD-0413", ComparisonParameterName.STRONG_BASELINE_THRESHOLD).default
+        == 0.75
+    )
+    assert parameter(
+        "DD-0414", ComparisonParameterName.TRIVIAL_TOLERANCE
+    ).sensitivity_grid == (0.05, 0.1)
+
+
+def test_contract_rejects_attempt_evidence_that_differs_from_its_inputs() -> None:
+    contract = load_paper_validation_contract()
+    payload = contract.model_dump(mode="python")
+    payload["attempts"][0]["evidence_level"] = EvidenceLevel.AUTHOR_DERIVED_AGGREGATE
+
+    with pytest.raises(ValidationError, match="evidence level must be"):
+        type(contract).model_validate(payload)
+
+    mixed_payload = contract.model_dump(mode="python")
+    mixed_payload["attempts"][0]["inputs"] += (
+        {"table_id": "cheap_decisions", "columns": ("task",)},
+    )
+    with pytest.raises(
+        ValidationError, match="evidence level must be author_derived_aggregate"
+    ):
+        type(contract).model_validate(mixed_payload)
+
+
+def test_published_result_input_paths_are_explicitly_allowed_and_still_safe() -> None:
+    table = InputTableSpec(
+        id="published",
+        path="processed/published-results/table.parquet",
+        remote_path="published-results/table.parquet",
+        columns=("value",),
+        evidence_level=EvidenceLevel.AUTHOR_DERIVED_AGGREGATE,
+    )
+
+    assert table.path == "processed/published-results/table.parquet"
+    with pytest.raises(ValidationError, match="repository-relative"):
+        InputTableSpec(
+            id="unsafe",
+            path="../published-results/table.parquet",
+            columns=("value",),
+            evidence_level=EvidenceLevel.AUTHOR_DERIVED_AGGREGATE,
+        )
 
 
 @pytest.mark.parametrize(
@@ -357,7 +591,7 @@ def test_row_predicates_are_typed() -> None:
         RowPredicate(column="step", operator=PredicateOperator.EQ, value=(37500,))
 
 
-def test_run_format_2_manifest_has_only_trace_and_bundle_identities() -> None:
+def test_run_format_3_manifest_has_only_trace_and_bundle_identities() -> None:
     now = datetime(2026, 8, 21, tzinfo=UTC)
     manifest = AnalysisManifest(
         run_id="run-1",
@@ -369,7 +603,7 @@ def test_run_format_2_manifest_has_only_trace_and_bundle_identities() -> None:
         plot_series_identity=ContentIdentity(id="plot-series.json", sha256=_SHA256),
     )
 
-    assert manifest.run_format == 2
+    assert manifest.run_format == 3
     assert "qualification" not in manifest.model_dump()
     assert "tree_state" not in manifest.model_dump()
 

@@ -243,12 +243,10 @@ text = "Using continuous likelihood proxy metrics makes MBPP more than 80% predi
 kind = "empirical_numeric"
 family = "math_code"
 paper_target = "MBPP: decision_accuracy > 0.80 at percent_target_compute = 0.01 using continuous likelihood proxy"
-attempt_ids = []
+attempt_ids = ["dd-0017-default"]
 method_dependency_claim_ids = []
 paper_elements = ["abstract"]
 citation_keys = []
-supporting_outcome = "not_assessable_from_dd_parsed"
-non_assessable_reason = "The required math/code evaluation results are absent from dd_parsed."
 
 [[claims]]
 id = "DD-0018"
@@ -259,12 +257,10 @@ text = "Using continuous likelihood proxy metrics makes HumanEval more than 80% 
 kind = "empirical_numeric"
 family = "math_code"
 paper_target = "HumanEval: decision_accuracy > 0.80 at percent_target_compute = 0.01 using continuous likelihood proxy"
-attempt_ids = []
+attempt_ids = ["dd-0018-default"]
 method_dependency_claim_ids = []
 paper_elements = ["abstract"]
 citation_keys = []
-supporting_outcome = "not_assessable_from_dd_parsed"
-non_assessable_reason = "The required math/code evaluation results are absent from dd_parsed."
 
 [[claims]]
 id = "DD-0019"
@@ -3140,12 +3136,10 @@ text = "Correct Prob enables ranking predictions for code tasks that are too har
 kind = "empirical_comparison"
 family = "math_code"
 paper_target = "code-task Correct Prob decision accuracy exceeds Accuracy at small scales"
-attempt_ids = []
+attempt_ids = ["dd-0213-default"]
 method_dependency_claim_ids = []
 paper_elements = ["sec:characterizing_evals summary"]
 citation_keys = []
-supporting_outcome = "not_assessable_from_dd_parsed"
-non_assessable_reason = "The required math/code evaluation results are absent from dd_parsed."
 
 [[claims]]
 id = "DD-0214"
@@ -3258,12 +3252,10 @@ text = "HumanEval and MBPP go from trivial to largely predictable when replacing
 kind = "empirical_plot"
 family = "math_code"
 paper_target = "code tasks improve from near-random to high decision accuracy with Correct Prob"
-attempt_ids = []
+attempt_ids = ["dd-0221-default"]
 method_dependency_claim_ids = []
 paper_elements = ["fig:math_and_code caption"]
 citation_keys = []
-supporting_outcome = "not_assessable_from_dd_parsed"
-non_assessable_reason = "The required math/code evaluation results are absent from dd_parsed."
 
 [[claims]]
 id = "DD-0222"
@@ -3274,12 +3266,10 @@ text = "Common math tasks stay near trivial decision accuracy regardless of prox
 kind = "empirical_plot"
 family = "math_code"
 paper_target = "Minerva and GSM8K remain near random under Accuracy and Correct Prob proxies"
-attempt_ids = []
+attempt_ids = ["dd-0222-default"]
 method_dependency_claim_ids = []
 paper_elements = ["fig:math_and_code caption"]
 citation_keys = []
-supporting_outcome = "not_assessable_from_dd_parsed"
-non_assessable_reason = "The required math/code evaluation results are absent from dd_parsed."
 
 [[claims]]
 id = "DD-0223"
@@ -3305,12 +3295,10 @@ text = "Correct Prob raises code-task decision accuracy from trivial to approxim
 kind = "empirical_plot"
 family = "math_code"
 paper_target = "MBPP and HumanEval Correct Prob decision accuracy approximately 0.80"
-attempt_ids = []
+attempt_ids = ["dd-0224-default"]
 method_dependency_claim_ids = []
 paper_elements = ["fig:math_and_code"]
 citation_keys = []
-supporting_outcome = "not_assessable_from_dd_parsed"
-non_assessable_reason = "The required math/code evaluation results are absent from dd_parsed."
 
 [[claims]]
 id = "DD-0225"
@@ -3321,12 +3309,10 @@ text = "Correct Prob lets small code-task models exceed the noise floor while pr
 kind = "empirical_plot"
 family = "math_code"
 paper_target = "Correct Prob proxy separates code recipes while target remains Accuracy"
-attempt_ids = []
+attempt_ids = ["dd-0225-default"]
 method_dependency_claim_ids = []
 paper_elements = ["fig:math_and_code"]
 citation_keys = []
-supporting_outcome = "not_assessable_from_dd_parsed"
-non_assessable_reason = "The required math/code evaluation results are absent from dd_parsed."
 
 [[claims]]
 id = "DD-0226"
@@ -3337,12 +3323,10 @@ text = "Minerva and GSM8K do not gain comparable predictability from switching t
 kind = "empirical_plot"
 family = "math_code"
 paper_target = "math-task Correct Prob proxy does not materially exceed Accuracy proxy"
-attempt_ids = []
+attempt_ids = ["dd-0226-default"]
 method_dependency_claim_ids = []
 paper_elements = ["fig:math_and_code"]
 citation_keys = ["lewkowycz2022solvingquantitativereasoningproblems","cobbe2021gsm8k"]
-supporting_outcome = "not_assessable_from_dd_parsed"
-non_assessable_reason = "The required math/code evaluation results are absent from dd_parsed."
 
 [[claims]]
 id = "DD-0227"
@@ -3353,12 +3337,10 @@ text = "Minerva and GSM8K exceed 80% decision accuracy if the target metric is c
 kind = "empirical_numeric"
 family = "math_code"
 paper_target = "math tasks decision_accuracy > 0.80 with Correct Prob target"
-attempt_ids = []
+attempt_ids = ["dd-0227-default"]
 method_dependency_claim_ids = []
 paper_elements = ["sec:characterizing_evals"]
 citation_keys = []
-supporting_outcome = "not_assessable_from_dd_parsed"
-non_assessable_reason = "The required math/code evaluation results are absent from dd_parsed."
 
 [[claims]]
 id = "DD-0228"
@@ -6130,12 +6112,10 @@ text = "For MBPP and HumanEval, both Correct Prob bars are above 60% and near or
 kind = "empirical_plot"
 family = "math_code"
 paper_target = "code Correct Prob bars >0.60 and approximately >=0.80"
-attempt_ids = []
+attempt_ids = ["dd-0413-default"]
 method_dependency_claim_ids = []
 paper_elements = ["fig:math_and_code"]
 citation_keys = []
-supporting_outcome = "not_assessable_from_dd_parsed"
-non_assessable_reason = "The required math/code evaluation results are absent from dd_parsed."
 
 [[claims]]
 id = "DD-0414"
@@ -6146,12 +6126,10 @@ text = "For Minerva and GSM8K, Correct Prob bars remain near the 50% random base
 kind = "empirical_plot"
 family = "math_code"
 paper_target = "math Correct Prob bars approximately 0.50"
-attempt_ids = []
+attempt_ids = ["dd-0414-default"]
 method_dependency_claim_ids = []
 paper_elements = ["fig:math_and_code"]
 citation_keys = []
-supporting_outcome = "not_assessable_from_dd_parsed"
-non_assessable_reason = "The required math/code evaluation results are absent from dd_parsed."
 
 [[claims]]
 id = "DD-0415"

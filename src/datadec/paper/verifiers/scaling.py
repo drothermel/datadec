@@ -1254,7 +1254,7 @@ def run_scaling_law_attempts(
     contract: PaperValidationContract,
     input_identities: Mapping[str, ContentIdentity],
 ) -> tuple[tuple[AttemptResult, ...], tuple[PlotSeries, ...]]:
-    """Run format-2 scaling-law attempts from normalized evaluation evidence."""
+    """Run format-3 scaling-law attempts from normalized evaluation evidence."""
     root = Path(repository_root)
     inputs = Path(data_root)
     specs = _scaling_specs(contract)

@@ -540,7 +540,7 @@ def render_outcome_audit_svg(bundle: AnalysisBundle) -> bytes:
 
 
 def render_figures(bundle: AnalysisBundle) -> tuple[tuple[str, bytes], ...]:
-    """Render named SVG bytes strictly from one completed format-2 bundle."""
+    """Render named SVG bytes strictly from one completed format-3 bundle."""
     grouped: defaultdict[str, list[PlotSeries]] = defaultdict(list)
     for series in bundle.plot_series:
         if series.paper_analog and series.points:

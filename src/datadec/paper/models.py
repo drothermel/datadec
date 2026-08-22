@@ -58,12 +58,19 @@ class ValidationOutcome(StrEnum):
 
 
 @verify(UNIQUE)
+class EvidenceLevel(StrEnum):
+    LOWER_LEVEL_ROWS = "lower_level_rows"
+    AUTHOR_DERIVED_AGGREGATE = "author_derived_aggregate"
+
+
+@verify(UNIQUE)
 class AnalysisId(StrEnum):
     SINGLE_SCALE = "single_scale"
     PER_TASK = "per_task"
     PROXY_METRICS = "proxy_metrics"
     NOISE_SPREAD = "noise_spread"
     SCALING_LAW = "scaling_law"
+    MATH_CODE = "math_code"
 
 
 @verify(UNIQUE)
@@ -99,6 +106,7 @@ class ComparisonParameterName(StrEnum):
     ACCURACY_THRESHOLD = "accuracy_threshold"
     CHANCE_BASELINE = "chance_baseline"
     CLUSTER_COUNT = "cluster_count"
+    COMPUTE_LOG10_BIN_WIDTH = "compute_log10_bin_width"
     COMPUTE_RATIO_THRESHOLD = "compute_ratio_threshold"
     CONVERGENCE_TOLERANCE = "convergence_tolerance"
     DECLINE_THRESHOLD = "decline_threshold"
@@ -106,6 +114,7 @@ class ComparisonParameterName(StrEnum):
     EQUIVALENCE_DIFFERENCE_MINIMUM = "equivalence_difference_minimum"
     FIXED_COMPUTE_RANGE_MINIMUM = "fixed_compute_range_minimum"
     FRACTION_THRESHOLD = "fraction_threshold"
+    FRONTIER_DIFFERENCE_MAXIMUM = "frontier_difference_maximum"
     LATE_SLOPE_MINIMUM = "late_slope_minimum"
     LOW_RELIABILITY_MAXIMUM = "low_reliability_maximum"
     MARKED_GAP_MINIMUM = "marked_gap_minimum"
@@ -114,6 +123,7 @@ class ComparisonParameterName(StrEnum):
     OLS_SLOPE_MINIMUM = "ols_slope_minimum"
     OVERLAP_RANGE_MAXIMUM = "overlap_range_maximum"
     PLATEAU_SSE_IMPROVEMENT_MINIMUM = "plateau_sse_improvement_minimum"
+    PREDICTED_TIE_CREDIT = "predicted_tie_credit"
     SILHOUETTE_MINIMUM = "silhouette_minimum"
     SPEARMAN_MINIMUM = "spearman_minimum"
     STANDARD_DEVIATION_TARGET = "standard_deviation_target"
@@ -324,17 +334,13 @@ class InputTableSpec(PaperModel):
     id: str = Field(min_length=1)
     path: str
     columns: tuple[str, ...]
+    evidence_level: EvidenceLevel
     remote_path: str | None = None
 
     _validate_path = field_validator("path")(_validate_repository_path)
 
     @model_validator(mode="after")
     def validate_table(self) -> Self:
-        paths = (
-            (self.path,) if self.remote_path is None else (self.path, self.remote_path)
-        )
-        if any("published-results" in PurePosixPath(path).parts for path in paths):
-            raise ValueError("validation inputs cannot reference published-results")
         if self.remote_path is not None:
             _validate_repository_path(self.remote_path)
         if not self.columns:
@@ -361,6 +367,7 @@ class AttemptSpec(PaperModel):
     default: bool
     parent_attempt_id: str | None = Field(default=None, min_length=1)
     analysis_id: AnalysisId
+    evidence_level: EvidenceLevel
     inputs: tuple[AttemptInput, ...]
     recipe_ids: tuple[str, ...] = ()
     seed_ids: tuple[str, ...] = ()
@@ -558,7 +565,7 @@ class PaperValidationContract(PaperModel):
             ("analysis policy IDs", policy_ids),
         ):
             _require_unique(values, description)
-        known_inputs = {item.id: set(item.columns) for item in self.inputs}
+        known_inputs = {item.id: item for item in self.inputs}
         known_attempts = set(attempt_ids)
         known_rules = set(rule_ids)
         known_policies = set(policy_ids)
@@ -576,14 +583,28 @@ class PaperValidationContract(PaperModel):
                     raise ValueError(
                         f"attempt {attempt.id} references unknown input {attempt_input.table_id}"
                     )
-                unknown_columns = (
-                    set(attempt_input.columns) - known_inputs[attempt_input.table_id]
+                unknown_columns = set(attempt_input.columns) - set(
+                    known_inputs[attempt_input.table_id].columns
                 )
                 if unknown_columns:
                     unknown = ", ".join(sorted(unknown_columns))
                     raise ValueError(
                         f"attempt {attempt.id} references unknown columns: {unknown}"
                     )
+            expected_evidence = (
+                EvidenceLevel.AUTHOR_DERIVED_AGGREGATE
+                if any(
+                    known_inputs[attempt_input.table_id].evidence_level
+                    is EvidenceLevel.AUTHOR_DERIVED_AGGREGATE
+                    for attempt_input in attempt.inputs
+                )
+                else EvidenceLevel.LOWER_LEVEL_ROWS
+            )
+            if attempt.evidence_level is not expected_evidence:
+                raise ValueError(
+                    f"attempt {attempt.id} evidence level must be "
+                    f"{expected_evidence.value}"
+                )
             if attempt.comparison_rule_id not in known_rules:
                 raise ValueError(
                     f"attempt {attempt.id} references unknown comparison rule"
@@ -711,6 +732,7 @@ class AttemptResult(PaperModel):
     claim_id: str = Field(min_length=1)
     role: AttemptRole
     parent_attempt_id: str | None = Field(default=None, min_length=1)
+    evidence_level: EvidenceLevel = EvidenceLevel.LOWER_LEVEL_ROWS
     comparison_rule_id: str = Field(min_length=1)
     comparison_rule_version: int = Field(ge=1)
     transformation_ids: tuple[str, ...]
@@ -862,7 +884,7 @@ class PlotSeries(PaperModel):
 
 
 class AnalysisManifest(PaperModel):
-    run_format: Literal[2] = 2
+    run_format: Literal[3] = 3
     run_id: str = Field(pattern=r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
     started_at: datetime
     completed_at: datetime
@@ -953,6 +975,7 @@ __all__ = [
     "ComparisonRule",
     "ContentIdentity",
     "DimensionValue",
+    "EvidenceLevel",
     "InputTableSpec",
     "MeasureValue",
     "MetadataDiscrepancy",

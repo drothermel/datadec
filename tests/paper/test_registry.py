@@ -100,4 +100,39 @@ def test_migrated_repository_registry_and_config_are_cross_validated() -> None:
         ClaimKind.EMPIRICAL_PLOT,
     }
     assert len([claim for claim in registry.claims if claim.kind in primary]) == 79
-    assert len(contract.attempts) == 68
+    assert len(contract.attempts) == 79
+    newly_assessable = {
+        "DD-0013",
+        "DD-0017",
+        "DD-0018",
+        "DD-0054",
+        "DD-0119",
+        "DD-0165",
+        "DD-0180",
+        "DD-0181",
+        "DD-0189",
+        "DD-0192",
+        "DD-0213",
+        "DD-0221",
+        "DD-0222",
+        "DD-0224",
+        "DD-0225",
+        "DD-0226",
+        "DD-0227",
+        *(f"DD-{claim:04d}" for claim in range(301, 309)),
+        "DD-0311",
+        "DD-0312",
+        "DD-0330",
+        "DD-0368",
+        "DD-0369",
+        "DD-0413",
+        "DD-0414",
+    }
+    claims = {claim.id: claim for claim in registry.claims}
+    assert len(newly_assessable) == 32
+    assert all(claims[claim_id].attempt_ids for claim_id in newly_assessable)
+    assert all(
+        claims[claim_id].supporting_outcome is None
+        and claims[claim_id].non_assessable_reason is None
+        for claim_id in newly_assessable
+    )

@@ -284,7 +284,7 @@ def _render_traceability(bundle: AnalysisBundle) -> str:
 
 
 def render_report(bundle: AnalysisBundle) -> str:
-    """Render a finding-comparison report strictly from one format-2 bundle."""
+    """Render a finding-comparison report strictly from one format-3 bundle."""
     attempts_by_claim = _attempts_by_claim(bundle)
     targets = tuple(
         sorted(bundle.targets, key=lambda item: (item.family, item.claim_id))

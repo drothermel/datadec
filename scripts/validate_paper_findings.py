@@ -34,7 +34,7 @@ def run(
 ) -> None:
     """Run every configured analysis and persist one immutable bundle."""
     bundle = run_validation(Path.cwd(), run_id, data_dir)
-    typer.echo(f"created format-2 run {bundle.manifest.run_id}")
+    typer.echo(f"created format-3 run {bundle.manifest.run_id}")
 
 
 @app.command()
