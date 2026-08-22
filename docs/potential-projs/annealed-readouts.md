@@ -284,3 +284,35 @@ decisions. Only notes about this project are kept here.
   could be matched on totally different mixes of the two." Wen et al. (arXiv 2410.05192) is
   the canonical statement; their interpolation signature is "the closest thing to a 'river
   test.'" Paper list in `docs/topics/landscape-literature.md`.
+
+### 2026-08-18 — origin of this project (from the Research Trajectory page)
+
+**Danielle-flagged project seeds** (the `→` notes on the Notion toggle):
+1. "Predict performance differences from dataset features."
+2. "Does merging-as-annealing-proxy work on cosine mid-run checkpoints rather than just
+   stable-phase ones?"
+3. "Does a dataset's 'determinism profile' predict landscape geometry?"
+
+Seed 2 is ANN-1's open question; seed 3 is the data link that the flagship ranking folds
+into this project. Question posed: DataDecide's models would be more useful trained with a
+WSD schedule, because then annealing tests would be comparable along the trajectory; their
+evals show un-annealed or partially annealed performance, which skews all results including
+post-training. What are the options — small extensions of training from each checkpoint, or
+redoing some pretraining with WSD?
+
+- The confound, as first stated: "every intermediate checkpoint sits mid-schedule with high
+  residual LR — in river-valley terms, evals on those checkpoints measure 'position along
+  river + current distance up the wall'… Post-training from such checkpoints inherits the
+  confound (you're fine-tuning from a point high on the wall)."
+- The two cheap fixes on existing checkpoints (now ANN-1 merging and ANN-5/ANN-2 MPL):
+  "if [merging] works even approximately you can retrofit 'annealed' evals onto all of
+  DataDecide for the cost of evals"; the MPL "quantifies how much each recipe's apparent
+  ranking is schedule artifact."
+- Two caveats that shaped ANN-6 and ANN-opt-1: intermediate-checkpoint *decisions* may
+  already match final ones ("the confound may partially cancel for rankings even while
+  distorting levels and post-training"), and "the decay phase itself makes progress along
+  the river — so annealed evals aren't a pure 'reveal' either; branch length becomes a
+  parameter to control."
+- Prior art (Hägele 2024; MiniCPM; Llama 3 annealing data valuation; Blakeney; WSM; Nemotron
+  3) in `docs/topics/schedules-and-annealing-literature.md`: "'annealing branches as the
+  correct eval' is validated practice — but no *open, multi-recipe suite* has it."

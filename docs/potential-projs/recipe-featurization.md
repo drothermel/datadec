@@ -287,3 +287,34 @@ better story for a thesis or grant than a single-suite reanalysis."
   medium-high**… **Ceiling: medium-high**, jumping to high if the order effect is large."
   Recommendation: run sub A "in the background from week one — it's mechanical, half-done,
   and its manifest module is [the project's] foundation anyway."
+
+### 2026-08-18 — origin of this project (from the Research Trajectory page)
+
+**Danielle-flagged project seeds** (the `→` notes on the Notion toggle):
+1. "Predict performance differences from dataset features."
+2. "Does merging-as-annealing-proxy work on cosine mid-run checkpoints rather than just
+   stable-phase ones?"
+3. "Does a dataset's 'determinism profile' predict landscape geometry?"
+
+Seed 1 is REC-3; seed 3 is REC-2 → REC-4. Question posed: how does the field currently
+quantify differences between datasets? They become approximately black boxes because they
+are so large — but we analyze trained models, which actually are black boxes, so there must
+be things we can do for datasets as well.
+
+- The three feature families as first laid out — model-mediated (perplexity correlations,
+  RegMix, DoReMi, mixing laws: "don't tell you *what property* of the data mattered"),
+  similarity embeddings (Task2Vec alignment, diversity coefficient; "data similarity alone
+  is not enough"), intrinsic statistics (WIMBD, compression, Zipf/burstiness: "closest to
+  your instinct, least developed") — in `docs/topics/data-featurization-literature.md`.
+- The causal anchor for intrinsic features: Zipf/burstiness/type-token statistics "are
+  exactly the properties Chan et al. showed *cause* ICL emergence in small transformers…
+  the one place intrinsic data statistics have been causally tied to a capability."
+- The supervised-problem framing as first stated: "DataDecide hands you a supervised problem
+  — 25 corpora with measured outcomes (and ~300 pairwise decisions, plus per-task
+  breakdowns). No one has systematically featurized those 25 corpora… and asked which
+  features predict the outcome table, or whether intrinsic features match model-mediated
+  ones."
+- REC-4's motivation as first stated: "a dataset's 'determinism profile' (cheap to estimate
+  with any reference model) is a candidate feature predicting not just performance but
+  *landscape geometry*, i.e., annealing behavior. That would tie your WSD-branch suite and
+  your featurization question into one design."

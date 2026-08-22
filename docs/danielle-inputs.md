@@ -427,3 +427,34 @@ river-valley); [topics/warmstarting-decomposition.md](topics/warmstarting-decomp
 [topics/task-vectors.md](topics/task-vectors.md); the matched-loss rule in the
 potential-projs README.
 
+### Toggle 9 — WSD and Annealing Effects + Dataset Metrics/Features
+
+> I feel like the DataDecide models would be more useful if they were trained with WSD
+> learning rate schedule because then we could actually do comparable annealing tests along
+> the course of the trajectory. Unfortunately their evals are actually just showing the
+> un-annealed or partially annealed performance directly after pretraining. This skews all
+> results including post-training performance.
+> Then, what are some of our options to work around this problem? Are there ways to do small
+> extensions of the training from each checkpoint to gather more data? Or, would redo-ing
+> some portion of the pretraining using WSD enable some interesting experiments? How does
+> related work interact with this question.
+> Separately, how does the field currently quantify differences between datasets? They
+> become approximately black boxes because they are SO large, but we analyze trained models
+> which actually are black boxes, so there must be things we can do for datasets as well.
+
+Danielle-flagged project seeds (the `→` notes on the toggle title):
+
+> → "Predict performance differences from dataset features."
+> → "Does merging-as-annealing-proxy work on cosine mid-run checkpoints rather than just
+>   stable-phase ones?"
+> → "Does a dataset's 'determinism profile' predict landscape geometry?"
+
+Routed to: origin entries (with the seeds) in
+[potential-projs/annealed-readouts.md](potential-projs/annealed-readouts.md),
+[potential-projs/wsd-suite.md](potential-projs/wsd-suite.md), and
+[potential-projs/recipe-featurization.md](potential-projs/recipe-featurization.md) §4; new
+reference topics
+[topics/schedules-and-annealing-literature.md](topics/schedules-and-annealing-literature.md)
+and [topics/data-featurization-literature.md](topics/data-featurization-literature.md);
+[topics/landscape-literature.md](topics/landscape-literature.md).
+

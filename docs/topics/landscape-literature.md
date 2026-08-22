@@ -81,3 +81,13 @@ each partial."
 
 **Thought.** "Nobody has connected either literature to *metric validity*: no paper says 'ICL
 scores / task vectors / plasticity statistics are comparable iff models pass test X.'"
+
+---
+
+## 2026-08-18 — valley geometry as a data property (from the WSD/featurization discussion)
+
+"The river-valley hypothesis **attributes the valley geometry itself to data properties** —
+**deterministic tokens forming the river**, **uncertain tokens the walls** — meaning a
+dataset's 'determinism profile' (cheap to estimate with any reference model) is a candidate
+feature predicting not just performance but *landscape geometry*, i.e., annealing behavior."
+This is the link between this topic and `data-featurization-literature.md` / REC-4.
