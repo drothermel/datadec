@@ -2558,6 +2558,23 @@ Routed to: [topics/reference/datadecide-data-pipeline.md](topics/reference/datad
 labels belong to an earlier plan not on file, mapping to IRT / REC / TRJ-ANN recorded as
 inferred).
 
+### 2026-08-22 — Coverage and LR-derivation provenance (same repo-read conversation)
+
+> the detailed parses exist for these and they've all been pulled, processed and uploaded
+> to my private huggingface dataset. I don't remember exactly what I finally landed on for
+> the lr derivations but I did my best to get the info and these estimates are the closest
+> I could get. I think I scoured the repo, the issues, the drive docs, the paper and maybe
+> even asked the paper authors (who generally didn't know a ton of the details because
+> this was a huge sweep and they published what they did know...).
+
+(with a screenshot of the private HF dataset listing all 25 recipe folders.)
+
+Routed to: [topics/reference/datadecide-data-pipeline.md](topics/reference/datadecide-data-pipeline.md)
+(second entry: coverage settled for all 25 recipes; LR provenance; MPL-fit-as-validation
+and checkpoint-config spot-check ideas; the "24 in frame" miscount flagged) and a dated
+note in [potential-projs/recipe-featurization.md](potential-projs/recipe-featurization.md)
+§4 (the three-divergences framing for the data-card paper).
+
 ### Post-intake decisions — 2026-08-22 (third pass)
 
 > (1) promote (2) I did run a few versions of this, I think we need a new section that

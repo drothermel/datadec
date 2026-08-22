@@ -346,6 +346,23 @@ deterministic tokens)? Has it been done?
   deterministic, so you'd want the profile computed before and after dedup to separate
   'structured domain' from 'duplicated corpus.'"
 
+### 2026-08-22 — The data-card thesis as a pattern of three divergences
+
+From a conversation reviewing the `datadec` repository state (record in
+`../topics/reference/datadecide-data-pipeline.md`). The data-card / composition paper
+this doc's REC-a feeds has three independent, already-found cases where the suite's
+self-description and its ground truth diverge: (1) mixture labels are shard-file
+fractions, not token shares (this doc, §1); (2) the raw scaling-law exports encode
+nominal-parameter rather than exact-parameter compute (caught by
+`verify_preprocessed_derivations.py`); (3) learning-rate schedules are not recoverable
+from any published artifact — Danielle's derivations come from the OLMo repo, issues,
+Drive docs, and the paper, with the authors unable to confirm details of the sweep. The
+response's framing: "the pattern is the paper," and each downstream analysis paper cites
+the data card for its cleaned inputs. Action it implies for REC: write the LR-provenance
+narrative into the data-card outline now, while the search trail is reconstructible.
+Coverage fact settled the same day: OLMES detail tables are processed and published
+(private HF dataset) for all 25 recipes.
+
 ### Undated (~2026) — Danielle's framing of the "datasets are unknowable" objection, and the retrieval / perturbation answer
 
 Her statement (verbatim, from speech; external conversation, intake 2026-08-22):
