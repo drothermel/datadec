@@ -87,3 +87,14 @@ adaptation' territory." See `icl-as-posttraining.md`.
   original benchmark." Design in `warmstarting-decomposition.md`.
 - The diagnostic panel to log at matched training loss: curvature, feature rank, dead
   units, weight norm, gradient-norm ratio.
+
+---
+
+## 2026-08-18 — the origin of the plasticity literature (from the critical-periods discussion)
+
+"'Information Plasticity decreases and the network can no longer adapt' (Achille, Rovere &
+Soatto, 2017–2019) *is* plasticity loss, five years before Dohare's Nature paper, with the
+Fisher trace as the diagnostic — and since the Fisher matrix approximates the Hessian for
+log-loss, Lyle's later 'plasticity loss is about loss-landscape curvature' finding is nearly
+a rediscovery in different coordinates." Add the Fisher trace to the diagnostic panel. See
+[critical-periods.md](critical-periods.md).

@@ -284,3 +284,19 @@ Full text for each: `recipe-featurization.md` §4 (first),
   debates — your pretraining-scale question recapitulated inside a single forward pass."
   Reference topic: [../topics/icl-literature.md](../topics/icl-literature.md).
 
+### 2026-08-18 — the deepest root: critical learning periods (from the Research Trajectory page)
+
+- Achille, Rovere & Soatto's critical-period / Information-Plasticity line "is arguably the
+  deepest root of your whole tree": it is the origin of the plasticity literature (Fisher
+  trace as diagnostic; Lyle's curvature finding "nearly a rediscovery in different
+  coordinates"), it restates the warm-starting gap (starting past the Fisher peak), it
+  grounds the basin story (the critical period as "the window before the run commits to a
+  basin/valley"), it supplies the featurization tool (Task2Vec is the same Fisher
+  formalism), and the LLM-scale data-placement results are "critical-period phenomenology at
+  scale, mostly published without the connection drawn."
+- Closing loop for the retrospective narrative: "the blurred-kitten paper you started from
+  turns out to contain the earliest version of your plasticity thread, your featurization
+  thread, and your basin thread all at once." Reference topic:
+  [../topics/critical-periods.md](../topics/critical-periods.md); staged study:
+  [../topics/critical-period-timing-study.md](../topics/critical-period-timing-study.md).
+

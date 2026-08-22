@@ -318,3 +318,28 @@ be things we can do for datasets as well.
   with any reference model) is a candidate feature predicting not just performance but
   *landscape geometry*, i.e., annealing behavior. That would tie your WSD-branch suite and
   your featurization question into one design."
+
+### 2026-08-18 — origin of REC-2's design (from the Research Trajectory page)
+
+Question posed: for the deterministic axis, can it be measured across datasets (e.g. percent
+deterministic tokens)? Has it been done?
+
+- "Score every token with a strong reference model's conditional entropy (or an ensemble, to
+  separate the aleatoric floor from the reference model's own ignorance), and characterize a
+  corpus by its distribution of per-token entropy — from which '% deterministic tokens'
+  falls out as a threshold statistic." Existing machinery: DoReMi's excess loss and Rho-1's
+  reference-model excess-loss scoring are "per-token *epistemic* measurements… the machinery
+  is exactly what you'd need, pointed at a different goal." The "code has far lower
+  conditional entropy than web text" folk fact is "a two-dataset determinism comparison,
+  made informally." Wen et al. computed token uncertainty within one distribution, "never
+  comparatively across corpora."
+- "So the specific study — determinism profiles of, say, the 25 DataDecide corpora,
+  correlated with valley geometry, decay-responsiveness, and annealing behavior — is open,
+  and it's cheap: it's inference-only over corpus samples."
+- The two design cautions that became REC-2's curve-not-scalar and pre/post-dedup
+  requirements: "determinism is *relative* — to the reference model's capacity and to
+  context length (a token deterministic given 2k context may be uncertain given 128) — so
+  report profiles as curves over entropy thresholds and context lengths rather than a
+  single percentage; and dedup interacts with it, since repeated text is trivially
+  deterministic, so you'd want the profile computed before and after dedup to separate
+  'structured domain' from 'duplicated corpus.'"

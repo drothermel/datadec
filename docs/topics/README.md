@@ -41,6 +41,7 @@ directory only holds live, unresolved material.
 | [posttraining-experiment-design.md](posttraining-experiment-design.md) | Whether any of its designs (post-training power analysis / RL-ability proxy; "did SFT move the model in distribution space"; within-reach-task post-training; late-window cross-family intervention) becomes a project or is absorbed into TINY / ANN / TOK |
 | [icl-as-posttraining.md](icl-as-posttraining.md) | Whether ICL curves on existing checkpoints (plus the code-autoencoder reconstruction probe) become a proxy-metric project, or fold into TINY / the post-training design topic |
 | [warmstarting-decomposition.md](warmstarting-decomposition.md) | Whether the Ash & Adams reproduction + factorial decomposition becomes a project (cheap, CIFAR-scale, code public) — "Chapter 1" of the retrospective narrative |
+| [critical-period-timing-study.md](critical-period-timing-study.md) | Whether the sibling-seeds-with-timed-deficits study (Fisher trace + barriers + ICL curves measured together) becomes a project or folds into GEO-opt-5 / warm-starting / ICL |
 | [nonstationarity-accounting.md](nonstationarity-accounting.md) | Whether "non-stationarity accounting" becomes the thesis-level framing (see candidate program framings in the potential-projs README); its case study has moved to the MoE movement project |
 
 Absorbed on 2026-08-21 into project docs: `moe-analysis-program` and
@@ -60,3 +61,4 @@ Absorbed on 2026-08-21 into project docs: `moe-analysis-program` and
 | [schedules-and-annealing-literature.md](schedules-and-annealing-literature.md) | Stable-phase + decay-branch methodology (Hägele, MiniCPM, Llama 3 annealing, Blakeney), checkpoint merging (WSM, Nemotron 3), MPL correction, the cancellation and branch-length caveats |
 | [data-featurization-literature.md](data-featurization-literature.md) | Model-mediated (perplexity correlations, RegMix, DoReMi, mixing laws), similarity (Task2Vec, alignment, diversity coefficient), intrinsic (WIMBD, compression, Zipf/burstiness) feature families |
 | [token-level-literature.md](token-level-literature.md) | River/wall token mapping (Wen toy + Spearman), epistemic/aleatoric decomposition, Rho-1 loss-trajectory taxonomy, RLVR entropy / forking-token results |
+| [critical-periods.md](critical-periods.md) | Achille–Soatto critical learning periods and Information Plasticity (Fisher trace); how it anchors plasticity, warm-starting, basins, Task2Vec, and LLM data-placement results |

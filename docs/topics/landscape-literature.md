@@ -102,3 +102,14 @@ learning-rate phase learns the deterministic tokens whereas the decay phase lear
 the stochastic tokens. On real data they validated the mapping correlationally: a
 significant Spearman correlation (~0.39) between token-level uncertainty and local sharpness
 of the landscape." See `token-level-literature.md`.
+
+---
+
+## 2026-08-18 — the critical period as the window before basin commitment
+
+"Combine [critical periods] with the linear-mode-connectivity fact that checkpoints become
+linearly connected only after early training stabilizes, and 'critical period' becomes:
+*the window before the run commits to a basin/valley*. The river is chosen early, while
+Fisher information is high; after commitment, you travel it. Deficits during the window
+change which river you're in — permanently, because post-commitment plasticity won't take
+you over the walls." See `critical-periods.md` and `critical-period-timing-study.md`.

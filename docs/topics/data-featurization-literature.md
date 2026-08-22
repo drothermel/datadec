@@ -60,3 +60,15 @@ families."
   tokens forming the river, uncertain tokens the walls — meaning a dataset's 'determinism
   profile' (cheap to estimate with any reference model) is a candidate feature predicting
   not just performance but *landscape geometry*, i.e., annealing behavior."
+
+---
+
+## 2026-08-18 — the determinism profile as a feature family member
+
+Per-token reference-model entropy as a corpus descriptor. Related machinery: DoReMi's
+"excess loss" and Rho-1's reference-model excess-loss scoring (per-token epistemic
+measurements used for domain weighting and token selection respectively); compression-based
+statistics as the crude aggregate version; Task2Vec (Achille et al.) as the Fisher-embedding
+formalism that the alignment and diversity coefficients build on. Design cautions (relative
+to reference model and context length → curves; pre/post dedup) recorded in
+`../potential-projs/recipe-featurization.md` §4.

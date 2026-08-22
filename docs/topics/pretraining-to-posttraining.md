@@ -117,3 +117,13 @@ learner' in plasticity terms) predicts post-training outcomes."
 - Bornschein, Lyle, Pascanu et al., *Fine-Tuned In-Context Learners for Efficient Adaptation*
   — "prompt-based methods excel in few-shot scenarios but their effectiveness plateaus as
   more data becomes available." Design consequence in `icl-as-posttraining.md`.
+
+---
+
+## 2026-08-18 — the data-placement results as critical-period phenomenology
+
+"The 2025–2026 data-placement results — early exposure shaping models more durably than
+late data (*Early Data Exposure…*), the final-window effects (*Similar Models Learn
+Differently*), safety behaviors from pretraining resisting post-training removal — are
+critical-period phenomenology at scale, mostly published without the connection drawn." See
+`critical-periods.md`.

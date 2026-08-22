@@ -80,3 +80,16 @@ public, so the reproduction is genuinely cheap."
 dataset — and the ELR-re-warming result (that re-warming closes the gap) is naturally read as
 'you need enough effective temperature to leave/reshape the basin.'" Suggests logging
 interpolation barriers between warm-started and re-initialized endpoints in the factorial.
+
+---
+
+## 2026-08-18 — add the Fisher trace; test whether it predicts which fix works (from the critical-periods discussion)
+
+"Adding the Fisher trace to your warm-starting diagnostic panel is essentially free and
+connects your Chapter 1 to the oldest version of the theory." "Initializing from a converged
+model means starting *past* the Fisher peak, in the low-Information-Plasticity regime — Ash &
+Adams' gap restated. Shrink-and-perturb, ELR re-warming, and continual backprop are all, in
+this frame, interventions that artificially reopen the period. The literature has noticed
+the adjacency (papers on relearning cite both works side by side) but your factorial
+breakdown would be the first to test whether the Fisher trajectory actually *predicts* which
+fix works." See [critical-periods.md](critical-periods.md).

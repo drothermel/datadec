@@ -194,3 +194,13 @@ models share a basin?
   and work[s] poorly early in training, with no unified theory of when they succeed"; the
   2026 neuron-identifiability line may eventually give a principled comparability
   criterion. Paper list in `docs/topics/landscape-literature.md`.
+
+### 2026-08-18 — GEO-opt-5 as a critical-period measurement (from the Research Trajectory page)
+
+- The onset of linear connectivity between sibling runs (GEO-opt-5, seed-split timing) is
+  proposed as one of four events — with the Fisher-trace peak, the Achille critical period,
+  and induction-head / ICL emergence — that "are all claimed to live in the same early
+  window — but no one has measured them *together* on one set of runs to check whether
+  they're the same event." A timed-deficit sibling-seed study is staged in
+  `docs/topics/critical-period-timing-study.md`; GEO-opt-5 on DataDecide's three seeds is
+  its free observational version.

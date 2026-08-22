@@ -498,3 +498,25 @@ taxonomy; RLVR token regimes; the causal per-token branch measurement). Already 
 toggle 10 — nothing additional. From here on, toggles are raw timestamped Q&A; Danielle's
 reorganization stopped at toggle 10.
 
+### Toggle 12 — 2026-08-18 17:51 (determinism axis across datasets; Soatto & Achille)
+
+> so then, for the deterministic axis, is this something you could measure across different
+> data sets (eg percentage of deterministic tokens, etc)? has this already been done? And
+> then one final piece that showed up early in my attempts to understand: soatto and achille
+> have an extensive collection of work on information bottlnecks and something about how if
+> you blur a cats vision as a kitten it will never be able to see unblurred (their proposed
+> equivalent in NN training had a name but i forget). how does this line of work interact
+> with these things we've been discussing?
+
+Routed to: [potential-projs/recipe-featurization.md](potential-projs/recipe-featurization.md)
+§4 (origin of REC-2's design) and
+[topics/data-featurization-literature.md](topics/data-featurization-literature.md); new
+reference topic [topics/critical-periods.md](topics/critical-periods.md); new staging topic
+[topics/critical-period-timing-study.md](topics/critical-period-timing-study.md); notes in
+[topics/warmstarting-decomposition.md](topics/warmstarting-decomposition.md),
+[topics/plasticity.md](topics/plasticity.md),
+[topics/landscape-literature.md](topics/landscape-literature.md),
+[potential-projs/landscape-geometry.md](potential-projs/landscape-geometry.md) §4,
+[topics/pretraining-to-posttraining.md](topics/pretraining-to-posttraining.md); the
+potential-projs README program-level notes.
+
