@@ -173,3 +173,14 @@ is moving from grid sweeps to analysis with a mechanism story, the MoE line is t
 long-term home, and the dense T0 papers (IRT, drift/diffusion, the data card) are best
 treated as the fast, low-risk publications that build the shared instruments — noise floors,
 entropy scorer, matched-loss methodology — that the MoE program then imports."
+
+---
+
+## 2026-08-21 — Artifact status
+
+Final checkpoints for the entire Slicing-and-Dicing sweep exist and will be uploaded to
+Hugging Face soon; the collaborator's upcoming experiments may provide intermediate
+checkpoints/logs for some runs. Details in
+[../open-questions-answered.md](../open-questions-answered.md). This unblocks the
+sweep-reanalysis step (final-checkpoint analyses only; over-training analyses need the new
+runs).

@@ -119,6 +119,25 @@ print(c.sql("""
 PY
 ```
 
+## 2026-08-21 — Slicing-and-Dicing MoE sweep: final checkpoints are available
+
+**Question.** Are the trained models from the Slicing-and-Dicing MoE sweep
+(https://arxiv.org/abs/2605.11689; Danielle third author) retained and obtainable? Gates the
+sweep-reanalysis idea (taxonomy invariance across configs / seeds / balancing mechanisms via
+cross-model expert matching) and the use of the sweep as a matched-loss comparison across
+architectures — see `docs/topics/moe-analysis-program.md` and `docs/topics/moe-recipe-suite.md`.
+
+**Answer (confirmed with the collaborator who ran the sweep, 2026-08-21).** All **final**
+checkpoints exist. One of the two will upload them to Hugging Face fairly soon. The
+collaborator is also running a range of additional experiments; for some of those,
+intermediate checkpoints / logs can likely be obtained.
+
+**Consequence.** The sweep-reanalysis work is unblocked on artifacts (final checkpoints only
+— no intermediate checkpoints from the original sweep, so training-dynamics analyses on the
+sweep itself are not available; any "over training" analysis needs the new experiments or
+runs of our own). Remaining open items: the HF upload landing, and which of the new
+experiments will log intermediates.
+
 ---
 
 ## Open — not yet checked

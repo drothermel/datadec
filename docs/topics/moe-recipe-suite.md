@@ -63,3 +63,11 @@ architecture?" via cross-model expert matching — as the first-act "sweep-reana
 with the balancing-mechanism sweep as the validation that routing-as-measurement is not a
 load-balancing artifact. Recorded in full in
 [moe-analysis-program.md](moe-analysis-program.md).
+
+---
+
+## 2026-08-21 — Artifact status
+
+Final checkpoints for the full sweep exist and are headed to Hugging Face; intermediate
+checkpoints/logs are likely obtainable for some of the collaborator's upcoming experiments.
+Details in [../open-questions-answered.md](../open-questions-answered.md).

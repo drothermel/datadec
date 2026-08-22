@@ -120,3 +120,14 @@ project-specific parts to [potential-projs/trajectory-statistics.md](potential-p
 and [potential-projs/token-movement.md](potential-projs/token-movement.md) §4; the
 sweep-reanalysis idea is also noted in [topics/moe-recipe-suite.md](topics/moe-recipe-suite.md).
 
+### Slicing-and-Dicing checkpoints — availability (Danielle's own note)
+
+> I checked with my collaborator and she does have all of the final checkpoints for the
+> slicing and dicing paper and one of us will upload them to huggingface fairly soon so thats
+> unblocked. there are also a range of additional exps she'll be doing so likely for some of
+> them we can get intermediate logs, etc.
+
+Recorded in: [open-questions-answered.md](open-questions-answered.md) (as a resolved gate),
+[topics/moe-analysis-program.md](topics/moe-analysis-program.md), and
+[topics/moe-recipe-suite.md](topics/moe-recipe-suite.md).
+
