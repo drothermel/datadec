@@ -402,3 +402,28 @@ quantized deltas for storage);
 [potential-projs/moe-partitions.md](potential-projs/moe-partitions.md) §4 (Theseus's
 functional task identity as the model for cross-granularity expert matching).
 
+### Toggle 8 — Loss Basins and the River-Valley Explanation
+
+> Another related idea is that of the loss basins and the river valley explanation of
+> training. My understanding is that these metrics are sometimes only relevant/comparable
+> between models if they're in the same basin. Is there currently a way to identify whether
+> a model is currently in the valley versus climbing the mountains? And is there a way to
+> identify whether two models are in the same basin?
+
+Danielle-flagged project seed (the `→` note on the toggle title):
+
+> → "Treat basin membership as a covariate of proxy-metric validity: Test whether 'Metrics
+>   are comparable iff linear mode connectivity (two models are in the same basin)'. Report
+>   your elicitability comparisons *conditional on* barrier height. If recipe effects on
+>   ICL-ability only hold within low-barrier pairs, that's a finding. If they hold across
+>   basins, that's a stronger one."
+
+Routed to: [potential-projs/landscape-geometry.md](potential-projs/landscape-geometry.md) §4
+(origin entry with the flagged seed); new reference topic
+[topics/landscape-literature.md](topics/landscape-literature.md);
+[potential-projs/annealed-readouts.md](potential-projs/annealed-readouts.md) §4 (MPL ↔
+river-valley); [topics/warmstarting-decomposition.md](topics/warmstarting-decomposition.md),
+[topics/icl-as-posttraining.md](topics/icl-as-posttraining.md),
+[topics/task-vectors.md](topics/task-vectors.md); the matched-loss rule in the
+potential-projs README.
+

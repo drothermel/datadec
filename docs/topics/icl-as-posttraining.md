@@ -155,3 +155,15 @@ Paper references for each in [icl-literature.md](icl-literature.md).
   flexible than extracted ones, and come with a mechanistic account (OV circuits, key
   heads, linear propagation) — a candidate for the "task-vector geometry" measurement that
   is less extraction-method-dependent. See `task-vectors.md`.
+
+---
+
+## 2026-08-18 — report comparisons conditional on basin membership (from the loss-basins discussion)
+
+Danielle-flagged seed on the loss-basins toggle, applied to this project: "log the pairwise
+interpolation barrier (with and without alignment) between every pair of checkpoints you
+compare, and report your elicitability comparisons *conditional on* barrier height. If
+recipe effects on ICL-ability only hold within low-barrier pairs, that's a finding; if they
+hold across basins, that's a stronger one." Also: "mechanism-level metrics (task vectors,
+GD-similarity scores) may not be comparable across basins at all" (Juneja et al., ICLR
+2023).

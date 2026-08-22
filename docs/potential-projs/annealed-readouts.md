@@ -272,3 +272,15 @@ decisions. Only notes about this project are kept here.
   claim is false at your scales, that's also a finding." The decay-branch runner is the same
   instrument with the schedule (rather than data) as the late-window intervention. Full
   discussion in `docs/topics/posttraining-experiment-design.md`.
+
+### 2026-08-18 — the river-valley reading of the MPL decay term (from the Research Trajectory page)
+
+- "The multi-power law paper itself flags this. Its authors note the river-valley conjecture
+  as the landscape framework their schedule-dependent loss terms are implicitly modeling.
+  The 'decay-induced loss drop' term is, in river-valley language, descending from
+  oscillating on the walls down to the river… So 'loss' during training conflates
+  along-river progress (durable) with distance-from-river (transient) — exactly the two
+  components your matched-loss design needs to distinguish. Two recipes matched on loss
+  could be matched on totally different mixes of the two." Wen et al. (arXiv 2410.05192) is
+  the canonical statement; their interpolation signature is "the closest thing to a 'river
+  test.'" Paper list in `docs/topics/landscape-literature.md`.

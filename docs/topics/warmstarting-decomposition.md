@@ -71,3 +71,12 @@ public, so the reproduction is genuinely cheap."
 - "**Chapter 1:** Why did the field's oldest 'pretraining hurt downstream performance at
   matched loss' result happen, and which modern practice fixed it?"
 - "**Future chapter:** Matched-loss ICL experiments as the same question at the next scale."
+
+---
+
+## 2026-08-18 — warm-starting as a basin story (from the loss-basins discussion)
+
+"Initializing from a converged solution means starting deep in a basin shaped by the small
+dataset — and the ELR-re-warming result (that re-warming closes the gap) is naturally read as
+'you need enough effective temperature to leave/reshape the basin.'" Suggests logging
+interpolation barriers between warm-started and re-initialized endpoints in the factorial.

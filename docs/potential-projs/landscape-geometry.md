@@ -159,3 +159,38 @@ decisions. Only notes about this project are kept here.
   different loss are different controls, and you'll want both." The core already
   distinguishes matched-compute from matched-loss pairs; keep both in every stratified
   analysis rather than collapsing to one.
+
+### 2026-08-18 — origin of this project (from the Research Trajectory page)
+
+**Danielle-flagged project seed** (the `→` note on the Notion toggle): "Treat basin
+membership as a covariate of proxy-metric validity: test whether 'metrics are comparable iff
+linear mode connectivity (two models are in the same basin).' Report your elicitability
+comparisons *conditional on* barrier height. If recipe effects on ICL-ability only hold
+within low-barrier pairs, that's a finding. If they hold across basins, that's a stronger
+one."
+
+Question posed: metrics may only be comparable between models in the same basin — is there
+a way to tell whether a model is in the valley vs. climbing the mountains, and whether two
+models share a basin?
+
+- "You're comparing observables (ICL curves, task vectors, plasticity statistics) across
+  models at matched loss. Loss is a scalar projection of position in parameter space, where
+  two models with equal loss can sit in different valleys or in the same valley but at
+  different points along the river vs. up the wall. The basin question is therefore the
+  question of *when your comparisons are well-defined*."
+- "There's no settled scalar measure of 'same basin' or 'on the river.' What exists is a
+  toolkit of pairwise tests: interpolation barrier (raw and permutation-aligned), the
+  convex-vs-monotone interpolation signature, feature-space connectivity, curve-collapse —
+  each partial." (These are GEO-2/GEO-5, GEO-1, GEO-opt-4, GEO-opt-1 respectively.)
+- "Nobody has connected either literature to *metric validity*: no paper says 'ICL scores /
+  task vectors / plasticity statistics are comparable iff models pass test X.' For your
+  design this suggests a cheap, high-value addition: log the pairwise interpolation barrier
+  (with and without alignment) between every pair of checkpoints you compare, and report
+  your elicitability comparisons *conditional on* barrier height."
+- Precedent for the core question: Juneja et al. (ICLR 2023) — models in different
+  linearly-connected basins "implement *different generalization strategies*… despite
+  similar in-distribution accuracy."
+- Caveats inherited from the literature: re-basin "often reduce[s] barriers only marginally
+  and work[s] poorly early in training, with no unified theory of when they succeed"; the
+  2026 neuron-identifiability line may eventually give a principled comparability
+  criterion. Paper list in `docs/topics/landscape-literature.md`.

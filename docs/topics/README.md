@@ -56,3 +56,4 @@ Absorbed on 2026-08-21 into project docs: `moe-analysis-program` and
 | [pretraining-to-posttraining.md](pretraining-to-posttraining.md) | DataDecide; pretraining choices → post-training outcomes at matched loss; the "post-training did nothing" literature; retrospective on the earlier project |
 | [icl-literature.md](icl-literature.md) | Emergence of in-context learning as a function of pretraining data properties; ICL mechanism assumptions |
 | [task-vectors.md](task-vectors.md) | Weight-space task vectors / task arithmetic / merging (Ilharco; Zhou; Theseus; quantization) and activation-space ICL task vectors (Dong; Yang); the two senses and their gradient link |
+| [landscape-literature.md](landscape-literature.md) | River-valley picture and its measurements; linear mode connectivity, re-basin, feature connectivity, cross-task linearity, neuron identifiability; the comparability-across-basins precedent |

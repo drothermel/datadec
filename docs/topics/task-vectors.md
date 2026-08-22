@@ -82,3 +82,13 @@ vectors are statistic #4 of the ICL protocol (`icl-as-posttraining.md`).
   subset of 'key heads' most decisive. At a higher level… TV propagation is largely linear:
   early TVs are rotated toward task-relevant subspaces to improve logits of relevant labels,
   while later TVs are predominantly scaled in magnitude."
+
+---
+
+## 2026-08-18 — why task arithmetic works only within a basin (from the Research Trajectory page)
+
+"Cross-task linearity in the pretraining–finetuning paradigm (*On the Emergence of Cross-Task
+Linearity in the Pretraining-Finetuning Paradigm*) — models fine-tuned from a common
+checkpoint stay in a shared linear regime, which is precisely why task arithmetic and model
+souping (*Model soups*) work, and why they *only* work within a basin." See
+`landscape-literature.md`.

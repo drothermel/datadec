@@ -258,6 +258,11 @@ Full text for each: `recipe-featurization.md` §4 (first),
   reaches this loss faster' and 'recipe A has better ICL at this loss' are separable
   claims." Applies to every matched-loss comparison in the portfolio (TRJ-3, IRT-3, GEO pair
   selection, TOK-4, the sweep reread as data in PART).
+- Third control, from the loss-basins discussion: matched loss can hide different mixes of
+  along-river progress (durable) and distance-from-river (transient), and different basins
+  altogether — "the basin question is therefore the question of *when your comparisons are
+  well-defined*." Log interpolation barriers between compared checkpoints and report
+  conditional on barrier height (the landscape-geometry project's core).
 - Cross-scale / cross-modality design principle: "Define the invariant measurement, not the
   invariant model. The bridge between tiers is a protocol… The deliverable of tier 1 is
   'here is a low-variance elicitability metric and here's how many seeds it needs.'" A
