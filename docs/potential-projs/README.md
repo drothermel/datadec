@@ -274,4 +274,8 @@ Full text for each: `recipe-featurization.md` §4 (first),
   performance at matched loss' result happen, and which modern practice fixed it? **Future
   chapter:** Matched-loss ICL experiments as the same question at the next scale." Staging
   topic: [../topics/warmstarting-decomposition.md](../topics/warmstarting-decomposition.md).
+- From the ICL-analysis discussion: "the field's best ICL measurement is a loss curve over
+  context position, fit with power laws, complete with emergence thresholds and proxy-metric
+  debates — your pretraining-scale question recapitulated inside a single forward pass."
+  Reference topic: [../topics/icl-literature.md](../topics/icl-literature.md).
 

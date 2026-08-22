@@ -368,3 +368,14 @@ hypotheses to [topics/plasticity.md](topics/plasticity.md); stabilizer reading t
 experiment cross-note in [topics/icl-as-posttraining.md](topics/icl-as-posttraining.md);
 retrospective chapter plan to the potential-projs README program-level notes.
 
+### Toggle 7 — Analyzing ICL
+
+> How you can analyze what's happening during in context learning? Are there gradient
+> approximations? What types of statistics have people come up with to measure the
+> intermediate impact of ICL?
+
+Routed to: [topics/icl-literature.md](topics/icl-literature.md) (papers, both the
+gradient-approximation arc and the task/function/state-vector family); the ranked
+measurement protocol to [topics/icl-as-posttraining.md](topics/icl-as-posttraining.md); one
+line to the potential-projs README program-level notes.
+

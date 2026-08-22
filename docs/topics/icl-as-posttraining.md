@@ -120,3 +120,27 @@ The warm-starting decomposition's final experiment — "a tiny transformer in th
 protocol" — asks whether "warm-starting damage[s] *elicitability* too, or only accuracy,"
 which "is unasked in all of this literature." Matched-loss ICL is proposed as the next
 chapter of the same question. See [warmstarting-decomposition.md](warmstarting-decomposition.md).
+
+---
+
+## 2026-08-18 — Measurement protocol: statistics in rough order of robustness (from the Research Trajectory page)
+
+1. "*In-context loss curves* — per-token loss as a function of context position / number of
+   demonstrations. Olsson et al.'s original 'ICL score' was literally the loss difference
+   between an early and late token position. Smooth, continuous, seed-cheap — the direct
+   descendant of your loss-curve-features thesis."
+2. "*Induction-head strength* (prefix-matching/copying scores on synthetic sequences) — the
+   mechanistic correlate of ICL emergence, measurable per-checkpoint, so you can watch
+   elicitability *develop* along the pretraining trajectory."
+3. "*Task-recognition vs. task-learning decomposition* — shuffled-label and format-only
+   controls separate 'the demos told the model which task' from 'the model learned the
+   mapping.' Matters because pretraining recipes plausibly affect these two components
+   differently."
+4. "*Task-vector geometry*" — norm (how much learning happened), direction stability across
+   demo orderings (cheap variance), transferability across prompts (generalization), and
+   whether differently-pretrained base models produce differently-structured task vectors at
+   matched loss.
+5. "*ICL–GD similarity*, last, and only with the adversarial controls" (the untrained-model
+   control that the founding papers skipped).
+
+Paper references for each in [icl-literature.md](icl-literature.md).
