@@ -304,3 +304,63 @@ test content if available; emit requirement metadata if tests are generated goin
   after-selection rule from the first entry in optimizer form: the holdout is what the
   selection rule is scored on.
 - GEPA 2507.19457 added to the ledger (agent-supplied).
+
+## Undated (intake 2026-08-22) — ranking metrics when pairwise decision accuracy saturates
+
+**Danielle's prompt (verbatim).**
+
+> I am predicting the ranking of a list of things (~25 items) and one metric that is
+> relevant is "decision accuracy" which would be the average pairwise prediction accuracy.
+> however, even bad baselines do great on this metric. so then I'd like to instead use a
+> metric that captures "correct rank predicted" or somehting like this to capture that
+> swapping element 1 and 2 is substantial even if 1 and 2 are both ranked higher than all
+> the rest correctly so there's a high decision accruacy.
+>
+> My loose memory is that NDCG or something like that is a ranking metric that captures
+> osmething like this, but it weights the values at the top of the list heavier or
+> somethign like this? Waht woud be good metrics for me to consider
+
+**Response (condensed).** NDCG@K (DCG = Σ rel_i / log₂(i+1), normalized by the ideal
+DCG; top-heavy via the log discount; graded relevance); MAP@K (precision at each relevant
+position — needs a binary "relevant" notion); weighted rank correlations (Blest's
+weighted rank correlation; the top-weighted ν family with a tunable emphasis parameter);
+Precision@K / Recall@K; Kendall τ and Spearman ρ noted as position-uniform, with weighted
+versions existing. Recommendation: NDCG@K (K ≈ 5–10) primary, MAP@K secondary, combine
+with P@K. Sources are recsys blog posts plus one weighted-rank-correlation paper.
+
+**Intake notes.**
+
+- The response answered a recsys question; Danielle's is a *full-permutation* question
+  (all ~25 items have a true rank; nothing is "irrelevant"). That changes the menu:
+  - MAP@K and P@K/R@K need a relevant/irrelevant split and are the wrong tools unless she
+    defines "top-k recipes" as the relevant set — then P@K is just "how many of the true
+    top-k did I put in my top-k," which is coarse but interpretable.
+  - NDCG with *rank-derived gains* (gain = 25 − true_rank, or exponential) works, but its
+    log discount is mild: swapping the true #1 and #2 costs only the difference between
+    1/log₂2 and 1/log₂3 on two items — small against a sum over 25. It will not make the
+    1↔2 swap "substantial" unless gains are steep (2^rel − 1 style).
+  - **Kendall τ and Spearman ρ** are the baseline permutation metrics; they are *not*
+    what saturates — decision accuracy *is* (τ+1)/2 up to ties, so any pairwise-accuracy
+    saturation is identical for τ. The problem is position-uniform weighting, not the
+    statistic.
+  - The right families for "top swaps matter more" on a permutation are
+    **top-weighted rank correlations**: weighted Kendall τ (Vigna 2015, hyperbolic
+    weights; `scipy.stats.weightedtau`), **rank-biased overlap** (Webber, Moffat & Zobel
+    2010; persistence parameter p sets how top-heavy), and Blest's / the Wroclaw ν family
+    the response named. These keep the whole permutation and let her choose the emphasis
+    curve explicitly.
+  - Two plain, reportable complements: **top-1 / top-k hit** (did the true best recipe
+    land in the predicted top-k) and **regret** (true metric of the predicted #1 minus
+    true metric of the true #1) — the latter is the decision-theoretic quantity DataDecide
+    actually cares about and is immune to the "baselines look fine" problem because it is
+    in metric units.
+- Why bad baselines score well: with ~25 items and a few large effect sizes, most pairs
+  are easy; pairwise accuracy is dominated by far-apart pairs. Report it stratified by
+  true-rank gap (adjacent pairs only; pairs within the top 5) before replacing it —
+  adjacent-pair accuracy is often the honest version of the same metric.
+- This is EDP's metric suite question revisited (`../../potential-projs/early-dynamics-
+  prediction.md`, 2025-07 responses 12–15 already list ρ/τ + NDCG@10); the additions
+  there should be weighted τ / RBO and regret, not MAP.
+- Weighted τ (Vigna 2015, 1404.3325) and RBO (Webber et al. 2010, TOIS) are
+  Claude-added, unverified.
+

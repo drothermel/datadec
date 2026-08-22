@@ -959,3 +959,17 @@ not the curve feature itself.
 - Any-step setting: confirm the feature window stays fixed at S₀ (see intake note); decide
   τ grid (K = 3 {33, 66, 100%} per the first review, or {25, 50, 75, 100%}).
 - Source the static recipe features from `REC`'s measured properties.
+
+### 2026-08-22 — Decision accuracy saturates; what to add to the metric suite
+
+Danielle's observation: on ~25-recipe rankings "even bad baselines do great" on pairwise
+decision accuracy, and a 1↔2 swap should count as substantial. Decision accuracy is
+(τ+1)/2 up to ties, so Kendall τ saturates identically; the fix is weighting, not the
+statistic. Add to the per-fold table: **weighted Kendall τ** (`scipy.stats.weightedtau`)
+or **rank-biased overlap** with a stated emphasis parameter, **top-k hit** for the true
+best recipe, **regret** (true metric of predicted #1 − true metric of true #1), and
+decision accuracy **stratified by true-rank gap** (adjacent pairs; top-5 pairs). NDCG@10
+stays but with rank-derived gains; MAP/P@K need a relevance split and are not natural
+here. Discussion: `../topics/reference/estimation-and-calibration-methods.md` (ranking
+metrics entry).
+

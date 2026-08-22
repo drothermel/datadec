@@ -373,3 +373,5 @@ WizardCoder; `chang2024effective` there is 2402.04177 (different paper) and
 | 2407.17465 | u-µP: Unit-Scaled Maximal Update Parametrization (Blake et al.) — Danielle-supplied PDF/URL | `parametrization-and-hp-transfer` | Danielle-supplied | GEO/TINY/EDP/DataDecide-dense | |
 | 2203.03466 | µTransfer (Yang et al.) — named in intake note only | `parametrization-and-hp-transfer` | Claude-added | — | |
 | 2303.11257 | Unit Scaling (Blake et al.) — named in intake note only | `parametrization-and-hp-transfer` | Claude-added | — | |
+| 1404.3325 | Vigna — weighted Kendall τ (hyperbolic weights) — named in intake note only | `estimation-and-calibration-methods` (ranking metrics) | Claude-added | EDP | |
+| (no ID) | Webber, Moffat & Zobel 2010, rank-biased overlap (ACM TOIS) — named in intake note only | `estimation-and-calibration-methods` (ranking metrics) | Claude-added | EDP | |

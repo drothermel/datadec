@@ -3670,3 +3670,21 @@ with a design-option pointer in
 [topics/staging/datadecide-dense.md](topics/staging/datadecide-dense.md) and three ledger
 rows (one Danielle-supplied, two Claude-added). No project ID.
 
+### Ranking metrics when decision accuracy saturates (one turn)
+
+> I am predicting the ranking of a list of things (~25 items) and one metric that is
+> relevant is "decision accuracy" which would be the average pairwise prediction accuracy.
+> however, even bad baselines do great on this metric. so then I'd like to instead use a
+> metric that captures "correct rank predicted" or somehting like this to capture that
+> swapping element 1 and 2 is substantial even if 1 and 2 are both ranked higher than all
+> the rest correctly so there's a high decision accruacy.
+>
+> My loose memory is that NDCG or something like that is a ranking metric that captures
+> osmething like this, but it weights the values at the top of the list heavier or
+> somethign like this? Waht woud be good metrics for me to consider
+
+Routed to [topics/reference/estimation-and-calibration-methods.md](topics/reference/estimation-and-calibration-methods.md)
+(new entry; the response's recsys menu re-read for a full-permutation target) with a §4
+note in [potential-projs/early-dynamics-prediction.md](potential-projs/early-dynamics-prediction.md)
+extending the 2025-07 metric suite. Two Claude-added ledger rows.
+
