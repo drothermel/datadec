@@ -4417,3 +4417,29 @@ added to the TLC §4 submission-record entry; the writing-period conversation is
 next intake. Still open from the walkthrough: TLC §1 adoption of the NL argument +
 vocabulary; TLC-0 metric consolidation; divergence staging promotion; the four
 candidate principles.
+
+### Walkthrough round 2 (2026-08-23)
+
+> 1(a) yes, and NL-as-prediction-not-requirement is really important, we should make
+> that very clear.
+>
+> 2(a) yes, findable but not decided on yet
+>
+> 3-yes promote!
+>
+> 4 first two yes, lets add the second to with annotations about thos caveats
+
+Applied: (1) a "Why the latent is natural language — a prediction, not a requirement"
+block in [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+§1 — the keystone constraint, the prediction-not-requirement emphasis with its two
+falsifying experiments, the cross-decoder hierarchy, the adopted vocabulary, and the
+Miao & Blunsom lineage; (2) a "TLC-0 candidate metrics" consolidation block at the end
+of §1, explicitly findable-not-decided; (3)
+[topics/staging/model-behavioral-divergence.md](topics/staging/model-behavioral-divergence.md)
+created (hypothesis verbatim, the ready spec, distance designs, the corrected
+no-AST-code fact, the time-sensitive OpenRouter snapshot note, gate), with the topics
+README staging table and the evaluation-methodology pointer updated; (4) all four
+principles added to
+[topics/reference/project-approach-principles.md](topics/reference/project-approach-principles.md)
+— benchmark-as-byproduct and module-or-kill as full principles, one-knob-one-plot and
+lens-not-commitment as technique-level with the discussed caveats annotated.
