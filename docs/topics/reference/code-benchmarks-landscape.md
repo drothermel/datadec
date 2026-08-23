@@ -243,3 +243,20 @@ model tried, down to the cheapest; some items broken in the official release; it
 bottleneck. Context and the synthetic-library lessons that preceded the cutover:
 `../../potential-projs/text-latent-code-autoencoder.md` §4, 2026-08-23 dataset-strategy
 entry.
+
+## 2026-08-23 — Efficiency-beyond-correctness benchmarks and DS-1000 (chunk 5 of the early-2026 conversation)
+
+From the historical re-eval conversation (respondent's claims, unverified; only DS-1000
+came with an arXiv ID). The efficiency-eval cluster the decision-quality idea must
+position against: **ENAMEL** — eff@k metric, expert reference solutions, strong stress-
+test generators, distinguishes suboptimal algorithms from suboptimal implementations;
+**EvalPerf / DPE** — profiles candidate code against reference solutions at distinct
+efficiency levels; **EffiBench** — NeurIPS Datasets & Benchmarks, efficiency relative
+to human canonical solutions on LeetCode-style tasks. **DS-1000** (2211.11501) —
+execution-based evaluation of real-world data-science code generation
+(pandas/numpy/matplotlib/sklearn/scipy/torch), with surface-form constraints (e.g.
+must-use-vectorized-ops) that already implement a form of constraint adherence beyond
+pass@1; the direct precedent for the data-manipulation task family (TLC doc §4,
+chunk-4 entry). Also mentioned: Pydantic ships "Pydantic Evals" as an eval framework
+(ecosystem note, not a benchmark paper). Decision-quality framing and de-risking:
+`evaluation-methodology-literature.md`, 2026-08-23 chunk-5 entry.

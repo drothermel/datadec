@@ -1781,3 +1781,20 @@ properties of the operator tree, and (d) a natural ground-truth description d_s 
 length the budget B = b1·|d_s| + b2 can bind against — while "succinct spec, rich
 implementation" is exactly the asymmetry the compression bottleneck needs and
 HumanEvalPlus lacks.
+
+### 2026-08-23 — Chunk 5 pointer: decision quality, efficiency prior art, and Danielle's agent-tooling goals
+
+Chunk 5 of the historical conversation mostly belongs to the divergence thread —
+Danielle's ranked-choice "decision quality under constraints" idea, its efficiency-
+benchmark prior art (ENAMEL / EvalPerf / EffiBench / DS-1000), the probe-for-divergence
+framing, and the de-risked A/B/C design are recorded in
+`../topics/reference/evaluation-methodology-literature.md` and
+`../topics/reference/code-benchmarks-landscape.md` (2026-08-23 entries). TLC-relevant
+residue: DS-1000 (2211.11501) is the direct precedent to position the chunk-4
+data-manipulation family against (a generator adds controllability, anti-memorization,
+and variance-at-scale over its fixed items); pydantic contract tasks (implement
+BaseModels + validators against payload suites asserting accept/reject behavior and
+error paths) are a candidate task family aligned with Danielle's stated tooling goal —
+"I'd REALLLY love to fit my coding agents to be pros at pydantic," then pandas, altair,
+matplotlib, torch; her stack is a Docker-sandboxed pydantic-ai agent, uv, pytest, with
+synthetic tests currently plain input/output pairs.

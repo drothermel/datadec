@@ -3889,3 +3889,51 @@ cutover, her first-hand critique, the combine-synthetic-and-real interest) and
 Routed to [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
 §4 (chunk-4 entry: data-manipulation + tiny-ML task families, DSL design, canonical
 evaluation, determinism strategy, roadmap). No new identifiers.
+
+### Chunk 5 (three prompts)
+
+> I have a docker sandboxed agent running built with pydantic ai, and as a user I'd
+> REALLLY love to fit my coding agents to be pros at pydantic (which I realize is not
+> in any of the categories we just discussed, but falls into another category of data
+> structs and data classes). and then pandas, altair, matplotlib, torch.  And yes, I
+> use uv and pytest but for now my synthetic tests are just input/output pairs.
+>
+> Separately, do you think there would be a version of this that could measure a
+> different type of automatically verifiable correctness?  I'm thinking things like
+> tasks with clear constraints that make one of the options clearly optimal given your
+> constraint, but where an agent might not choose that option even if they technically
+> solve the task.  So like, lets say you tell an agent that you care alot about the
+> performance of your code and you need to write a function to sort a huge list of
+> floats.  Ask it to choose between three implementation sketches that you saw online
+> and then complete the implementation to provide you the function you need.  Then the
+> sketches clearly output bubblesort, mergesort, radix sort or something like that.
+> there's a clear right answer, if you instructed the agent to "choose one of the
+> sketches" then a correct result should implement one of the algorithms, which you
+> can verify.  You can verify the correctness of the implementation.  And you can
+> verify that the agent chose the optimal one, probably directly via ast, but
+> definitely via timing the sorting of a huge list.  I feel like this sounds like the
+> kind of question that would be super annoying to generate, but actually, if you work
+> backwards from "true statements" for software engineers, that are conveniently
+> collected in books like "cracking the coding interview" in addition to a range of
+> websites, you could make a small set of "clearly ranked choice options" and then
+> generate a set of templated "task scenarios" and verification methods.  Thoughts?
+> Does this already exist?
+
+> Interesting, but it kind of sounds like it would be a pretty hard pitch for like,
+> something you would expand to a full conference paper, for example, because there
+> are so many things that do a very, very similar thing.
+
+> Cool. I guess I'm interested in one, or, wait, oh, I missed this part of your
+> answer, which is decision quality under constraints as a probe for model divergence
+> and reliability. I think this would be very cool, but it also seems like it might
+> seem very cool, and yet there probably are a bunch of types of outcomes that would
+> make it very difficult to draw any conclusions, making it high risk.
+
+Routed to [topics/reference/evaluation-methodology-literature.md](topics/reference/evaluation-methodology-literature.md)
+(decision-quality-as-divergence-probe entry with A/B/C design, de-risking, and a
+Claude-added option-position-bias caveat),
+[topics/reference/code-benchmarks-landscape.md](topics/reference/code-benchmarks-landscape.md)
+(efficiency-beyond-correctness cluster: ENAMEL, EvalPerf/DPE, EffiBench, DS-1000), and
+a pointer entry in [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+§4 (DS-1000 as data-manipulation precedent; pydantic contract tasks; her agent stack).
+Four ledger rows (DS-1000 with ID; three no-ID efficiency benchmarks).

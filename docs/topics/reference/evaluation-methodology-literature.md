@@ -103,3 +103,63 @@ per-model solution-family entropy.
 
 Status: a freestanding project candidate (uses the TLC synthetic library as testbed but
 is not TLC); promotion to staging/project doc is a pending intake decision.
+
+## 2026-08-23 — Decision quality under constraints as a divergence probe (chunk 5 of the early-2026 conversation)
+
+Continuation of the divergence-hypothesis entry above; same historical conversation and
+provenance caveats.
+
+**Danielle's idea (near-verbatim):** tasks "with clear constraints that make one of the
+options clearly optimal given your constraint, but where an agent might not choose that
+option even if they technically solve the task" — e.g., performance-critical sorting of
+a huge float list, choose among three implementation sketches (bubble / merge / radix)
+and complete the chosen one. Verify implementation correctness with tests; verify
+choice optimality "probably directly via ast, but definitely via timing." Generation
+strategy: work backwards from the curated "true statements" of software engineering
+(interview-prep books and sites) → small set of clearly ranked choice options →
+templated task scenarios + verification methods.
+
+**Prior-art answer (respondent, unverified):** no widely adopted benchmark has
+choose-among-sketches-then-implement as its core unit, but efficiency-beyond-
+correctness is an active crowded area: ENAMEL (eff@k, expert references, stress test
+generators), EvalPerf/DPE (profiling against reference solutions at distinct efficiency
+tiers), EffiBench (NeurIPS D&B, efficiency vs. human canonical solutions on
+LeetCode-style tasks), and DS-1000 (2211.11501 — execution-tested data-science code
+across pandas/numpy/matplotlib/sklearn/scipy/torch with surface-form constraints; the
+direct precedent for the chunk-4 data-manipulation family, complemented by a generator's
+controllability and anti-memorization). Danielle's pushback that this is "a pretty hard
+pitch" for a full paper accepted as correct for a generic efficiency benchmark.
+
+**The defensible framing (respondent's recommendation):** decision quality under
+constraints *as a probe for model divergence and reliability* — merging this thread
+with Danielle's divergence hypothesis. Unit of evaluation: three separable skills via a
+two-stage protocol (structured pick-and-justify, then implement): (A) choice quality,
+(B) implementation correctness, (C) constraint adherence (profiling/static checks).
+Unique hook a generator enables: constraint-varying families where the *right choice
+changes with the constraint* (memory cap → in-place wins; stability required → stable
+sort; latency-critical → vectorization), testing whether models track constraints.
+Candidate full-paper claim set: similar-on-correctness ≠ similar-on-decision-quality;
+decision quality more variance-prone and family-sensitive; prompt optimization improves
+correctness more than decision quality (or vice versa by regime); "good coders, bad
+planners" as a persistent per-model profile.
+
+**De-risking (Danielle flagged high risk of unconcludable outcomes; respondent's
+answer):** named failure modes — ceiling, floor, spec ambiguity, timing noise, and the
+choice-vs-implementation-difficulty confound. Mitigations: the A/B/C separation itself;
+low-risk families (asymptotic slam-dunks verified by scaling regime or hard timeout
+rather than microbenchmarks; API-constraint compliance via AST/import checks — pandas
+vectorization, pydantic validators, torch-not-numpy; memory caps via OS limits);
+ceiling knobs (trap options, conflicting constraints requiring prioritization, 3→5
+options), floor knobs (fill-in-missing-lines scaffolds, partial starters), timing knobs
+(coarse scaling tests, timeouts, median-of-5, pinned threads). Hypotheses designed to
+be interpretable under nulls: H1 choice separates families more than correctness (null
+= "constraint-following is commoditized"); H2 optimization improves implementation more
+than choice (either direction tells a story); H3 relative seed-stability of choice vs.
+implementation ("planning stable, execution noisy" or the reverse). Pilot kill-test:
+30 tasks (10 asymptotic / 10 API-constraint / 10 vectorization-vs-loop) × 6 models × 5
+seeds.
+
+**Intake note (Claude-added):** the two-stage structured pick is exposed to
+option-position and label bias (models preferentially pick option A / the first or last
+listed); the respondent never mentions randomizing option order and identity across
+samples, which this design needs from day one.

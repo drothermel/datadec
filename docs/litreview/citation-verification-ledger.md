@@ -386,3 +386,7 @@ WizardCoder; `chang2024effective` there is 2402.04177 (different paper) and
 | 2006.03511 | TransCoder — "Unsupervised Translation of Programming Languages" (2020) | `text-latent-code-autoencoder` §4 (chunk 3, cross-language) | agent-supplied | TLC (library leverage) | |
 | 2110.06773 | "Leveraging Automated Unit Tests for Unsupervised Code Translation" (2021) | `text-latent-code-autoencoder` §4 (chunk 3, cross-language) | agent-supplied | TLC (library leverage) | |
 | (no ID) | Cost-aware evolutionary prompt optimization, PMLR v293 zehle25a — only a proceedings link given | `text-latent-code-autoencoder` §4 (chunk 3, curriculum) | agent-supplied | TLC (optimizer loop) | |
+| 2211.11501 | DS-1000 — data-science code generation benchmark (pandas/numpy/matplotlib/sklearn/scipy/torch) | `code-benchmarks-landscape` (2026-08-23 efficiency cluster) | agent-supplied | TLC (task families), divergence probe | |
+| (no ID) | ENAMEL — eff@k efficiency metric, expert references; only a catalyzex link given | `code-benchmarks-landscape` (2026-08-23 efficiency cluster) | agent-supplied | divergence probe | |
+| (no ID) | EvalPerf / DPE — efficiency-tiered reference profiling; only a catalyzex link given | `code-benchmarks-landscape` (2026-08-23 efficiency cluster) | agent-supplied | divergence probe | |
+| (no ID) | EffiBench — NeurIPS D&B 2024, efficiency vs human canonical solutions; only a proceedings PDF link given | `code-benchmarks-landscape` (2026-08-23 efficiency cluster) | agent-supplied | divergence probe | |
