@@ -304,5 +304,8 @@ contracts but divergence under underspecification), four figures (mean-vs-tail
 scatter; failure-signature heatmap+clustering; success-conditioned behavioral
 fingerprint heatmap; regime stability), per-sample logging schema, and paper outline —
 handed off at the time to a separate implementation-planning agent (verbatim spec in
-the transcript, chunk 17). **Outcome of the Re-Align submission and the Logical
-Reasoning plan not recorded in this conversation — open intake question.**
+the transcript, chunk 17). **Outcome (resolved at intake, 2026-08-23): neither the Re-Align
+"behavioral non-collapse" paper nor the Logical Reasoning structured-latent plan was
+submitted, "or even close" (Danielle). The only submission was the LLA bandits paper
+(TLC doc §4, submission-record entry). The spec remains implementation-ready and
+unexecuted; staging promotion is the open decision.**

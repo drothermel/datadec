@@ -259,3 +259,22 @@ The four framings previously listed here as candidates (data measurement → dyn
 measurement science at academic scale; non-stationarity accounting; elicitation-controlled
 evaluation) are not discarded: the fourth is the apex question and the other three are the
 pillars above.
+
+### 2026-02-25 (recorded 2026-08-23) — the DQE research statement
+
+Danielle's own program-level formulation, from the "Code Compression Results + DQE
+Discussion" presentation of 2026-02-25 (preserved in the 2026-08-23 convo-artifacts
+bundle; context in `text-latent-code-autoencoder.md` §4, submission-record entry).
+Near-verbatim from the slide:
+
+> "I'm interested in how to build ML-style modular systems out of frozen pretrained
+> LLMs… where the trainable object is the system… where we optimize using verifiable
+> feedback. My goal is to understand and improve **reliability**, **cost-efficiency**,
+> and **broad utility** (like OODG) by designing the right benchmarks & optimizing
+> intermediate representations → with special interest in using small/cheap models."
+
+Recorded as a dated formulation (Danielle's decision, 2026-08-23), alongside — not
+replacing — the current apex-and-pillars framing; it was not adopted in the discussion
+where it was presented. Coverage note (Claude-added): the statement subsumes TLC, ELI,
+the behavioral-divergence/reliability instrument, the prompt-optimization re-eval
+thread, and the small/weak-model elicitation interest in one sentence.

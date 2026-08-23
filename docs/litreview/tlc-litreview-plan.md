@@ -85,3 +85,43 @@ As in the REC plan: identifier-first dedup; `title-only` papers never cited as f
 one serial corpus writer; no Notion or Paperpile mutation; every worker Opus, fresh,
 self-contained, read-only except the designated writer; the orchestrating session reviews
 between workflows.
+
+## 2026-08-23 addendum — must-reads from the February-2026 conversation intake (Danielle-approved)
+
+Added by decision at the 2026-08-23 intake walkthrough ("strong yes on miao + Blunsom
+and the rest of the must-reads"). Fit noted per item; identifiers from the intake
+ledger rows (origins recorded there).
+
+- **Miao & Blunsom 2016, 1609.07317** — *gate 1 must-read, PDF in hand* (bundle:
+  `~/drotherm/data/convo-artifacts/2026/2026-08-23-prompt-opt-reeval-aha/`). ASC:
+  discrete-VAE sentence compression with an NL latent under a background-LM prior —
+  the closest formal ancestor of the TLC setup; advisor-recommended; the LM prior is
+  the trained-model counterpart of the frozen-model distribution-compatibility
+  argument.
+- **DS-1000, 2211.11501** — required before building the data-manipulation task
+  family (subdomain: tasks/benchmarks); the precedent a generator must visibly
+  improve on (controllability, anti-memorization, scale).
+- **BigO(Bench)** (Facebook Research; no ID recorded) — required before any
+  complexity-property oracle or choose-then-implement mining; ~1.19M
+  complexity-labeled solutions + dynamic inference tooling; friendly last author.
+- **e-graphs / equality saturation** (egg line of work; Claude-attributed, verify) —
+  the formalism between rewriting and search; recommended three times in the
+  February conversation; relevant to canonicalization and macro-token vocabulary.
+- **TransCoder 2006.03511 + "Leveraging Automated Unit Tests for Unsupervised Code
+  Translation" 2110.06773** — before the cross-language equivalence direction; the
+  latter's generate-then-test-filter loop matches the library's spec+verify shape.
+- **SymC (PMLR v235 pei24b) + ProgramTransformer** (no IDs recorded) —
+  semantics-preserving-transformation prior art for the canonicalization/invariance
+  thread.
+- **Novelty check: curriculum in prompt optimization** — verify the respondent's
+  claim that curriculum/adaptive task scheduling is not a standard component of
+  prompt-optimization methods (adjacent: cost-aware evolutionary prompt opt, PMLR
+  v293 zehle25a) before it appears as a contribution claim anywhere.
+- **Bisimulation metrics (skim level)** — for tool-borrowing only (abstraction-
+  quality measures); the intake caveat stands: in single-shot settings this
+  degenerates to observational/contextual equivalence — do not adopt as paper
+  framing without PL review.
+
+Reminder this addendum exists to serve: Reviewer 3 of the LLA submission dinged the
+paper for not discussing GEPA and the prompt-optimization SOTA — the exact omission
+gate 1 is designed to prevent.

@@ -2252,10 +2252,11 @@ facts surfaced: the respondent's recap confirms the draft's variance instrumenta
 end-to-end (C_s; decoder-only vs. full-reconstruction pass distributions; the
 waterfall; FizzBuzz ×100; 3 synthetic families × 10 specs × 10 generations; provider/
 cost-tier design; DG-* prompt regimes as a contract-entropy axis; one-stage vs.
-two-stage; COMP-NL/COMP-SHORT; b1 ∈ [0.5, 1.0] budget sweeps). **Danielle has an
-existing AST code-metrics analysis** over generations (control-flow condition
-presence, solution complexity, variable-name/line/total lengths, comments,
-docstrings) — a live data asset. She was also planning a *second* workshop submission
+two-stage; COMP-NL/COMP-SHORT; b1 ∈ [0.5, 1.0] budget sweeps). In chunk 16 Danielle described having
+an AST code-metrics analysis over generations (control-flow condition presence,
+solution complexity, variable-name/line/total lengths, comments, docstrings);
+**corrected at intake (2026-08-23): no AST-metrics code exists** — she has
+code-processing codebases to point to instead (pointers to follow). She was also planning a *second* workshop submission
 at the time: contradictions within (model, spec) pairs under a structured latent, for
 the Logical Reasoning workshop — a TLC-adjacent plan whose outcome is unrecorded.
 The variance-paper spec itself ("Behavioral non-collapse in cheap coding LLMs",
@@ -2337,3 +2338,15 @@ gets it implicitly from the frozen models' pretrained priors, with the reconstru
 likelihood replaced by a test-suite oracle. That is a one-sentence lineage for the
 related-work section, and the paper belongs in TLC litreview gate 1 alongside GenDLN
 and ShortenDoc.
+
+**Framing provenance of the submitted paper (Danielle at intake, 2026-08-23,
+near-verbatim):** the compression framing used in the submission was the advisor's;
+"as I was writing I came to the conclusion that I guess we should use the compression
+framing my advisor dictated but I didn't really understand it and really I understood
+my previous framing much better but I hadn't thought it through sufficiently to
+either do both or do mine in a way that wasn't a clear 'I'm rejecting your
+instructions' way. so I tried very hard to figure out how to do his with no sleep in
+very very little time." A separate conversation from the writing period documents
+this framing confusion — intake to follow. The DQE statement (README program-level
+note, 2026-02-25) was her attempt at her own framing; it was not adopted in that
+discussion.
