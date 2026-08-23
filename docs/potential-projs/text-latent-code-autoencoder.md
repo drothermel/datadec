@@ -1915,3 +1915,86 @@ final message is answered in the next chunk). The technically durable outputs:
   Python. Note the explicitly compression-shaped statement of the benefit — this ties
   canonicalization to the thesis track's MDL framing, and the small/weak-model clause
   ties it to her elicitation interests.
+
+### 2026-08-23 — Chunk 11 of the early-2026 conversation: the resolution — property-indexed equivalence and faithful abstraction
+
+The canonicalization argument resolves, and this chunk contains what is probably the
+conversation's core "aha." Danielle's marker, on being shown "you're not asking for
+reversibility — you're asking for faithful abstraction… re-emitting Python is just
+choosing a representative of the equivalence class": **"I feel so seen lol, this is
+what I was trying to say at the beginning, but finally understand how to say now an
+hour later!"**
+
+**The precise hypothesis (respondent's faithful restatement, accepted):** for a large
+class of real-world Python, forcing programs through a more constrained intermediate
+language and re-emitting Python in a consistent form *reduces representational
+entropy* in a way that improves downstream learning, recognition, and error
+correction — especially for weaker models. About state-space reduction /
+regularization / pattern alignment / compressibility / error predictability, not
+semantic perfection. The intermediate language is a *regularizer, not a semantic
+mirror* (kin: SSA, desugared core languages, theorem-prover IRs, BPE — "lossy but
+regularizing"). Real risks: over-regularization (collapsing distinctions that are
+signal — vectorized-vs-loop, stable-vs-unstable, precision choices), model mismatch
+(weak models gain, strong models may not — itself an interesting result), translation
+noise (tests + filters catch). Minimal test: Python → restricted typed IR → fixed
+ugly-but-consistent Python style; measure pass@k, seed variance, error
+predictability, transfer.
+
+**Property-indexed equivalence (Danielle's formulation, formalized):** her framing —
+define the properties of a code chunk that matter (big-O category, optionally its
+constant, side effects on inputs, the output set) and prove equivalence on those
+properties, algorithms-class style. Formalized: f ~_P g iff ∀p∈P, p(f)=p(g) —
+observational equivalence under a projection; compound property sets like
+{functional correctness, big-O, purity} are valid equivalence relations; the missing
+word is **abstraction** (abstract interpretation / cost semantics are the named
+frameworks). Under this: normalization = moving within a class; **compression =
+collapsing class variance**; decoding = choosing a representative.
+
+**Terminology decisions (Danielle's, recorded for adoption):** *canonicalization*
+rejected with its precise definition (unique + idempotent + total representative per
+equivalence class — soundness, uniqueness, idempotence; her instinct that ML usage is
+aspirational was confirmed: entity resolution is approximate clustering +
+representative selection, not canonicalization). Adopted vocabulary, in her order of
+preference: **"abstracting programs into equivalence classes"** (favorite),
+**"behavior-preserving normalization"** (the invariant named explicitly, no
+uniqueness claim). Rejected: "representation regularization" (regularization
+overloaded), "semantic X" (precision varies uncomfortably), "idiom standardization"
+(linguistic baggage). Her keeper sentences, verbatim from the conversation:
+
+> "We define program equivalence relative to a set of observable properties
+> (functional behavior, complexity class, and effects), and treat programs equivalent
+> under these properties as interchangeable for downstream learning and analysis."
+
+> "Rather than preserving exact program structure, we abstract programs into
+> equivalence classes defined by behavioral properties and operate on representative
+> implementations to reduce representational variance."
+
+North-star sentence (respondent's, thesis-shaped): "We study how abstracting programs
+into equivalence classes under behavioral properties can reduce representational
+variance and improve model reliability."
+
+**The tokenizer thread:** her structural-tokenization idea (learned vocabulary over
+Python with primitives larger than byte pairs; synthetic structure markers replacing
+indentation; "templated tokenizing" — templates × tokenization) named as *program
+vocabulary induction / grammar-aware structural tokenization*: identify frequent
+normalized subtrees, replace with typed macro tokens (e.g. SORT_LIST(xs),
+MAP_FILTER(xs, f, p)), define decoding rules back to Python; reversibility required
+only up to a behaviorally valid representative. Caveats: BPE-style greedy local
+merges fail on hierarchical structure (operate on parsed structure, not raw text);
+tokens must be typed (arity/roles/constraints). Adjacent prior art named without IDs:
+code2vec/code2seq, AST path vocabularies, neural grammar induction, e-graphs with
+learned costs.
+
+**TLC ties (Claude-added):** (a) property-indexed equivalence generalizes TLC's C_s —
+the current oracle is P = {test-suite behavior}; adding complexity-class (BigO(Bench)
+tooling, chunk 7) and purity/effect properties gives a graded family of stricter
+success criteria for the same pipeline; (b) "compression = collapsing class variance"
+states the compression thesis in the new vocabulary — the NL bottleneck is an
+abstraction map, and the typed-macro-token vocabulary is a *deterministic,
+enumerable* competitor to the NL latent (a baseline the compression project should
+eventually beat or absorb — note it is close kin to the chunk-4 task-DSL operators);
+(c) tension to manage: normalization destroys exactly the behavioral fingerprints the
+divergence instrument (evaluation-methodology thread) wants to measure — normalize
+inside the optimizer/autoencoder loop, do *not* normalize the divergence
+measurements; (d) these keeper sentences and the vocabulary are candidates for
+adoption into this doc's §1/objective statement — walkthrough decision.

@@ -4096,3 +4096,42 @@ rewrite-theory math-vs-search boundary, IR-distance as drift metric and
 implementation-leakage operationalization, and her refined consistent-output-format
 hypothesis). No new identifiers; e-graphs/equality-saturation named without citation
 (Claude-added pointer flagged in the entry).
+
+### Chunk 11 (five prompts, voice-dictated; the resolution of the canonicalization thread)
+
+> okay, I swear I'm actually reading through everything that you're writing. I'm just doing it very slowly. And when I hit on a point that I'm confused about, then I am responding to it. Um, so like, I just read this section about how the reason I can say two sorting functions are equivalent is because I'm doing semantic matching on sorting, right? But, like, and I think that that's, like, um, okay. I see that, but I don't think that's the point I'm trying, like, that's definitely the point I made, right? But I don't think that's the point I'm trying to make. I think the point I'm trying to make is something closer to if we define the properties of a, I'm gonna call it a function, um a like chunk of code, a function that has inputs and outputs, um if we define the properties of a chunk of code that we care about as being, like, some version of big O notation, some version of like the scalar on the big O notation, um any type of side effects on the inputs, and then the set of outputs, then there are many There are many things that you can prove are equivalent on those properties through things like recursive proofs and things like that, right? Like, I feel like this is what we did in algorithms class. And so I do agree that you cannot prove that all of the steps are the same, and I think that that is fair. But you can prove that the runtime category is the same, the output will be the same given a, um, like a general form of an input for many cases, and that, like, at the very least, that there are no side effects. Um, there are definitely settings where you can prove that there are no side effects in two different functions, and I suspect you can prove a wider range of things. Um, and so I see your point, which is basically, I did not just say that these two functions are equivalent, but under the properties that I defined to be the key values that need to be equivalent for me to consider them equivalent star, then I can mathematically say that these functions are equivalent. Uh, is that, like, I mean, that's still not mathematically precise enough, but is that, like, closer to an accurate description of the levels of assumption I'm trying to make that are beyond just, well, I semantically think these are the same thing, um, that are more, like, principled than that, but are not claiming that these are the same programs.
+
+> Okay, I got stuck again. So I'm at the point where you said, I think we're not disagreeing at this point, but this is more like an interesting question. So this is very similar in spirit to SSA forms and compilers, canonical IRs and theorem provers, desugared core languages and functional compilers, and byte pair encodings and NLP, lossy but regularizing. And that byte pair encoder encoding clarifies the exact parallel that I'm thinking about, which is basically what I, in my head and envisioning, but did not map to the like example where I was envisioning it from, is learning a tokenizer over the space of Python programs, but considering primitives that are much larger than byte pairs, and basically normalizing the text in such a way that perhaps destroys, like, for example, let's say that you remove the indentation and the impact of spacing by introducing some type of like colon character that doesn't actually exist in Python, but that allows you to reconstruct the text form Python and also in a more consistent way tokenize the text form with like a learned tokenizer based on the distribution of the data set. I suspect there are like some key details about how tokenizers work that would make this harder, but like, you can definitely do word tokenization, char tokenization, byte pair encoding tokenization. And so I don't see why you couldn't define like max chunk sizes and maybe min chunk sizes or something like that. Like I think the process of optimizing a tokenizer is pretty flexible, and that's basically exactly what I was imagining, is tokenizing. But like, maybe like a templated tokenizing or something like that. So it's like a mashup between templates, like composition and tokenization, which I realize is not actually what byte pair encoding does. Anyways, I'm curious what your thoughts are on that.
+
+> A quick note, mainly to myself, but also to you. I really like the phrase behavior-preserving normalization. I think I also feel good about representation regularization, kind of, but not really, because I think that, like, basically, the word regularization feels really overloaded. The word semantic, I think in some cases is very precise in a way that I don't quite understand, and in other cases is very loose. And so I find it a little bit uncomfortable as a word to try to define a precise concept with. And then, like, idiom has very, well, I mean, my main association with the word idiom and idiom standardization is, like, a linguistic concept, which probably has a very precise definition, but then that feels like it doesn't necessarily map cleanly or obviously, at least to me, to what we're talking about. So behavioral-preserving normalization sounds great, and I will take the feedback that canonicalization is not what I'm doing. But if you could briefly explain what the definition of canonicalization is, because, like, I guess the settings that I've heard the phrase canonicalization are settings that are inherently, like, ill-defined. Like, basically, okay, so you're trying to canonicalize a set of strings that you extracted from a text document into a ground truth set of entities, right? And so, like, I guess in that sense, you could say your target is that you want to achieve canonicalization, but you really have no hope of actually achieving canonicalization, and because that feels very fuzzy, then I think of canonicalization as a somewhat fuzzy term to describe a, like, target that you are proposing a solution to try to obtain, but there is no chance that you or anybody else who is proposing a solution will ever actually obtain it.
+
+> Okay, updated note, because I reached this part and your response. I like abstracting programs into equivalence classes even more, and I like whatever I said was my favorite so far in the last comment.
+
+> """
+> Now your earlier IR intuition finally clicks:
+>
+> A stricter language makes property extraction easier
+>
+> Lower IRs make Big-O, effects, and costs more explicit
+>
+> You’re not asking for reversibility
+>
+> You’re asking for faithful abstraction
+>
+> Then re-emitting Python is just:
+>
+> choosing a representative of the equivalence class
+>
+> Not “recovering semantics.”
+> """ - I feel so seen lol, this is what I was trying to say at the beginning, but finally understand how to say now an hour later!
+>
+> “We define program equivalence relative to a set of observable properties (functional behavior, complexity class, and effects), and treat programs equivalent under these properties as interchangeable for downstream learning and analysis.” - recording this here for my future note taking
+
+Routed to [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+§4 (chunk-11 entry: the precise reduced-entropy hypothesis, property-indexed
+equivalence and the abstraction framing, terminology decisions with her keeper
+sentences verbatim, the structural-tokenization / program-vocabulary-induction thread,
+and Claude-added TLC ties — C_s generalization, macro-token vocabulary as a
+deterministic competitor baseline, the normalize-vs-measure-divergence tension, and
+the candidate adoption of the new vocabulary into the doc's objective statement). No
+new identifiers (code2vec/code2seq, grammar induction, e-graphs named without IDs).
