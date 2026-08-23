@@ -1637,3 +1637,58 @@ conclusions under model drift?").
 Intake still in progress (more chunks of the historical conversation to come); this
 entry may be extended. Sibling record of the re-eval framing:
 `../topics/reference/prompt-optimization-landscape.md` (2026-08-23 entry).
+
+### 2026-08-23 — Chunk 3 of the early-2026 conversation: library leverage, open-ended tasks, curriculum
+
+Same historical conversation as the entry above. Chunk 3 turns to the synthetic
+function-generation library (the "pretty robust library for generating testable python
+functions" built for the workshop paper, needing multi-language extension) and what
+else it unlocks. Danielle's reactions carry the signal:
+
+- **Open-ended task templates — enthusiastic yes** ("would be really cool to add to my
+  synthetic dataset library!!"). The respondent's design note (verbatim in the
+  transcript) proposes three starter templates that stay closed-world-verifiable while
+  opening the implementation space: multi-function micro-libraries (4–8 related
+  functions sharing invariants, e.g. a tiny `stats` module with cross-function
+  invariant tests like `quantile(0.5) == median`), stateful data structures (LRU cache
+  with TTL, event emitter, rate limiter — sequential scripts + invariant checks +
+  randomized operation sequences), and repair/refactor tasks (broken code + tests;
+  avoids cold-start variance, ideal for measuring optimizer improvement trajectories).
+  Design principles: deterministic verification, multiple reasonable decompositions,
+  surface area over algorithmic novelty, failure-mode richness, composable difficulty
+  knobs. These extend the existing String Rules / Stateful / Simple Algorithms
+  families upward in openness.
+- **Curriculum for the LLM-as-optimizer** — Danielle's observation: curriculum learning
+  over difficulty knobs "would even be plausible as an approach to making the
+  LLM-as-optimizer approach stronger… I suspect it isn't a standard component of all
+  approaches?" Respondent concurs it is not standard (adjacent momentum in
+  budget-aware/sequential evaluation-allocation methods, e.g. a cost-aware
+  evolutionary prompt-optimization paper at PMLR v293, zehle25a — no arXiv ID given);
+  implementable inside the harness as adaptive task scheduling (start search on easy
+  instances, introduce harder ones, measure sample efficiency and transfer). This is a
+  candidate TLC optimizer-loop contribution the difficulty ladder already supports.
+- **Cross-language semantic equivalence** — Danielle's strongest reaction
+  ("!!!!! I hadn't even considered this"): same spec → implementations in multiple
+  languages, each verified by language-native tests; measures polyglot robustness,
+  cross-language prompt-optimization transfer, language-specific failure signatures.
+  Her follow-up on unsupervised-MT-for-code answered with TransCoder (2006.03511,
+  2020) and "Leveraging Automated Unit Tests for Unsupervised Code Translation"
+  (2110.06773, 2021) — the latter's generate-then-test-filter loop closely matches the
+  library's spec+verify structure; the library can emit supervised translation pairs
+  cleaner than mined corpora. (Both IDs agent-supplied, ledger rows added.)
+- **Post-training/distillation data generation** — aligns with her stated interest in
+  "how far we can push small/weak models": the library can emit failure cases with
+  minimal counterexamples, self-correction traces, and unit tests from specs as
+  reusable assets for RL/DPO/verifier training.
+- **The orphaned variance sweep** — the large performance/variance run done for the
+  workshop paper never fit in it. Respondent's homes: arXiv companion evaluation
+  report (recommended: workshop paper = tight claim, companion = the sweep),
+  repro-style writeup, artifact report living with code+logs, or supplement. As a
+  standalone reliability-workshop framing: "point estimates are misleading:
+  within-model variance and early-stage feasibility failures dominate observed
+  differences; reliability ranking flips under realistic budgets."
+
+Chunk 3 also contains Danielle's model-divergence hypothesis and three
+behavioral-distance experiment designs — recorded in
+`../topics/reference/evaluation-methodology-literature.md` (2026-08-23 entry), since it
+is a freestanding measurement question rather than TLC-specific.

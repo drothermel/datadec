@@ -3774,3 +3774,68 @@ the pitch bibliography's author/title pairings for 2402.18700 (Chuang) and 2408.
 applied to the TLC §4 entry and the prompt-optimization-landscape entry: conversation
 is historical (~Jan–Mar 2026), the workshop paper was submitted and rejected, and the
 current TLC docs are the return to the original direction.
+
+### Chunk 3 (two prompts)
+
+> this is very cool! one of the things you said that I'm curious about is the idea of a
+> "more open ended coding task", what types of examples were you considering?
+>
+> Also, for the workshop we previously intended to submit to I ran a large number of
+> runs to get performance and variance across models and I don't believe this type of
+> analysis is going to go into the paper, making me wonder where else it could go.
+>
+> Then, I'm also wondering about the idea I've heard frequently from researchers that
+> all the model provider's models have collapsed to almost identical solutions.  My
+> results on simple fxn generation seems to suggest almost the opposite and makes me
+> wonder whether for the specialized task of coding older models were actually *more*
+> similar because their gains came mainly from general LLM improvements but now we're
+> making great progess in the coding realm because of the ability to verify outputs
+> for rewards or dataset generation, etc so different model families may actually have
+> gotten *further* from each other in the coding task space over time.  I'm not quite
+> sure how I'd design an experiment to test whether this is the case or not.
+>
+> And finally, I've built a pretty robust library for generating testable python
+> functions.  And for our workshop paper I need to extend it to other langauges too.
+> Then it makes me wonder what other types of ways I can leverage it either for easily
+> generating specific useful data for specific ideas or as the base of a benchmark,
+> etc.  Thoughts?
+
+> 1) oooh, these more open-ended tasks would be really cool to add to my synthetic
+> dataset library!!
+>
+> 2) variance experiments - do you think there's a way to try to frame the conclusions
+> into its own focused workshop submission for a very different type of workshop at
+> perhaps a more analysis or reliability kind of conference?
+>
+> 3) I love the idea of "distance between model behaviors",  each of the things you
+> listed seems both informative and totally doable.  Do you think there are 1-3
+> workshop sized hypothesis + exp designs in there where quick initial tests could
+> narrow down which ones would be most pluasible?
+>
+> 4) "A. Cross-language semantic equivalence benchmark"!!!!! I hadn't even considered
+> this as a direct result of using the same specs for different languages, thats such
+> a cool concept!  Do you know if people have used the old Unsupervised MT techniques
+> (handwavy description: aligning the tokens based on statistics to infer translations
+> between language) on code translation?  I'm sure there are a ton of semi-supervised
+> approaches but I see how this library would provide the ability to generate
+> interesting supervised data.
+>
+> "C. Curriculum / controllable difficulty scaling" whoa, this would even be plausible
+> as an approach to making the LLM-as-optimizer approach stronger by using curriculum
+> learning.  which I'm sure exists in directly comparable related work but I haven't
+> seen it immediately in my cursory pass so I suspect it isn't a standard component of
+> all approaches?
+>
+> "F. Data generation for post-training / distillation experiments" -> this aligns
+> with my interest of how far we can push small/weak models, I think that would be
+> super cool.
+
+Routed to [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+§4 (chunk-3 entry: open-ended task templates, curriculum-for-optimizer candidate,
+cross-language leverage, post-training data generation, the orphaned variance sweep and
+its possible homes) and
+[topics/reference/evaluation-methodology-literature.md](topics/reference/evaluation-methodology-literature.md)
+(new entry: the model-divergence hypothesis verbatim + behavioral-distance designs
+A–E and workshop slices H1–H3). Three ledger rows (TransCoder, unit-test-filtered code
+translation, PMLR cost-aware prompt opt with no ID). Divergence-hypothesis
+staging/promotion deferred to the post-conversation walkthrough.

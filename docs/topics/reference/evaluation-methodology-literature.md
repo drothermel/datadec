@@ -53,3 +53,53 @@ exception, and few-shot configuration variance is "a bias axis to sweep, not noi
 average." The variance of interest is in training (seed, data order, init) — consistent
 with Signal and Noise's definition of noise as step-to-step wander. Cited: OLMES (*A
 Standard for Language Model Evaluations*).
+
+## 2026-08-23 — Danielle's model-divergence hypothesis and behavioral-distance designs (early-2026 conversation, historical)
+
+From chunk 3 of the ChatGPT re-eval conversation (~Jan–Mar 2026; transcript at
+`~/drotherm/data/convo-artifacts/2026/2026-08-23-prompt-opt-reeval-aha/`; project
+context in the TLC doc §4). Respondent claims unverified.
+
+**The hypothesis (Danielle, verbatim):** "I've heard frequently from researchers that
+all the model provider's models have collapsed to almost identical solutions.  My
+results on simple fxn generation seems to suggest almost the opposite and makes me
+wonder whether for the specialized task of coding older models were actually *more*
+similar because their gains came mainly from general LLM improvements but now we're
+making great progess in the coding realm because of the ability to verify outputs for
+rewards or dataset generation, etc so different model families may actually have gotten
+*further* from each other in the coding task space over time."
+
+Note this is grounded in her own data: the early-2026 TLC baseline runs on simple
+function generation showed large cross-model behavioral differences, against the
+folk-wisdom "collapse" claim.
+
+**Behavioral-distance measurements** (respondent's menu; all run on fixed task sets at
+fixed decode settings):
+
+- A. Agreement/correlation on per-item success across models; cluster models
+  (dendrogram/heatmap). Collapse predicts high correlation, tight clusters.
+- B. Error-mode distance: label failures (not-code / parse / type / wrong-algorithm /
+  off-by-one / timeout / contract violation), compare distributions across models (JS
+  or Wasserstein divergence). Equal pass@1 with different failure signatures is the
+  strong anti-collapse evidence.
+- C. Output diversity under controlled sampling: N samples per prompt per model;
+  unique AST shapes / CFG-ish fingerprints, edit-distance distributions, solution
+  families after normalization (formatting, alpha-renaming).
+- D. Prompt transfer as behavioral probe: optimize on A, evaluate on B; collapse
+  predicts high transfer, small gaps.
+- E. Time axis (her hypothesis directly): 2–3 generations per family, repeat A–D, test
+  whether pairwise distances shrink or grow over time — OpenRouter's historical model
+  sequences as the asset. Respondent's prior: convergence on easy items, divergence on
+  hard/edge-case items.
+
+**Workshop-sized slices** (respondent, on request): H1 behavioral clustering (200–500
+tasks × 6–10 models, pass/fail correlations); H2 failure-mode divergence ("equal mean,
+different tails" — same runs plus failure taxonomy; recommended single pick, least
+sensitive to baseline accuracy levels); H3 transfer matrix (3 models, optimize-on ×
+eval-on deltas, transfer-gap metric). Concrete starter: ~300 generated tasks, 6 models
+(3 families × old/new), log pass/fail + failure taxonomy + normalized solution
+fingerprint; plot success-correlation matrix, failure-distribution JS divergence,
+per-model solution-family entropy.
+
+Status: a freestanding project candidate (uses the TLC synthetic library as testbed but
+is not TLC); promotion to staging/project doc is a pending intake decision.
