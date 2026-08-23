@@ -3983,3 +3983,42 @@ Routed as a chunk-7 addendum to the decision-quality thread in
 (BigO(Bench) mining designs, the collaborator connection, the analysis-first paper
 shape with her framing near-verbatim flagged as a candidate standing principle, and a
 Claude-added contamination caveat on mining real solutions). No new identifiers.
+
+### Chunk 8 (two prompts, voice-dictated)
+
+> So recently I've been trying to use the approach of taking a loosely plausible
+> workshop subject and then trying to figure out how I could fit my ideas, like one of
+> my ideas, or many, but like at least one idea to the workshop by changing the
+> framing as a way to get better at thinking about the first versions of the ideas
+> from different perspectives. And one of the workshops that I'm having a really hard
+> time figuring out that has a name that sounds very related is the logical reasoning
+> workshop at High Clear, because logical reasoning with LLMs is the full name, sounds
+> like exactly what all these things are that I'm interested in, but it seems like a
+> much more formal target setting or formal target methods that they're looking for,
+> and I'm not really sure, like, I feel like these ideas, especially with like code
+> verification and stuff like that, are, and then you get into like big O notation,
+> whatever, these ideas are very close to the space of things where you have, for
+> example, external logic tools that allow your LLMs to perform more reliably or stuff
+> like that. But I just don't really still see how to take one of the ideas and make
+> it a really good fit for this workshop.
+>
+> https://sites.google.com/view/iclr-2026-llmreasoning
+
+> So it seems like, submitting, like this is a meta question, but like, it really
+> seems like workshops are kind of the perfect testbed to dip a toe into areas that
+> are slightly outside of your subject matter focus, and also to take a stab at
+> getting better and faster at converting half-baked ideas into concrete tiny papers,
+> where you could even contribute multiple to different workshops, and this seems like
+> it's especially well-suited because of their two-stage submission process where you
+> could start with a tight, tiny paper, perhaps even two tight, tiny papers in a very
+> specific thing, and then based on the review feedback, you either improve it, then
+> resubmit it, because it was rejected, or you can expand it into a fuller version for
+> the second round, which seems like a really cool feature. Am I missing something?
+
+Routed as a chunk-8 addendum to
+[topics/reference/evaluation-methodology-literature.md](topics/reference/evaluation-methodology-literature.md)
+(constraint-consistency as a fourth measurement axis; logic-workshop translation of
+the portfolio; workshop-strategy gotchas; a second candidate standing principle —
+workshop submissions must feed the big paper or kill a direction). The ICLR 2026
+logical-reasoning workshop itself is historical — no workshop-deadlines update. No
+new identifiers.

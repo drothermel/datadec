@@ -230,3 +230,38 @@ respondent claims unverified):
   preserving-strategy) or regenerating implementations against the labels would be
   needed; the respondent does not raise this here despite raising anti-memorization
   earlier in the same conversation.
+
+**Chunk-8 addendum — constraint consistency as a fourth measurement axis, and the
+workshop-fitting exercise.** Danielle's practice (near-verbatim): "taking a loosely
+plausible workshop subject and then trying to figure out how I could fit my ideas… by
+changing the framing as a way to get better at thinking about the first versions of
+the ideas from different perspectives." Applied here to the ICLR 2026 LLM logical-
+reasoning workshop (sites.google.com/view/iclr-2026-llmreasoning — historical; that
+workshop has passed). The respondent's translation of her portfolio into
+logic-workshop language surfaced one genuinely new measurable: **constraint
+consistency across logically related prompt variants** — same spec rephrased, spec
+plus an added constraint, spec as choose-among-sketches — with contradiction defined
+as violating an implied or stated commitment ("claims it chose O(n log n) but
+implements O(n²)"; "says stability required but uses unstable approach"). Framings:
+spec = premises, program = proof witness; a unit-test harness / complexity profiler /
+type checker / pydantic validator functions as the CFP's "external logical solver."
+Sketch submission: 30–80 tasks × 3–5 related variants; feasibility, success, and
+consistency rate; intervention = verifier loop where the model proposes solution +
+structured commitments, the verifier returns a failing constraint or counterexample,
+and the model patches under a don't-violate-prior-commitments rule.
+
+This gives the accumulating instrument four distinct axes worth naming: variance
+(same prompt, different seeds), consistency (related variants, systematic sensitivity),
+divergence (across models/families/vintages), and decision quality (within-task choice
+under constraints). (Claude-added synthesis.)
+
+On the meta-question — workshops as testbed for adjacent areas and for practicing
+half-baked-idea-to-tiny-paper conversion — respondent's cautions: the two-stage
+tiny-then-expanded process is not a universal ICLR-workshop feature (verify per CFP);
+review quality varies; dual-submission rules vary; and the "workshop farm" risk of
+fragmenting the thesis narrative. Crisp rule offered, candidate standing principle for
+`project-approach-principles.md` (pending walkthrough decision, alongside the chunk-7
+benchmark-as-byproduct candidate): **every workshop submission should either become a
+module of the eventual big paper or decisively kill a direction quickly** — plus the
+1-home-workshop + 1-stretch-workshop pattern, each tiny paper = one clean hypothesis,
+one killer figure, one minimal intervention.
