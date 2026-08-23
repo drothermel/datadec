@@ -104,3 +104,69 @@ whole-program or predictor level (`pred_name`, `pred_trace`), with a trainset fo
 reflection and a valset for Pareto tracking (`dspy.ai` optimizer docs). This is the first
 of the missing-anchor list (APE, OPRO, ProTeGi, TextGrad, DSPy/MIPROv2, GEPA) to arrive
 with an ID; the rest still need supplying. All claims are the respondent's, unverified.
+
+## 2026-08-23 — Re-evaluating 2022–2024 findings under modern models (ChatGPT conversation, in progress)
+
+A long ChatGPT conversation Danielle describes as a real "aha" moment; arriving in
+chunks, full verbatim transcript at
+`~/drotherm/data/convo-artifacts/2026/2026-08-23-prompt-opt-reeval-aha/` (source link in
+its `INDEX.md`). This entry summarizes chunk 1 and may be extended. All respondent
+claims and identifiers unverified.
+
+**Danielle's motivating observation:** current cheap LLMs are often more powerful than
+the best LLM of two years ago — so which 2022–2024 prompt-optimization findings (OPRO,
+Revisiting OPRO, LLM-based evolutionary optimizers) actually hold up now? She initially
+framed this as "purely analysis" suited to a repro/blog-post track, unsure it counts as
+a research paper.
+
+**Identifiers supplied** (all agent-supplied; ledger rows added). This delivers the
+second and third of the missing-anchor list (OPRO now has an ID; APE, ProTeGi, TextGrad,
+DSPy/MIPROv2 still needed):
+
+- **OPRO** — "Large Language Models as Optimizers", 2309.03409 (2023).
+- **Revisiting OPRO** — "The Limitations of Small-Scale LLMs as Optimizers",
+  2405.10276; per the respondent an ACL Findings 2024 paper (2024.findings-acl.100):
+  small open models (LLaMA-2, Mistral 7B) are weak as optimizers; strong
+  direct-instruction baselines recommended in that regime. Danielle named the title;
+  the ID is the respondent's. The respondent calls it "a template" for her idea, with
+  the axis changed from small-vs-big to modern-cheap-vs-old-SOTA.
+- **LEO** — "Large Language Model-Based Evolutionary Optimizer: Reasoning with
+  elitism", 2403.02054 (Danielle-named title, respondent ID); population-based
+  numerical optimizer, guardrails against hallucination.
+- APO systematic survey 2502.16923; automatic prompt engineering survey 2502.11560
+  (both 2025, offered as scaffolding for a fair comparison protocol).
+- **PromptBridge** 2512.01420 — cross-model prompt transfer (2025).
+
+**Venue map for replication/re-eval work** (respondent's, unverified): MLRC/ReproML
+(reproml.org); ReScience C (replication journal); TMLR reproducibility certifications;
+mainline venues when framed as evaluation protocol + findings (Findings-style tracks);
+NeurIPS Datasets & Benchmarks if packaged as an evaluation suite.
+
+**The re-eval harness sketch** (respondent's design, condensed): "MLflow +
+lm-eval-harness + Optuna, narrowly scoped to prompt optimization." Six pillars —
+(1) forced separation of task / template / optimizer / model / budget / evaluation;
+(2) a strict optimizer interface (`initialize` / `propose` / `update`) every method must
+fit, enabling comparison of search behavior, not just final accuracy; (3) budget-first
+execution (tokens/$/steps/wall-clock as first-class config, hard stop on exhaustion —
+"most papers quietly cheat on budget"); (4) full search-trajectory logging (every
+candidate prompt, per-step cost and score, seed variance, edit distance);
+(5) train/val/test splits for the prompt search itself, reporting only on test
+(prompt-overfitting control); (6) cross-model transfer as a first-class experiment
+(optimize on A, evaluate on A/B/C). v1 scope: 3–5 tasks, 3–4 optimizers (random,
+hill-climb, OPRO-style, evolutionary), 4–6 models, YAML configs, one command per
+figure, reproducibility manifest (model version, API params, commit, cost, seed).
+
+**Candidate claims the instrument could test** (respondent's list, useful as hypothesis
+menu): gains collapse under realistic budgets; search trajectories differ qualitatively
+across model families; improvements largely from prompt length creep; prompts optimized
+on model A do/don't transfer under controls.
+
+**Positioning** (respondent, condensed): a benchmark counts as research when it is a
+measurement framework / diagnostic lens / standardization contribution / belief-revising
+findings / adopted artifact — "the paper is about the methodology and the findings; the
+library is the evidence and artifact." Suggested arc: (1) measurement + first
+disconfirmation, (2) mechanism paper on why the failures happen (why does OPRO plateau;
+is the optimizer doing search or writing longer prompts), (3) optional constrained
+improvement (budget-aware optimizer, transfer-robust representation, stopping
+criterion). Explicit anti-scope-creep advice: small, clean, convincing — not the
+definitive benchmark.

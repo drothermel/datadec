@@ -3688,3 +3688,45 @@ Routed to [topics/reference/estimation-and-calibration-methods.md](topics/refere
 note in [potential-projs/early-dynamics-prediction.md](potential-projs/early-dynamics-prediction.md)
 extending the 2025-07 metric suite. Two Claude-added ledger rows.
 
+
+## Prompt-optimization re-evaluation conversation (ChatGPT) — intake from 2026-08-23
+
+Danielle's framing at handoff: a very long conversation, "a real 'aha' moment for me
+about the project I was working on"; delivered in chunks. Full verbatim transcript
+(both sides) preserved at
+`~/drotherm/data/convo-artifacts/2026/2026-08-23-prompt-opt-reeval-aha/transcript.md`;
+source: https://chatgpt.com/c/6988915f-707c-8326-aa49-8b0aa7a18537
+
+### Chunk 1 (four prompts)
+
+> There are a bunch of papers from the last few years that explore different methods of
+> prompt optimization for different tasks and with different models.  However, current
+> cheap LLMs are often more powerful that the best LLM of 2 years ago.  Then, I'm curious
+> which of the findings actually hold up in the modern era. I vaguely remember reading
+> about ML conferences that have repro or blog post tracks, which this feels like the
+> perfect kind of systematic investigation for (as it wouldn't provide a new approach or
+> conclusion necessarily, it would be purely analysis which I'm unclear can really be
+> submitted as a research paper even to a workshop).
+>
+> What are these options? And, have similar studies been done?  I'm specifically
+> referring to things like the OPRO method with LLMs as optimizers, the later
+> "revisiting" paper (Revisiting OPRO: The Limitations of Small-Scale LLMs as Optimizers
+> ), Large Language Model-Based Evolutionary Optimizer: Reasoning with elitism, etc.
+
+> "Prompt Optimization Re-eval Harness" - what would this even look like? as in if I
+> just released the open source library that was well designed and usable for re-evaling
+> prompt optimization approaches?
+
+> so like, when you consider a phd students "success" in an ml phd do benchmark papers
+> contribute or are they seen as "just engineering"? I feel like an analysis paper would
+> be a (small) positive mark in the research bucket but im less sure about benchmarks?
+
+> I'm technically mid but am really just hitting my stride in terms of defining a clear
+> research trajectory, identifying my own directions and making them testable, writing
+> the papers independently, etc.
+
+Routed to [topics/reference/prompt-optimization-landscape.md](topics/reference/prompt-optimization-landscape.md)
+(new dated entry, marked in progress) and six agent-supplied ledger rows (OPRO,
+Revisiting OPRO, LEO, two APO surveys, PromptBridge — OPRO's missing-anchor slot now
+filled). Project-level routing (staging vs. project doc, and which existing project the
+"aha" lands on) deferred until the conversation completes.

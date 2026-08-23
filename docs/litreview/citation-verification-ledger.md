@@ -375,3 +375,9 @@ WizardCoder; `chang2024effective` there is 2402.04177 (different paper) and
 | 2303.11257 | Unit Scaling (Blake et al.) — named in intake note only | `parametrization-and-hp-transfer` | Claude-added | — | |
 | 1404.3325 | Vigna — weighted Kendall τ (hyperbolic weights) — named in intake note only | `estimation-and-calibration-methods` (ranking metrics) | Claude-added | EDP | |
 | (no ID) | Webber, Moffat & Zobel 2010, rank-biased overlap (ACM TOIS) — named in intake note only | `estimation-and-calibration-methods` (ranking metrics) | Claude-added | EDP | |
+| 2309.03409 | OPRO — "Large Language Models as Optimizers" | `prompt-optimization-landscape` (2026-08-23 re-eval conversation) | agent-supplied | prompt-opt re-eval (TBD) | |
+| 2405.10276 | Revisiting OPRO — small-scale LLMs as optimizers; ACL Findings 2024 per respondent (Danielle-named title) | `prompt-optimization-landscape` (2026-08-23 re-eval conversation) | agent-supplied | prompt-opt re-eval (TBD) | |
+| 2403.02054 | LEO — evolutionary optimizer, reasoning with elitism (Danielle-named title) | `prompt-optimization-landscape` (2026-08-23 re-eval conversation) | agent-supplied | prompt-opt re-eval (TBD) | |
+| 2502.16923 | Systematic survey of Automatic Prompt Optimization (2025) | `prompt-optimization-landscape` (2026-08-23 re-eval conversation) | agent-supplied | prompt-opt re-eval (TBD) | |
+| 2502.11560 | Survey of Automatic Prompt Engineering (2025) | `prompt-optimization-landscape` (2026-08-23 re-eval conversation) | agent-supplied | prompt-opt re-eval (TBD) | |
+| 2512.01420 | PromptBridge — cross-model prompt transfer (2025) | `prompt-optimization-landscape` (2026-08-23 re-eval conversation) | agent-supplied | prompt-opt re-eval (TBD) | |
