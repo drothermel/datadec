@@ -2065,3 +2065,67 @@ syntax." The "one knob + one plot" experiment template (name the knob, name the
 y-axis, hold all else fixed, 3–5 settings × 2–3 models × enough seeds, one figure) —
 matches her stated aspiration to convert intuitions into crisp single-question
 experiments; walkthrough candidate alongside the other principles.
+
+### 2026-08-23 — Chunk 13 of the early-2026 conversation: why the latent must be natural language
+
+The conversation's most direct payoff for TLC's core design. Chunk 13 also closes the
+compile-down question (LLVM front/middle/back-end mental model confirmed; binaries
+decompile only to heuristic pseudocode — Ghidra/Hex-Rays-style — because compilation
+is intentionally many-to-one; no faithful source recovery) and endorses Danielle's
+"collect them" structuring idea (below). But the center is this:
+
+**The advisor's objection, and the answer (early 2026).** The advisor's strong
+pushback on the pitch was: if the objective is a behavior-preserving compressed
+representation optimized on a behavioral reconstruction loss, *why does the latent
+have to be natural language* — it could be any compressed representation. Danielle
+could feel but not articulate the answer; the distribution-compatibility constraint
+from chunk 12 is it. The keystone sentence:
+
+> "Because the encoder and decoder are black-box, pretrained LLMs, the intermediate
+> representation must live in a region of representation space where those models
+> already have strong priors."
+
+Formal sibling: "Given fixed, pretrained encoder–decoder models, any intermediate
+representation must reside within a region of input space with sufficient prior
+support to allow reliable encoding and decoding." Unpacked: with no retraining, no
+tokenizer changes, and multiple general-purpose decoders, the only shared,
+high-capacity, semantically grounded channel is natural language plus code — a custom
+DSL, symbolic graph encoding, dense vector-in-text, or novel markup has no prior
+support and dies at decode time. Danielle's own refinement of the claim: **NL is a
+prediction, not a requirement** — "I'm not arguing that we need to constrain the
+intermediate representation to natural language. I'm predicting that the best
+performing intermediate representations will be some form of human interpretable text
+(due to the training data)" — which then justifies NL-instruction inductive biases in
+initial experiments as probability-of-success maximization, not dogma. The
+respondent's strengthening lever: the argument is strongest under the **cross-decoder
+robustness** requirement (d must decode across model families, not just the encoder's
+partner) — a single fixed decoder pair might learn an idiosyncratic code; shared
+priors are what force NL. Note this makes "transfer of d across decoders" a *test of
+the NL-necessity claim itself*, connecting to the conversation's transfer-matrix
+thread. Precision caveat for the paper: "representation space" here means input token
+sequences with training-distribution support, not embedding/latent space.
+
+She drafted a written version of the argument for the advisor at the time
+(Context / Method / Hypothesis / prediction-not-requirement / inductive-bias
+justification — full draft and the correctness review preserved in the transcript,
+chunk 13). Historical status: drafted the evening before sending, ~4 days before the
+workshop deadline; outcome not recorded in this conversation.
+
+**(Claude-added:)** this argument belongs in this doc's core rationale (§1), not just
+here in §4 — it answers the project's most predictable objection, converts the NL
+choice from taste into a falsifiable constraint-driven prediction, and names its own
+killer experiment (NL vs. non-NL vs. NL-likeness-ladder d under fixed decoders — the
+chunk-12 inverted-U, plus cross-decoder transfer of d). Walkthrough item.
+
+**The "collect them" idea (hers):** the abstraction pattern appears across algorithmic
+domains, shaped by each domain's history and admissible assumptions; a structuring
+activity is to collect instantiations, extract the portable pieces from the
+domain-specific ones, and accumulate a comparison/reuse suite. Respondent's domain
+map: PL (abstract interpretation, SSA/IRs, e-graphs, superoptimization), algorithms
+(complexity classes, reducibility), ML (denoising AEs, VAEs, contrastive invariance),
+RL (state abstraction, MDP homomorphisms), formal methods (bisimulation, trace
+equivalence), databases (query normalization, logical-vs-physical plans). Practice:
+a two-column notebook — object type × properties defining equivalence, plus how the
+representative is chosen. **(Claude-added:)** this is a natural seed for a new
+reference accumulator (cross-domain abstraction mechanisms) if the thread stays
+live — walkthrough item.
