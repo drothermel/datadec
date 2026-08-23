@@ -2262,3 +2262,78 @@ The variance-paper spec itself ("Behavioral non-collapse in cheap coding LLMs",
 targeted at the Re-Align Challenge track) lives with the divergence thread:
 `../topics/reference/evaluation-methodology-literature.md`, chunks-16–17 addendum;
 full verbatim spec in the transcript bundle, chunk 17.
+
+### 2026-08-23 — The actual submission, its reviews, the post-mortem presentation, and the Miao & Blunsom anchor (project history, early 2026)
+
+Documented at intake from four artifacts Danielle preserved together (all now in the
+convo-artifacts bundle): the submitted paper, the OpenReview reviews, her 2026-02-25
+advisor presentation, and the advisor-recommended reference. She marks the
+presentation plus that reference as the turning point of the discussions around this
+project.
+
+**The submission.** "Prompt Optimization for Behavioral Code Compression: Bandits vs
+LLM-in-the-Loop Search," submitted to the **ICLR 2026 Workshop on Lifelong Agents
+(LLA)** — a third venue, distinct from both the pitch's target (Recursive
+Self-Improvement, deadline 2026-02-10) and the 2026-02-08 plan (Re-Align Challenge).
+Content: frozen black-box encoder–decoder; encoder-prompt selection as a multi-armed
+bandit over a structured template (3 slots × 3 phrasings incl. omission → 27 arms;
+expanded grid 8,064 arms with |A| ≫ N); UCB1 vs. Thompson sampling vs. LLM-in-the-loop
+optimizer; headline metric the **compression–correctness frontier** S_m(c; N) —
+fraction of tasks with ≥1 passing reconstruction of realized IR length ≤ c within
+budget N (N = 90), summarized by frontier AUC; training on Stateful Algorithms, |D| =
+50, medium difficulty; OOD with frozen selected prompts on HumanEval++, a harder
+bit-operations family, cross-language Java/Rust, and Gemini-Flash-Lite decoder
+transfer; 3 seeds, 95% CIs. Findings: in the enumerable grid all three methods find
+near-identical frontiers and the oracle gap stays open (the budget/feasibility
+landscape, not exploration policy, is the limiting factor); in the large space the
+LLM optimizer shows modest but consistent sample-efficiency gains; transfer is
+strongly domain-dependent (bit-ops partially reverses the ordering; Gemini transfer
+drops further — decoder-specific contracts). Note the chunk-15 decision inverted en
+route: bandits went from appendix candidate to co-headline. Writing context recorded
+for interpretation: the deadline slipped 12 hours, her collaborator fell ill, and
+Danielle wrote the entire paper herself across two consecutive nights.
+
+**Reviews (verbatim in the bundle's `openreview-reviews.md`).** R1 = 7 (accept): clean
+frontier metric, careful regime separation, honest conclusions; wants formal
+rate–distortion grounding and links to best-arm identification. R2 = 5: synthetic
+scale (50 functions), heavily templated prompt space, modest gains unexplained,
+unit-test-only oracle may overestimate equivalence, wants seeds/ablations/decoder
+sensitivity. R3 = 5: **novelty — GEPA (2507.19457) and the SOTA prompt-optimization
+line undiscussed** (the omission the litreview plan exists to prevent; GEPA was
+already the doc's named incumbent); synthetic data; narrow model pool (gpt-5-nano +
+claude-haiku-4.5 in the loop). Area Chair recommended **Accept (Poster)** ("fits the
+workshop theme to some extent"); **Program Chairs rejected** — an AC-overridden
+reject, consistent with theme-fit/capacity rather than technical assessment.
+
+**The 2026-02-25 presentation** ("Code Compression Results + DQE Discussion," 1:1) —
+franker than the paper: "Basically no differentiation between the 3 methods attempted
+on our 'training' setup, even in large search space where N_arms ≪ T"; generalization
+experiments differentiate but were not thoroughly analyzed — "not clear patterns."
+Per-stage retro with next steps: (1) difficulty calibration and task sampling
+distributions matter — better difficulty labeling and validation (true uniqueness,
+test coverage); (2) refine the prompt search space so methods *can* differentiate;
+(3) reconsider reward design and the history the LLM-as-optimizer receives; (4) dig
+into whether generalization-only differentiation was a design decision or an
+implementation quirk. Overall: need more task and model diversity for general
+conclusions. **The DQE slide is a research-statement formulation worth preserving
+(near-verbatim):** "I'm interested in how to build ML-style modular systems out of
+frozen pretrained LLMs… where the trainable object is the system… where we optimize
+using verifiable feedback. My goal is to understand and improve **reliability**,
+**cost-efficiency**, and **broad utility** (like OODG) by designing the right
+benchmarks & optimizing intermediate representations → with special interest in using
+small/cheap models."
+
+**The advisor-recommended anchor: Miao & Blunsom 2016, "Language as a Latent
+Variable: Discrete Generative Models for Sentence Compression" (1609.07317; PDF in
+the bundle, metadata verified against the PDF).** Auto-encoding sentence compression
+(ASC): a latent *summary sentence* is drawn from a background language model, and the
+observed sentence is reconstructed conditioned on it; discrete VAE trained with
+REINFORCE; combined with a supervised compression model for semi-supervised learning.
+This is the closest formal ancestor of TLC's setup. **(Claude-added:)** the
+background-LM prior on the latent is the trainable-era implementation of exactly the
+distribution-compatibility constraint from the February conversation — Miao & Blunsom
+enforce NL-ness of the latent with an explicit LM prior in the objective, where TLC
+gets it implicitly from the frozen models' pretrained priors, with the reconstruction
+likelihood replaced by a test-suite oracle. That is a one-sentence lineage for the
+related-work section, and the paper belongs in TLC litreview gate 1 alongside GenDLN
+and ShortenDoc.

@@ -221,3 +221,16 @@ a docstring. Recommended first prototype: (1) + (2).
   (Decodable IB, Saxe, Hewitt conditional probing, Pimentel, Hewitt & Liang, UniXcoder,
   CodeRetriever, CKA, LogME, Task2Vec, CodeBERTScore, FuzzPretrain, CodeJudge) need venue
   or ID lookup.
+
+## 2026-08-23 — Miao & Blunsom 2016 (advisor-recommended, PDF in hand)
+
+"Language as a Latent Variable: Discrete Generative Models for Sentence Compression,"
+arXiv 1609.07317 (EMNLP 2016; Oxford/DeepMind) — recommended by the advisor during
+the February 2026 feedback rounds; Danielle marks it among the artifacts that turned
+the discussion. ASC: latent summary sentence drawn from a background language model;
+observed sentence reconstructed conditioned on it; discrete VAE via REINFORCE;
+semi-supervised by marginalizing the latent text. The closest formal ancestor of the
+TLC setup — the explicit LM prior on the latent is the trained-model counterpart of
+the frozen-model distribution-compatibility constraint. Metadata verified against the
+PDF (bundle: `miao-blunsom-2016-language-as-a-latent-variable.pdf`). Candidate
+gate-1 must-read; details in the TLC doc §4 (submission-record entry).

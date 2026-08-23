@@ -4356,3 +4356,31 @@ outcome an open intake question) and
 [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
 §4 (instrumentation recap, the AST-metrics data asset, the planned structured-latent
 contradictions submission, precise dates). No new identifiers.
+
+### Post-conversation artifacts (2026-08-23, before the walkthrough): the submission, reviews, presentation, and the recommended paper
+
+> ok, can we actually do a bit more before processing: talk about the workshop we did
+> submit, look at the version we submitted, look at the updates I made in my
+> presentation to my advisor + the one very useful looking paper he passed in earlier
+> rounds of feedback (he was very non-convinced by anything, so then everything turned
+> after these last artifacts so I just want to document them now.
+>
+> We ended up submitting to "ICLR 2026 Workshop on Lifelong Agents: Learning,
+> Aligning, Evolving"  the paper is attached.
+
+> Then, this is the presentation I made for my advisor to try to layout the actual
+> work (because I ended up staying up two nights in a row and writing the whole thing
+> myself in the extra 12 hours they delayed the deadline because my collaborator got
+> sick and the results took that long to get, so the paper was VERY poorly written).
+> and then, also attached it the paper he recommended that is quite relevant.
+
+(The three OpenReview reviews, meta-review, and decision were pasted in full and are
+preserved verbatim in the bundle's `openreview-reviews.md`; the submitted paper,
+2026-02-25 presentation, and Miao & Blunsom PDF are beside it.) Routed to
+[potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+§4 (submission-record entry: the LLA workshop paper, condensed reviews with the
+AC-accept/PC-reject outcome, the presentation's franker readout and per-stage retro,
+the DQE research statement, and Miao & Blunsom as the closest formal ancestor with the
+LM-prior ↔ distribution-compatibility lineage observation), a new entry in
+[topics/reference/nl-bottleneck-prior-art.md](topics/reference/nl-bottleneck-prior-art.md),
+and nine ledger rows (Danielle-supplied; Miao & Blunsom verified against the PDF).
