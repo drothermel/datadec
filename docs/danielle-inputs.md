@@ -4022,3 +4022,23 @@ the portfolio; workshop-strategy gotchas; a second candidate standing principle 
 workshop submissions must feed the big paper or kill a direction). The ICLR 2026
 logical-reasoning workshop itself is historical — no workshop-deadlines update. No
 new identifiers.
+
+### Chunk 9 (one prompt, voice-dictated; logged in full in the transcript, condensed here)
+
+Danielle's canonicalization idea: function → normalized function variant as a sibling
+of function → language → function; provably functionality-preserving standardization
+beyond linter/autoformatter conventions; possibly compiling to C/MIPS/IR for more
+aggressive normalization then returning to a standardized Python variant; motivations —
+pipeline stability ("it shouldn't matter whether I put a comment above or below a
+certain line… but I suspect it does"), predicted non-uniform-across-families
+performance effects, and shrinking the wrapper-optimizer search space; linked by her to
+constraint consistency, code compression/stylistic modification, and CompilerGym as a
+task setting. (Full verbatim text in the transcript bundle, chunk 9.)
+
+Routed to [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+§4 (chunk-9 entry with prior art — SymC, ProgramTransformer, LibCST, CompilerGym,
+2403.14714 — the three-level decomposition, and Claude-added TLC ties: generalizes the
+minified-X condition, output canonicalization for variance decomposition, the
+wrapper-only sibling, code-side consistency perturbations) plus a consistency-axis
+note in [topics/reference/evaluation-methodology-literature.md](topics/reference/evaluation-methodology-literature.md)
+and three ledger rows.

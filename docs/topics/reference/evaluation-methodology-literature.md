@@ -265,3 +265,9 @@ benchmark-as-byproduct candidate): **every workshop submission should either bec
 module of the eventual big paper or decisively kill a direction quickly** — plus the
 1-home-workshop + 1-stretch-workshop pattern, each tiny paper = one clean hypothesis,
 one killer figure, one minimal intervention.
+
+**Chunk-9 note:** the consistency axis extends to code-side perturbations — Danielle's
+canonicalization thread (recorded in the TLC doc §4, chunk-9 entry) supplies
+semantics-preserving transformation operators as the generator of "logically related
+variants" on the code side (invariance to program symmetries), complementing the
+prompt-side rephrasings above; canonicalization is then the natural intervention arm.

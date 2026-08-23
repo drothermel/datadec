@@ -1798,3 +1798,52 @@ error paths) are a candidate task family aligned with Danielle's stated tooling 
 "I'd REALLLY love to fit my coding agents to be pros at pydantic," then pandas, altair,
 matplotlib, torch; her stack is a Docker-sandboxed pydantic-ai agent, uv, pytest, with
 synthetic tests currently plain input/output pairs.
+
+### 2026-08-23 — Chunk 9 of the early-2026 conversation: canonicalization as a deterministic sibling of the autoencoder
+
+Danielle's idea (voice-dictated; her framing): alongside function → language → function,
+consider **function → normalized function variant** — provably functionality-preserving
+transformations that take code to a much more standard form, beyond what
+linters/autoformatters do for human consumption ("standardization that [is] not
+necessarily beneficial… for humans… but that [is] functionality preserving, like
+provably"). The encoder/decoder need not be an LLM at all — a deterministic
+canonicalizer. Her extension: compile to a lower-level language (C, MIPS, LLVM-style)
+where much more aggressive normalization/optimization is possible, then convert back to
+a standardized Python variant. Motivations she names: **stability for highly variable
+pipelines** ("it shouldn't matter whether I put a comment above or below a certain
+line… but I suspect it does"); a prediction that normalization/minification produces
+measurable, *non-uniform-across-families* performance changes (interesting on its own);
+and **shrinking the space wrapper-style optimizers search over** ("fewer variations
+that you're optimizing over"). She links it to constraint consistency, to
+compressing/stylistically-modifying code, and to CompilerGym as a task setting.
+
+Respondent (condensed; identifiers unverified): this is quotienting out program
+symmetries. Prior art: **SymC** (code symmetries, invariance/equivariance to
+semantics-preserving rewrites; PMLR v235 pei24b, no arXiv ID given);
+**ProgramTransformer** (semantics-preserving transformation catalog — variable
+renaming, independent-statement swaps, loop exchange, dead-code insertion; ScienceDirect,
+no ID); **LibCST** (lossless CST parsing + codemods, since Python's AST cannot
+round-trip formatting/comments); **CompilerGym** (compiler pass sequencing as
+sequential decision-making — "rewrites as an action space"); LLM+compiler feedback
+work (2403.14714). On compile-down-and-back: Python → IR → Python is not a clean
+inverse (decompilation underdetermined); keep the IR as a canonical *view* (CFG/SSA/
+bytecode) rather than a round-trip. Three-level decomposition: L1 surface
+canonicalization (formatting, imports, comment/docstring normalization); L2
+structure-changing semantics-preserving rewrites (alpha-renaming, statement
+reordering, desugaring, boolean/commutative normalization) — where cross-family
+differences likely appear; L3 canonical IR for invariance-style reasoning. Suggested
+first experiment: L1 + a few L2 operators, quantify per-model sensitivity to
+semantics-preserving transformations; canonicalization then motivated as the
+stabilizing intervention. Paper-claim shape: canonicalization reduces spurious
+variance and improves robustness/edit-agent reliability/optimizer transfer,
+non-uniformly across families.
+
+**TLC ties (Claude-added):** (a) TLC-0's condition matrix already contains "minified
+X" — this thread generalizes that single condition into a family of deterministic
+encoders at graded aggressiveness, enriching the 𝒱-information-retention comparisons;
+(b) canonicalizing decoder *outputs* before comparison would separate stylistic from
+semantic variance in the existing FizzBuzz/variance measurements; (c) the
+"fewer variations to optimize over" motivation is exactly the wrapper-only sibling's
+regime (2026-08-22 entry above); (d) transformation-generated equivalence-class
+variants give the consistency axis (evaluation-methodology entry, chunk-8) its
+code-side perturbations, complementing prompt-side rephrasings.

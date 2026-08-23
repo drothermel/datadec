@@ -391,3 +391,6 @@ WizardCoder; `chang2024effective` there is 2402.04177 (different paper) and
 | (no ID) | EvalPerf / DPE — efficiency-tiered reference profiling; only a catalyzex link given | `code-benchmarks-landscape` (2026-08-23 efficiency cluster) | agent-supplied | divergence probe | |
 | (no ID) | EffiBench — NeurIPS D&B 2024, efficiency vs human canonical solutions; only a proceedings PDF link given | `code-benchmarks-landscape` (2026-08-23 efficiency cluster) | agent-supplied | divergence probe | |
 | (no ID) | BigO(Bench) — complexity prediction + complexity-controlled generation (Facebook Research; only a github.io link given) | `code-benchmarks-landscape` (chunk-6 addition) | agent-supplied | divergence probe | |
+| (no ID) | SymC — code symmetries, invariance to semantics-preserving rewrites (PMLR v235 pei24b; only proceedings link given) | `text-latent-code-autoencoder` §4 (chunk 9, canonicalization) | agent-supplied | TLC (canonicalization) | |
+| (no ID) | ProgramTransformer — semantics-preserving transformation toolchain (ScienceDirect; no ID given) | `text-latent-code-autoencoder` §4 (chunk 9, canonicalization) | agent-supplied | TLC (canonicalization) | |
+| 2403.14714 | LLM + compiler feedback loops for optimization (title not stated in response) | `text-latent-code-autoencoder` §4 (chunk 9, canonicalization) | agent-supplied | TLC (canonicalization) | |
