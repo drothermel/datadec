@@ -2129,3 +2129,68 @@ a two-column notebook — object type × properties defining equivalence, plus h
 representative is chosen. **(Claude-added:)** this is a natural seed for a new
 reference accumulator (cross-domain abstraction mechanisms) if the thread stays
 live — walkthrough item.
+
+### 2026-08-23 — Chunk 14 of the early-2026 conversation: cross-decoder positioning, the closing experiment suite, bisimulation, and representation scoring
+
+**Cross-decoder decodability — settled positioning (Danielle's decision, early 2026):**
+she recognized it is *not* a standard autoencoder assumption (encoder and decoder are
+normally co-adapted; latents are decoder-relative) and chose not to include it as a
+requirement — but the system should be designed to permit swapping cheaply, because
+swappability strengthens the method and analysis. Respondent's hierarchy, adopted:
+(1) primary constraint — black-box pretrained models force d into high-prior regions;
+(2) prediction — those regions are NL-like; (3) secondary emergent benefit /
+evaluation axis — cross-model decodability. Boundary sentence for
+reviewers: "We don't assume decoder interchangeability in the autoencoder sense; we
+treat cross-model decodability as an empirical property of the learned representation
+that may increase its utility." Also the memorable framing: "You are not learning a
+latent from scratch; you're discovering a representation that already aligns with
+existing priors."
+
+**The requested closing experiment suite (consolidating the conversation's
+hypotheses):** E0 — fix the observation model (P1 tests; optional P2 side-effect-free
+via sandbox + static checks; optional P3 complexity proxy via timeout/scaling
+buckets). E1 — the distribution-compatibility curve (five-rung input-normalization
+ladder: raw / Black / +alpha-renaming / +desugaring / ugly-consistent; ~200 tasks ×
+N seeds; success + CI vs. rung). E2 — d̂ format comparison at matched budget:
+freeform NL summary vs. structured-NL JSON (purpose/inputs/invariants/examples) vs.
+invented pseudo-DSL; the NL-necessity test. E3 — cross-decoder transfer matrix
+(2–3 decoders × formats); tests "d lives in shared prior space." E4 —
+equivalence-class variance compression: structural distance (AST features, opcode
+n-grams, CFG fingerprints) among test-passing solutions, before vs. after
+normalization/representation intervention. E5 (optional) — planner-vs-implementer
+sketch tasks. Recommended first wave: E1 + E2 + E3.
+
+**Bisimulation as the formal frame (her connection, from prior exposure to
+friends' POMDP/procedural-env work):** the recursive bisimulation metric (reward
+difference + discounted Wasserstein distance over next-state class distributions)
+maps onto the project as program↔state, test suite↔reward, execution↔transitions,
+nuisance syntax↔pixel noise, normalization↔state abstraction, NL d̂↔learned state
+embedding; contrastive learning = approximate bisimulation (collapse nuisance, keep
+task-relevant differences). Grounding sentence offered: "our formulation can be
+viewed as a form of behavioral bisimulation… analogous to state abstraction in RL."
+Her take: bisimulation is a drop-in *definition* upgrade; contrastive learning is the
+tractable *mechanism* — "quick learnings." **(Claude-added caveat:)** the mapping is
+weaker than the respondent claims — programs here are single-shot, not sequential
+state-action processes, so "bisimulation" largely degenerates to observational/
+contextual equivalence (the established PL term); useful as intuition-bridge and for
+borrowing RL abstraction-quality tools, but a PL reviewer may read "behavioral
+bisimulation" as overdressed. All uncited; no ledger rows.
+
+**Representation scoring (her question — the missing piece she named: "a good way to
+evaluate the representations themselves"):** respondent's grounded menu — scalar
+quality Q(d) = S(d) − λ·V(d) − µ·C(d) (decoding success, seed variance, token cost;
+needs no training); **cross-decoder agreement** S_multi(d) = mean pass probability
+across M decoders (operationalizes shared-prior-space directly — note this is the
+NL-necessity claim restated as a per-representation metric); contrastive variants
+(pairwise ranking scorer g(d); InfoNCE embedder with inter/intra-class distance ratio
+or silhouette-style indices); then optionally train a small scorer to predict Q from
+text features — a learned ordering with a grounded target. Equivalence labels between
+representations must be **soft/in-expectation**, not pass-all-or-none: pass-rate
+similarity y = 1 − |p(d_i) − p(d_j)| to start, upgraded to per-test outcome-vector
+similarity (cosine/Jaccard/KL over per-test pass probabilities) — "they fail and
+succeed on the same things." **(Claude-added:)** the outcome-vector version is the
+meaningful one (pass-rate similarity alone conflates different behaviors with equal
+rates), and it extends machinery this project already validated — the 2026-07-11
+fractional-test-pass-rate and per-test-outcomes entries above; Q(d) and S_multi are
+direct candidates for TLC-0's representation-quality axis alongside IR-distance
+(chunk 10) and the class-variance metrics (chunk 12).
