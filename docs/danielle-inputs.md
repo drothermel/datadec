@@ -3862,3 +3862,30 @@ Routed to [potential-projs/text-latent-code-autoencoder.md](potential-projs/text
 cutover, her first-hand critique, the combine-synthetic-and-real interest) and
 [topics/reference/code-benchmarks-landscape.md](topics/reference/code-benchmarks-landscape.md)
 (first-hand HumanEvalPlus defects note).
+
+### Chunk 4 (one prompt)
+
+> So as someone who writes a ton of research code, I've also been playing around with
+> the idea of data manipulation problems where in the most general case the model can
+> use any library from a whitelisted set (eg pandas, numpy, polars, no library, etc)
+> and needs to accomplish a certain type of transformation on data which could be
+> defined as filtering -> transforming columns -> aggregating -> writing, or could
+> even involve creating a plot with a specific plotting library that was judged by
+> pixel distance versus the plot that matched the spec.  all of those ideas have a ton
+> of different ways you could implement them but you could describe the target
+> succinctly and make it easily testable.
+>
+> I think you could even do things with say scikit learn vs scipy vs pytorch etc where
+> there was some deterministic target (potentially made harder because it wasn't
+> specified how to make it deterministic, but it would need to be possible) that
+> involved using a functionality or even building a tiny model according to a spec,
+> training it for a fixed number of steps and then evaluating it on some data and
+> reporting the scores.  as long it was all tiny and stayed on the cpu I think this
+> would be super doable (though it would be tricky to find settings where the same
+> evaluation was identical across libraries for some classes of problems).
+>
+> Do you think this is a plausible direction?
+
+Routed to [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+§4 (chunk-4 entry: data-manipulation + tiny-ML task families, DSL design, canonical
+evaluation, determinism strategy, roadmap). No new identifiers.

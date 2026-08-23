@@ -1728,3 +1728,56 @@ Cross-references: first-hand HumanEvalPlus defects also recorded in
 HumanEval-derivative intake (same file) is the candidate menu for "better real world
 datasets"; empirical difficulty calibration of synthetic families connects to the IRT
 program (IRT-11: which item representation explains difficulty).
+
+### 2026-08-23 — Chunk 4 of the early-2026 conversation: data-manipulation and tiny-ML task families
+
+Same historical conversation. Danielle's proposal (her idea, from writing "a ton of
+research code"): **data-manipulation tasks** — model may use any library from a
+whitelisted set (pandas, numpy, polars, no library); accomplish a transformation
+expressible as filtering → transforming columns → aggregating → writing; optionally
+produce a plot with a specified plotting library judged by pixel distance against the
+spec-matching plot — "all of those ideas have a ton of different ways you could
+implement them but you could describe the target succinctly and make it easily
+testable." And **tiny-ML tasks** — scikit-learn vs scipy vs pytorch with a
+deterministic target (possibly deliberately unspecified how to achieve determinism):
+build a tiny model to spec, train a fixed number of steps on CPU, evaluate, report
+scores; she flags cross-library evaluation identity as the tricky part.
+
+Respondent (condensed, endorsing): the combo is "open-ended implementation space +
+tight verification." Key design guidance —
+
+- **Task DSL + sandboxed execution:** an internal task representation generating input
+  dataset, target transformation, and evaluation oracle; the NL prompt is one
+  *rendering* of the DSL. Data-manipulation tasks as compositions of a small operator
+  set (filter / select-rename / mutate / join / groupby-aggregate / sort-limit /
+  write). "Relational algebra benchmarks with modern dataframe libraries."
+- **Canonicalized evaluation, not string equality:** schema (names/dtypes, possibly
+  relaxed), values (exact for ints/strings, tolerance for floats), row-set equality
+  with ordering enforced only when specified.
+- **Plots:** pixel distance is fragile (fonts, anti-aliasing, versions, backends);
+  start by comparing the underlying plotted data or a canonical spec (Vega-Lite JSON /
+  captured matplotlib calls); pixel distance later with Agg backend, fixed
+  font/DPI/figure size, pinned versions, tolerance.
+- **Tiny-ML determinism by construction:** closed-form targets (normal-equation
+  ridge, PCA-via-SVD) or fixed-init fixed-order full-batch iterative methods;
+  single-thread (OMP_NUM_THREADS=1), fixed dtype, no shuffling/dropout; cross-library
+  comparison on metrics within tolerance, parameters only when the algorithm is
+  forced. Starter: synthetic data from a known linear model → ridge/logreg → held-out
+  metrics.
+- **Pitfalls:** library-trivia benchmark (mitigate with minimal docs in prompt or
+  restricted operator set); hidden nondeterminism; overly strict matching; spec
+  ambiguity (include schema previews, 3–5 example rows, explicit invariants).
+- **Roadmap:** v0 dataframe transforms only (8–12 operator templates, pandas + pure
+  Python); v1 polars/numpy + one non-pixel plot task; v2 pixel plots + tiny-ML.
+- Ties to the earlier threads: library choice and idiom become behavioral-distance
+  fingerprints; optimizers measurably reduce schema/ordering/missing-value/style
+  errors; cheap per-task cost supports proper variance estimation.
+
+**Intake note (Claude-added observation, for the walkthrough):** the DSL design bears
+directly on the dataset-strategy problems recorded above — a canonical operator-tree
+representation gives (a) dedup and identity-degeneracy detection at the semantic level
+rather than post-hoc, (b) a maintainable generator, (c) difficulty as measurable
+properties of the operator tree, and (d) a natural ground-truth description d_s whose
+length the budget B = b1·|d_s| + b2 can bind against — while "succinct spec, rich
+implementation" is exactly the asymmetry the compression bottleneck needs and
+HumanEvalPlus lacks.
