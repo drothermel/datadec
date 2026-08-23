@@ -163,3 +163,22 @@ seeds.
 option-position and label bias (models preferentially pick option A / the first or last
 listed); the respondent never mentions randomizing option order and identity across
 samples, which this design needs from day one.
+
+**Chunk-6 addendum — the bare-MCQ variant:** Danielle, surprised no standard eval is
+just the multiple-choice asymptotic pick ("input size is huge; O(n²) vs O(n log n) vs
+O(n) — which do you choose?") as a probe of "the agent's ability to explicitly
+retrieve and understanding about core foundational programming concepts." Respondent:
+MCQ complexity questions exist inside general-knowledge benchmarks (MMLU CS topics) but
+never became a standard *coding* eval because bare MCQ is gameable as recall and the
+field shifted to execution-based evals; the nearest existing benchmark is
+**BigO(Bench)** (Facebook Research — complexity prediction from code plus
+complexity-controlled generation, validated by profiling/curve-fitting; no arXiv ID
+given). What would make the MCQ version scientifically useful rather than trivia:
+scenario constraints that make the answer spec-dependent (memory vs time caps,
+stability, input-distribution assumptions like nearly-sorted or small integer range);
+a *commitment test* pairing the pick with implementation or scaffold-completion
+(separating knows-the-concept from can-execute-it — the same A/B separation as above);
+and generated anti-memorization variants rotating surface form over fixed underlying
+principles (sorting under assumptions, kth-element selection, streaming distinct
+counts, join strategies). Offered v0: ~50 items across 5 "truth families," each with
+MCQ + optional scaffolded implementation + deterministic verifier.

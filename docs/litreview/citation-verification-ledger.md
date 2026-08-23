@@ -390,3 +390,4 @@ WizardCoder; `chang2024effective` there is 2402.04177 (different paper) and
 | (no ID) | ENAMEL — eff@k efficiency metric, expert references; only a catalyzex link given | `code-benchmarks-landscape` (2026-08-23 efficiency cluster) | agent-supplied | divergence probe | |
 | (no ID) | EvalPerf / DPE — efficiency-tiered reference profiling; only a catalyzex link given | `code-benchmarks-landscape` (2026-08-23 efficiency cluster) | agent-supplied | divergence probe | |
 | (no ID) | EffiBench — NeurIPS D&B 2024, efficiency vs human canonical solutions; only a proceedings PDF link given | `code-benchmarks-landscape` (2026-08-23 efficiency cluster) | agent-supplied | divergence probe | |
+| (no ID) | BigO(Bench) — complexity prediction + complexity-controlled generation (Facebook Research; only a github.io link given) | `code-benchmarks-landscape` (chunk-6 addition) | agent-supplied | divergence probe | |

@@ -3937,3 +3937,18 @@ Claude-added option-position-bias caveat),
 a pointer entry in [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
 §4 (DS-1000 as data-manipulation precedent; pydantic contract tasks; her agent stack).
 Four ledger rows (DS-1000 with ID; three no-ID efficiency benchmarks).
+
+### Chunk 6 (one prompt, voice-dictated)
+
+> I'm actually really surprised that there isn't an evaluation task that's just a
+> multiple choice setting with the family one example you're talking about where you
+> have, like, well, you know, input size is huge. Your options are this O of n squared
+> versus this O of n log n versus this O of n. Um, which one should you choose?
+> Because that seems like a solid way to try to probe the agent's ability to
+> explicitly retrieve and understanding about core foundational programming concepts.
+
+Routed as an addendum to the decision-quality entry in
+[topics/reference/evaluation-methodology-literature.md](topics/reference/evaluation-methodology-literature.md)
+(bare-MCQ variant, commitment test, anti-memorization variants) with BigO(Bench) added
+to [topics/reference/code-benchmarks-landscape.md](topics/reference/code-benchmarks-landscape.md)
+and one no-ID ledger row.

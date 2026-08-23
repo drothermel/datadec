@@ -260,3 +260,10 @@ pass@1; the direct precedent for the data-manipulation task family (TLC doc §4,
 chunk-4 entry). Also mentioned: Pydantic ships "Pydantic Evals" as an eval framework
 (ecosystem note, not a benchmark paper). Decision-quality framing and de-risking:
 `evaluation-methodology-literature.md`, 2026-08-23 chunk-5 entry.
+
+**Chunk-6 addition:** **BigO(Bench)** (Facebook Research; no ID given) — complexity
+prediction (given code, predict time/space complexity) and complexity-controlled
+generation (generate code meeting a complexity constraint), validated by
+profiling/curve-fitting. The nearest prior art to the asymptotic-choice slice of the
+decision-quality probe; differs in unit (predict/generate under constraint, not
+choose-then-commit under a scenario).
