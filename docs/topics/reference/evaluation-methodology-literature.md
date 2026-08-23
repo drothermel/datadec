@@ -182,3 +182,51 @@ and generated anti-memorization variants rotating surface form over fixed underl
 principles (sorting under assumptions, kth-element selection, streaming distinct
 counts, join strategies). Offered v0: ~50 items across 5 "truth families," each with
 MCQ + optional scaffolded implementation + deterministic verifier.
+
+**Chunk-7 addendum — mining BigO(Bench) into the choose-then-implement format, and the
+analysis-first paper shape.** Two developments (same historical conversation;
+respondent claims unverified):
+
+- *Practical note:* BigO(Bench)'s last author is one of Danielle's friends and
+  favorite previous collaborators — a natural contact if the mining direction ever
+  becomes real. Danielle explicitly not interested in building the bare-MCQ version.
+- *Mining designs.* Per the respondent, BigO(Bench) ships ~1.19M solutions labeled
+  with time/space complexity (inferred by its dynamic profiling/regression framework)
+  plus runtime coefficients. Option A (low hassle): for each problem, sample 3 real
+  solutions from different complexity classes, mask 10–30% into sketches (loop body /
+  update / helper; skeleton intact — completion, not synthesis, to reduce the
+  choice-vs-implementation-difficulty confound), prompt choose-and-fill under stated
+  constraints ("n up to 10^6, <1s"; "256MB cap"; "streaming, single pass"). Verify:
+  problem's own tests (correctness), option's complexity label (choice), and re-run
+  the complexity-inference framework on the completed code to catch silent algorithm
+  mutation (drifting back to the slow strategy — itself a measurable phenomenon:
+  choice→implementation consistency). Option B (more novel): cluster solutions by
+  AST/control-flow fingerprints into *strategy families*, one representative sketch
+  per cluster. Label-noise caveat: dynamic inference is noisy at small n and for
+  large-constant implementations — start with large-margin class separations (O(n²)
+  vs O(n log n) vs O(n)), optionally require clear profiling-coefficient separation.
+- *Danielle's framing principle (near-verbatim):* "I would prefer a setting where the
+  paper relies on some other key thing, and the release of a benchmark is a
+  byproduct… I've done this interesting, very carefully designed analysis on this
+  specific set of questions, and I created this benchmark as a way to do that. And
+  then I introduced a, like, not super novel, but semi-novel approach that targeted
+  one of the biggest failure modes that I discovered in my analysis." Respondent's
+  compression: benchmark = instrument; paper = discovery + explanation + targeted
+  fix. Seven-step shape: question → instrument → non-obvious analysis → dominant
+  failure mode → small principled intervention (example: a constraint-conformance
+  repair loop — static/dynamic checker flags forbidden AST patterns or scaling
+  violations, model patches while preserving the chosen strategy) → show the fix
+  works across models → artifact release as byproduct. Four publishable result
+  shapes: families differ on decision quality (divergence evidence); similar choice
+  but different implementation reliability (planner-vs-implementer); divergence only
+  under mixed tradeoffs; intervention reduces violations even when raw correctness
+  is flat. **Candidate standing principle for `project-approach-principles.md`
+  (pending Danielle's decision at the walkthrough):** instrument → analysis →
+  targeted fix, benchmark as byproduct.
+- *Intake note (Claude-added):* mining real competitive-programming solutions
+  reintroduces the contamination/memorization risk the synthetic generator was
+  praised for avoiding — masked completion of solutions models may have seen verbatim
+  partially measures recall. Surface-form rewriting (renaming, restructuring-
+  preserving-strategy) or regenerating implementations against the labels would be
+  needed; the respondent does not raise this here despite raising anti-memorization
+  earlier in the same conversation.

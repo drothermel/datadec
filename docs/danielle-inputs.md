@@ -3952,3 +3952,34 @@ Routed as an addendum to the decision-quality entry in
 (bare-MCQ variant, commitment test, anti-memorization variants) with BigO(Bench) added
 to [topics/reference/code-benchmarks-landscape.md](topics/reference/code-benchmarks-landscape.md)
 and one no-ID ledger row.
+
+### Chunk 7 (two prompts, voice-dictated)
+
+> Well, that's hilarious. I thought the event was the coolest concept, and then it
+> turns out that the last author was one of my friends and favorite previous
+> collaborators. Uh, so I guess it's not surprising. That's very nice.
+>
+> I guess I wonder then, um, so I'm not particularly interested in doing the multiple
+> choice version. Um, so then I wonder whether you could repurpose the Big O benchmark
+> as a source of like labeled data to produce the multiple sketches that the model has
+> to choose one of and then implement that we're comparing or something like that. Do
+> you know what I mean?
+
+> Very cool. I mean, I guess I'm a little hesitant about the whole idea of publishing
+> a new benchmark, just because it seems like there are a gazillion different
+> benchmarks. And so I feel like I would prefer a setting where the paper relies on
+> some other key thing, and the release of a benchmark is a byproduct. And it seems
+> like there are interesting ideas in the analysis that you can do with this
+> benchmark, which I understand then is basically we're releasing a benchmark, but
+> instead of being like, whoa, I have a benchmark, then it's more like, I've done this
+> interesting, very carefully designed analysis on this specific set of questions, and
+> I created this benchmark as a way to do that. And then I introduced a, like, not
+> super novel, but semi-novel approach that targeted one of the biggest failure modes
+> that I discovered in my analysis, right? I think that that's pretty different than
+> putting out a benchmark. What do you think?
+
+Routed as a chunk-7 addendum to the decision-quality thread in
+[topics/reference/evaluation-methodology-literature.md](topics/reference/evaluation-methodology-literature.md)
+(BigO(Bench) mining designs, the collaborator connection, the analysis-first paper
+shape with her framing near-verbatim flagged as a candidate standing principle, and a
+Claude-added contamination caveat on mining real solutions). No new identifiers.
