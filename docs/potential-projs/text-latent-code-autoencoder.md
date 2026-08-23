@@ -1998,3 +1998,70 @@ divergence instrument (evaluation-methodology thread) wants to measure — norma
 inside the optimizer/autoencoder loop, do *not* normalize the divergence
 measurements; (d) these keeper sentences and the vocabulary are candidates for
 adoption into this doc's §1/objective statement — walkthrough decision.
+
+### 2026-08-23 — Chunk 12 of the early-2026 conversation: the distribution constraint, the d-unification, and the obviousness check
+
+The debrief after the resolution. Three durable results:
+
+**1. The distribution-compatibility constraint (Danielle's realization, near-verbatim):**
+black-box LLMs are "trained over a distribution of text, and you really can't change
+that distribution… to have a high likelihood of improving the system, we almost
+certainly need something that will return whatever tokenization, encoding, abstraction
+that we produce into something that looks close enough to the distribution of Python
+that the language models are able to operate over it… at least well enough that it
+doesn't wipe out any gains from the effect of the abstraction." Respondent's
+compression: you are designing "a preimage that must land back in the model's existing
+token space" — reversibility is needed relative to the *training distribution*, not
+just the abstraction. The induced experiment: x-axis = normalization/abstraction
+aggressiveness ladder (raw → Black-only → desugar+rename → "ugly consistent"), y-axis
+= performance/variance; predicted inverted-U — "that curve is the paper."
+**(Claude-added:)** this constraint applies equally to TLC's NL latent: the
+description d must lie in the decoder's expected natural-language distribution, and
+aggressive structured/compressed descriptions risk falling off-distribution — the
+pitch's COMP-NL vs COMP-SHORT contrast (strictness of the "Natural Language"
+definition in the two-stage setup) is already a two-point sample of exactly this
+ladder, so the U-curve experiment extends existing machinery rather than requiring new
+scaffolding.
+
+**2. The d-unification (Danielle's, verbatim — arguably the conversation's second
+"aha"):** "my goal with the (f -> enc -> d -> dec -> f) setting is to produce 'd' a
+'behavior-preserving normalization' of the code input 'f' to 'reduce representational
+variance while retraining functional equivalence under a defined observation model.'
+I just realized that my goal in both of these settings is literally identical, down to
+trying produce that single specific entity! … one lived in the world of 'Variational
+Autoencoders' and 'ELBO bounds' and 'RL-style optimization' and the other lived in the
+world of linters because they are two very very different approaches (on the surface)
+to accomplish the same thing." Respondent's alignment table: rule-based arm
+(human-designed invariants, deterministic, partial-but-interpretable coverage) vs.
+learned arm (objective + verifier, statistical, broad-but-opaque coverage) — same
+target object d. This formally merges the chunk-9 "deterministic sibling" into TLC:
+not a competitor project but the rule-based arm of the same objective, sharing
+evaluation protocol and failure modes (over-regularization vs. distribution shift).
+
+**3. The obviousness check (her "bubble bursting" question, answered honestly):**
+the ingredients are standard in their home communities — abstract interpretation
+(map programs into an abstract domain capturing the properties you care about),
+e-graphs / equality saturation (equivalence classes as first-class objects + cost-based
+representative extraction; third mention in this conversation — firmly litreview
+material), denoising autoencoders (BART, 1910.13461, as many-surface-forms → regular
+form). The cross-paradigm unification itself — one target object, two mechanism
+families, one shared evaluation — is not standard ML furniture; expected reception is
+"interesting — show me the curve," not "duh." Pitch sentence: "treat code
+transformations, learned autoencoders, and prompt/agent optimization as different ways
+of selecting representatives from program equivalence classes defined by behavioral
+properties — and measure the abstraction/compatibility trade-off empirically."
+
+**Additional keepers:** the canonicalization definition's strength registered
+("deterministic, total, and idempotent… an incredibly strong statement lol") — her
+one-line journey summary: "I thought I was arguing for canonicalization, but I was
+actually arguing for equivalence-class abstraction with representative selection under
+behavioral constraints." Terminology cheat sheet recorded in her notes (transcript,
+chunk 12). New metric vocabulary that TLC-0 can absorb: **class consistency** (do two
+surface forms land in the same class), **intra-class variance**, **representative
+quality** (does representative choice change downstream success), **abstraction
+error** (when collapsing variance destroys signal). The disambiguation line: "by
+canonical, we mean canonical in the space of behavioral abstractions, not canonical
+syntax." The "one knob + one plot" experiment template (name the knob, name the
+y-axis, hold all else fixed, 3–5 settings × 2–3 models × enough seeds, one figure) —
+matches her stated aspiration to convert intuitions into crisp single-question
+experiments; walkthrough candidate alongside the other principles.

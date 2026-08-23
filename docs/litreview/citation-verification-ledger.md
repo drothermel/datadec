@@ -394,3 +394,4 @@ WizardCoder; `chang2024effective` there is 2402.04177 (different paper) and
 | (no ID) | SymC — code symmetries, invariance to semantics-preserving rewrites (PMLR v235 pei24b; only proceedings link given) | `text-latent-code-autoencoder` §4 (chunk 9, canonicalization) | agent-supplied | TLC (canonicalization) | |
 | (no ID) | ProgramTransformer — semantics-preserving transformation toolchain (ScienceDirect; no ID given) | `text-latent-code-autoencoder` §4 (chunk 9, canonicalization) | agent-supplied | TLC (canonicalization) | |
 | 2403.14714 | LLM + compiler feedback loops for optimization (title not stated in response) | `text-latent-code-autoencoder` §4 (chunk 9, canonicalization) | agent-supplied | TLC (canonicalization) | |
+| 1910.13461 | BART — denoising autoencoder for text (analogy for behavior-preserving normalization) | `text-latent-code-autoencoder` §4 (chunk 12) | agent-supplied | TLC (framing) | |
