@@ -3730,3 +3730,35 @@ Routed to [topics/reference/prompt-optimization-landscape.md](topics/reference/p
 Revisiting OPRO, LEO, two APO surveys, PromptBridge — OPRO's missing-anchor slot now
 filled). Project-level routing (staging vs. project doc, and which existing project the
 "aha" lands on) deferred until the conversation completes.
+
+### Chunk 2 (one prompt, with pitch PDF + Table 5 screenshot attached)
+
+> (see attached doc and screenshot) "so, I just pitched my advisor on the pdf contents
+> as a general thesis direction to move in (starting with a well scoped workshop paper
+> which is a small subset of what's in that doc).  but one of the things that made me
+> curious about this direction (beyond using OPRO+ as related work and wondering how
+> accurate the conclusions are currently, when optimizing prompts, tasks, etc.  also,
+> has posttraining in some cases robbed llms of previously existing general
+> optimization skills because they've been partially collapsed to game metrics/fit
+> benchmarks?) is the table that I screenshotted.  This is just the selection of models
+> on open router right now that seem likely to be solid at coding, are very
+> inexpensive, and are the most recent version released of their line.  But the number
+> of wildly low price models on open router, including historical sequences of models,
+> just seems like this amazing opportunity not to evaluate the models on your standard
+> terminalbench one shot monstrosities, but actually to evaluate them on fairly well
+> scoped tasks that we'd expect them to succeed at and then measure the variance within
+> model and across models + extend to understanding how these "super cheap" modern
+> options compare to the 1-3 affordable-SOTAish options that were generally published
+> on in for previous methods.
+>
+> Does that make sense?"
+
+The attached PDF is the pitch "LLM-as-Optimizer of Natural Language Bottleneck Model"
+(Rothermel*, Li*, Cho) — the conversation's project is TLC. Routed to
+[potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+§4 (new 2026-08-23 entry: pitch milestone, her three motivating curiosities including
+the posttraining-collapse hypothesis, condensed response) with a chunk-2 note in
+[topics/reference/prompt-optimization-landscape.md](topics/reference/prompt-optimization-landscape.md).
+Pitch PDF preserved in the convo-artifacts bundle. Two Danielle-supplied ledger rows:
+the pitch bibliography's author/title pairings for 2402.18700 (Chuang) and 2408.11198
+(Taherkhani) conflict with earlier agent-supplied attributions (Zhou; Saluja).

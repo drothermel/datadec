@@ -170,3 +170,15 @@ is the optimizer doing search or writing longer prompts), (3) optional constrain
 improvement (budget-aware optimizer, transfer-robust representation, stopping
 criterion). Explicit anti-scope-creep advice: small, clean, convincing — not the
 definitive benchmark.
+
+**Chunk 2 (2026-08-23):** the conversation's target project is TLC — Danielle attached
+the pitch "LLM-as-Optimizer of Natural Language Bottleneck Model" (Rothermel*, Li*,
+Cho; Recursive Self-Improvement Workshop @ ICLR 2026) plus its Table 5 OpenRouter
+pricing menu. The re-eval framing merged with TLC's harness-optimizer formulation:
+cheap models make distributional (variance-first) evaluation of optimizer loops
+affordable; the respondent proposed a budgeted re-eval workshop slice with a
+phase-transition claim and a transfer matrix, and operationalized Danielle's
+posttraining-collapse hypothesis (optimizer competence vs. task competence; transfer).
+Full detail in the TLC project doc §4 (2026-08-23 entry); transcript and pitch PDF in
+the convo-artifacts bundle. Chunk 2 supplied no new identifiers, but the pitch's own
+bibliography settles two earlier attribution conflicts (see ledger).

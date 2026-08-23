@@ -1566,3 +1566,63 @@ loop baseline). The overlap literature's three-matrix scheme (prompt↔prompt, c
 prompt↔code) is the same bookkeeping as TLC-0's leakage accounting; within-HumanEval item
 redundancy is unstudied and is a small analysis worth doing before per-item claims.
 
+
+### 2026-08-23 — The pitch to Cho, and the cheap-model re-evaluation angle (from the re-eval conversation)
+
+**Milestone (Danielle, 2026-08-23):** "I just pitched my advisor on the pdf contents as a
+general thesis direction to move in (starting with a well scoped workshop paper which is
+a small subset of what's in that doc)." The pitch document — "LLM-as-Optimizer of
+Natural Language Bottleneck Model" (Rothermel*, Li*, Cho), targeting the AI with
+Recursive Self-Improvement Workshop @ ICLR 2026 — is preserved at
+`~/drotherm/data/convo-artifacts/2026/2026-08-23-prompt-opt-reeval-aha/cho-proj-pitch-llm-as-optimizer-of-nl-bottleneck-model.pdf`
+(full conversation transcript beside it). Draft state at pitch time: formal setup done
+(harness config θ=(θ_E,θ_D) over prompts/templates/format/stages/tool
+use/sampling; Feas/Succ waterfall, Eqs. 4–5; objective J(θ), Eq. 6; LLM-as-optimizer
+policy π_opt with harness-editing actions and batch-mean-Succ reward, Eq. 7); manual
+baseline experiments done (FizzBuzz ×100-sample variance; String Rules / Stateful /
+Simple Algorithms families at difficulty 3–5; gpt-5-nano, gpt-5.1-codex-mini,
+gemini-2.5-flash-lite, gemini-2.5-flash, haiku-4.5, gpt-oss-120b; temperature 0.2,
+top-p 0.95; OpenRouter + Docker isolation); the optimizer loop itself not yet run —
+"later this week, before the workshop deadline."
+
+**Danielle's motivating curiosities beyond the pitch itself (near-verbatim):**
+
+- Using OPRO+ as related work, "wondering how accurate the conclusions are currently,
+  when optimizing prompts, tasks, etc."
+- "has posttraining in some cases robbed llms of previously existing general
+  optimization skills because they've been partially collapsed to game metrics/fit
+  benchmarks?"
+- The OpenRouter cheap-model menu (the pitch's Table 5: coding-capable,
+  latest-of-their-line models from $0.02/M input) "just seems like this amazing
+  opportunity not to evaluate the models on your standard terminalbench one shot
+  monstrosities, but actually to evaluate them on fairly well scoped tasks that we'd
+  expect them to succeed at and then measure the variance within model and across
+  models + extend to understanding how these 'super cheap' modern options compare to
+  the 1-3 affordable-SOTAish options that were generally published on in for previous
+  methods."
+
+**Response (ChatGPT, condensed; unverified):** the load-bearing reframe is that *the
+feasible experimental regime changed* — cheap models make distributional evaluation
+affordable (within-model variance, across-model variance, and their interaction with
+optimizer loops), where 2022–2024 papers reported point results. Recasts the question
+decision-theoretically: not "can method X improve task Y on model Z" but "when is
+prompt optimization worth doing at all given model strength, cost, variance, and
+transfer" — expected gain vs. search cost plus stability. Operationalizes the
+posttraining-collapse hypothesis two ways: (a) optimizer competence vs. task competence
+(models chosen so direct-solve is decent; a collapsed model shows flat/noisy improvement
+curves and poor edit validity despite good direct performance); (b) transfer (optimize
+on A, evaluate on B — collapsed-to-quirks optimization transfers poorly). Proposes a
+workshop-slice with headline claim "under realistic budgets, prompt optimization
+exhibits a phase transition: below a model-dependent capability threshold loops
+stagnate; above it, gains appear but are dominated by variance reduction and contract
+enforcement rather than clever prompting" — RQs: budgeted value / mean-shift vs.
+variance-reduction attribution through the Feas waterfall / transfer matrix / optimizer
+vs. task competence; three headline figures (ROI curves vs. $, waterfall attribution
+stacked bars, optimize-on × evaluate-on transfer heatmap). Flags OpenRouter model
+identity/versioning drift as both a reproducibility hazard (log model string, provider,
+date, sampling params, request IDs) and a research question ("how stable are
+conclusions under model drift?").
+
+Conversation still in progress; this entry may be extended. Sibling record of the
+re-eval framing: `../topics/reference/prompt-optimization-landscape.md` (2026-08-23
+entry).
