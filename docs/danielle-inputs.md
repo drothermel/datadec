@@ -4384,3 +4384,36 @@ the DQE research statement, and Miao & Blunsom as the closest formal ancestor wi
 LM-prior ↔ distribution-compatibility lineage observation), a new entry in
 [topics/reference/nl-bottleneck-prior-art.md](topics/reference/nl-bottleneck-prior-art.md),
 and nine ledger rows (Danielle-supplied; Miao & Blunsom verified against the PDF).
+
+### Walkthrough round 1 (2026-08-23)
+
+> ok, so there is no AST-metrics code but I do have some codebases around code
+> processing that I can point you to later.  no other version was submitted, or even
+> close to being submitted.
+>
+> agreed with adding statement as a dated program level note.  [one adviser-related
+> clause elided per standing convention]  strong yes on miao + Blunsom and the rest of
+> the must-reads.
+>
+> then, I also just found the discussion convo that I used while writing the paper,
+> and I suspect it actually will make it clear the pieces I was confused about.
+> basically as I was writing I came to the conclusion that I guess we should use the
+> compression framing my advisor dictated but I didn't really understand it and really
+> I understood my previous framing much better but I hadn't thought it through
+> sufficiently to either do both or do mine in a way that wasn't a clear "I'm
+> rejecting your instructions" way.  so I tried very hard to figure out how to do his
+> with no sleep in very very little time.  and the conversation makes this  clear, so
+> I think we should ingest it after you do this round of processing?
+
+Applied: DQE statement as a dated program-level note in
+[potential-projs/README.md](potential-projs/README.md) (marked not-adopted-at-the-time);
+approved must-reads added to
+[litreview/tlc-litreview-plan.md](litreview/tlc-litreview-plan.md) (Miao & Blunsom
+gate-1 with PDF, DS-1000, BigO(Bench), e-graphs, TransCoder pair, SymC/
+ProgramTransformer, curriculum novelty check, bisimulation skim). Facts corrected in
+place: no Re-Align or Logical Reasoning submission was made or close; no AST-metrics
+code exists (code-processing codebase pointers to follow). Framing-provenance note
+added to the TLC §4 submission-record entry; the writing-period conversation is the
+next intake. Still open from the walkthrough: TLC §1 adoption of the NL argument +
+vocabulary; TLC-0 metric consolidation; divergence staging promotion; the four
+candidate principles.
