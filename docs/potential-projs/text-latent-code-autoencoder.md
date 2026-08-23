@@ -1567,11 +1567,21 @@ prompt↔code) is the same bookkeeping as TLC-0's leakage accounting; within-Hum
 redundancy is unstudied and is a small analysis worth doing before per-item claims.
 
 
-### 2026-08-23 — The pitch to Cho, and the cheap-model re-evaluation angle (from the re-eval conversation)
+### 2026-08-23 — The Cho pitch (early 2026) and the cheap-model re-evaluation angle (historical conversation, intake 2026-08-23)
 
-**Milestone (Danielle, 2026-08-23):** "I just pitched my advisor on the pdf contents as a
-general thesis direction to move in (starting with a well scoped workshop paper which is
-a small subset of what's in that doc)." The pitch document — "LLM-as-Optimizer of
+**Timeline (Danielle's correction at intake):** the conversation and pitch date from
+roughly January–March 2026, not from intake time; time-sensitive advice in the
+conversation (deadlines, "this week") is historical. A workshop paper was eventually
+submitted and rejected — Danielle's own assessment: the rejection was fair, the paper
+was written very, very fast. The project's scope was subsequently redirected for a
+period; as of 2026-08-23 Danielle is returning to the original version of the
+direction. This conversation is therefore the *ancestor* of the current TLC framing:
+this doc and the three-layer TLC structure (decided 2026-08-22) are the return to and
+refinement of what was pitched here.
+
+**The pitch (Danielle, early 2026):** "I just pitched my advisor on the pdf contents as
+a general thesis direction to move in (starting with a well scoped workshop paper which
+is a small subset of what's in that doc)." The pitch document — "LLM-as-Optimizer of
 Natural Language Bottleneck Model" (Rothermel*, Li*, Cho), targeting the AI with
 Recursive Self-Improvement Workshop @ ICLR 2026 — is preserved at
 `~/drotherm/data/convo-artifacts/2026/2026-08-23-prompt-opt-reeval-aha/cho-proj-pitch-llm-as-optimizer-of-nl-bottleneck-model.pdf`
@@ -1585,7 +1595,8 @@ gemini-2.5-flash-lite, gemini-2.5-flash, haiku-4.5, gpt-oss-120b; temperature 0.
 top-p 0.95; OpenRouter + Docker isolation); the optimizer loop itself not yet run —
 "later this week, before the workshop deadline."
 
-**Danielle's motivating curiosities beyond the pitch itself (near-verbatim):**
+**Danielle's motivating curiosities beyond the pitch itself (near-verbatim, from the
+early-2026 conversation):**
 
 - Using OPRO+ as related work, "wondering how accurate the conclusions are currently,
   when optimizing prompts, tasks, etc."
@@ -1623,6 +1634,6 @@ identity/versioning drift as both a reproducibility hazard (log model string, pr
 date, sampling params, request IDs) and a research question ("how stable are
 conclusions under model drift?").
 
-Conversation still in progress; this entry may be extended. Sibling record of the
-re-eval framing: `../topics/reference/prompt-optimization-landscape.md` (2026-08-23
-entry).
+Intake still in progress (more chunks of the historical conversation to come); this
+entry may be extended. Sibling record of the re-eval framing:
+`../topics/reference/prompt-optimization-landscape.md` (2026-08-23 entry).

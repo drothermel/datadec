@@ -105,10 +105,14 @@ reflection and a valset for Pareto tracking (`dspy.ai` optimizer docs). This is 
 of the missing-anchor list (APE, OPRO, ProTeGi, TextGrad, DSPy/MIPROv2, GEPA) to arrive
 with an ID; the rest still need supplying. All claims are the respondent's, unverified.
 
-## 2026-08-23 — Re-evaluating 2022–2024 findings under modern models (ChatGPT conversation, in progress)
+## 2026-08-23 — Re-evaluating 2022–2024 findings under modern models (ChatGPT conversation, early 2026; intake in progress)
 
-A long ChatGPT conversation Danielle describes as a real "aha" moment; arriving in
-chunks, full verbatim transcript at
+A long ChatGPT conversation Danielle describes as a real "aha" moment. **The
+conversation dates from roughly January–March 2026** (Danielle's correction at intake);
+time-sensitive content — deadlines, venue timing, model pricing — reflects that period.
+The workshop paper it fed was submitted and rejected, and Danielle is returning to the
+direction as of 2026-08-23 (project history in the TLC doc §4). Arriving in chunks,
+full verbatim transcript at
 `~/drotherm/data/convo-artifacts/2026/2026-08-23-prompt-opt-reeval-aha/` (source link in
 its `INDEX.md`). This entry summarizes chunk 1 and may be extended. All respondent
 claims and identifiers unverified.

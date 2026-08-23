@@ -3762,3 +3762,15 @@ the posttraining-collapse hypothesis, condensed response) with a chunk-2 note in
 Pitch PDF preserved in the convo-artifacts bundle. Two Danielle-supplied ledger rows:
 the pitch bibliography's author/title pairings for 2402.18700 (Chuang) and 2408.11198
 (Taherkhani) conflict with earlier agent-supplied attributions (Zhou; Saluja).
+
+### Timeline correction (2026-08-23, during intake)
+
+> yeah, to be clear, this was around the Jan-Mar 2026 timeline so the time estimates
+> etc are currently irrelevant, a paper was eventually submitted but rejected (which
+> was fair, I wrote it very very very fast). [...] So, I'm only just getting back to
+> thinking about the original version.
+
+(One clause of adviser-related context elided per standing convention.) Corrections
+applied to the TLC §4 entry and the prompt-optimization-landscape entry: conversation
+is historical (~Jan–Mar 2026), the workshop paper was submitted and rejected, and the
+current TLC docs are the return to the original direction.
