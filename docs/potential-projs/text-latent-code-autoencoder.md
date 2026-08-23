@@ -1847,3 +1847,71 @@ semantic variance in the existing FizzBuzz/variance measurements; (c) the
 regime (2026-08-22 entry above); (d) transformation-generated equivalence-class
 variants give the consistency axis (evaluation-methodology entry, chunk-8) its
 code-side perturbations, complementing prompt-side rephrasings.
+
+### 2026-08-23 — Chunk 10 of the early-2026 conversation: the canonicalization deep-dive (representation ladder, oracle-relative equivalence, IR-distance)
+
+A long adversarial back-and-forth extending the chunk-9 thread (Danielle repeatedly
+"stopping halfway through" to push back; the exchange ends mid-conversation — her
+final message is answered in the next chunk). The technically durable outputs:
+
+- **The Python representation ladder** (respondent): source text → CST (lossless
+  w.r.t. text; LibCST/RedBaron) → AST (lossless w.r.t. executable semantics modulo
+  introspection) → lowered/desugared AST with explicit control flow (non-standard but
+  conceptually key: fewer degrees of freedom, still structured) → bytecode
+  (many-to-one from AST) → CFG/SSA/trace views → native. Terminology settled:
+  CPython (the C-implemented interpreter everyone uses) vs Cython (an opt-in separate
+  language); general Python is not compilable to other languages because of dynamic
+  typing/attributes, monkey-patching, reflection, eval/exec — compilable subsets
+  (Numba, Cython, TorchScript, JAX traces) work by removing those features.
+- **Test-oracle-relative equivalence — paper-ready formalization TLC should adopt
+  (Claude-added flag):** three equivalence notions — textual, observational (full
+  reflective indistinguishability), behavioral (same outputs/effects on inputs of
+  interest). "Lossless is relative to the observer": under an execution-based
+  black-box harness that never inspects reflective details, AST round-tripping and
+  AST-level normalization are lossless. This is exactly TLC's C_s (Eq. 2) notion; the
+  formalization pre-answers the reviewer objection to any normalization step in the
+  pipeline. Caveat retained: the guarantee is as strong as the test set — true of the
+  whole execution-based-eval paradigm.
+- **Where Danielle's compile-down-and-back argument landed** after several rounds:
+  one-to-many is not a blocker when any single canonical representative suffices
+  (conceded — how decompilers/superoptimizers work); the real blockers are
+  compositionality (IR chunk boundaries don't align with Python structure; meaning is
+  context-dependent, so chunk-caching explodes), stability under iteration (naive
+  decompiler-style round trips drift — structure oscillates, abstractions dissolve),
+  and environmental equivalence (dependency versions, FP backends, threading). AST
+  normalization is idempotent (normalize∘normalize = normalize); lower-IR round trips
+  generally have no stable normal form.
+- **Rewrite-theory boundary** (the math-vs-search resolution): a rewrite system is
+  "math" when sound + confluent + terminating; AST normalization rules are convergent
+  by construction; semantic-idiom collapsing ("these are both sorting") makes rules
+  non-local/overlapping/non-confluent — classification is where the search lives,
+  amortized offline into the ruleset. Behavioral equivalence is undecidable, so any
+  canonicalizer is incomplete, heuristic, or oracle-backed; the honest claim is
+  "policy-driven semantic normalization under a distributional prior." E-graphs /
+  equality saturation named as the formalism sitting exactly between rewriting and
+  search (no citation given; the standard reference is the egg line of work —
+  Claude-added pointer, unverified).
+- **The strongest salvage — IR-distance, don't round-trip:** compile *both* sides of
+  the autoencoder down to a common view (bytecode n-grams, CFG fingerprints, def-use
+  chains, normalized opcode sequences, call-graph patterns, or runtime traces on
+  canonical inputs) and compare there. Uses: detect reconstruction drift ("passes
+  tests but changed algorithm"), cluster solutions into algorithm families, rerank
+  samples (minimal IR-distance subject to passing tests), regenerate under a
+  preserve-structure constraint — "a semantic regularizer for generation." Proposed
+  v0: 200 tasks × 6 models × 20 seeds; does IR-distance explain output variance
+  beyond pass/fail; intervention = IR-distance-guided reranking. **(Claude-added:)**
+  IR-distance between f and f̂ also directly operationalizes TLC-0's
+  implementation-leakage measurement — a reconstruction that is IR-close to the
+  source demonstrates the description carried implementation, not just behavior.
+- **Danielle's refined hypothesis** (final message, not yet answered — near-verbatim):
+  not that a C round trip helps LLMs across the board ("that would be a wild
+  hypothesis"); rather that "there is an impact to having a consistent output format
+  for each type of operation in Python… you dramatically reduce the state space,
+  because then it is easier to compress components… it allows you to identify things
+  that are in fact the same operation, and if you are a weak coding model… you can
+  just track that whenever you see something like this, you've got to make sure to do
+  this other thing." The identification/merging is best done "in a language where you
+  have strict typing and a lot of other constraints… before then bringing it back" to
+  Python. Note the explicitly compression-shaped statement of the benefit — this ties
+  canonicalization to the thesis track's MDL framing, and the small/weak-model clause
+  ties it to her elicitation interests.
