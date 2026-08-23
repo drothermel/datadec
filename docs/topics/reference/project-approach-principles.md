@@ -253,3 +253,46 @@ uncompromising). The more options searched, the larger the bias. Came up three t
 2026-08-22 in different clothes (TLC optimizer reporting, conformal calibration after model
 selection, best-recipe claims from DataDecide); detailed record in
 `estimation-and-calibration-methods.md`. Applies to every project that chooses anything.
+
+## 2026-08-23 — Principles adopted from the February-2026 conversation intake
+
+Adopted at the 2026-08-23 walkthrough (Danielle's decisions). The first two are full
+standing principles; the last two are adopted **as technique-level discipline with
+caveats**, subordinate to the first two.
+
+1. **Benchmark as byproduct (instrument → analysis → targeted fix).** Danielle's own
+   formulation (2026-02-06, near-verbatim): "I would prefer a setting where the paper
+   relies on some other key thing, and the release of a benchmark is a byproduct… I've
+   done this interesting, very carefully designed analysis on this specific set of
+   questions, and I created this benchmark as a way to do that. And then I introduced
+   a… semi-novel approach that targeted one of the biggest failure modes that I
+   discovered in my analysis." Shape: question → instrument → non-obvious findings →
+   dominant failure mode → small principled intervention causally tied to it →
+   artifact released as byproduct. **Why:** it converts "another benchmark" into a
+   scientific claim, and it describes how the portfolio already works (TLC-0, the
+   divergence spec). **How to apply:** when a benchmark or suite appears in a plan,
+   name the question it instruments and the finding it must enable before building it.
+
+2. **Module or kill (workshop submissions).** Every workshop submission should either
+   become a module of the eventual big paper or decisively kill a direction quickly;
+   if it is neither, it is practice, not strategy. **Why:** the guard against
+   workshop-farm fragmentation of the thesis narrative — the discipline the
+   February-2026 sprint lacked. **How to apply:** at submission-planning time, state
+   which big-paper module the tiny paper becomes on success and what it kills on
+   failure; if neither answer exists, deprioritize.
+
+3. **One knob, one plot** *(technique-level, with caveat).* Name the knob, name the
+   y-axis, hold everything else fixed, run the smallest study that shows a curve, make
+   one figure that answers the question (flat = a result; non-monotonic = a story;
+   family-dependent = a paper). **Caveat:** this is an experiment-design recipe, not a
+   scoping principle — it serves principle 1's "instrument" step and does not by
+   itself justify running an experiment.
+
+4. **Lens, not commitment** *(technique-level, with caveat).* When a formal framework
+   (bandits, bisimulation, contrastive learning, rate–distortion) explains work
+   already done: operational definitions stay in the main text; each lens gets one
+   bridge sentence; explicit formalism goes to the appendix; full formal unification
+   is the follow-up paper. **Caveat:** a paper-framing recipe, not a research
+   principle — it governs how discovered structure is *presented* mid-stream, and does
+   not defer the obligation (principle 1) to eventually test whether the lens buys
+   anything.

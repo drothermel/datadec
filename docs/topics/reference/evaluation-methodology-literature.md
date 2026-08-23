@@ -308,4 +308,5 @@ the transcript, chunk 17). **Outcome (resolved at intake, 2026-08-23): neither t
 "behavioral non-collapse" paper nor the Logical Reasoning structured-latent plan was
 submitted, "or even close" (Danielle). The only submission was the LLA bandits paper
 (TLC doc §4, submission-record entry). The spec remains implementation-ready and
-unexecuted; staging promotion is the open decision.**
+unexecuted; promoted to `../staging/model-behavioral-divergence.md` by decision
+2026-08-23.**

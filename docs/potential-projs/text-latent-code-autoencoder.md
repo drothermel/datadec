@@ -90,6 +90,51 @@ with an off-the-shelf embedding model. If the structured-space intuition is righ
 should form a better-organized vector space than embeddings of the raw code — clustering by
 function rather than surface.
 
+### Why the latent is natural language — a prediction, not a requirement
+
+*(Adopted into §1 by decision 2026-08-23; provenance and full derivation in the §4
+entries for the February-2026 conversation, chunks 12–14.)*
+
+The most common objection to this design is: if the objective is a behavior-preserving
+compressed representation, why should the latent be natural language rather than any
+compressed form? The answer is a constraint, not a taste:
+
+> **Because the encoder and decoder are black-box, pretrained LLMs, the intermediate
+> representation must live in a region of representation space where those models
+> already have strong priors.**
+
+("Representation space" here means input token sequences with training-distribution
+support, not embedding space.) With no retraining, no tokenizer changes, and
+general-purpose decoders, the only shared, high-capacity, semantically grounded channel
+is natural language plus code; a custom DSL, symbolic encoding, or novel markup has no
+prior support and fails at decode time.
+
+**Crucially, this is a falsifiable prediction, not a design requirement.** The project
+does not constrain the representation to natural language; it predicts that the
+best-performing intermediate representations will be some form of human-interpretable
+text, because of the training data — and therefore treats NL-instruction inductive
+biases in early experiments as probability-of-success maximization, not dogma. Two
+experiments test the prediction directly: the abstraction-vs-compatibility ladder
+(increasingly aggressive / less NL-like representations at matched budget; predicted
+inverted-U — the COMP-NL vs. COMP-SHORT contrast is already a two-point sample), and
+cross-decoder transfer of the representation (shared priors are what force NL; an
+idiosyncratic code learned for one decoder pair that fails to transfer *confirms* the
+mechanism). Cross-decoder decodability is accordingly an emergent evaluation axis, not
+an assumption: hierarchy = constraint (high-prior regions) → prediction (NL-like) →
+emergent benefit (cross-model transfer).
+
+The working vocabulary that goes with this framing: equivalence is
+**property-indexed** — "we define program equivalence relative to a set of observable
+properties (functional behavior, complexity class, and effects), and treat programs
+equivalent under these properties as interchangeable for downstream learning and
+analysis." The pipeline performs **behavior-preserving normalization** — "rather than
+preserving exact program structure, we abstract programs into equivalence classes
+defined by behavioral properties and operate on representative implementations to
+reduce representational variance." (Not "canonicalization," which formally requires a
+unique, deterministic, total, idempotent representative.) Closest formal ancestor:
+Miao & Blunsom 2016 (1609.07317), whose background-LM prior on a latent summary
+sentence is the trained-model counterpart of the frozen-prior constraint above.
+
 ### Degeneracy: an open question, not a design constraint
 
 Classical autoencoders require bottlenecks because an unconstrained optimizer reliably finds
@@ -234,6 +279,34 @@ Observed landscape: the cheapest OpenRouter models sit at roughly 80–95%+ pass
 ratios, with a sharp step-function cliff to zero below a threshold ratio — and the zeros are
 refusals ("that's too small"), i.e., compliance failures rather than capability failures.
 This step structure drives the census design in §3.
+
+### TLC-0 candidate metrics from the February-2026 conversation (findable, not decided)
+
+*(Consolidated by decision 2026-08-23. These are candidates for the measurement suite,
+recorded here so they are findable when TLC-0 implementation resumes — none is adopted
+into the suite's agreed design yet. Derivations in §4, chunks 10–14.)*
+
+- **IR-distance** between source f and reconstruction f̂ (bytecode n-grams, CFG
+  fingerprints, def-use chains, normalized opcode sequences, or runtime traces on
+  canonical inputs): detects algorithm drift ("passes tests but changed strategy") and
+  directly operationalizes implementation leakage — IR-close reconstruction means the
+  description carried implementation, not just behavior.
+- **Q(d) = pass_rate(d) − λ·variance(d) − µ·cost(d)** — a grounded scalar ordering on
+  representations requiring no training.
+- **S_multi(d)** — mean pass probability across M decoders; cross-decoder agreement as
+  the shared-prior-space probe (the NL prediction restated as a per-representation
+  metric).
+- **Equivalence-class geometry:** class consistency, intra-class variance,
+  representative quality, abstraction error; plus per-test outcome-vector similarity
+  (cosine/Jaccard/KL over per-test pass probabilities) as the soft, in-expectation
+  equivalence label — extends the validated fractional-test-pass machinery; never
+  pass-all-or-none.
+- **Graded property oracles:** P = {tests} → {tests, complexity class} → {tests,
+  complexity, purity/effects}; complexity properties are free on synthetic items
+  (provenance) and tool-assisted elsewhere (BigO(Bench)-style inference, noisy).
+- **Deterministic-canonicalizer conditions** (surface canonicalization → structural
+  rewrites) as the style-only information floor the NL bottleneck must beat; also
+  separates stylistic from semantic variance when applied to decoder outputs.
 
 ## 2. Doability and impact
 
