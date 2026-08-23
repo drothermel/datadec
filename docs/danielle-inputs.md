@@ -3839,3 +3839,26 @@ its possible homes) and
 A–E and workshop slices H1–H3). Three ledger rows (TransCoder, unit-test-filtered code
 translation, PMLR cost-aware prompt opt with no ID). Divergence-hypothesis
 staging/promotion deferred to the post-conversation walkthrough.
+
+### Current-state update during intake (2026-08-23, not part of the historical conversation)
+
+> ahhh, something I learned after this convo: designing the families and their
+> difficulty levels was very non-trivial and a variety of issues came up such as
+> ending up with "different" functions by sampling different settings that ended up
+> being identical, it being very difficult to maintain, some functions basically
+> simplifying to identity, and the difficulty measures being very uneven across and
+> within families.  so the synthetic functions would need some work to use, and a core
+> reviewer pushback was why use synthetic functions at all, why not use standard
+> datasets.  which my advisor firmly agreed with so we're currently using
+> HumanEvalPlus, which I've discovered is much worse than my synthetic functions in
+> that it has a dramatic variance of difficulty, some samples have been solved by
+> every model I've tried on them, down to the cheapest, some are broken in the
+> official release, they are SUPER short so compression is kinda meaningless, etc.
+> So, I'm interested in combining synthetic and real world, reporting on humaneval
+> because people assume it must be good, but also on better real world datasets, etc.
+
+Routed to [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+§4 (dataset-strategy entry: synthetic-library defect classes, the HumanEvalPlus
+cutover, her first-hand critique, the combine-synthetic-and-real interest) and
+[topics/reference/code-benchmarks-landscape.md](topics/reference/code-benchmarks-landscape.md)
+(first-hand HumanEvalPlus defects note).

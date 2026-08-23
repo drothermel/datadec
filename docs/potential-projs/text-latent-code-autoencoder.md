@@ -1692,3 +1692,39 @@ Chunk 3 also contains Danielle's model-divergence hypothesis and three
 behavioral-distance experiment designs — recorded in
 `../topics/reference/evaluation-methodology-literature.md` (2026-08-23 entry), since it
 is a freestanding measurement question rather than TLC-specific.
+
+### 2026-08-23 — Dataset strategy: synthetic-library lessons and the HumanEvalPlus cutover (current state, Danielle at intake)
+
+Current-state update from Danielle during the transcript intake (this postdates the
+early-2026 conversation and supersedes its assumption that the synthetic families are
+ready to use as-is):
+
+**Synthetic-library lessons learned** (near-verbatim): "designing the families and
+their difficulty levels was very non-trivial and a variety of issues came up such as
+ending up with 'different' functions by sampling different settings that ended up being
+identical, it being very difficult to maintain, some functions basically simplifying to
+identity, and the difficulty measures being very uneven across and within families.
+so the synthetic functions would need some work to use." Four distinct defect classes:
+(1) sampled-setting collisions producing duplicate functions, (2) high maintenance
+burden, (3) degenerate samples that simplify to identity, (4) design-time difficulty
+ladders not matching empirical difficulty, unevenly across and within families.
+
+**The cutover:** a core reviewer pushback was "why use synthetic functions at all, why
+not use standard datasets," which the advisor firmly agreed with; the project currently
+uses HumanEvalPlus.
+
+**Danielle's assessment of HumanEvalPlus** (first-hand, from running it): "much worse
+than my synthetic functions in that it has a dramatic variance of difficulty, some
+samples have been solved by every model I've tried on them, down to the cheapest, some
+are broken in the official release, they are SUPER short so compression is kinda
+meaningless." The shortness point is structural for the compression track: items must
+be long enough for a description-length bottleneck to bind.
+
+**Current interest:** "combining synthetic and real world, reporting on humaneval
+because people assume it must be good, but also on better real world datasets, etc."
+
+Cross-references: first-hand HumanEvalPlus defects also recorded in
+`../topics/reference/code-benchmarks-landscape.md` (2026-08-23 note); the 2026-08-22
+HumanEval-derivative intake (same file) is the candidate menu for "better real world
+datasets"; empirical difficulty calibration of synthetic families connects to the IRT
+program (IRT-11: which item representation explains difficulty).

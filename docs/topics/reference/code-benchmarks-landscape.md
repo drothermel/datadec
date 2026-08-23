@@ -232,3 +232,14 @@ Scope answer (verbatim):
   nearest benchmark family to the explain→regenerate protocol.
 - Two near-duplicate report drafts exist in the bundle; the pasted one is the 9-section
   final. The 30 reference numbers map 1:1 onto `enriched_top30.json`.
+
+## 2026-08-23 — First-hand HumanEvalPlus defects (Danielle, from TLC baseline runs)
+
+Danielle-supplied ground truth (not an external claim), from running HumanEvalPlus in
+the TLC reconstruction pipeline after the project cut over to it from the synthetic
+families: dramatic variance of difficulty across items; some items solved by every
+model tried, down to the cheapest; some items broken in the official release; items
+"SUPER short," making description-length compression nearly meaningless for the TLC
+bottleneck. Context and the synthetic-library lessons that preceded the cutover:
+`../../potential-projs/text-latent-code-autoencoder.md` §4, 2026-08-23 dataset-strategy
+entry.
