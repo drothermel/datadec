@@ -2242,3 +2242,23 @@ vocabulary**; task/benchmark building blocks; behavioral distance; venue/packagi
 The digest is preserved verbatim in the transcript (chunk 15); its content is already
 distributed across this doc's chunk entries and the evaluation-methodology/
 benchmarks-landscape entries, which serve as the durable, cross-referenced version.
+
+### 2026-08-23 — Chunks 16–17 (session of 2026-02-08): the variance data becomes the divergence paper; conversation ends
+
+The conversation's final session (two days after the pitch-week chunks; the timeline
+is now precise — chunks 1–15 on 2026-02-06, four days before the Recursive
+Self-Improvement workshop deadline of 2026-02-10; chunks 16–17 on 2026-02-08). TLC
+facts surfaced: the respondent's recap confirms the draft's variance instrumentation
+end-to-end (C_s; decoder-only vs. full-reconstruction pass distributions; the
+waterfall; FizzBuzz ×100; 3 synthetic families × 10 specs × 10 generations; provider/
+cost-tier design; DG-* prompt regimes as a contract-entropy axis; one-stage vs.
+two-stage; COMP-NL/COMP-SHORT; b1 ∈ [0.5, 1.0] budget sweeps). **Danielle has an
+existing AST code-metrics analysis** over generations (control-flow condition
+presence, solution complexity, variable-name/line/total lengths, comments,
+docstrings) — a live data asset. She was also planning a *second* workshop submission
+at the time: contradictions within (model, spec) pairs under a structured latent, for
+the Logical Reasoning workshop — a TLC-adjacent plan whose outcome is unrecorded.
+The variance-paper spec itself ("Behavioral non-collapse in cheap coding LLMs",
+targeted at the Re-Align Challenge track) lives with the divergence thread:
+`../topics/reference/evaluation-methodology-literature.md`, chunks-16–17 addendum;
+full verbatim spec in the transcript bundle, chunk 17.

@@ -271,3 +271,38 @@ canonicalization thread (recorded in the TLC doc §4, chunk-9 entry) supplies
 semantics-preserving transformation operators as the generator of "logically related
 variants" on the code side (invariance to program symmetries), complementing the
 prompt-side rephrasings above; canonicalization is then the natural intervention arm.
+
+**Chunks 16–17 addendum (session of 2026-02-08) — the divergence hypothesis becomes a
+paper spec.** Two days after the main conversation, Danielle returned to package the
+existing TLC baseline data as a variance-analysis workshop paper (ICLR 2026 workshops
+with deadlines ≥ Feb 10). Workshop scan (respondent, web-backed, historical): CAO
+drift-monitoring workshop judged the cleanest fit but deadline too tight (Feb 11);
+Logical Reasoning (Feb 20 / Mar 20 two-round) already earmarked by Danielle for a
+*separate planned submission* — "contradictions within (model, spec) pairs if we use a
+structured latent"; **Re-Align Challenge track (Feb 26) chosen** — behavioral
+distributions treated as representations, alignment/divergence measured across
+providers. Three storylines offered; Danielle picked C, her divergence hypothesis:
+"cheap models aren't collapsed — they're diverse in behavioral geometry."
+
+Evidence requirements settled for the claim: operationalize collapse as (small)
+per-spec outcome correlation, failure-mode distribution distance, and within-spec
+variance; behavioral signature vector s_m over waterfall categories with JS/TV/
+Wasserstein distances; explicit tail-risk metric P(catastrophic) = P(not-code ∪
+compile ∪ runtime); robustness across ≥2 prompt regimes and ≥2 task families. Her
+addition (the chunk-16 question, confirmed load-bearing): **two kinds of collapse** —
+outcome collapse vs. behavioral/solution collapse — with her existing AST code-metrics
+analysis (control-flow conditions, complexity, naming/line/total lengths, comments,
+docstrings) testing the second, **conditioned on success** ("even when they succeed,
+they differ" — divergence in the equivalence-class interior). Feature split for
+credibility: structural/strategy features headline (control-flow shape,
+algorithm-family proxies, library usage, complexity, mutation patterns, exception
+handling); stylistic features supporting only. Final deliverable: a complete
+implementation-ready spec — "Behavioral non-collapse in cheap coding LLMs" — with
+thesis, H1 (tail/failure-mode non-collapse), H2 (success-conditioned strategy
+diversity), H3 (persistence across specs/regimes; fallback: collapse under strict
+contracts but divergence under underspecification), four figures (mean-vs-tail
+scatter; failure-signature heatmap+clustering; success-conditioned behavioral
+fingerprint heatmap; regime stability), per-sample logging schema, and paper outline —
+handed off at the time to a separate implementation-planning agent (verbatim spec in
+the transcript, chunk 17). **Outcome of the Re-Align submission and the Logical
+Reasoning plan not recorded in this conversation — open intake question.**

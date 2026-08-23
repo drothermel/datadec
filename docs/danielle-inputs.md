@@ -4332,3 +4332,27 @@ decision table; the conference-paper unification horizon and venue sketch; the
 conversation's own design-decision digest, preserved verbatim in the transcript with
 the repo entries as the durable cross-referenced version; one new detail — hand-
 designed 10–30-construct macro set before any learned vocabulary). No new identifiers.
+
+### Chunks 16–17 (six prompts, voice-dictated; session of 2026-02-08 — the conversation ends here)
+
+> Today, what I'm interested in doing is thinking about how the experimental results that we already have could be packaged into some type of analysis paper about the behavior of LLMs and how they vary across, like within model-spec pairs, you get a huge variance. And then for a given model across specs, you get a huge variance, and then across providers, you get a huge variance. And I think that there just has to be, I am too interested in the outcomes of these experiments for there not to be some interesting narrative to be made from them. But it would need to be a narrative that could be submitted to an iClear workshop that has a submission date that is the 10th or later. So can you start by telling me what we've already covered in this direction? Because I feel like we talked about it. And then after you do that, I'm going to ask for you to look for a good fit for workshop if we haven't already covered that.
+
+> Ok great, so before To create a candidate storyline, I think the most important first choice is to, or like first task, is to go and see what workshops are available with ICLR, because I think creating that narrative storyline will need to be directly targeted at one of the available workshops. And I don't think there are any that are like, basically just like an exact fit for this. And so I think we'll probably have to do a little bit of tuning of the narrative based on that. So can you go and search for all of the ICLR workshops that are, that have deadlines the 10th or later, and lay those out along with your, your view on what the most promising work that we could try to shape a narrative with this data around?
+
+> Ok, so I think CAO is optimal but the deadline is super tight.  Then, I like the Re-Align Challenge track idea +  the Logical Reasoning of LLMs seems solid but I'm already planning a submission of work related to this around contradictions within (model, spec) pairs if we use a structured latent.  So I think it would be cool to aim for Re-align?
+
+> interesting, I htink that C would be the coolest but I'm not sure what we'd need to make that claim.  what do you think we'd need for a workshop paper level claim like that?
+
+> I like this a lot. I think one piece that I don't see in this, but that we have the data for, and I think would be really interesting, is to look at not just the failure modes, but also the behavioral diversity. So like, I have the analysis on basically like using AST, all of the different types of like if, while loop conditions and their presence, the level of complexity of the solution, variable naming length, length of lines, total length, like just a bunch of different things that are metrics on the code that are relevant things with like comments, doc strings, et cetera. And so it seems like the strongest argument for there being a lack of collapse is not just that there isn't collapse in the success versus failure reasons, but also that there clearly isn't collapse in like the output types for like fairly basic setups. Does that make sense? Do you think that that falls into the same category, or is that just like interesting but not really relevant to the main point of the paper?
+
+> Okay, I completely agree. Then I'm gonna have a different agent look at the state of my code currently and then plan what we would need to change to be able to, or like implement to be able to collect the results for this workshop paper proposal and chunk it into, like, well-scoped tasks. So can you give me a final clear description of what the workshop paper is that we're trying to put together, what pieces we need for it, what the hypotheses are, and the main plots that we need to make to support those hypotheses, basically any information this agent would need to be able to put together a clear, like, actionable plan for what to do next?
+
+Conversation dates now precise: chunks 1–15 on 2026-02-06, chunks 16–17 on 2026-02-08.
+Routed to [topics/reference/evaluation-methodology-literature.md](topics/reference/evaluation-methodology-literature.md)
+(chunks-16–17 addendum: the variance-analysis paper planning, the ICLR-workshop scan,
+the Re-Align choice, the two-kinds-of-collapse distinction with success-conditioned
+strategy diversity, and the full "Behavioral non-collapse in cheap coding LLMs" spec —
+outcome an open intake question) and
+[potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+§4 (instrumentation recap, the AST-metrics data asset, the planned structured-latent
+contradictions submission, precise dates). No new identifiers.
