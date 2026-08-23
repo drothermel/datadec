@@ -2194,3 +2194,51 @@ rates), and it extends machinery this project already validated — the 2026-07-
 fractional-test-pass-rate and per-test-outcomes entries above; Q(d) and S_multi are
 direct candidates for TLC-0's representation-quality axis alongside IR-distance
 (chunk 10) and the class-variance metrics (chunk 12).
+
+### 2026-08-23 — Chunk 15 of the early-2026 conversation: framing adoption, the bandit baseline, and the conversation's own design digest
+
+**Optimizer-loop baseline decision (early 2026):** the advisor's suggested loop —
+sample actions, keep any that beat the current reward, stop after n non-improving
+steps or when improvements peter off — adopted as the main baseline (simple, matches
+common practice), with Danielle's recognition that it is a greedy multi-armed-bandit /
+hill-climbing variant and her commitment that bandit formulations (ε-greedy / UCB /
+Thompson) should at least be *tried*, appendix-level. Note the convergence with the
+chunk-3 curriculum thread: bandit machinery is budget-allocation machinery, and the
+cost-aware evolutionary prompt-optimization citation (PMLR zehle25a) already sits in
+exactly that space. (Also note the pitch's §7 named "a simple ES based optimization
+approach" as the intended next step — the greedy loop is the even-simpler successor.)
+
+**Framing-adoption decision ("lens, not commitment"):** her worry — "it feels pretty
+substantial to shift our framing so dramatically to a much more formal version
+overnight" — answered with a rule she accepted: workshop main text stays operational
+(test-based equivalence, executable definitions); each formal lens gets exactly one
+bridge sentence (greedy loop "can be viewed as a greedy multi-armed-bandit-style
+optimization"; equivalence "closely related to behavioral abstraction and
+bisimulation"; ranking "can be interpreted as a contrastive objective"); explicit
+losses, bandit baselines, and formalisms live in the appendix; the full formal
+unification is the follow-up paper. Decision table (main / appendix / future-work per
+concept) in the transcript. Sorting rule: changes-how-you-interpret-results → main
+text; changes-how-you-might-implement-later → appendix/future work.
+
+**The conference-paper horizon (recorded so it can be shelved):** a unification +
+systematic-measurement paper — formalize the observation model, treat intermediate
+representations as elements of an abstract space scored by invariance, recoverability,
+and downstream utility; compare abstraction mechanisms head-to-head (heuristic
+normalization, greedy/bandit search, contrastive objectives, learned encoders); the
+central object of study is the abstraction–compatibility trade-off; contributions are
+variance-reduction, robustness/transfer, and success/failure conditions per mechanism
+— explicitly *not* a new algorithm. Venue sketch (respondent's, generic but
+reasonable): ICLR/NeurIPS under a representation-learning framing, ACL/EMNLP Findings
+under a code-LLM framing, PL+ML crossover or D&B under a measurement framing.
+
+**The conversation's own design-decision digest (next-day request):** the respondent
+produced a consolidated digest — shared foundations (property-indexed equivalence;
+behavior-preserving normalization as umbrella term; CST/AST for rewriting vs. IR for
+comparison; the black-box distribution constraint; the one-plot trade-off) and eight
+project modules (workshop core; greedy-vs-bandit optimization; representation
+evaluation; the L0–L4 normalization ladder; the macro-token vocabulary — with one new
+detail: **start with a hand-designed macro set of 10–30 constructs before any learned
+vocabulary**; task/benchmark building blocks; behavioral distance; venue/packaging).
+The digest is preserved verbatim in the transcript (chunk 15); its content is already
+distributed across this doc's chunk entries and the evaluation-methodology/
+benchmarks-landscape entries, which serve as the durable, cross-referenced version.

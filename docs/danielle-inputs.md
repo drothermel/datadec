@@ -4314,3 +4314,21 @@ hypotheses; the bisimulation frame with a Claude-added degeneracy caveat; the
 representation-scoring menu — Q(d), cross-decoder agreement S_multi, contrastive
 ranking, soft/in-expectation equivalence labels upgraded to per-test outcome vectors,
 tied to the existing fractional-test-pass machinery). No new identifiers.
+
+### Chunk 15 (four prompts, voice-dictated; includes a next-day resumption)
+
+> Wow, this is really cool. So basically, I think my main remaining question is whether in the workshop version of our submission, I should update the way that we've been describing these concepts to use these new terms and explicitly call out that we're using these different approaches. So, for example, when Cho, my advisor, suggested that I do the simplest possible optimization loop where basically you just keep sampling actions until you get one that produces a reward higher than your current reward, and then if you can't within n steps, you stop your optimization loop. And if your optimization is producing values of reward that are slowly petering off, then you stop your optimization loop. And that's like a super valuable approach, but I think that like a really clean standard description of what we're trying to do is a multi-armed bandit, and there are a lot of standard, like the first thing you try is approaches and simple baselines that you would normally compare to. And so then the option, in that case, I think it's totally reasonable, basically, to do the his version because other people use his version, and so I think that that's a solid baseline, but like, Ultimately, I think we should, at the very least, try using multi-armed bandin formulations, and I think it can be in the appendix, but like, we should try it. And so then I think similarly with the concept of pi simulation or the idea of using a contrastive objective to rank the intermediate representations, it's not clear how many of these ideas should be just like included in a very simple, like, we did this by that, cite standard way of doing that, details in the appendix way. I think that's fair, but it also feels pretty substantial to shift our framing so like, so dramatically, I guess, to a much more formal version overnight. I don't know if that makes sense.
+
+> That's really helpful. Um, just so that my mind is not spinning thinking about this, and instead I should be going to sleep, can you give me just like a brief description of what that, like, conference paper level next step might look like, given our discussion? So like, a paragraph or two, um just to kind of get a sense of what you were imagining so that I can insert it into my brain and then say, look, we figured this out for right now, and we can return to it later.
+
+> And a paper like that could be submitted to, like, a standard conference and get, like, serious consideration for being accepted?
+
+> Okay, it's the next day, and I have thought a bit about all the things we discussed, and I realized that it would be really useful if you could go through our conversations and pull out a summary of all of the design decisions that we've talked about for the different projects that are listed, because that will make it much easier for me to then go back through and pick up the ones that are most relevant to what I'm working on today.
+
+Routed to [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+§4 (chunk-15 entry: the greedy-loop-as-baseline / bandits-in-appendix decision with
+its curriculum/budget-allocation convergence; the lens-not-commitment framing rule and
+decision table; the conference-paper unification horizon and venue sketch; the
+conversation's own design-decision digest, preserved verbatim in the transcript with
+the repo entries as the durable cross-referenced version; one new detail — hand-
+designed 10–30-construct macro set before any learned vocabulary). No new identifiers.
