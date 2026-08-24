@@ -2780,3 +2780,39 @@ was very tired" — followed by the sanity check "does it make sense for 3 slots
 discrete phrasings each to have 27 arms?" (3³ = 27; consistent with the submitted
 appendix's Table 6). The sprint's working conditions, in one exchange: verifying
 single-digit exponentiation at 7:25am while discovering eleven unexpected extra hours.
+
+### 2026-08-23 — The writing-sprint conversation, chunk 9 (the figures land, the noise question, the submission decision; ends 07:33 on 2026-02-16)
+
+Danielle's timeline correction at intake: the deadline was originally 7am (not 6am as
+she recalled at chunk 8), and this exchange ends at exactly 07:33 on 2026-02-16 —
+i.e., 30+ minutes past the original deadline, portal still open, extension to 6pm just
+discovered. She attached the then-current Figures 1 & 2: near-overlapping AUC-vs-N
+curves (~0.03 → ~0.3 over N = 5→50, LLM optimizer slightly above from N ≈ 20,
+overlapping bands). Her verdict: "basically the least interesting they could possibly
+be..."
+
+Three exchanges: (1) legibility triage — difference-plot insets Δ(c), Δ(N)
+(the single best move), scalar-in-caption, y-zoom, caption metadata, multi-N
+frontiers, and **the regime experiment ("this is the real story"): expand the arm
+space at fixed N so bandits' exploration thins while the semantic prior degrades
+gracefully.** (2) Her "but it is noise right, the band shows that its noise?" —
+answered correctly: bands are uncertainty, not noise; overlapping CIs are a weak
+eyeball test; the paired per-run difference curve with its CI is the fast decisive
+check; conservative-vs-supported phrasings for either outcome. (3) Her submission
+decision (verbatim): "I put them in the figure slots, get the generalization results
+based on the data (running now) into the fig 3 slot, remove any claims of comparison
+and submit, then iterate after?" — endorsed with the descriptive-not-comparative
+wording list, the limitations sentence as a planned-extension hook, and the
+still-answers-a-question checklist.
+
+**(Claude-added:)** the submitted paper's final shape is this plan *plus the regime
+experiment executed inside the unexpected extension*: the 8,064-arm large-space
+regime (paper §3.3, Figure 3) is the chunk-9 "real story" advice made real — likely
+run between 07:33 and the 6pm extended deadline — and "modest but consistent" is the
+supported-phrasing branch of the noise answer. Also note the OOD results were still
+*running* at submission-decision time ("data (running now) into the fig 3 slot"),
+which is the concrete referent of the 2026-02-25 presentation's "differentiation in
+generalization exps, but not enough time to thoroughly analyze." The paired
+difference-curve analysis recommended here was never run — it remains the cheapest
+outstanding item for any revival: the logs exist, and it would settle "modest but
+consistent" vs. noise definitively.

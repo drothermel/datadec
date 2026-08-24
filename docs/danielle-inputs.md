@@ -4885,3 +4885,24 @@ Routed to [potential-projs/text-latent-code-autoencoder.md](potential-projs/text
 §4 (writing-sprint chunk-8 entry: the submitted title as the assistant's recommended
 pick verbatim, with the shelved framing-C banner titles noted; keywords; the 7:25am
 deadline realization and the 3³ = 27 sanity check). No new identifiers.
+
+### Writing-sprint conversation, chunk 9 (three prompts; ends 07:33 on 2026-02-16), with intake corrections
+
+Her intake note (verbatim): "Oh! I misremembered, the deadline was actually originally
+supposed to be at 7 and this sequence of exchanges ends at exactly 7:33am on Feb 16."
+(Two screenshots of the then-current near-overlapping AUC figures were attached;
+described in the transcript, final versions in the submitted PDF.)
+
+> so these are our current figures 1 & 2, basically the least interesting they could possibly be...
+
+> but it is noise right, the band shows that its noise?
+
+> ok, so if we're 30mins past the deadline and the portal is still open my thought is I put them in the figure slots, get the generalization results based on the data (running now) into the fig 3 slot, remove any claims of comparison and submit, then iterate after?
+
+Routed to [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+§4 (writing-sprint chunk-9 entry: the legibility triage and the regime-experiment
+advice traced to the paper's 8,064-arm section; the noise-vs-uncertainty answer; the
+verbatim submission decision; Claude-added notes — the OOD data still running at
+decision time as the referent of the presentation's "not enough time to thoroughly
+analyze," and the never-run paired difference-curve analysis flagged as the cheapest
+outstanding item for any revival). No new identifiers.
