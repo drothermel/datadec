@@ -2528,3 +2528,69 @@ source link in the companion transcript header.) Four exchanges:
   (the deferred "optional enhancement") is a known upgrade for any revival, and the
   per-test outcome-vector machinery recorded in the TLC-0 candidate metrics is its
   natural implementation.
+
+### 2026-08-23 — Current state: the compression thesis's origin, the decoupled-sampling insight, and the optimizer infrastructure (Danielle at intake)
+
+Three current-state additions from the intake dialogue (not the historical
+transcripts):
+
+**Why the compression track demands a strong optimizer — provenance of the goal.**
+Danielle's resolution of the framing confusion (near-verbatim): in later conversations
+she asked "but if our goal is compression why would we ever setup a system like this
+one?? aren't there better ways?" and ultimately realized the advisor "was certain that
+by combining lossless and lossy compression we could beat all lossless compression at
+least on a pareto frontier level. which I agree is true in theory, but I feel like in
+practice claiming that all we have to do to write an easy straightforward paper is to
+**beat LOSSLESS COMPRESSION** seems kinda crazy. but it is the task we now have, which
+means we actually do need a very well tuned complex prompt optimization algorithm
+because the baseline is a crazy hard bar that has been aggressively tuned for
+decades." This is the origin of TLC-1–3's stated goal (this doc's one-line pitch) —
+now recorded with her difficulty assessment attached: the lossless bar is what forces
+the optimizer sophistication, which in turn is why she "ended up doing prompt
+optimization when that's not really what I thought I was doing."
+
+**The unarticulated benefit of the original fixed-arm design — decoupled sampling.**
+Her articulation (near-verbatim): the initial design "took a very complicated pipeline
+and made it so you could do a substantial amount of sampling up front (the
+infrastructurally hard part) while still being able to do 'optimization' because the
+search space is basically fixed." By contrast, live prompt-optimization loops need a
+distributed system: the inner step is prompt → remote inference → result → remote
+inference → result → compute-heavy parsing → sandboxed evaluation, and "when you add a
+complex optimization loop around that its actually kinda a nightmare" — she has spent
+more than a month getting to first optimization results. **(Claude-added:)** this is a
+real architectural axis worth keeping explicit — fixed-space designs permit
+sample-once/optimize-offline (and offline re-analysis under any metric, as the
+February frontier-from-logs collapse exploited), while open-space optimizers buy
+expressiveness at the cost of durable-workflow infrastructure; the two-regime paper
+structure was also, implicitly, a comparison of these infrastructure classes.
+
+**Optimizer infrastructure status (verified locally 2026-08-23).** The live
+optimization harness is "basically fully implemented" for **COPRO, MIPROv2, GEPA, and
+a Codex direct prompt proposer** on her dr-* stack — confirmed against the whetstone-ai
+README (COPRO and GEPA platform-wired through `submit_optim_run` with sandboxes;
+MIPROv2 and Codex-direct live via the in-process harness; Codex-direct is the only
+tool-using optimizer, macOS-only). All repos public, local, versioned, and active
+(whetstone-ai 0.1.13 and whetstone-envs 0.2.4 committed 2026-08-23). Design principle
+(hers): "agents will often mess with things they shouldn't so I tried to pull each
+level of primitives out so that we could freeze them during exp running without
+concern + update different pieces with clear versioning over time." The stack, with
+her one-line descriptions:
+
+- `dr-serialize` (0.1.2) — canonical serialization; core to giving runs stable IDs
+- `dr-wire` (0.1.0) — HTTP helper
+- `dr-providers` (0.3.2) — LLM provider access: param validation (no silent
+  failures), unified API
+- `dr-graph` (0.1.3) — the graph definition that *is* the inner loop being optimized
+- `dr-store` (0.2.6) — storage primitives of different shapes
+- `dr-exec` (0.1.14) — CPU jobs with different parallelization types
+- `dr-platform` (0.2.7) — durable workflow primitives built on DBOS
+- `whetstone-ai` (0.1.13) — the optimization algorithms + eval engine (bootstrap CIs,
+  power analysis, anchor calibration over persisted evidence)
+- `whetstone-envs` (0.2.4) — simpler test environments; **the minigrid-based env is
+  one Danielle "probably want[s] to spec out into a small project"** (flagged; her
+  decision)
+- `dr-code` (0.2.0) — code operations
+
+**Missing piece:** the `code-comp` repo (not yet written) that composes whetstone-ai
+and dr-code into the actual TLC experiments. The February submission did *not* use
+this stack; the next round will.

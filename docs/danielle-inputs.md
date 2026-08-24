@@ -4481,3 +4481,53 @@ as the DQE statement's ancestor; framings A/B/C and the A+B decision the paper
 implemented; AUC-primary metric choice; the exact Eq. 1 / Figure-1 caption origin;
 the coverage-vs-probability decision and its link to R2's later critique). No new
 identifiers.
+
+### Current-state additions during intake (2026-08-23): compression-thesis origin, decoupled sampling, infrastructure
+
+> yessss, your points are very accurate.  and I think this was why I was confused that
+> somehow I ended up doing prompt optimization when thats not really what I thought I
+> was doing....
+>
+> in future convos with my advisor I was like "but if our goal is compression why
+> would we ever setup a system like this one?? aren't there better ways?"  and he was
+> like ... I don't understand, obviously this is a compression paper... which didn't
+> seem to answer my question.  but ultimately I realized he was certain that by
+> combining lossless and lossy compression we could beat all lossless compression at
+> least on a pareto frontier level.  which I agree is true in theory, but  I feel like
+> in practice claiming that all we have to do to write an easy straightforward paper
+> is to **beat LOSSLESS COMPRESSION** seems kinda crazy.  but it is the task we now
+> have, which means we actually do need a very well tuned complex prompt optimization
+> algorithm because the baseline is a crazy hard bar that has been aggressively tuned
+> for decades.
+>
+> also, one real benefit that my initial design had that I wasn't able to clearly
+> articulate is that it took a very complicated pipeline and made it so you could do a
+> substantial amount of sampling up front (the infrastructurally hard part) while
+> still being able to do "optimization" because the search space is basically fixed.
+> whereas I've spend more than a month trying to get my first optimization results
+> with prompt optimization because while I could just run COPRO once or twice, if I
+> want to be able to run it enough times to be able to make claims and then log things
+> sufficiently to debug, etc, then I actually need a distributed system.  because the
+> inner part is (prompt -> remote inference -> result -> remote inference -> result ->
+> compute heavy parsing -> sandboxed evaluation).  and when you add a complex
+> optimization loop around that its actually kinda  nightmare.  but I think I have it
+> basically fully implemented for (COPRO, MIPROv2, GEPA, codex direct prompt proposer)
+> using building block repos that work together.  now is maybe a good time to look at
+> those.
+>
+> all should be public, all thats missing is the code-comp repo (not written yet) that
+> combines whetstone-ai and dr-code to actually set up the exps.  this isn't what I
+> was using for the submission of course, but its what this next round will use.  the
+> general design principle is that agents will often mess with things they shouldn't
+> so I tried to pull each level of primitives out so that we could freeze them during
+> exp running without concern + update different pieces with clear versioning over
+> time.
+
+(Her ten-repo list with one-line descriptions follows in the original; recorded with
+local versions in the TLC §4 entry.) Routed to
+[potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+§4 (current-state entry: the compression track's beat-lossless goal with provenance
+and her difficulty assessment; the decoupled-sampling architectural insight; the
+optimizer-infrastructure inventory verified against local clones and the whetstone-ai
+README — COPRO/GEPA platform-wired, MIPROv2/Codex-direct in-process; code-comp repo
+pending; the whetstone-envs minigrid env flagged as a possible small-project spec-out).
