@@ -237,3 +237,28 @@ flagged fabrication-prone)**
   the experts?"; rated slightly below #1 on probability-of-strong-outcome but comparable on
   ceiling; the entry predates the Slicing-and-Dicing discussion so it assumes a FLAME-MoE-
   style config — (source: docs/portfolio-rankings.md; docs/potential-projs/moe-recipe-suite.md §4).
+
+**NBLM MoE-notebook additions (intake 2026-08-24; agent-generated; canon IDs
+Claude-added, cluster items no-ID):**
+
+- **The MoE scaling-law cluster** — Efficiency Leverage (activation ratio as
+  primary driver), comprehensive joint law (G_opt≈7, S_opt≈0.31), unified
+  routed laws (2202.01169; S-BASE robustness), holistic shape laws (optimal
+  band widens with scale — proxy-scale shape sensitivity caution), joint
+  memory-aware law (MoE memory-optimality), parameters-vs-FLOPs (reading
+  comprehension favors density), fine-grained laws (2402.07871), 50B+
+  empirics (softmax/Top-k ordering sensitivity) — (source:
+  `../../topics/reference/moe-literature.md`, 2026-08-24 NBLM entry)
+- **B2, optimal sparsity for reasoning** (no ID) — sparsity helps memorization
+  monotonically but hurts reasoning at scale; NOT recoverable by GRPO or
+  test-time compute; convergent with Mixture of Parrots — (source: same)
+- **Capacity-aware inference** (no ID) — test-time expert load up to 7×
+  average despite training load losses; the train-vs-inference routing
+  distribution gap — (source: same)
+- **Specialization evidence** — OLMoE 2409.02060 from-scratch routing highly
+  domain-specialized vs upcycled Mixtral's redundancy; A4 survey's >99%
+  expert-similarity collapse without regularization (OMoE/MoDE fixes); HMoE
+  hard-token→large-expert routing — (source: same)
+- **ST-MoE 2202.08906 fine-tuning protocols** — sparse models need different
+  fine-tuning hyperparameters (smaller batch, higher LR) — a comparability
+  datum for dense-vs-MoE pipeline comparisons — (source: same)

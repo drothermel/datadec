@@ -29,6 +29,14 @@ is the durable part.
 
 ## 2026-08-24 — NotebookLM notebooks
 
+- [MoE notebook (NotebookLM, undated)](https://notebook.google.com/notebook/4223a13e-3dd3-4f46-ab0e-97b464d2151e)
+  — 27 sources: MoE canon with detail, nine-paper scaling-law cluster,
+  heterogeneity, capacity-aware inference, and B2's
+  sparsity-hurts-reasoning-unrecoverably finding → routed:
+  `topics/reference/moe-literature.md` (main entry), shared recall sections in
+  all three MoE project corpora (moe-recipe-suite / moe-movement /
+  moe-partitions), 24 ledger rows (8 Claude-added canonical IDs).
+
 - [Agentic refactoring + self-improvement notebook (NotebookLM, undated)](https://notebook.google.com/notebook/a31f1767-9de4-4842-9754-76fe6eb7d41c)
   — 25 sources: refactoring cluster (SWE-Refactor detail, RefactorBench,
   CodeTaste, MANTRA, agentic-behavior empirics, Dagstuhl APR),

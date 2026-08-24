@@ -190,3 +190,84 @@ program should look all the way down to that scale.
   shrinks and routing discreteness plausibly adds eval variance, so the noise-floor stage
   "isn't skippable here, it's more necessary"; keep a dense control ladder at matched
   active parameters.
+
+## 2026-08-24 — NotebookLM MoE notebook: 27-source corpus (canon detail + the scaling-law cluster)
+
+Danielle supplied a NotebookLM notebook over 27 MoE sources (bundle:
+`nblm-moe-notebook.md` in the 2026-08-24 intake bundle; **no arXiv IDs
+supplied** — canon IDs below Claude-added, inferred; agent-generated,
+unverified; NotebookLM inaccuracy caveat). The design-space canon here was
+already sketched above (Shazeer 1701.06538, DeepSeekMoE 2401.06066, Soft MoE);
+this intake adds per-paper detail and, more importantly, a **nine-paper MoE
+scaling-law cluster** new to the record:
+
+**Canon detail (Claude-added IDs, inferred):** Jacobs 1991 (competitive-vs-
+cooperative error functions; interference motivation); Switch 2101.03961
+(Top-1; selective router float32; 0.1× init; expert dropout 0.4 at fine-tune);
+Expert Choice 2202.09368 (experts pick tokens — perfect balance by
+construction, >2× convergence); BASE 2103.16716 (routing as linear assignment
+— zero auxiliary losses); ST-MoE 2202.08906 (router z-loss; **sparse models
+need different fine-tuning protocols** — smaller batches, higher LR,
+validation-overfit-prone — a pipeline-comparability datum); DeepSeekMoE
+2401.06066 detail (fine-grained segmentation + shared-expert isolation);
+MegaBlocks 2211.15841 (block-sparse dropless kernels); DeepSeek-V3 2412.19437
+(auxiliary-loss-free bias-adjusted balancing with update speed γ; MLA; MTP;
+FP8 E4M3 with tile/block quantization; DualPipe); OLMoE 2409.02060 detail
+(64 experts / 8 active, dropless token choice; **intermediate-layer routing
+highly domain-specialized while upcycled Mixtral shows less specialization
+and more redundancy** — the from-scratch-vs-upcycled specialization contrast);
+DeepSpeed-MoE (PR-MoE pyramid placement — more experts in deeper layers;
+Mixture-of-Students distillation).
+
+**The scaling-law cluster (no IDs unless noted):**
+
+- *Holistic architecture optimization* — joint (M, N_a, N) constraint triad;
+  16-dim search decoupled to 4 DoF; **the near-optimal shape band widens with
+  compute scale** — small proxies are shape-sensitive, large models tolerant
+  (a small-scale-measurement caution: proxy-scale shape sensitivity
+  overstates large-scale stakes).
+- *Efficiency Leverage* (300+ models to 28B) — **activation ratio is the
+  primary efficiency driver** (power law: EL rises as sparsity rises,
+  diminishing at extremes); granularity and shared-expert ratio secondary.
+- *Unified routed-LM laws* (Clark et al. 2202.01169, Claude-added) — 168
+  models, three routers; diminishing expert gains with N; S-BASE (Sinkhorn)
+  scales best and is most tuning-robust.
+- *Comprehensive joint law* (Dolma + WSD) — optimal activated experts
+  **G_opt ≈ 6.78 (≈7)** and shared ratio **S_opt ≈ 0.31**, matching
+  DeepSeek-V3.1/Kimi-K2's 1-shared+8-routed pattern; loss error 0.0059.
+- *Dense-vs-MoE transfer* — **MoE as implicit regularizer** (better downstream
+  at matched training loss — directly relevant to the matched-loss pillar);
+  LR (√-scaling) and batch rules transfer between families.
+- *Joint memory-aware law* (280+ Switch models, FineWeb-Edu) — **MoE can be
+  memory-optimal**: under a VRAM budget, compute-matched MoE on more tokens
+  beats an equal-total-parameter dense model even if the dense one is
+  overtrained; principled LR-vs-expert-count scaling.
+- *Parameters vs FLOPs* (RedPajama) — at fixed compute, larger+sparser wins
+  (ignoring memory/comms); optimal N* rises and N_a* falls with budget;
+  **reading comprehension favors denser configurations** (an early
+  task-dependence signal).
+- *Fine-grained granularity laws* (Krajewski et al. 2402.07871, Claude-added)
+  — with optimal granularity, MoE beats dense at any budget.
+- *50B+ fine-grained empirics* (56B total / 17B active) — granularity gains
+  persist at scale; **routing performance extremely sensitive to the order of
+  softmax vs Top-k normalization** (an implementation-sensitivity gotcha).
+
+**Also new:** HMoE (heterogeneous expert sizes + P-Penalty; hard tokens route
+to big experts); HDEE (ensemble-of-domain-experts heterogeneity — size
+heterogeneity beats step heterogeneity); capacity-aware inference (test-time
+load imbalance up to 7× average despite training load losses — a
+train-vs-inference routing-distribution gap relevant to the routing
+observable channel; token-drop/expanded-drop 1.07–1.87× speedups); A4
+survey's representation-collapse figure (**expert similarity >99% without
+explicit regularization**; OMoE orthogonality / MoDE mutual distillation as
+fixes — convergent with the Myth-of-Expert-Specialization entry above); A2
+survey (FFN 90% of params, ~20% activation engagement vs attention's ~80% —
+why FFNs are the MoE target; DS-MoE dense-train/sparse-infer; upcycling).
+
+**B2 — Optimal Sparsity for Reasoning Tasks** (no ID) — the headline for the
+program: **memorization improves monotonically with sparsity+parameters, but
+reasoning degrades with sparsity once budgets scale, and the degradation is
+NOT recoverable by post-training RL (GRPO) or test-time compute**. Convergent
+with Mixture of Parrots (entry above: experts buy memorization, not
+reasoning) and load-bearing for the pretraining-choices→post-training-outcomes
+pillar: a pretraining architecture choice that post-training cannot undo.

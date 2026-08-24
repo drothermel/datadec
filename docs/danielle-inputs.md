@@ -5811,3 +5811,29 @@ vs the PTQ paper's LR-decay attribution — read together at verification; ID
 2411.04330 Claude-added). SWE-Refactor row annotated; 21 new ledger rows
 (2603.23443, 2508.06026, 2501.00663, 2411.04330 with IDs).
 Ingest-link-index row added.
+
+### 2026-08-24 — NotebookLM MoE notebook ingested
+
+> link: https://notebook.google.com/notebook/4223a13e-3dd3-4f46-ab0e-97b464d2151e
+
+(Followed by the 27-source comparative review and the evolution report —
+verbatim in the bundle, `nblm-moe-notebook.md`.) Twelfth NotebookLM notebook of
+the day, landing on the MoE program. Routed: main entry in
+[topics/reference/moe-literature.md](topics/reference/moe-literature.md) —
+canon detail (incl. ST-MoE's different-fine-tuning-protocols comparability
+datum; OLMoE's from-scratch-vs-upcycled specialization contrast; DeepSeek-V3's
+aux-loss-free balancing) plus the previously unrecorded **nine-paper MoE
+scaling-law cluster** (Efficiency Leverage's activation-ratio power law;
+G_opt≈6.78/S_opt≈0.31 matching DeepSeek-V3.1/Kimi-K2; dense-vs-MoE
+transfer with MoE-as-implicit-regularizer — matched-loss-pillar relevant;
+memory-optimality; the holistic law's shape-band-widens-with-scale caution for
+small proxies; reading-comprehension-favors-density), heterogeneity (HMoE,
+HDEE), capacity-aware inference (test-time 7× straggler despite training load
+losses — routing-observable relevant), the A4 survey's >99%
+expert-representation-collapse figure, and the headline **B2: MoE sparsity
+helps memorization monotonically but hurts reasoning at scale, and the
+degradation is not recoverable by post-training RL or test-time compute** —
+convergent with Mixture of Parrots and load-bearing for the
+pretraining→posttraining pillar. Shared recall sections added to all three MoE
+project corpora; 24 ledger rows (8 canonical IDs Claude-added, marked).
+Ingest-link-index row added.
