@@ -234,3 +234,38 @@ TLC setup — the explicit LM prior on the latent is the trained-model counterpa
 the frozen-model distribution-compatibility constraint. Metadata verified against the
 PDF (bundle: `miao-blunsom-2016-language-as-a-latent-variable.pdf`). Candidate
 gate-1 must-read; details in the TLC doc §4 (submission-record entry).
+
+## 2026-08-24 — The 2026-02-03 ChatGPT novelty check (Danielle's Notion "Lit Review" page)
+
+Verbatim copy with resolved citation links:
+`~/drotherm/data/convo-artifacts/2026/2026-08-24-notion-lit-reviews/lit-review-nl-bottleneck-prior-art.md`.
+ChatGPT-generated two days before the pitch (Notion Date field 2025-12-11);
+characterizations are the generating agent's. Verdict: **"published in parts — Yes,"**
+against this record's Dec-2025 SciSpace verdict of "appears novel" (378 papers,
+six-component rubric) — the difference is matching strictness, not new literature.
+
+Its prior-art map, relative to what this record already holds:
+
+- **NL-Debugging (2505.15356)** and **PlanSearch (2409.03733)** as the two
+  independent 2024/25 convergences on NL-intermediate + frozen decoder + search —
+  both already ledgered via the submitted bibliography; this review is where they
+  entered the project.
+- **New here — RTC (Allamanis et al., ICML 2024, 2402.08699):** round-trip
+  correctness (code → NL summary → code, check semantic equivalence) as an
+  *unsupervised evaluation*, explicitly treating the NL description as a compression
+  of behavior. Directly TLC-0-relevant (the reconstruction-metric family); added to
+  the litreview plan row A.
+- **New here — secondary strands:** Self-Debug (Chen et al., 2304.05128) and
+  Reflexion (Shinn et al., NeurIPS 2023) — single-model NL-reasoning loops, no
+  separated encoder/decoder, no external search over the representation; Yuan et al.
+  (Sci. Rep. 15:37300, 2025) — RL-trained query rephraser for a fixed code
+  generator; CodePlan (Bairi et al., FSE 2024, 2309.12499) — fine-tuned pseudocode
+  planning, blurring encoder/decoder roles.
+- **The gap statement** (the pitch's novelty positioning, verbatim in the bundle
+  copy): prior art optimizes the encoder/latent heavily but treats the decoder
+  prompt as given; no work searches decoder phrasing or tunes a separate frozen
+  encoder/decoder pair in tandem.
+- **Red-flagged in source** (Notion red highlight, kept unverified): "Wei et al.
+  (NeurIPS 2019)" (ledgered as 1910.05923 via the submitted bibliography) and
+  "RL4Prompt" (name unresolved; possibly RLPrompt, which row A of the litreview plan
+  already lists).

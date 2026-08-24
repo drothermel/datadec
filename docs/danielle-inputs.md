@@ -5127,3 +5127,18 @@ matched across methods, instructed budget B fixed/scheduled/in-shared-arm-space;
 became the submitted appendix Figure 4 multi-T panels). Transcript preserved first at
 her request (compaction-proofing), routing filed after. Conversation complete: 14
 chunks, all 2026-02-16, ending 14:32. No new identifiers.
+
+### 2026-08-24 — Notion lit-review intake begins
+
+> ok great! so next lets pull in some lit reviews I did that are in Notion, can you remind me what our processing approach is?
+
+> great! please pull this page first: https://app.notion.com/p/Lit-Review-2fcde135cd1f80358304da2a8f39ede3?v=2fcde135cd1f8087ae97000c181d4a2e
+
+Routed: verbatim copy with resolved mentions in
+`~/drotherm/data/convo-artifacts/2026/2026-08-24-notion-lit-reviews/` (batch INDEX
+there); dated entries in
+[potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+§4 and [topics/reference/nl-bottleneck-prior-art.md](topics/reference/nl-bottleneck-prior-art.md);
+five ledger rows (RTC 2402.08699, Self-Debug 2304.05128, CodePlan 2309.12499,
+Reflexion and Yuan et al. without IDs); RTC added to litreview plan row A. No new
+identifiers assigned.
