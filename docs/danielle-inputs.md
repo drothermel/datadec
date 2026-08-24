@@ -5837,3 +5837,31 @@ convergent with Mixture of Parrots and load-bearing for the
 pretraining→posttraining pillar. Shared recall sections added to all three MoE
 project corpora; 24 ledger rows (8 canonical IDs Claude-added, marked).
 Ingest-link-index row added.
+
+### 2026-08-24 — post-run hygiene pass + convergent-findings note
+
+> ok great, lets do the bundle index / hygeine pass + the cross cutting synthesis
+> note. then can you give me a compaction prompt?
+>
+> I think the notion db is ready to be read and then updated by our new entries
+> and notes + to be pulled into our local versions. And I think the perfect next
+> step will be to discuss how to design that process (dynamic workflow, what are
+> the target outcomes for notion, I'd love to actually promote the potential
+> projects and topic pages there too with a timestamp so we can update as we go
+> periodically) after the compaction.
+
+Applied: bundle INDEX.md "Routed to" section now covers the full post-batch link
+run (per-artifact routing map) alongside the original Notion-batch routing; new
+reference accumulator
+[topics/reference/convergent-intake-findings.md](topics/reference/convergent-intake-findings.md)
+(+ topics README row) recording the three threads that recurred across
+independent 2026-08-24 sources — amplify-don't-instill/mode collapse in cheap
+improvement loops, the four downstream costs of over-training, and
+representation-surface-changes-frozen-model-capability — each with witnesses,
+accumulator pointers, a working statement, program relevance, and the
+convergence-≠-verification caveat. STATE CHANGE noted for next session: the
+Notion paper DB is ready — the holds are ending; next work item is a design
+discussion (not yet execution) for the Notion↔repo sync process: reading the
+cleaned DB, pushing our new entries/notes back, pulling into local versions, and
+promoting potential-projs + topics pages to Notion with timestamps for periodic
+updates.
