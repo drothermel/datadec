@@ -27,6 +27,18 @@ is the durable part.
   `topics/reference/code-benchmarks-landscape.md` (now dated, with provenance note),
   TLC §4 prior-art pointer, 21 ledger rows.
 
+## 2026-08-24 — NotebookLM notebooks
+
+- [Continual Learning notebook (NotebookLM, assembled ≥2024-10)](https://notebook.google.com/notebook/040273e8-020f-4926-b7ab-6af42dee3505)
+  — data table + source list + two synthesis reports over CoLLAs 2022/23 talks
+  (Sutton CBP, Lyle plasticity, Van Roy CCRL, Bing Liu CL/OOD, Rish scale,
+  Aljundi pretrained-model CL, Larochelle mobilization), a Harrison
+  learned-optimization talk, and her own Roam daily-pages export (2024-10-02);
+  first report transcript-garbled (flagged) → routed:
+  `topics/reference/plasticity.md` (main entry, cluster by cluster),
+  `topics/reference/nonstationarity-accounting.md` (drift taxonomy +
+  stream-evaluation vocabulary), 15 no-ID ledger rows.
+
 ## 2026-08-24 — Perplexity source conversations
 
 - [LLMs as optimizers; classical ML component slots; toy RL with minimal translation (Perplexity task, undated)](https://www.perplexity.ai/computer/tasks/ddb5d88b-0e76-4664-bdd5-c61b94d23e17)

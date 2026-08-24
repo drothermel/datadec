@@ -114,3 +114,79 @@ a rediscovery in different coordinates." Add the Fisher trace to the diagnostic 
 - Spectral collapse (arXiv 2509.22335); activation-function design (arXiv 2509.22562);
   calibrated partial resets (arXiv 2607.24996); plasticity-loss survey in RL (arXiv
   2411.04832); Fisher-guided selective forgetting (arXiv 2502.00802).
+
+## 2026-08-24 — NotebookLM Continual Learning notebook (CoLLAs talks + her Roam notes; assembled ≥2024-10)
+
+Danielle supplied the outputs of a NotebookLM notebook on continual learning
+(bundle: `nblm-continual-learning-notebook.md` in the 2026-08-24 intake bundle;
+data table + source list + two synthesis reports). Sources are mainly CoLLAs
+2022/2023 talk recordings — Sutton (CBP), Lyle (plasticity mechanisms), Van Roy
+(CCRL), Bing Liu (CL/OOD unification), Rish (CL at scale), Aljundi (CL with
+pretrained models), Larochelle (knowledge mobilization) — plus a James Harrison
+learned-optimization talk and **Danielle's own Roam daily-pages export
+(2024-10-02)** as source [2], so table rows citing [2] partially reflect her own
+2024 notes (e.g. "Resetting the network improves plasticity more than any other
+intervention; Adam introduces 'magic' to optimization"). **Reliability caveat:**
+NotebookLM's own inaccuracy warning applies, and the first synthesis report is
+visibly transcript-garbled ("Clara Lyle", "Ashton Adams" = Ash & Adams, "Mammal"
+= MAML, "itbid" = IDBD, "Socar ICML 2023" plausibly = Sokar et al. dormant
+neurons, "Vastava & Danny Tarlow" plausibly = Shrivastava & Tarlow repo-level
+prompt augmentation; identifications inferred, unverified). The second ("Deep
+Research") report is cleaner. Talk-level detail beyond this record's existing
+paper anchors (Dohare/CBP, Lyle's ICML/disentangling papers, Ash & Adams — all
+already above):
+
+- **Sutton talk (CoLLAs 2022):** CBP's utility measure (weight magnitude ×
+  activity × plasticity), replacement rate ~1e-6, dead-unit percentage and
+  effective rank as the maintained quantities; Slippery Ant — standard PPO
+  collapses under changing friction, Continual PPO (CBP) keeps running.
+- **Lyle talk (CoLLAs 2023):** probe-task loss as the plasticity definition;
+  label-shuffle spikes in dead units becoming unrecoverable; Adam epsilon/moment
+  tuning removes specific post-shuffle pathologies but only delays plasticity
+  loss; GD trajectories vs random walks — ill-conditioning and gradient
+  collinearity as the trained-in pathology; width + LayerNorm help but don't
+  solve; the two-hot categorical trick (bounded gradients → less plasticity
+  loss); CReLU; regress-features-to-initialization regularization; resetting
+  dead units / last layer as the strongest single intervention.
+- **Van Roy talk (CoLLAs 2023):** CL as computationally constrained RL —
+  maximize average reward under information capacity C; ~C log C parameters
+  needed to hold C bits trainable by SGD; prediction error decomposes into
+  *informational* error (forgetting = relevant history lost) vs *inferential*
+  error (implasticity = current observations underused); the idealized Bayesian
+  gold standard P*_t with KL distance; IDBD step-size adaptation needs a
+  capacity correction term; **L2-toward-initial-weights beat CBP across their
+  benchmarks at lower complexity** — a directly actionable baseline claim for
+  the reset staging topics; average reward keeps growing with capacity in
+  complex CL environments (no plateau).
+- **CL evaluation cluster (tutorial parts I–II, Aljundi):** prequential
+  test-then-train evaluation; anytime accuracy; the **stability gap** (worst-case
+  drop right after drift; EMA-of-weights evaluation model reduces it);
+  compute-bounded CL where plain Experience Replay beats complex methods by
+  processing more data per budget; realistic-stream benchmarks (CLEAR,
+  Wild-Time, CLOC, CORe50) vs shuffled class-incremental setups;
+  **representation forgetting is much milder than head forgetting** (linear
+  probes; non-linear with a large initial drop) — convergent with the
+  frozen-body/reset staging topics' premise; "no adaptation" + LDA head as a
+  hard-to-beat baseline (+15% over NCM); update-only-3%-of-first-MLP-layer
+  preserving CLIP holdout within 0.1%.
+- **Scale cluster (Rish talk):** larger pretrained models forget less;
+  self-supervised pretraining more CL-robust than supervised; continual
+  pretraining (Pile→SlimPajama) with LR re-warming and soft gradient masking
+  beats from-scratch; BNSL for non-monotonic scaling shapes; Chinchilla vs
+  over-train-small ("Llama strategy") framed as data-optimal vs
+  inference-optimal.
+- **Learned-optimization block (Harrison talk; adjacent material from the same
+  notebook):** VeLO (82 tasks, 4,000 TPU-months; ≥4× tuned Adam on >50% of
+  tasks but lags on 8B+ LMs and fails on RL/PPO); optimization framed as a
+  POMDP; ES/zeroth-order estimators for chaotic unrolled graphs; stability-at-
+  initialization biases and magnitude normalization for meta-generalization.
+  Related to the whetstone optimizer-stack world; no dedicated accumulator —
+  lives here with the notebook.
+- **Knowledge-mobilization block (Larochelle talk):** Head-to-Toe probing
+  (all-layer linear probe closes most of the fine-tuning gap at <1% FLOPs/
+  storage); URT (attention over multiple pretrained backbones); repo-level
+  prompt augmentation for Codex (out-of-file context; garbled attribution).
+
+Drift-taxonomy and evaluation vocabulary routed to
+`nonstationarity-accounting.md` (same intake). All claims talk-transcript-level,
+agent-distilled, unverified; no arXiv IDs supplied anywhere in the notebook.

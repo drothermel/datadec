@@ -123,3 +123,26 @@ communities, one claim — *the training path leaves damage that the final loss 
 — none citing the others' framing." In accounting terms, ITER is a stabilizer that removes
 the non-stationarity's *history* rather than suppressing the non-stationarity itself. See
 `reinit-and-transfer-literature.md`.
+
+## 2026-08-24 — formal drift taxonomy and stream-evaluation vocabulary (NotebookLM CL notebook)
+
+From the NotebookLM continual-learning notebook Danielle supplied (bundle:
+`nblm-continual-learning-notebook.md`; full routing in `plasticity.md`, same
+date). The CL community's accounting vocabulary for non-stationarity, useful as
+shared language for this pillar (agent-distilled, unverified):
+
+- **Drift decomposition via P(x,y) = P(x)P(y|x) = P(y)P(x|y):** *virtual drift /
+  covariate shift* (P(x) moves, P(y|x) fixed), *real drift / concept drift*
+  (P(y|x) moves — decision boundaries obsolete), *prior-probability shift* (P(y)
+  moves, P(x|y) fixed). Temporal shapes: sudden, gradual, incremental, recurring.
+  Scenario split: task- vs class- vs domain-incremental (who gets task labels,
+  when).
+- **Evaluation vocabulary:** prequential (test-then-train) evaluation; anytime
+  accuracy; forward/backward transfer; the **stability gap** — worst-case
+  accuracy drop immediately after a drift before recovery (EMA-of-weights
+  evaluation reduces it). Realistic-stream benchmarks: CLEAR, Wild-Time, CLOC,
+  CORe50 — gradual drift, long-tail imbalance, temporal coherence, natural
+  recurrence, contra shuffled task-boundary benchmarks.
+- **Van Roy's error decomposition** (informational = forgetting vs inferential =
+  implasticity, under capacity C) is the cleanest formal statement on record of
+  the stability–plasticity ledger this pillar wants to do accounting against.

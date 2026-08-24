@@ -5544,3 +5544,29 @@ Eureka's nesting, the FunSearch program-space principle); a prior-art pointer
 line in the minigrid staging placeholder (pointer only — spec still deferred);
 11 no-ID ledger rows (the response supplies no arXiv IDs). Ingest-link-index row
 added.
+
+### 2026-08-24 — NotebookLM Continual Learning notebook ingested
+
+> ok, this ones a bit different, we're going to include the outputs from a
+> Notebook LM notebook on a given topic (Continual Learning in this case).
+>
+> link: https://notebook.google.com/notebook/040273e8-020f-4926-b7ab-6af42dee3505
+
+(Followed by three artifacts: the data table, the source list, the "Original
+Synthesis Report," and the "New Deep Research Report" — all verbatim in the
+bundle, `nblm-continual-learning-notebook.md`.) First continual-learning-side
+intake of the day. Provenance: eleven sources, mainly CoLLAs 2022/23 talks
+(Sutton, Lyle, Van Roy, Bing Liu, Rish, Aljundi, Larochelle) plus a Harrison
+learned-optimization talk and **her own Roam daily-pages export (2024-10-02)**
+as source [2]. Reliability flagged: NotebookLM's own caveat, plus the first
+synthesis report is transcript-garbled (mis-heard names — "Ashton Adams" = Ash &
+Adams, "Socar" plausibly Sokar et al., "itbid" = IDBD, etc.; identifications
+inferred and marked). Routed: main cluster-by-cluster entry in
+[topics/reference/plasticity.md](topics/reference/plasticity.md) (talk-level
+detail beyond the existing paper anchors, incl. Van Roy's
+L2-toward-init-beats-CBP baseline claim and the representation-vs-head
+forgetting asymmetry convergent with the reset/frozen-body staging topics);
+drift-taxonomy + stream-evaluation entry in
+[topics/reference/nonstationarity-accounting.md](topics/reference/nonstationarity-accounting.md);
+15 no-ID ledger rows (the notebook supplies no arXiv IDs anywhere).
+Ingest-link-index row added under a new NotebookLM group.
