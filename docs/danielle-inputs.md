@@ -4939,3 +4939,57 @@ versions; figure plan settled; §2 collapse; the glaring-issues checklist with a
 cross-check of what got fixed vs. the caption typos that survived; item 8's
 27-arms-only overreach flag confirming the 8,064-arm regime postdates 07:33). No new
 identifiers.
+
+### Writing-sprint conversation, chunk 11 (seven prompts; 09:09 on 2026-02-16 — the ownership pass)
+
+> ok, I decided to assume that the portal will remain open until 6 and also to aim to make a version of this draft I feel good about, send it to my advisor for his thoughts, but make it clear that I'm not convinced we should submit and instead should probably aim for a different deadline with some more thought given to different aspects of the exploration/design/framing.
+>
+> Then, I'm working through the draft to write it in my own words based on what I actually want to say, and I'm hoping you can help me with the writing aspect this time (because my diction tanks when I"m exhausted).
+>
+> The first question is:
+>
+> "Code compression differs from natural-language compression because correctness is behavioral: the surface form representation can vary substantially while being behaviorally equivalent, and this equivalence can often be effecitvely evaluated (estimated, proxied??) through performance on a test suite. "
+>
+> there is a word that basically means "a solid estimator or reperesentative of" that I'm looking for in this sentence.  related to abstractions?
+
+> ok so, basically, I want to say two surface forms are equivalent.  but you really can't say that in the general case.   but if instead I say that there are a few properties that define equivalence for me, then I can find a representation of the equivalence class.  and the equivalence class is defined by behavior but we can't measure "behavior" in the same way you can't take an expectation, so instead we have to estimate it like taking the empirical estimator of an expectation.  and thats what we're using the test suite as.
+
+> "Passing all tests is an empirical estimator of agreement with the target behavior, and we use it as our correctness criterion throughout." is this a pretentious and pedantic sentance, or is it just specific?
+
+> ok, new word problem:
+>
+> Code compression differs from natural-language compression because correctness is behavioral: the surface form representation can vary substantially while being behaviorally equivalent, and performance on a test suite can often serve as an effective and (computable? tractable? verifiable?) surragate for equivalence.
+
+> "behavioral code compression" isn't really a thing is it?  as in "We study behavioral code compression with a black-box LLM encoder–decoder..."
+
+> but plenty of people use test passing "verifiable surrogate" for code representations being equivalent, so it seems like this isn't really a term thats ours to coin?
+
+> ok, so this is my new-and-probably-not-improved-but-more-me abstract:
+>
+> """
+> We study code compression under a behavioral equivalence constraint: an encoder maps a program to a compact intermediate representation (IR) and a decoder reconstructs executable code whose equivalence is evaluated by unit tests for the original program. 
+> We instantiate this as a black-box LLM encoder–decoder with frozen pretrained models, and treat encoder prompt selection as black-box search over a finite prompt space. 
+> We evaluate classic multi-armed bandit strategies (UCB1 and Thompson sampling) and an LLM-in-the-loop optimizer that proposes prompts conditioned on the search history. 
+> Under a fixed budget of reconstruction evaluations, we measure performance via the compression–correctness frontier discovered by each method, defined as fraction of tasks solved (reconstructed code passes all tests) as a function of an IR length cap. We summarize the sample efficiency of each method via the area under this curve as the number of evaluations increase. 
+> Across settings we observe a consistent cost–performance tradeoff, and we further evaluate transfer by freezing the selected prompt and testing out-of-distribution, including across programming language, to a separate LLM encoder-decoder, and to HumanEval++.
+> """
+>
+> And intro:
+> """
+> Code compression differs from natural-language compression because correctness is behavioral: the surface form representation can vary substantially while being behaviorally equivalent, and performance on a test suite can often serve as an effective and verifiable surragate for equivalence.
+> We study code compression under a unit-test behavioral equivalence criterion, with a black-box LLM encoder–decoder that maps programs to compact intermediate representations (IRs) and reconstructs executable code. 
+> We treat encoder prompt selection as black-box search and compare bandit baselines (UCB1, Thompson sampling) to an LLM-in-the-loop optimizer. 
+> We evaluate methods by the compression–correctness frontier they discover under a fixed evaluation budget and by the sample efficiency of frontier discovery. 
+> Across settings we observe a clear cost–performance tradeoff, and we test transfer by freezing the selected prompt and evaluating out-of-distribution, including HumanEval++."""
+>
+> When I get clearer results the last sentence will become a claim instead of an observation...
+>
+> But beyond that, glaring issues?
+
+Routed to [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+§4 (writing-sprint chunk-11 entry: the 09:09 reset — own words, not-convinced-should-
+submit position; her equivalence-class/empirical-estimator articulation as continuity
+with the 2026-02-06 property-indexed framing; the coining-ethics exchange producing
+the submitted abstract's opening phrase; the abstract's final provenance revised to
+her 9am rewrite plus minimal fixes; the open question of how the not-convinced
+position became a same-day submission). No new identifiers.

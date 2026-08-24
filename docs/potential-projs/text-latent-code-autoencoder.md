@@ -2841,3 +2841,50 @@ budgets," "neumeartion pass rates" in the submitted Figure 1 caption) — the la
 edits under the least review. The final submitted figure numbering (Fig 1 two-panel,
 Fig 2 OOD grid, Fig 3 large-space regime) is this chunk's plan plus the
 afternoon's regime experiment appended as Figure 3.
+
+### 2026-08-23 — The writing-sprint conversation, chunk 11 (09:09 on 2026-02-16 — the ownership pass)
+
+The most important chunk of the writing conversation for the provenance record, and
+for the project's history. At 09:09 — post-all-nighter, deadline crisis over — she
+reset the terms (verbatim): "I decided to assume that the portal will remain open
+until 6 and also to aim to make a version of this draft I feel good about, send it to
+my advisor for his thoughts, but make it clear that I'm not convinced we should
+submit and instead should probably aim for a different deadline with some more thought
+given to different aspects of the exploration/design/framing. Then, I'm working
+through the draft to write it in my own words based on what I actually want to say" —
+with the assistant demoted to diction support ("my diction tanks when I'm exhausted").
+
+What the ownership pass produced:
+
+- **Her equivalence-class articulation, in her own words, at 9am:** "there are a few
+  properties that define equivalence for me, then I can find a representation of the
+  equivalence class. and the equivalence class is defined by behavior but we can't
+  measure 'behavior' in the same way you can't take an expectation, so instead we
+  have to estimate it like taking the empirical estimator of an expectation. and
+  thats what we're using the test suite as." This is the property-indexed-equivalence
+  framing from the 2026-02-06 conversation (chunk 11 there), resurfacing as her
+  working vocabulary ten days later while writing — direct evidence the "aha"
+  formalization had stuck and was hers.
+- **The coining-ethics exchange:** her check "'behavioral code compression' isn't
+  really a thing is it?" followed by the sharper "plenty of people use test passing…
+  so it seems like this isn't really a term thats ours to coin?" — resolved as
+  don't-coin: "code compression under a behavioral equivalence criterion," **which is
+  the submitted abstract's opening phrase.** The same instinct as the chunk-6 style
+  check and the attribution practice: verify what you're inheriting or claiming
+  before adopting it.
+- **Abstract provenance, final revision:** her "new-and-probably-not-improved-but-
+  more-me abstract" plus the minimal fixes (criterion-not-constraint; "post hoc" cap;
+  the parallel transfer list "across languages, across models, and on HumanEval++")
+  matches the submitted abstract nearly line for line. This supersedes the chunk-5
+  finding: the submitted abstract's last ancestor is the 9am ownership rewrite, not
+  the chunk-5 polish — the abstract is more hers than the chunk-5 lineage suggested.
+- Word decisions: "verifiable surrogate" chosen; her pretension check on "empirical
+  estimator" ("pretentious and pedantic, or just specific?") answered honestly
+  (accurate but heavier than the intro needs); "When I get clearer results the last
+  sentence will become a claim instead of an observation" — the upgrade that never
+  happened before the decision date.
+
+**(Claude-added — open question:)** at 09:09 her stated position was
+not-convinced-we-should-submit, aim for a different deadline; the paper was
+nevertheless submitted to LLA that day. How the position changed between 09:09 and
+submission is not recorded in this conversation.
