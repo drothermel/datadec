@@ -2594,3 +2594,30 @@ her one-line descriptions:
 **Missing piece:** the `code-comp` repo (not yet written) that composes whetstone-ai
 and dr-code into the actual TLC experiments. The February submission did *not* use
 this stack; the next round will.
+
+### 2026-08-23 — The writing-sprint conversation, chunk 3 (AUC mechanics and the OOD protocol; 2026-02-16)
+
+**Provenance note (Danielle at intake, near-verbatim):** "my ultimate goal was that
+basically nothing was copied verbatim from this convo into the paper, I honestly can't
+remember in the rush in the end whether I got to rewriting all the sections or not.
+but regardless, even if I was to submit to exactly the same venue with the same
+results I'd do a substantial rewrite." (Spot-check at intake: the submitted paper's
+§3.2 matches the drafted generalization paragraph in structure and content but not
+wording — consistent with rewriting, at least there.)
+
+Chunk 3 content: (1) the AUC computation recipe — the envelope *is* a curve (a step
+function); trapezoid integration over a cost grid, normalized by C_max (fixed cap or
+95th-percentile of observed costs), np.trapz; gotchas: N counts total decode+test
+attempts (not pools), per-seed AUC then average with error bars. (2) Her
+generalization-experiment notes, corrected into the paper's §3.2 protocol — the two
+methodological saves: **c_0 chosen from training data only** (no test tuning; the
+paper adopted this phrasing) and **sweep the post-hoc cost cap computed from realized
+costs, not the instructed budget** (the February collapse principle re-applied at
+test time); plus per-method prompt-selection symmetry (same train score rule for
+bandits and the LLM optimizer) and k=3 decodes with coverage/pass@k-under-cap.
+(3) Drafted generalization-intro and Figure-2 caption templates. **(Claude-added:)**
+the drafted Figure-2 plan (AUC(N) vs. evaluations) partially changed en route — the
+submitted paper's Figure 3(b) plots cumulative success rate vs. evaluation number
+instead, with normalized frontier AUC appearing as the OOD summary panel (Figure 2,
+right); and the np.trapz-level question arriving in the same session as the framing
+decision is a fair snapshot of the sprint's working conditions.

@@ -4531,3 +4531,39 @@ and her difficulty assessment; the decoupled-sampling architectural insight; the
 optimizer-infrastructure inventory verified against local clones and the whetstone-ai
 README — COPRO/GEPA platform-wired, MIPROv2/Codex-direct in-process; code-comp repo
 pending; the whetstone-envs minigrid env flagged as a possible small-project spec-out).
+
+### Writing-sprint conversation, chunk 3 (four prompts; 2026-02-16), with intake note
+
+Her intake note (verbatim):
+
+> note: my ultimate goal was that basically noting was copied verbatim from this convo
+> into the paper, I honestly can't remember in the rush in the end whether I got to
+> rewriting all the sections or not. but regardless, even if I was to submit to
+> exactly the same venue with the same results I'd do a substantial rewrite...
+
+> Okay, so then returning to the figure two question about AUC versus the other option, I guess I don't know how you calculate AUC because it it's um you don't have a curve. So how do I calculate it? DC, is this something or there's just like a standard SK learn? Function or something like this? Um how do I get at UC? Uh I'm totally sold on competing AUC. Just tell me how to get it
+
+> Amazing. Now let's say I've written the paper based on this. Um, and then the last piece that I want to have is generalization experiments, which I was imagining doing according to the following notes. Um, does this make sense with what we've laid out? Or are there key changes you would suggest?
+>
+> ### Generalization Experiments
+>
+> - We ran each method on the train benchmark for a fixed budget T decode-vals.
+> - Output a recommended prompt / arm which maximizes the training score under a fixed scoring rule: solve rate under a cost cap → fraction of train specs with ≥ 1 pass and cost ≤ c_0
+> - Take the selected prompt, evaluate on
+>     - diff langauge
+>     - harder synthetic family
+>     - HumanEval++
+> - Evaluation
+>     - run fixed prompt n=1-3 times, recording cost and pass rate
+>     - if the range in cost is too low we can sweep budget but aim for one fixed value for eval (somewhere in the middle?)
+>     - compute fraction of specs solved vs cost cap
+
+> ok, can you give me how you would phrase the generalization experiment intro in the methods/exps section?
+
+> Awesome. Can you also give me a caption / methods or exps section introduction for figure two?
+
+Routed to [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+§4 (writing-sprint chunk-3 entry: AUC mechanics, the two OOD-protocol saves — c_0 from
+train only and post-hoc cap sweep from realized costs — the drafted templates, the
+rewrite-provenance note with a §3.2 spot-check, and a Claude-added note that the
+drafted AUC(N) Figure-2 plan partially changed before submission). No new identifiers.
