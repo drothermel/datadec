@@ -4824,3 +4824,24 @@ contrast sentences shipping near-verbatim; the pinpointed exit of the pitch form
 from the paper; the two artifacts preserved in the old section's comments — the
 orphaned variance sweep and the drafted-but-unrun encoder×decoder transfer-matrix
 figure). No new identifiers.
+
+### Writing-sprint conversation, chunk 6 (two prompts; 2026-02-16 — style and citations)
+
+> is this "tons of little paragraphs" style standard or are you copying my collaborator's writing style?
+
+> do I need to cite any of these methods:
+>
+> Optimization algorithms We compare three prompt-selection strategies: (i) UCB1, which selects
+> prompts based on empirical mean reward plus an exploration bonus; (ii) Thompson sampling,
+> which samples prompts in proportion to a Bayesian posterior over reward; and (iii) an LLM-in-
+> the-loop optimizer, which proposes the next encoder prompt by conditioning on the prompt search
+> history (previous prompts and observed outcomes) and leveraging the LLM’s semantic prior over
+> prompt text. All methods share the same evaluation interface and are compared at the same total
+> number of decode–test evaluations N .
+
+Routed to [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+§4 (writing-sprint chunk-6 entry: the paragraph-style taxonomy and hybrid conversion;
+the Auer 2002 / Thompson 1933 citation additions — both in the submitted references;
+the recurring spec-sampling truth check, resolved as uniform in the paper). No new
+arXiv identifiers (both canonical citations are journal papers already implicit in the
+submitted bibliography).

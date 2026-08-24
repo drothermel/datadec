@@ -2691,3 +2691,19 @@ mostly hers, methods/experiments assistant-skeleton with her edits, related work
 closest to assistant text, with the three contrast sentences shipping near-verbatim.
 Her stated bar ("nothing copied verbatim") was met in some sections and not in others;
 her planned substantial rewrite for any resubmission stands, with Related Works first.
+
+### 2026-08-23 — The writing-sprint conversation, chunk 6 (style and citations; 2026-02-16)
+
+Two lighter exchanges, both of which landed in the submitted paper. (1) Her style
+check — "is this 'tons of little paragraphs' style standard or are you copying my
+collaborator's writing style?" — answered with the three-variant taxonomy (paragraph
+headers: scannable, deadline-friendly, choppy; subsections with prose: polished;
+hybrid recommended: 3–5 subsections with ≤ 1–3 paragraph heads each, ≤ 10 total) plus
+a hybrid-style conversion of the Experiments section; the submitted paper's §3 uses
+the hybrid structure. (2) The citation check for the algorithms paragraph: UCB1 →
+Auer, Cesa-Bianchi & Fischer 2002; Thompson sampling → Thompson 1933; the LLM
+optimizer needs no citation as her method but should nod to OPRO — all three landed
+(both canonical citations appear in the submitted references, and the paper's §2
+compares the strategies in exactly this three-part structure). The uniform-vs-adaptive
+spec-sampling truth check recurs a third time (as a footnote to resolve); the
+submitted paper states specs are sampled uniformly at random.
