@@ -29,6 +29,15 @@ is the durable part.
 
 ## 2026-08-24 — Perplexity source conversations
 
+- [LLMs as optimizers; classical ML component slots; toy RL with minimal translation (Perplexity task, undated)](https://www.perplexity.ai/computer/tasks/ddb5d88b-0e76-4664-bdd5-c61b94d23e17)
+  — one turn; taxonomy of genuine LLM-as-optimizer work (OPRO, FunSearch,
+  Eureka, LLAMBO), component-slot substitutions (ReEvo, LLM-SR, DICL), dual-LLM
+  structures nearest her autoencoder framing (Matryoshka, ACING), and the
+  toy-RL survey with the outer-loop-vs-inner-loop conclusion → routed:
+  `topics/reference/prompt-optimization-landscape.md` (full entry), TLC recall
+  corpus (4 lines), minigrid staging placeholder (prior-art pointer only), 11
+  no-ID ledger rows.
+
 - [HumanEval derivatives; task-suite fit for compression; cross-dataset composition (Perplexity task, undated ~early April 2026)](https://www.perplexity.ai/computer/tasks/e7748d8a-10b8-4ccf-bc34-f83c840ba770)
   — three turns; turn 1 repeats the 2026-04-09 ChatGPT ecosystem question verbatim
   on a second platform; turns 2–3 are TLC planning material (ClassEval as

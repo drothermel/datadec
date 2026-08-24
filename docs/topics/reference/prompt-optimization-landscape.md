@@ -213,3 +213,56 @@ LLMs for Code Generation** (10 empirical guidelines) and her flag to skim
 Prochemy/Prompt Alchemy (2503.11085, already row B). Bearing: optimizer outputs
 are model-specific — evidence for the cross-decoder-transfer falsifier and a
 design constraint for any shared-arm-space comparison. Unverified.
+
+## Undated (Perplexity; intake 2026-08-24) — LLM-as-optimizer taxonomy and toy-RL-with-minimal-translation survey (one turn)
+
+Perplexity task supplied with link (bundle:
+`perplexity-llm-as-optimizer-toy-rl-convo.md`); undated (task IDs carry no
+timestamp; her prompt's dual-LLM-autoencoder framing places it after TLC ideation,
+and the response cites 2025 work). Her question: which works genuinely deserve
+"LLM as an optimizer" in a broad sense; which put a black-box LLM in a classical
+ML component slot; and what exists on LLMs solving classic toy optimization/RL
+problems (CartPole, minigrid, mountain-car) with minimal state↔language
+translation. **No arXiv IDs anywhere in the response** — author-year only;
+identifiers to recover later. Agent-supplied, unverified.
+
+**True optimizers (the loop is the point):** OPRO 2309.03409 (already canonical
+here; read as "warm-start guesser that improves in context," strongest when the
+LLM has solution-structure priors); **FunSearch** (Nature; search in *program*
+space, LLM as learned mutation operator inside an evolutionary loop; cap set +
+bin-packing results; **AlphaEvolve** 2025 follow-up adds RL fine-tuning of the
+mutation operator); **Eureka** (Ma et al. 2023 — LLM optimizes the *reward
+function*, RL optimizes the policy: LLM-outer/RL-inner nesting; beats human
+reward engineers on 83% of 29 envs); **LLAMBO** (Liu et al. 2024 — LLM replaces
+both surrogate and acquisition function in Bayesian optimization, the
+Gaussian-process slot).
+
+**Classical component slots:** **ReEvo** (Ye et al. 2024 — FunSearch structure on
+NP-hard combinatorial problems + a reflection step, "verbal gradients");
+**LLM-SR** (Shojaee et al. 2024 — equation skeletons as programs + numerical
+parameter fitting; LLM injects structure priors into symbolic regression);
+**DICL** (Benechehab et al. 2024 — LLM in the transition-model slot of
+model-based RL; disentangling multivariate continuous observations for
+in-context prediction). **Closest to the dual-LLM autoencoder framing:**
+**Matryoshka** (small white-box LLM guiding a large black-box LLM via decomposed
+task representations) and **ACING** (actor-critic over instruction optimization
+for black-box LLMs); the generator-evaluator dual-LLM pattern is pervasive but
+never branded as an autoencoder.
+
+**Toy RL with minimal translation (sparse, mixed):** **Sensory-Motor Control
+with LLMs via Iterative Prompting** (2025 — the closest match to her setting:
+minimal labeling of the observation vector, LLM writes a Python control function,
+performance fed back; o1-class models solve CartPole reliably); **Bosio &
+Mueller 2024** (FunSearch structure for pendulum swing-up / ball-in-cup;
+interpretable program policies); **Atari-GPT** (Waytowich et al. 2024 — negative
+result: multimodal LLMs fail as direct per-timestep policies).
+
+**The synthesized claim worth keeping:** LLMs work as *outer-loop optimizers*
+(propose, mutate, refine programs/rewards against a fast external evaluator) and
+fail as *inner-loop controllers* (per-timestep reactive decisions); the apparent
+exception (sensory-motor control) conforms once you notice the LLM writes an
+offline controller rather than acting as one. Recommended general framework:
+FunSearch/Eureka/ReEvo — LLM as mutation operator over programs with an external
+evaluator supplying the loss signal. Relevant context for the whetstone-envs
+minigrid spec-out (staging placeholder) and for the C2 optimizer-vs-bandit
+decomposition (OPRO's "warm-start guesser" reading).

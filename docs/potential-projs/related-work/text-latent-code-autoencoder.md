@@ -799,3 +799,19 @@ come from the Notion paper DB):**
 - **ContractEval / REval / VRTG** (no IDs) — contract-violation tests, runtime
   reasoning consistency, renaming attacks; robustness/verification flank —
   (source: same)
+
+**LLM-as-optimizer taxonomy (undated Perplexity task; intake 2026-08-24;
+agent-supplied, no IDs given):**
+
+- **Matryoshka** (no ID) — small white-box LLM guides a large black-box LLM via
+  decomposed task representations; named closest (with ACING) to the dual-LLM
+  autoencoder framing — (source:
+  `../../topics/reference/prompt-optimization-landscape.md`, LLM-as-optimizer entry)
+- **ACING** (no ID) — actor-critic structure over instruction optimization for
+  black-box LLMs — (source: same)
+- **Eureka** (no ID) — LLM-outer/RL-inner nested optimization (reward-function
+  search); structural cousin of TLC-opt's outer-loop-over-frozen-inner-loop shape —
+  (source: same)
+- **FunSearch program-space principle** (no ID; +AlphaEvolve 2025) — search in
+  program space with the LLM as mutation operator and a fast evaluator; the
+  outer-loop-optimizer vs inner-loop-controller distinction — (source: same)

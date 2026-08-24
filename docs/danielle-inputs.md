@@ -5503,3 +5503,44 @@ section (ClassEval, CoderEval, APPS, DynaCode, PseudoEval, theory anchors); 34
 new ledger rows + 4 updates (ENAMEL 2406.06647 and EffiBench 2402.02037 ID fills;
 2412.01526 triple partially untangled via HumanEvalNext 2503.05860; Gilbert
 ERE/SRE note). Ingest-link-index row added.
+
+### 2026-08-24 — LLM-as-optimizer / toy-RL Perplexity task ingested
+
+> link: https://www.perplexity.ai/computer/tasks/ddb5d88b-0e76-4664-bdd5-c61b94d23e17
+
+> I'm really interested in the idea of using LLMs like API black box LLMs as
+> optimizers for a range of problems. And I know that there are some papers that
+> are well known for having titles like "LLM as an Optimizer," and that there are
+> some works that, for example, use two LLMs to make an autoencoder, things like
+> this. So I understand the idea of using LLMs as components like black box LLMs
+> as components of systems that mirror previously considered standard machine
+> learning approaches isn't new, but I also feel like I haven't really seen—like
+> when I've looked into these works, I haven't necessarily seen things where it's
+> like, "Ah, yes, I do think this is what I would call using an LLM as an
+> optimizer," in a broad general sense. So I'm curious what some of the strongest
+> works in that direction are, kind of regardless of the application area. Just
+> things that make you say, "Ah, yes, this is in fact using an LLM as an
+> optimizer," or using an LLM as a component in a classical machine learning
+> system in kind of a novel way. And then I'm also curious about what exists out
+> there on using LLMs to solve different types of classic optimization problems
+> or even classic RL problems. I'm still thinking toy problems, but in settings
+> where we're not designing an actual—in settings where we're doing minimal
+> tuning, to translate the state and action space into language and then to
+> translate back to the classic state and action space. I'm just curious what
+> exists out there for this. So things like cart pole or, I don't know, minigrid,
+> pushing a ball up a hill. I feel like there are a bunch of classical RL
+> problems, at least, that I know of that are what you always start with. And so
+> things like that.
+
+One-turn Perplexity task, undated (her dual-LLM-autoencoder framing places it
+after TLC ideation; the response cites 2025 work). Verbatim in the bundle
+(`perplexity-llm-as-optimizer-toy-rl-convo.md`). Routed: full taxonomy entry in
+[topics/reference/prompt-optimization-landscape.md](topics/reference/prompt-optimization-landscape.md)
+(true optimizers OPRO/FunSearch+AlphaEvolve/Eureka/LLAMBO; component slots
+ReEvo/LLM-SR/DICL; Matryoshka + ACING as the closest dual-LLM structures; toy-RL
+survey with Atari-GPT's negative result and the outer-loop-optimizer vs
+inner-loop-controller synthesis); TLC recall-corpus lines (Matryoshka, ACING,
+Eureka's nesting, the FunSearch program-space principle); a prior-art pointer
+line in the minigrid staging placeholder (pointer only — spec still deferred);
+11 no-ID ledger rows (the response supplies no arXiv IDs). Ingest-link-index row
+added.
