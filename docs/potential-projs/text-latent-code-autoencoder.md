@@ -3338,6 +3338,46 @@ bundle; the raw capture quotes an assistant in places). First-hand highlights:
 - Venue flag: **LLM4Code 2026**. Tools: Jedi (Python parsing); add diffusion
   coding models to the model set.
 
+### 2026-08-24 — The April Perplexity thread: task-suite fit for compression, and the composition idea (three turns; undated, likely early April)
+
+A Perplexity task (link supplied; bundle
+`perplexity-humaneval-composition-compression-convo.md`) whose first prompt is
+verbatim the 2026-04-09 ChatGPT ecosystem question — the same question run on a
+second platform. Turns 2–3 are direct TLC planning material:
+
+- **Task-suite fit (turn 2).** Danielle's constraint in her own words: on short
+  HumanEval functions, stripping indentation/whitespace is already a competitive
+  compression baseline for black-box API models, so the suite needs class-level
+  length with rigorous tests. The response's analysis: **ClassEval 2308.01861 is
+  the clearest fit** (100 classes, 50–250 lines, ~500 person-hours of tests built
+  to catch inter-method/state bugs — exactly what compression must preserve;
+  trivial baseline only saves ~15–20% there); supplement with the CoderEval
+  class-level subset for variance; APPS competition tier for bulletproof judge
+  tests (but monolithic I/O programs); BigCodeBench longer but thin tests
+  (~5.6/task); EvalPlus's augmenter is general and could harden any of them.
+- **The composition idea (turn 3, hers).** Compose functions across benchmarks by
+  I/O-type matching to get larger, out-of-distribution, still-testable programs.
+  Response: "genuinely unexplored territory" — existing composition is
+  intra-benchmark only (DynaCode: MBPP+ atoms into 16 call-graph topologies, 189M
+  problems, contamination-motivated; HumanEval Pro's two-level self-invocation;
+  EvoEval's LLM-authored composition). The load-bearing observation: composed
+  programs are ill-defined for *generation* (incoherent NL description) but
+  perfectly defined for *compression* — **"the code is the specification"**; verify
+  by inherited component test suites. Contamination resistance comes free.
+- **Metric precedent.** Gilbert 2304.12512 read here as supplying the evaluation
+  framework: **ERE** (exact reconstruction) vs **SRE** (semantic reconstruction —
+  passes tests), ~5× compression claimed. Two theory anchors named without IDs:
+  *Fundamental Limits of Prompt Compression* (black-box compression as
+  rate-distortion — directly the API-model setting) and *Extending Context Window
+  via Semantic Compression* (source-coding view).
+
+Turn 1 is Perplexity's version of the derivative-ecosystem map — many new names
+and IDs relative to the ChatGPT record (PseudoEval, CRUXEval, Buggy-HumanEval,
+ClassEval, DynaCode, KodCode, RedCode, COFFE, ContractEval; HumanEvalNext pinned
+to its own ID 2503.05860, loosening the 2412.01526 triple-citation flag) — routed
+to `code-benchmarks-landscape.md`. All characterizations agent-supplied,
+unverified.
+
 ## 5. Related work and positioning
 
 *Purpose: the paper-facing synthesis — the prior-art landscape, this project's
@@ -3395,7 +3435,9 @@ the dated §4 entries):
   does not) is the closest existing artifact to a positioning statement, and its
   citation strategy is recognizably the submitted paper's related-work skeleton.
 - **The anchor set:** Gilbert et al. 2304.12512 (closest prior art — pipeline
-  feasibility, three fixed prompts, no optimization loop); Miao & Blunsom
+  feasibility, three fixed prompts, no optimization loop; also the metric
+  precedent — ERE/SRE exact-vs-semantic reconstruction, ~5× claimed, per the April
+  Perplexity thread); Miao & Blunsom
   1609.07317 (formal ancestor — trained-prior counterpart of the frozen-prior
   constraint); NL-Debugging 2505.15356 and PlanSearch 2409.03733 (the two
   independent mechanism-neighbors); RTC 2402.08699 (round-trip as evaluation, not

@@ -283,3 +283,28 @@ lowering the metric improve downstream pass@1 at constant cyclomatic complexity;
 plus the atoms-of-confusion perplexity-spike line ("How do Humans and LLMs Process
 Confusing Code?") — the LLM-aware rewriting flank adjacent to behavior-preserving
 normalization. All unverified.
+
+## Undated, likely early April 2026 (Perplexity; intake 2026-08-24) — metric framework and theory anchors from the composition thread
+
+From turn 3 of the Perplexity task (bundle:
+`perplexity-humaneval-composition-compression-convo.md`; see
+`code-benchmarks-landscape.md` for the full three-turn routing). Agent-supplied,
+unverified:
+
+- **Gilbert 2304.12512 as the metric precedent**: the response names its two
+  evaluation metrics — **ERE** (Exact Reconstructive Effectiveness,
+  character-for-character) and **SRE** (Semantic Reconstruction Effectiveness,
+  reconstruction passes tests) — and a ~5× compression claim with GPT-3.5/4 on
+  code. "Essentially the metric framework you'd want." First time the ERE/SRE
+  names enter this record; propagated to the TLC §5 anchor-set line.
+- **Fundamental Limits of Prompt Compression** (no ID) — formalizes black-box LLM
+  prompt compression as a rate-distortion problem with derived limits; directly
+  the TLC setting (API models, no training).
+- **Extending Context Window via Semantic Compression** (no ID) — source-coding /
+  information-theoretic framing of semantic redundancy reduction.
+- Context from turn 2 worth keeping here: Danielle's **trivial-baseline
+  articulation** — for black-box API models on short Python, removing
+  indentation/whitespace/docstrings is already a strong token-space compressor,
+  so compression claims need code long enough that the trivial baseline saturates
+  (~15–20% on ClassEval-length classes). This is the cleanest statement on record
+  of why the compression-correctness frontier needs a length axis.

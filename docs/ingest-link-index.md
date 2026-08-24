@@ -27,6 +27,18 @@ is the durable part.
   `topics/reference/code-benchmarks-landscape.md` (now dated, with provenance note),
   TLC §4 prior-art pointer, 21 ledger rows.
 
+## 2026-08-24 — Perplexity source conversations
+
+- [HumanEval derivatives; task-suite fit for compression; cross-dataset composition (Perplexity task, undated ~early April 2026)](https://www.perplexity.ai/computer/tasks/e7748d8a-10b8-4ccf-bc34-f83c840ba770)
+  — three turns; turn 1 repeats the 2026-04-09 ChatGPT ecosystem question verbatim
+  on a second platform; turns 2–3 are TLC planning material (ClassEval as
+  compression testbed; the composition idea, called unexplored; Gilbert ERE/SRE)
+  → routed: `topics/reference/code-benchmarks-landscape.md` (full three-turn
+  entry), `topics/reference/code-compression-literature.md` (metrics + theory
+  anchors), TLC §4 entry + §5 Gilbert enrichment + recall corpus section, 34
+  ledger rows + 4 row updates (ENAMEL/EffiBench ID fills, 2412.01526 untangling,
+  Gilbert ERE/SRE note).
+
 ## 2026-08-24 — Notion lit-review batch
 
 Bundle: `~/drotherm/data/convo-artifacts/2026/2026-08-24-notion-lit-reviews/`

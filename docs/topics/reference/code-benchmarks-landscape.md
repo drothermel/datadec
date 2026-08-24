@@ -359,3 +359,64 @@ Recommended stack per the response: harness for breadth, EvalPlus for current
 rankings, HF board for open-model browsing, Awesome-Code-Benchmark for long-tail
 discovery. Offered next artifact (not produced): a dataset × task type × languages ×
 codebase × leaderboard availability matrix for the HumanEval family.
+
+## Undated, likely early April 2026 (Perplexity; intake 2026-08-24) — the ecosystem question re-run + task-suite fit + composition (three turns)
+
+Perplexity task supplied with link (bundle:
+`perplexity-humaneval-composition-compression-convo.md`); undated (task IDs carry no
+timestamp), but turn 1's prompt is verbatim the 2026-04-09 ChatGPT ecosystem
+question — the same question on a second platform, so early April is likely. All
+IDs and characterizations agent-supplied, unverified.
+
+**Turn 1 — Perplexity's ecosystem map.** Substantially overlaps the ChatGPT record
+above but adds many names/IDs: ContractEval (SMT-derived contract-violation tests
+on HumanEval+; 0%→~50% contract satisfaction with few-shot); **HumanEvalNext
+pinned to its own ID 2503.05860** (BenchFrame; loosens the 2412.01526
+triple-citation); MBXP 2210.14868; PolyHumanEval 2410.09812; mHumanEval
+2410.15037; SakuraEval (Japan-localized problems, not translations); PseudoEval
+2502.19149 (pseudocode replaces the docstring — Python bottleneck is
+problem-solving, Rust's is language-coding); CRUXEval 2401.03065 (+CRUXEval-X, 19
+PLs); REval described (incremental execution-path consistency; avg 44.4%); CodeI/O
+2502.07316; Buggy-HumanEval 2306.03438 (one injected bug drops CODEGEN-2B-MONO
+>50%); VRTG (genetic variable-renaming attacks); RedCode 2411.07781; COFFE
+(CPU-instruction-count efficiency); ENAMEL 2406.06647 and EffiBench 2402.02037
+(IDs recovered for existing no-ID ledger rows); DocStringEval (BERTScore + Flesch
++ compression-ratio metrics; variable names matter more than scale); CodeExp
+2211.15395; Dainese docstring-reformulation; DiffMIA; Yang 2311.04850 (8–18%
+HumanEval overlap in RedPajama-1T / StarCoder-Data); ClassEval 2308.01861 +
+ClassEval-T + OOP-Eval; phi-1 2306.11644, KodCode 2503.02951, SelfCodeAlign (the
+synthetic-data-scaffold cluster); family table with SWE-Perf 2507.12415,
+SWE-Refactor 2602.03712, CodeXGLUE 2102.04664, DSrepair. Closing taxonomy: eight
+recurring motivations for derivative work (test sparsity, PL expansion, NL
+expansion, task reframing, contamination, beyond-correctness, structural
+complexity, training scaffold).
+
+**Turn 2 — test rigor × code length for compression evaluation.** Danielle's
+constraint: black-box API models, no training — on short functions,
+whitespace/indentation stripping is already a competitive compression baseline,
+so she needs class-level-or-a-bit-more code with tests strong enough to judge
+reconstruction. The response's per-dataset breakdown (tests): HumanEval ~7.7
+cases/problem; HumanEval+/MBPP+ genuinely sufficient but code too short;
+BigCodeBench ~5.6 tests/task (thin); APPS judge tests the strongest of the simple
+sets; ClassEval's tests purpose-built for inter-method/state bugs — "exactly the
+behavior that would survive or break under compression"; CoderEval inherits
+real-project test quality (variable); DS-1000 rigorous but tiny code. Length:
+ClassEval 50–250 lines (~600–3,000 tokens) is the clearest fit — trivial baseline
+saves only ~15–20% there; CoderEval class/project-level subset as variance
+supplement; APPS interview/competition tier if OO structure isn't required.
+EvalPlus's augmenter is dataset-general if false-passes appear.
+
+**Turn 3 — cross-dataset composition (her idea).** Compose functions across
+benchmarks by I/O-type compatibility into larger, out-of-distribution,
+still-testable programs. Response: "genuinely unexplored territory." Existing work
+is intra-benchmark only — **DynaCode** (MBPP+ functions composed into nested call
+graphs; 16 topologies × 4 complexity levels; up to 189M problems;
+contamination-motivated; 16.8–45.7% pass drops with nesting), HumanEval Pro's
+two-level self-invocation, EvoEval's LLM-authored composition. The structural
+argument: composed programs are ill-posed for generation benchmarks (incoherent
+NL description) but perfectly posed for compression — no NL needed, "the code is
+the specification," verification by inherited component test suites, and
+contamination resistance comes free (novel by structure *and* origin). Proposed
+architecture: ClassEval base units + BigCodeBench modules, type-signature
+matching via inspect/mypy/AST, evaluate with Gilbert's SRE. Compression-side
+citations routed to `code-compression-literature.md`.

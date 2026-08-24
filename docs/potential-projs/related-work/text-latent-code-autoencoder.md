@@ -760,3 +760,42 @@ come from the Notion paper DB):**
   exposures for benchmark selection (QuixBugs 100% leaked, APPS 10.8%, …) —
   (source: `../../topics/reference/code-benchmarks-landscape.md`, 2026-08-24
   lineage entry; bundle `code-datasets-lineage-overlap-note.md`)
+
+**April Perplexity thread — task suites, composition, and compression theory
+(intake 2026-08-24; agent-supplied, unverified):**
+
+- **ClassEval** (2308.01861) — 100 class-level Python tasks, ~500 person-hours of
+  inter-method/state tests; named the clearest task-suite fit for compression
+  evaluation (trivial whitespace baseline only ~15–20% there) — (source:
+  `../../topics/reference/code-benchmarks-landscape.md`, April Perplexity entry)
+- **CoderEval** (no ID) — 230 Py + 230 Java real-project tasks; class/project-level
+  subset as a ClassEval variance supplement — (source: same)
+- **APPS** (2105.09938) — competition tier: rigorous judge tests, monolithic I/O
+  structure — (source: same)
+- **DynaCode** (no ID) — MBPP+ functions composed into nested call graphs (16
+  topologies, up to 189M problems, contamination-motivated); closest prior to
+  Danielle's cross-dataset composition idea, which the response calls unexplored —
+  (source: same)
+- **PseudoEval** (2502.19149) — pseudocode replaces the docstring; isolates
+  problem-solving from language-coding — an alternative-representation cousin of
+  the NL-likeness ladder — (source: same)
+- **CRUXEval** (2401.03065) — ID recovered for the existing no-ID recall/plan
+  mentions; input/output prediction tasks — (source: same)
+- **Buggy-HumanEval** (2306.03438) — injected semantics-altering bugs; context
+  perturbation flank — (source: same)
+- **Gilbert ERE/SRE** (2304.12512) — the exact-vs-semantic reconstruction metric
+  pair + ~5× claim; metric precedent for the compression-correctness frontier —
+  (source: `../../topics/reference/code-compression-literature.md`, April entry)
+- **Fundamental Limits of Prompt Compression** (no ID) — black-box prompt
+  compression as rate-distortion; the TLC setting's theory anchor — (source: same)
+- **Extending Context Window via Semantic Compression** (no ID) — source-coding
+  framing — (source: same)
+- **DocStringEval** (no ID, IEEE 11108633) — docstring-generation metrics
+  (BERTScore, Flesch, compression ratio) — (source:
+  `../../topics/reference/code-benchmarks-landscape.md`, April Perplexity entry)
+- **CodeExp** (2211.15395) — explanatory (implementation-level) docstring
+  generation with human-correlated metrics; relevant to what a "good d" contains —
+  (source: same)
+- **ContractEval / REval / VRTG** (no IDs) — contract-violation tests, runtime
+  reasoning consistency, renaming attacks; robustness/verification flank —
+  (source: same)

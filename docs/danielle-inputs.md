@@ -5453,3 +5453,53 @@ EvalPlus leaderboard, Big Code Models Leaderboard with scriptable
 `code_eval_board.csv`, Awesome-Code-Benchmark discovery index, BigCodeBench with
 pre-generated model samples; REval = new name, link-list mention only). No ledger
 rows — resources, not citations. Ingest-link-index row added.
+
+### 2026-08-24 — April Perplexity thread ingested (task suites, composition, compression metrics)
+
+> link: https://www.perplexity.ai/computer/tasks/e7748d8a-10b8-4ccf-bc34-f83c840ba770
+
+Three turns, verbatim in the bundle
+(`perplexity-humaneval-composition-compression-convo.md`). Turn 1's prompt is the
+2026-04-09 ChatGPT ecosystem question verbatim (already logged in the 2026-08-22
+entry) run on a second platform; undated (Perplexity task IDs carry no timestamp),
+early April inferred. Her two new prompts:
+
+> This is incredibly helpful. So I guess one of my questions is around the other
+> data sets that you listed and how many of them actually have a test set that is
+> considered sufficient to actually judge output quality. And then also, how many
+> of them are long chunks of code? But perhaps not super long. I'm not looking for
+> a repo. But class level or a bit higher than that. I am interested in testing
+> out approaches to use language models to compress code. And while it is
+> definitely possible, with human eval, the functions are also short that are
+> pretty plausible way to compress the code is actually just to remove all of the
+> indentation and you get what I think is a pretty short representation if we're
+> staying in the space of tokens that language models are trained on. Because
+> we're doing black box. API. Models. And so there's no additional training. So
+> yes. What are some examples of code data sets that would match those criteria?
+
+> Very interesting. So then, another question I would have is if there are a bunch
+> of different data sets that have different lengths of code with different
+> focuses, and they have test cases that are rigorous, then has there been work on
+> composing these things because if you know the input and output structure in
+> expectations, then composing would probably create a data distribution that is
+> outside the norm. But it would also probably create much larger and more complex
+> functions that you still would be able to test to some extent. And I think
+> especially for setting around looking at code compression, then it's
+> particularly interesting because I don't need to be able to describe what I want
+> the agent to do. I just need to be able to pass in a chunk of code and see what
+> else it provides that should be sufficient for reconstruction.
+
+Routed: full three-turn entry in
+[topics/reference/code-benchmarks-landscape.md](topics/reference/code-benchmarks-landscape.md)
+(Perplexity's ecosystem map with new IDs; the test-rigor × length breakdown with
+ClassEval as clearest compression testbed; the composition turn — "genuinely
+unexplored," DynaCode closest, "the code is the specification"); metric/theory
+entry in
+[topics/reference/code-compression-literature.md](topics/reference/code-compression-literature.md)
+(Gilbert ERE/SRE + ~5×, Fundamental Limits of Prompt Compression, Extending
+Context Window via Semantic Compression, her trivial-baseline articulation); TLC
+§4 dated entry + §5 anchor-set Gilbert line enriched with ERE/SRE + recall-corpus
+section (ClassEval, CoderEval, APPS, DynaCode, PseudoEval, theory anchors); 34
+new ledger rows + 4 updates (ENAMEL 2406.06647 and EffiBench 2402.02037 ID fills;
+2412.01526 triple partially untangled via HumanEvalNext 2503.05860; Gilbert
+ERE/SRE note). Ingest-link-index row added.
