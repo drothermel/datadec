@@ -5222,3 +5222,18 @@ five verdicts. Routed: verbatim copy in the bundle; identity addendum on the
 OverLang provenance note; LBM attribution corrected (plan row A + table row); TLC
 §4 entry + §5 corpus update (five checks; the dual-prompt dismissal to engage);
 four ledger rows incl. the 2406.01989 ID-conflict flag. No new identifiers.
+
+### 2026-08-24 — Notion lit-review intake, page 6 (Undermind, 14 sub-pages)
+
+> ok, this one has a LOT of sub-pages, can you pull each of the subpages too please? https://app.notion.com/p/Lit-Review-2fdde135cd1f80d697d7de94ef4a8b53
+
+All 14 sub-pages pulled; verbatim multi-file packet
+`undermind-prompt-compression-review/` in the batch bundle (main + four dimension
+pages + four timeline pages + trends/contributors/recommendations/summary-table/
+foundational/adjacent). Routed: dated entries in
+[topics/reference/prompt-compression-and-optimization-literature.md](topics/reference/prompt-compression-and-optimization-literature.md)
+(the 21-paper map) and
+[topics/reference/nl-bottleneck-prior-art.md](topics/reference/nl-bottleneck-prior-art.md)
+(verdict + the Undermind-vs-Perplexity contrast pair); TLC §4 entry + §5 corpus
+update (six checks); three ledger rows. The ~60 per-paper Notion pages (shared
+paper database) were not pulled. No new identifiers.

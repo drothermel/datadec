@@ -3218,6 +3218,40 @@ five distinct verdicts**, spanning the full range from "novel, 90–95%" to
 - LBM attribution corrected in row A and the prior-art record: its two headline
   matches are the Perplexity and Gemini checks, both from the same Feb-4 session.
 
+### 2026-08-24 — The 2026-02-04 novelty check #6 (Notion "Lit Review" page + 14 sub-pages, Undermind-generated; historical)
+
+The sixth check of the Feb-2026 session (created 02:29, 3 minutes after
+Perplexity; verbatim multi-file packet in the bundle; characterizations are the
+generating agent's). Undermind read the proposal as
+prompt-compression-for-structured-objects and mapped that flank exhaustively — 21
+core papers, four analysis dimensions, four timeline eras; literature detail
+routed to the prompt-compression accumulator.
+
+- **Verdict — the friendliest deep check:** all ingredients established for
+  *prompts* (RL subset: PCRL, TACO-RL, PIS, GPT-C, Cmprsr via GRPO, LLM-DCP), but
+  "no paper … encodes programs, policies, or other structured semantics into short
+  text codes and then decodes them via a frozen LLM to reconstruct the original
+  behavior in a formal equivalence sense." Its Recommendations sub-page: the field
+  "appears poised for direct extensions to your target setting," with the
+  extension recipe (compress programs/traces instead of prompts; PCRL/TACO-RL-
+  style search; behavioral fidelity) — essentially the TLC design restated as the
+  literature's own next step.
+- **PCRL as nearest formal cousin:** its objective is output-distribution
+  divergence between the frozen model under original vs. compressed prompt — the
+  prompt-level analogue of behavioral reconstruction; already row A, now with the
+  detailed characterization.
+- **The positioning contrast pair:** Undermind "poised for extension" vs.
+  Perplexity "minor variation of LBM" — the two deepest checks agree on
+  ingredients, disagree on whether the extension is a contribution. §5 should use
+  this pair explicitly.
+- New IDs: Selective Context 2310.06201, LongLLMLingua 2310.06839, Fei et al.
+  2312.09571. The "Fundamental Limits of Prompt Compression: A Rate-Distortion
+  Framework" item likely = plan row C's Girish 2407.15504 (confirm at
+  verification). Also surfaced: CompressionAttack (prompt compression as an
+  attack surface — adjacent to the leakage thread).
+- Downstream Note not pulled; the ~60 per-paper Notion pages referenced by the
+  review were not pulled (the shared paper database, not sub-pages).
+
 ## 5. Related work and positioning
 
 *Purpose: the paper-facing synthesis — the prior-art landscape, this project's
@@ -3247,8 +3281,8 @@ work item after the Notion lit-review ingestion (2026-08-24).
 **Starting inventory for the synthesis** (assembled at intake 2026-08-24; detail in
 the dated §4 entries):
 
-- **The novelty-check corpus:** five Feb-2026 checks (one ~7-hour session,
-  2026-02-03/04) with five distinct verdicts — ChatGPT "published in parts,"
+- **The novelty-check corpus:** six Feb-2026 checks (one ~7-hour session,
+  2026-02-03/04) with six distinct verdicts — ChatGPT "published in parts,"
   Claude "novel, 85–90% by combination," Consensus "novel, 90–95%," Gemini
   "partially novel" (architecture established in LBM; the code-compression
   application and MDL-style objective are the novel part; its three-objectives
@@ -3256,7 +3290,11 @@ the dated §4 entries):
   this proposal compression — is a usable positioning frame), Perplexity
   "equivalent method already published" (the one check naming the exact
   dual-prompt configuration — and dismissing it as "a minor variation of the LBM
-  framework"; the positioning must answer this dismissal head-on).
+  framework"; the positioning must answer this dismissal head-on), and Undermind
+  (the sixth check, 21-paper prompt-compression map): ingredients established for
+  prompts, structured-object compression absent, field "poised for direct
+  extensions to your target setting" — the counterweight to Perplexity's
+  dismissal; use the pair.
   Danielle's read: the verdicts track how each review interpreted
   the prompt, and hence which literature it considered. The Claude check's
   component-feasibility matrix (each of the four components exists; the combination

@@ -400,3 +400,26 @@ What the full source adds over the August answer-only intake:
   implementation detail or a minor variation of the LBM framework." This is the
   one check that names the pitch's exact configuration and dismisses it; the
   positioning statement should engage this dismissal head-on.
+
+## 2026-08-24 — The 2026-02-04 Undermind novelty check (Danielle's Notion "Lit Review" page #6, with 14 sub-pages)
+
+Verbatim multi-file packet:
+`~/drotherm/data/convo-artifacts/2026/2026-08-24-notion-lit-reviews/undermind-prompt-compression-review/`.
+The sixth check of the Feb-2026 session (3 minutes after Perplexity) and the
+deepest on the prompt-compression flank: 21 core papers, four analysis dimensions,
+four timeline eras (detail routed to
+`prompt-compression-and-optimization-literature.md`, 2026-08-24 entry). Verdict —
+effectively the friendliest deep check: every architectural ingredient is
+established *for prompts* (discrete text bottlenecks, frozen decoders,
+gradient-free/RL encoder optimization: PCRL, TACO-RL, GPT-C, Cmprsr-via-GRPO), but
+"none of the papers compress external structured objects (programs, policies,
+proofs) into NL codes whose semantics are defined solely via the LLM's decoding" —
+fidelity is task performance, never formal equivalence, and its Recommendations
+sub-page concludes the field "appears poised for direct extensions to your target
+setting" (replace long-prompt with program/trace; PCRL/TACO-RL-style search;
+behavioral fidelity). PCRL's objective (divergence between the frozen model's
+output distributions under original vs. compressed prompt) is the nearest formal
+cousin of behavioral reconstruction. Contrast pair for positioning: Undermind's
+"poised for extension" vs. Perplexity's "minor variation of LBM" — the two deep
+checks agree on the ingredients and disagree on whether the extension is a
+contribution.

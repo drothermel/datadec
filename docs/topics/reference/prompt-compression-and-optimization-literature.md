@@ -81,3 +81,28 @@ prior-art pass: a seeded candidate list already exists.
 - EPiC's synonym-substitution mutator beating the LLM mutator on cost is a data point
   for ELI's outer-optimizer design (cheap mutators first).
 - Figures and IDs unverified; PDFs are on disk for verification.
+
+## 2026-08-24 — the 2026-02-04 Undermind novelty check: a 21-paper prompt-compression map (historical; unverified)
+
+Danielle's sixth Feb-2026 novelty check (Undermind platform; verbatim multi-file
+packet at
+`~/drotherm/data/convo-artifacts/2026/2026-08-24-notion-lit-reviews/undermind-prompt-compression-review/`).
+It maps the prompt-compression field along four dimensions (bottleneck/decoder
+role; optimization regime; extractive-vs-generative bottleneck text; evaluation
+target) and four timeline eras (2023 heuristic Selective Context → 2023–24
+extractive-pruning-to-learned-encoders+RL → 2024–25 generative/meta-prompting →
+2024–25 attention/model-internal). Core set of 21 papers; the RL/gradient-free
+subset it emphasizes: PCRL (the closest analogue — RL-edited prompts scored by
+output-distribution divergence vs. the original prompt's behavior), TACO-RL,
+PIS, GPT-C, Cmprsr (GRPO), LLM-DCP, LanguaShrink; training-free search:
+Style-Compress, DSPC, SCOPE, PartPrompt, EHPC, AttnComp. Foundational/adjacent
+sub-pages add Selective Context 2310.06201, LongLLMLingua 2310.06839, Fei et al.
+context-window semantic compression 2312.09571, LLMLingua-2, R2C, CPC,
+"Fundamental Limits of Prompt Compression: A Rate-Distortion Framework for
+Black-Box LLMs" (name matches plan row C's Girish rate-distortion item — confirm
+same paper at verification), CompressionAttack (prompt compression as an attack
+surface), and others (most name-only in the source; per-paper Notion pages exist
+if IDs are needed later). Gap statement, verbatim: "No paper in this set encodes
+programs, policies, or other structured semantics into short text codes and then
+decodes them via a frozen LLM to reconstruct the original behavior in a formal
+equivalence sense."
