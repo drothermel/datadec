@@ -5680,3 +5680,26 @@ probabilities, extractable from policy behavior alone; myopic agents don't; ID
 2506.01622 Claude-added, inferred). Positioned as the model-based flank of the
 LLM-in-classic-RL thread (DICL cross-ref) and minigrid spec-out background.
 2 ledger rows. Ingest-link-index row added.
+
+### 2026-08-24 — NotebookLM LLM-driven-optimization notebook ingested (link pending)
+
+> link:
+
+(Empty link line — the notebook link was not supplied; the ingest-link-index row
+carries a fill-in note. Followed by the 25-source synthesis and the
+hybrid-systems report — verbatim in the bundle,
+`nblm-llm-optimization-notebook.md`.) Seventh NotebookLM notebook of the day,
+extending the LLM-as-optimizer thread. Routed: main entry in
+[topics/reference/prompt-optimization-landscape.md](topics/reference/prompt-optimization-landscape.md)
+adding the standalone-vs-hybrid axis to the earlier outer-loop-vs-inner-loop
+conclusion: pure LLM optimizers fail on state tracking / density estimation
+(re-entering known-infeasible regions despite in-context history) and small
+models lose to few-shot CoT (Revisiting OPRO, already on record); hybrids win —
+Centaur shares CMA-ES state with the LLM and tops the autoresearch HPO
+benchmark ("classical methods find the path; LLMs suggest where to look next");
+evolutionary search beats RL updates for LLM idea search (2601.14525, mode
+collapse); HAPO as a budget-frugality datum; MCTS hybrids; agent-scaffold
+optimization; the RL-adjacent trio (Language Feedback Models,
+sequential-decision-making reward-vs-action modeling, planning survey) tagged
+for the minigrid context. AlphaEvolve's earlier no-ID ledger row filled with
+2506.13131; 22 new ledger rows (7 with notebook-supplied IDs).

@@ -266,3 +266,62 @@ FunSearch/Eureka/ReEvo — LLM as mutation operator over programs with an extern
 evaluator supplying the loss signal. Relevant context for the whetstone-envs
 minigrid spec-out (staging placeholder) and for the C2 optimizer-vs-bandit
 decomposition (OPRO's "warm-start guesser" reading).
+
+## 2026-08-24 — NotebookLM LLM-driven-optimization notebook (25 sources; extends the LLM-as-optimizer entry)
+
+Danielle supplied a NotebookLM notebook over 25 LLM-optimization sources
+(bundle: `nblm-llm-optimization-notebook.md`; **link not yet supplied** — fill
+in the ingest-link-index row when available; items 12–20 carry arXiv IDs,
+the rest titles only; agent-generated, unverified; NotebookLM caveat). The
+direct extension of the undated-Perplexity LLM-as-optimizer taxonomy above,
+adding a **standalone-vs-hybrid axis** to its outer-loop-vs-inner-loop
+conclusion:
+
+- **Headline aggregate verdicts.** LLMs are largely ineffective as standalone
+  direct optimizers or planners on long horizons — small models are beaten by
+  zero-shot CoT (Revisiting OPRO 2405.10276, already on record: few-shot CoT
+  dramatically beats iterative OPRO for 7B/13B models); frontier models suffer
+  mode collapse, hallucination, and **poor optimization state-tracking** (no
+  density estimation — they re-enter known-infeasible/OOM regions despite the
+  trial history in context). **Hybrids win**: LLM semantic reasoning + classical
+  state management.
+- **Centaur** (from the "Can LLMs Beat Classical HPO?" autoresearch study, no
+  ID) — the flagship hybrid: CMA-ES's (µ, σ, C) state is shared with the LLM
+  for optimizer-informed proposals; best overall on a 14-parameter HPO
+  benchmark where pure LLMs lose to TPE/CMA-ES. Scale note: 0.8B suffices for
+  the hybrid, while unconstrained code editing needs 27B+/frontier (Gemini 3.1
+  Flash-Lite fails 87–94% of edits). "Classical methods find the path; LLMs
+  suggest where to look next."
+- **Search-structure results relevant to C2/TLC-opt:** Execution-Grounded
+  Automated AI Research (2601.14525) — evolutionary search over LLM-generated
+  research ideas is sample-efficient (48.0% → 69.4%) while RL updates
+  mode-collapse; SEAL self-edit search — archive helps but mode
+  collapse/homogenization requires explicit novelty pressure; EvoPrompt-style
+  multimodal evolutionary prompt optimization elicits emergent strategies from
+  20 labeled examples; **HAPO** — unit-level attribution + UCB selection,
+  +13.28% over zero-shot CoT at far fewer API calls than OPRO/APE (a
+  budget-frugality datum for the eval-matched-budget framing).
+- **MCTS hybrids:** SCULPT (constraint-pruned MCTS, 89.9% MATH / 97.8% GSM8K on
+  GPT-5.2, >34% of branches pruned), JudgeFlow (block-level failure
+  attribution), CogMCTS 2512.08609.
+- **Agent-scaffold optimization:** Artemis/Evolving Excellence (+13.6%
+  competitive programming, −36.9% token cost), ReCreate (meta-agent edits
+  scaffolds from execution traces; >5% over human-designed scaffolds) — the
+  scaffold-as-search-space framing.
+- **RL-adjacent (minigrid/world-models context):** Language Feedback Models —
+  small offline models distilling LLM feedback for imitation learning on
+  ALFWorld/ScienceWorld, beating direct LLM-expert imitation cheaply; Modeling
+  Capabilities for Sequential Decision Making — LLMs fail at direct policy
+  output on unfamiliar dynamics but excel as **reward models** via AI feedback
+  (converges with the outer-loop-optimizer conclusion); planning survey — LLMs
+  as heuristic guides for classical planners, not standalone planners.
+- **ID fills and metadata-only items:** AlphaEvolve **2506.13131** (fills the
+  earlier no-ID row); LLM evolutionary optimizer with elitism 2403.02054; LLMs
+  as particle swarm optimizers 2504.09247; test-time compute-optimal scaling as
+  an optimizable graph 2511.00086 (Agent-REINFORCE textual gradients);
+  diffusion LLMs for offline BBO 2601.14446 (bidirectional modeling beats
+  autoregressive for design spaces); phylogenetic-tree code evolution
+  2601.14523. Surveys: LLMs-for-evolutionary-optimization, AutoML-in-the-age-
+  of-LLMs, GI-for-LLM-code (PSB2; helps small models, saturates at GPT-4),
+  LLMize (OPRO-style numerical optimization; LLM proposes the annealing
+  cooling rate).

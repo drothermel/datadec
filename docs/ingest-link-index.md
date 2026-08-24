@@ -29,6 +29,14 @@ is the durable part.
 
 ## 2026-08-24 — NotebookLM notebooks
 
+- LLM-driven-optimization notebook (NotebookLM; **link not supplied — Danielle's
+  message had an empty `link:` line; add it here when available**) — 25 sources
+  on LLMs + classical optimization/EAs/search (standalone-fails-hybrids-win
+  verdict; Centaur; evolutionary-beats-RL idea search; MCTS hybrids;
+  agent-scaffold optimization; AlphaEvolve 2506.13131 ID fill) → routed:
+  `topics/reference/prompt-optimization-landscape.md` (main entry extending the
+  LLM-as-optimizer taxonomy), 22 ledger rows (7 with IDs) + AlphaEvolve ID fill.
+
 - [World-models notebook (NotebookLM, undated)](https://notebook.google.com/notebook/ecbd81fa-0e71-42bf-b86d-b1b0f3d32478)
   — two papers: LLMs as text-based world models (From Word to World) and the
   no-model-free-shortcut theory (Richens, plausibly 2506.01622) + convergence
