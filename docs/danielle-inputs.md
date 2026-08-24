@@ -5865,3 +5865,59 @@ discussion (not yet execution) for the Notion↔repo sync process: reading the
 cleaned DB, pushing our new entries/notes back, pulling into local versions, and
 promoting potential-projs + topics pages to Notion with timestamps for periodic
 updates.
+
+### 2026-08-24 — Notion↔repo sync design discussion (decisions settled)
+
+> ok great! are you ready to discuss how we want to do the notion sync?
+
+> also look at
+> https://app.notion.com/p/7c3441613a874ec288c9145165bdd0ad?v=7d9ac0284b264248ae635446a01e6f08
+> which contains the research links and
+> https://app.notion.com/p/Potential-Projects-3c3de135cd1f802e86fdf02338bec6a4
+> which I intend to be the upload hub for potential project and topic list
+> pages.
+
+> so for repo docs (repo -> notion) I want instead to make them append only and
+> to always append the new version in full within a callout.  that way I can
+> edit old versions and then figure out how to merge the edits into new versions
+> (for now).  does that make sense?
+>
+> then, agreed to split into two systems.
+>
+> I would like to push our new work and the stale pending ones.  but the level
+> of reading and analysis that the aagents were doing killed my weekly limits
+> almost immediately, so I don't want to do all of the analysis around each
+> page, I just want to get its export.arxiv.com link and pull the metadata and
+> then aim for deduplication across authors and papers.
+>
+> then, for D4 I agree with the repo-refs accumulator.
+>
+> for D5, lets make it a DB page not an inline db.  and I do want the related
+> work recall corpora on notion too.
+>
+> the target outcome for notion is for me to be able to read through and write
+> on quickly.  roster appetite: yes fold in.
+>
+> then, what questions have I answered and what have I missed? any new
+> questions based on my answers?
+
+Follow-up selections (from the three closing questions): doc set = projects +
+topics + program docs (research-hypothesis, portfolio-rankings,
+open-questions-answered; excludes ledger/ingest-link-index/danielle-inputs);
+author dedup = exact-match link + mechanical duplicate review list, no merges
+without sign-off; version order = newest at top.
+
+Applied: full design settled and recorded as the canonical spec at
+`~/drotherm/data/.claude/datadec/2026-08-24/1939-notion-sync-design.md` — two
+systems (paper rows exclusively through phd `paper_corpus`; page promotion via a
+new dr-notion `doc_sync` generalizing `skill_sync`), all flows one-way, repo→
+Notion promotion append-only (full-page child DB under the Potential Projects
+hub; version callouts newest-first, appended only on content change; sync never
+edits existing blocks so her annotations on old versions are safe),
+metadata-only push folding the stale 178-create roster with our ~150 new works
+into one fresh roster review (no agent per-paper analysis, no seeding —
+weekly-limit protection), Repo Refs machine-owned property, Researchers
+exact-match linking (+ review list; new capability — paper_corpus currently
+writes only Author String), ledger gains a Paper ID column with DB-matched
+fills, manual sync cadence (no cron). Execution not yet started; build list in
+the design doc.
