@@ -5406,3 +5406,14 @@ Placeholder-only staging doc
 6-step pipeline as the half-spec, ContextBench as precedent, and an explicit
 benchmark-as-byproduct constraint for spec time. Do-not-expand-until-she-initiates
 note included.
+
+### 2026-08-24 — ingest link index added as a standing step
+
+> ok great, lets add another step to this process, lets add an index of links ->
+> ingest topics somewhere so we can look back if we want to in the future.
+
+Created [ingest-link-index.md](ingest-link-index.md): one line per link-based ingest
+(source link, what it is, routing targets), grouped by date. Backfilled with the full
+2026-08-24 Notion batch (18 pages) and the 2026-08-22 MAQA Next Steps page. Standing
+intake step from now on: every link-based ingest adds its row there in the same
+commit.
