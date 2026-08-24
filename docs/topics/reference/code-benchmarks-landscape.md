@@ -13,7 +13,16 @@ benchmarks the report does not cover.
 
 ---
 
-## Undated (intake 2026-08-22) — HumanEval's derivative ecosystem, and cross-benchmark overlap/dedup studies (two turns)
+## 2026-04-09 (ChatGPT; intake 2026-08-22, provenance completed 2026-08-24) — HumanEval's derivative ecosystem, and cross-benchmark overlap/dedup studies (two turns)
+
+**Provenance (added 2026-08-24).** Danielle supplied the source link
+(`chatgpt.com/c/69d807bb-…`) and full text; verbatim capture now in the 2026-08-24
+bundle (`chatgpt-humaneval-ecosystem-overlap-convo.md`). Conversation date 2026-04-09
+decoded from the conversation ID's timestamp prefix (inferred; consistent with the
+mid-April window — eight days before her 2026-04-17 reflection notes). **Identity:
+turn 2 is the source conversation of her curated lineage/overlap note** (2026-08-24
+entry below); the note's 6-step dedup pipeline refines this response's multi-layer-graph
+proposal.
 
 **Danielle's prompts.** (1) HumanEval is so widely adopted that many works must build on
 it — test augmentation (HumanEval+), extracting the comments or just the stub, using the
@@ -292,7 +301,9 @@ AVATAR flagged for Java↔Python. All unverified pending the paper-DB cleanup.
 ## 2026-08-24 — Danielle's lineage/overlap note: the dedup thread structured (first-hand curation, ChatGPT-sourced)
 
 Her curated note (bundle: `code-datasets-lineage-overlap-note.md`) deepens this
-record's overlap section into a working structure. **Three lines of work:**
+record's overlap section into a working structure. **Source conversation identified
+2026-08-24:** the 2026-04-09 ChatGPT conversation above (turn 2); her 6-step pipeline
+refines its multi-layer-graph proposal. **Three lines of work:**
 benchmark-of-benchmark audits; cross-benchmark leakage/overlap studies; building
 new benchmarks by pooling + deduplicating old ones. **Evidence detail beyond the
 earlier entries:** LessLeak's per-benchmark exposures (QuixBugs 100%,

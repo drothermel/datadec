@@ -5417,3 +5417,19 @@ Created [ingest-link-index.md](ingest-link-index.md): one line per link-based in
 2026-08-24 Notion batch (18 pages) and the 2026-08-22 MAQA Next Steps page. Standing
 intake step from now on: every link-based ingest adds its row there in the same
 commit.
+
+### 2026-08-24 — source link for the HumanEval-ecosystem/overlap conversation
+
+> link: https://chatgpt.com/c/69d807bb-7c84-8333-9a18-c182475985ca
+
+(Followed by the full two-turn conversation text; her two prompts are already logged
+verbatim in the 2026-08-22 entry "HumanEval's derivative ecosystem; cross-benchmark
+overlap and dedup (two turns)".) Provenance completion, not a re-ingest: the content
+was fully routed on 2026-08-22 (landscape entry + TLC §4 pointer + 21 ledger rows).
+New today: verbatim capture of both responses in the 2026-08-24 bundle
+(`chatgpt-humaneval-ecosystem-overlap-convo.md`); the conversation dated 2026-04-09
+via its ID timestamp (inferred; eight days before the April reflection notes, so the
+dedup thread was live by early April); identity established — turn 2 is the source of
+her curated lineage/overlap Notion note (the 6-step pipeline refines its
+multi-layer-graph proposal). Landscape section header dated; lineage-note entry
+cross-referenced; ingest-link-index row added.

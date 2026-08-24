@@ -10,6 +10,15 @@ Format: `- [Title](url) — what it is → routed: targets.` Grouped by ingest d
 newest group first. Notion view/query parameters are stripped; the page ID in the URL
 is the durable part.
 
+## 2026-08-24 — ChatGPT source conversations (retro-provenance)
+
+- [HumanEval derivative ecosystem + cross-benchmark overlap/dedup (ChatGPT, 2026-04-09)](https://chatgpt.com/c/69d807bb-7c84-8333-9a18-c182475985ca)
+  — two-turn conversation, first ingested 2026-08-22 as an unlinked paste; link + full
+  verbatim supplied 2026-08-24; conversation dated from its ID timestamp (inferred).
+  Turn 2 = source of the code-datasets lineage/overlap Notion note → routed (08-22):
+  `topics/reference/code-benchmarks-landscape.md` (now dated, with provenance note),
+  TLC §4 prior-art pointer, 21 ledger rows.
+
 ## 2026-08-24 — Notion lit-review batch
 
 Bundle: `~/drotherm/data/convo-artifacts/2026/2026-08-24-notion-lit-reviews/`
