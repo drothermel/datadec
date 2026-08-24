@@ -474,3 +474,19 @@ PCRL/SPELL/ICAE/Sentence-Bottleneck/Latent-Programmer — all scores agent-assig
 unverified; new item SAPS 2018, tree-to-tree structure-aware program synthesis,
 1.5/6, no ID; its Source Note points at an **unpulled SciSpace Lit Review page**,
 `2fdde135-cd1f-804a-b0d2-e05f44ed95c9`).
+
+## 2026-08-24 — the Aggregate Summary (chain endpoint): the merged cross-review ranking
+
+`~/drotherm/data/convo-artifacts/2026/2026-08-24-notion-lit-reviews/nl-latents-aggregate-summary.md`.
+The Feb-3/4 session's final artifact (created 06:39, platform "Aggregation," no
+downstream): all seven summary tables merged into one relevance-sorted,
+source-attributed table. Starred scores are aggregation-time estimates "based on
+abstract review"; unstarred carry the six-component rubric. **This is the closest
+existing thing to a completed §5 comparison table** — top tiers: LBM 5.5\*, NL in
+the Middle 5.5\* (single-source estimate, treat cautiously), NL-Debugging 5.0\*;
+the 4.5 band holds Gilbert, PlanSearch, RTC, DreamCoder/AutoDoc, FunSearch, GPT-C
+(the top unstarred prompt-side score), Hidden CoT\*, SPAE\*. Known flaws carried
+verbatim: incomplete dedup (Nano-Capsulator and EPiC appear twice), all scores
+agent-generated/unverified, and the estimated tier mixes different reviews'
+non-comparable framings. The intake batch's chain is fully pulled: 7 review pages
+(6 platform checks + the Dec-2025 verdict copy) → 7 NBLM tables → this aggregate.

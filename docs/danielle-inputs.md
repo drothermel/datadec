@@ -5320,3 +5320,15 @@ Identity: the Notion copy of the Dec-2025 SciSpace verdict (already intaken
 + per-paper checklists), both preserved in the bundle. Settles both scored tables'
 derivation. PCRL = 2308.08758 and SAPS = 1810.09717 recovered (ledger + plan row A
 updated); MIPS/APICoder/SAMMO added as no-ID rows. TLC §4/§5 updated.
+
+### 2026-08-24 — the Aggregate Summary (chain endpoint)
+
+> great! here's the top level merged table: https://app.notion.com/p/NL-Latents-Lit-Review-Aggregate-Summary-2fdde135cd1f80469c7ee9293dcbfedc
+
+The Feb-3/4 session's final artifact: all seven tables merged, relevance-sorted,
+source-attributed; no downstream. Preserved as
+`nl-latents-aggregate-summary.md` in the bundle; capstone entries in
+[topics/reference/nl-bottleneck-prior-art.md](topics/reference/nl-bottleneck-prior-art.md)
+and TLC §4; §5 raw-material bullet upgraded (the aggregate = the closest existing
+thing to a completed §5 comparison table, with its flaws listed). Chain fully
+pulled: 7 reviews → 7 tables → aggregate. No new papers; no ledger rows.

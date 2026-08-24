@@ -3275,6 +3275,19 @@ the bundle). This settles the scored tables' derivation: both the mislabeled
 platform reviews. ID recoveries: PCRL = 2308.08758, SAPS = 1810.09717.
 Supplemental items new to the record: MIPS, APICoder, SAMMO (no IDs in source).
 
+### 2026-08-24 — the Aggregate Summary: the Feb-2026 session's final artifact, chain complete
+
+The merged cross-review table (created 2026-02-04 06:39; all seven summary tables
+as sources; no downstream — the chain ends here; verbatim in the bundle).
+Relevance-sorted and source-attributed; starred scores are aggregation-time
+abstract-review estimates, unstarred carry the six-component rubric. Top tiers:
+LBM 5.5\*, NL in the Middle 5.5\* (single-source; treat cautiously), NL-Debugging
+5.0\*, then the 4.5 band (Gilbert, PlanSearch, RTC, DreamCoder/AutoDoc, FunSearch,
+GPT-C — the top unstarred prompt-side score — Hidden CoT\*, SPAE\*). Dedup
+incomplete (Nano-Capsulator, EPiC duplicated); everything agent-generated and
+unverified. The full Notion chain is now on disk: 7 review pages → 7 NBLM tables
+→ this aggregate.
+
 ## 5. Related work and positioning
 
 *Purpose: the paper-facing synthesis — the prior-art landscape, this project's
@@ -3300,9 +3313,12 @@ work item after the Notion lit-review ingestion (2026-08-24).
   with must-reads (Miao & Blunsom and GenDLN at gate 1).
 - `../litreview/citation-verification-ledger.md` — provenance of every identifier;
   nothing verified yet.
-- The bundle's `summary-tables/` directory — NBLM-distilled per-review comparison
-  tables (six-column schema usable as the §5 positioning-table template) and,
-  once pulled, the cross-review "NL Latents Lit Review Aggregate Summary".
+- The bundle's `summary-tables/` directory (seven NBLM per-review comparison
+  tables) and `nl-latents-aggregate-summary.md` — the merged, relevance-sorted
+  cross-review table (LBM 5.5\* / NL-in-the-Middle 5.5\* / NL-Debugging 5.0\* /
+  the 4.5 band). **The closest existing thing to a completed §5 comparison
+  table**; needs dedup, score verification, and the post-session additions
+  (Miao & Blunsom, CETBench, the divergence instruments) folded in.
 
 **Starting inventory for the synthesis** (assembled at intake 2026-08-24; detail in
 the dated §4 entries):
