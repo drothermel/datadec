@@ -2423,3 +2423,58 @@ very very little time." A separate conversation from the writing period document
 this framing confusion — intake to follow. The DQE statement (README program-level
 note, 2026-02-25) was her attempt at her own framing; it was not adopted in that
 discussion.
+
+### 2026-08-23 — The writing-sprint conversation, chunk 1 (metric origin; historical, ~2026-02-09/10)
+
+Second conversation intake (verbatim companion transcript:
+`~/drotherm/data/convo-artifacts/2026/2026-08-23-prompt-opt-reeval-aha/writing-conversation-transcript.md`).
+This is the conversation Danielle used while writing the LLA submission during the
+two-night sprint; her intake framing: it documents the pieces she was confused about
+while implementing the advisor's compression framing over her own better-understood
+one.
+
+**Chunk 1 — the origin of the paper's headline metric.** Three exchanges:
+
+1. Her opening question: with prompt selection framed as a finite-arm MAB (UCB1 /
+   Thompson vs. LLM-in-the-loop), what does "maximizing reward" mean — best-arm-at-end
+   evaluated on a test set, or cumulative reward/regret over matched train time? And is
+   it fair that the LLM optimizer isn't told how it will be evaluated? Answer: these
+   are two different problems (best-arm identification vs. cumulative regret) with
+   different exploration profiles; UCB1/TS are implicitly cumulative-regret algorithms;
+   **telling the agent the evaluation metric is problem specification, not privileged
+   leakage** (unfair = asymmetric horizon knowledge or test-distribution details);
+   LLM-as-policy-class framing; the semantic prior makes it structured bandits / side
+   information, which should be said, not hidden.
+2. Her disclosure of the real confusion: the paper's pitch is compression, the reward
+   is hit-budget-and-pass-tests, she had imagined **x = instructed budget** vs. success
+   while the advisor wanted **x = realized IR cost** (a Pareto front), and "I just
+   don't even at this point know what I'm claiming… all of the hyperparameters
+   directly impact which methods you'd expect to be better." Answer: three conflated
+   axes (search procedure / search objective / compression tradeoff); the end goal is
+   the **frontier under a fixed evaluation budget**, not reward; internal scalar reward
+   (1[pass ∧ cost ≤ B]) is fine as the optimization signal but not the evaluation; and
+   the two-story split — **Story A** (fair comparison on the same finite arm space)
+   vs. **Story B** (scaling: LLM-optimizer on spaces bandits can't enumerate) — which
+   is exactly the 27-arm / 8,064-arm structure the submitted paper ended up with.
+3. Her deepest confusion ("you are describing the same thing as my advisor, but I
+   also did not understand, when he explained it, how we would collapse what we're
+   doing into that"): is the instructed budget another arm? how do specs-per-pool and
+   samples-per-spec collapse? Answer — the unlock: **budget is a conditioning
+   variable, not an arm**; the frontier is computed from realized (cost, success)
+   outcomes, so any budget-cap view is recoverable from logs by filtering
+   (SuccessRate(B) = E[1(success ∧ cost ≤ B)]); one evaluation = one
+   encode→decode→test execution, making pooling hyperparameters collapse into
+   evaluation-budget accounting; per-spec envelopes averaged across specs; F(c) =
+   fraction of specs solvable under cost c. The closing "drop-in paragraph" is
+   near-verbatim the submitted paper's frontier definition (S_m(c; N), Eq. 1).
+
+**Intake notes (Claude-added):** (a) the instructed-budget vs. realized-cost
+distinction established here survives into current TLC (B = b1·|d_s| + b2 is the
+instruction; frontiers are on realized cost); (b) R1's later review asked for exactly
+the formal grounding this exchange deferred — "how does this relate to constrained
+optimization or best-arm identification?" — the reviewer independently found the seam
+("don't try to force regret/BAI framing" was the right deadline call, and the question
+is still open for the follow-up); (c) her "all of the hyperparameters directly impact
+which methods you'd expect to be better" is an honest statement that the
+method-comparison claim was under-determined — which the results then confirmed
+(no differentiation in-distribution).
