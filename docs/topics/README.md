@@ -50,6 +50,7 @@ directory only holds live, unresolved material.
 | [rewritten-anneal-slice.md](staging/rewritten-anneal-slice.md) | Rewritten (SwallowCode / ProX / FinerWeb-style) vs. selected anneal data as a decay-branch arm: separates per-document quality from mixture shift in WSD-opt-4. Gate: verify the four lead papers; decide whether a rewritten slice is cheap enough at the smallest scales to be an arm |
 | [model-behavioral-divergence.md](staging/model-behavioral-divergence.md) | "Cheap models aren't collapsed": behavioral non-collapse across providers measured on outcome signatures, tail risk, and success-conditioned solution-strategy diversity; implementation-ready Feb-2026 spec, never executed. Gate: Danielle decides it competes for time; if yes, the time-sensitive OpenRouter old-model snapshot run goes first |
 | [whetstone-minigrid-env.md](staging/whetstone-minigrid-env.md) | Placeholder only (2026-08-24, by decision): the whetstone-envs minigrid env flagged as a candidate small project; spec-out deferred until Danielle initiates it |
+| [pooled-dedup-code-benchmark.md](staging/pooled-dedup-code-benchmark.md) | Placeholder only (2026-08-24, by decision): pooling + deduplicating existing code benchmarks into a clean suite, per her lineage/overlap note's line of work 3 and 6-step pipeline; spec must satisfy benchmark-as-byproduct; spec-out deferred until Danielle initiates it |
 
 Promoted on 2026-08-22 (text moved into the new project docs' §4): `icl-as-posttraining` →
 `../potential-projs/icl-elicitability.md`; `warmstarting-decomposition` +

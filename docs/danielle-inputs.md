@@ -5395,3 +5395,14 @@ Her curated note (ChatGPT-sourced). Verbatim in the bundle. Routed: dated entry 
 representation backbone; her 6-step dedup pipeline); TLC recall-corpus line
 (dataset-rehab machinery); 2501.10711 title-pairing flag added to its ledger row.
 All five papers already ledgered — no new rows.
+
+### 2026-08-24 — pooled+dedup benchmark placeholder
+
+> yes, lets make a placeholder for the benchmark as a byproduct
+
+Placeholder-only staging doc
+[topics/staging/pooled-dedup-code-benchmark.md](topics/staging/pooled-dedup-code-benchmark.md)
+(+ staging table row): line-of-work-3 seed from the lineage/overlap note, with her
+6-step pipeline as the half-spec, ContextBench as precedent, and an explicit
+benchmark-as-byproduct constraint for spec time. Do-not-expand-until-she-initiates
+note included.
