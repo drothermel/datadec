@@ -255,68 +255,58 @@ current-state statement: rewrite it as understanding changes. Positioning claims
 are Danielle's to make; agent-supplied literature claims anywhere in this document
 are unverified leads, not established facts.*
 
-**Status: little related-work material on record (2026-08-24); positioning not yet
-written.** What exists is a handful of pointers rather than a literature thread: the suite's
-own papers, one published downstream consumer, one reporting-protocol citation, and the
-metric-definition provenance trail — all in the §4 entries above and in
-`../topics/reference/datadecide-data-pipeline.md`.
+**Status: little related-work material on record (2026-08-24); positioning not yet written.**
+What exists is a handful of pointers rather than a literature thread: the suite's own papers,
+one published downstream consumer, one reporting-protocol citation, and the metric-definition
+provenance trail. All identifiers unverified.
 
-**Where the raw material lives:**
+**The load-bearing items and the role each plays:**
 
-- `../topics/reference/datadecide-data-pipeline.md` — the densest source: the OLMES
-  metric-column reconstruction (what is settled, what is guessed, and which questions are
-  answerable only from the oe-eval/OLMES implementation), the pipeline-state read, the
-  LR-derivation provenance caveat, and the reproduction batches. All reproduction numbers
-  come from agent-written verification code Danielle has not read, debugged, or rerun.
-- `../topics/reference/loss-alternative-metrics-literature.md` — the source of the
-  bits-per-byte reporting recommendation for the PPL tables (SciSpace review, unverified).
-- `../topics/reference/small-scale-evaluation-metrics-literature.md` — Patel et al. 2026 as
-  a published downstream consumer of the 25 DataDecide corpora, and the wider proxy-metric
-  landscape that DCARD's tables feed.
-- `../topics/reference/pretraining-to-posttraining.md` — the DataDecide paper's own summary
-  (25 corpora, ≤1B, 3 seeds, 150M→1B ~80% ranking prediction, continuous proxies at 0.01%
-  compute), recorded as prompt context.
-- `../open-questions-answered.md` — the settled coverage facts the ledgers rest on
-  (per-instance coverage, checkpoint spacing, the 750M aggregate-table truncation,
-  training-loss availability by size).
-- `../portfolio-rankings.md` — where the data-card / composition artifact sits in the ranked
-  lists (workshop-sized #1 as the REC-a data card; Tier 3 component; "measured data cards"
-  as the most citable single table).
-- `../litreview/citation-verification-ledger.md` — the two `DCARD`-tagged pipeline rows
-  (2504.11393; 2407.21072) plus the shared loss-metric and proxy-metric rows; nothing
-  verified.
+- **Magnusson et al., *DataDecide: How to Predict Best Pretraining Data with Small
+  Experiments*** (Ai2, ICML 2025, arXiv 2504.11393) — *the object of the card*: of DCARD-2's
+  claim-by-claim reproduction and of every provenance-ledger entry. The ledger records its
+  metric definitions as cited from the HTML version (agent-supplied).
+- **OLMES, *A Standard for Language Model Evaluations*** (NAACL Findings 2025 per the record)
+  — *the definitional authority* DCARD-1(e) proposes to pin every metric column against,
+  together with the EleutherAI multiple-choice-normalization post and arXiv 2407.21072 (a
+  length-normalization / multiple-choice-scoring paper whose title the record does not know;
+  agent-supplied). The record is explicit that these questions are answerable from the
+  oe-eval/OLMES implementation, not from the paper.
+- **Patel, Reddy, Mosbach & Bahdanau 2026 (arXiv 2605.18607)** — *the published downstream
+  consumer*: uses the 25 corpora and the 1B target rankings as a data-selection benchmark and
+  reports beating the suite's own proxies (decision accuracy > 0.85 at ~10⁻⁵ target compute).
+  Recorded as a second reproduction target and as a check on whether their ground-truth
+  ranking inherited the nominal-compute or label-as-token-share assumptions this card
+  corrects. Per the SciSpace review, unverified.
+- **Paloma's per-domain bits-per-byte protocol (2312.10523)** — *the reporting-protocol
+  precedent* for carrying a BPB column on the released PPL tables so they are comparable
+  across tokenizers and suites. Claude-added in the ledger, unverified.
+- **Heineman et al., *Signal and Noise*** (ledger 2508.13144, Claude-added) — *the noise-model
+  precedent* behind the recorded program framing: the original paper's statistics are computed
+  without a noise model and the portfolio recomputes them with one.
+- **The multi-power law (Luo et al., 2503.12811, ICLR 2025)** — *the validation instrument for
+  DCARD-opt-2*: cross-recipe × cross-scale fits with shared structure as affirmative evidence
+  that the derived LR schedules are right in every way the loss dynamics can see.
+- **u-µP (Blake et al., 2407.17465)** — *a recipe-confound entry*: DataDecide uses per-size
+  hand-set hyperparameters and is not µP-parametrized, so its cross-size comparisons carry the
+  "was the small model's LR optimal" question.
 
-**Starting inventory for the synthesis**
+**Two gaps a literature pass would fill first, recorded as gaps rather than positions:**
 
-- **The suite's own artifacts.** Magnusson et al., *DataDecide: How to Predict Best
-  Pretraining Data with Small Experiments* (Ai2, ICML 2025, arXiv 2504.11393) — the object
-  of the reproduction and of every provenance-ledger entry; the ledger records the metric
-  definitions as cited from the HTML version (agent-supplied). OLMES (*A Standard for
-  Language Model Evaluations*, NAACL Findings 2025 per the record) is the evaluation
-  standard DCARD-1(e) proposes to pin column definitions against, together with the
-  EleutherAI multiple-choice-normalization post and 2407.21072 (a length-normalization /
-  multiple-choice-scoring paper whose title the record does not know; agent-supplied,
-  unverified).
-- **A published downstream consumer.** Patel, Reddy, Mosbach & Bahdanau 2026 (arXiv
-  2605.18607) use the 25 DataDecide corpora and the 1B target rankings as a data-selection
-  benchmark and report beating the suite's own proxies (decision accuracy > 0.85 at ~10⁻⁵
-  target compute). The §4 entry of 2026-08-22 records it as a second reproduction target and
-  as a check on whether their ground-truth ranking inherited the nominal-compute or
-  label-as-token-share assumptions this card corrects. Per the SciSpace review, unverified
-  beyond agent summaries.
-- **Reporting-protocol citation.** Paloma's per-domain bits-per-byte protocol (2312.10523),
-  recorded in §4 as the form to carry into the released PPL tables so they are comparable
-  across tokenizers and suites (Claude-added in the ledger, unverified).
-- **Signal and Noise** (Heineman et al.; ledger ID 2508.13144, Claude-added) appears in the
-  repo as the noise-model precedent behind the program framing sentence recorded in §4 —
-  "the original paper's statistics are computed without a noise model and the portfolio
-  recomputes them with one."
-- **No data-card / datasheet / reproduction-practice literature is on record.** DCARD-opt-3
-  (frozen predicates, threshold sensitivity, atomic decomposition, the `not_assessable`
-  category, the predicate-liveness guard) is described in §4 only as a candidate
-  contribution to reproduction practice, with the response's own workshop-sized rating
-  attached; the repository names no prior work in that space. Likewise the resource /
-  NeurIPS D&B framing is recorded as a venue judgment
-  (`../topics/reference/datadecide-data-pipeline.md`, `../portfolio-rankings.md`), not as a
-  positioning against named resource papers. These are the two gaps a literature pass would
-  fill first.
+- **No data-card / datasheet / reproduction-practice literature is named anywhere in the
+  repository.** DCARD-opt-3 (frozen predicates, threshold sensitivity, atomic decomposition,
+  the `not_assessable` category, the predicate-liveness guard) is described only as a
+  candidate contribution to reproduction practice, with the response's own workshop-sized
+  rating attached.
+- **The resource / NeurIPS D&B framing is a venue judgment on record**, not a positioning
+  against named resource papers.
+
+Full inventory (every possibly relevant item on record, grouped by theme) in
+`related-work/datadecide-data-card.md`. Main accumulators:
+`../topics/reference/datadecide-data-pipeline.md` (densest source; the metric-column
+reconstruction, LR-derivation provenance, and reproduction batches — all reproduction numbers
+from agent-written verification code Danielle has not read or rerun),
+`../topics/reference/loss-alternative-metrics-literature.md`,
+`../topics/reference/small-scale-evaluation-metrics-literature.md`,
+`../topics/reference/pretraining-to-posttraining.md`, `../open-questions-answered.md`,
+`../portfolio-rankings.md`; provenance in `../litreview/citation-verification-ledger.md`.

@@ -408,86 +408,53 @@ are Danielle's to make; agent-supplied literature claims anywhere in this docume
 are unverified leads, not established facts.*
 
 **Status: raw material assembled from repository records (2026-08-24); positioning not
-yet written.**
+yet written. The full inventory — every possibly-relevant item on record, with sources —
+now lives in `related-work/trajectory-statistics.md`; this section keeps only the
+load-bearing core.**
 
-**Where the raw material lives:**
+- **Heineman et al., *Signal and Noise*** (NeurIPS 2025 per the record; arXiv 2508.13144
+  per the ledger, a Claude-added and hallucination-prone row) — the direct dual: their
+  noise is this project's object, TRJ-4 re-derives their metric-choice finding, and their
+  windowed noise estimate's "drift within the window is negligible" assumption is what
+  the decomposition checks and corrects. Their ~900K-result release (OLMo checkpoints,
+  DataDecide, ladders) is also TRJ-5's fallback substrate.
+- **DataDecide (arXiv 2504.11393)** — the suite analyzed and the source of the
+  continuous-metrics-are-low-noise finding TRJ-4 should recover.
+- **Wen et al. (arXiv 2410.05192)** — the river-valley claim TRJ-2 tests with zero
+  training: diffusion should track `lr_at_step`, drift should not. Their interpolation
+  signature is the existing "river test", and they attribute the geometry to token
+  determinism, which is what makes the claim recipe-dependent.
+- **Power et al. grokking and Nanda et al. progress measures** — the boundary condition
+  on TRJ-3: two checkpoints matched on train *and* test loss can differ in hidden circuit
+  maturity, so matched-loss pairs are a necessary but provably insufficient control.
+  **Nakkiran et al. double descent** is the non-monotonicity warning alongside it.
+- **The basin-comparability toolkit** (Frankle et al. LMC; Git Re-Basin; Juneja et al.
+  *Linear Connectivity Reveals Generalization Strategies*) — the strongest recorded
+  version of "same metric value need not mean comparable models", with the standing note
+  that nobody has connected that literature to metric validity.
+- **The IRT accumulator** (Rodriguez et al. ACL 2021; tinyBenchmarks ICML 2024) — flagged
+  overlap: TRJ-3's matched-loss signatures and recipe-DIF are close enough that reviewers
+  will ask why both, and binary-vs-continuous IRT is a second route to TRJ-4.
+- **Routing follow-up neighbors:** **FLAME-MoE** (DataDecide-for-MoE; 38M–1.7B active,
+  released routing logs) as the substrate; **OLMoE's router saturation** as the existing
+  metric TRJ-moe-1's reverting-vs-persistent split extends; ***Three Phases of Expert
+  Routing*** as the closest existing routing-dynamics-over-training result; ***The Myth
+  of Expert Specialization*** as the cross-run comparability warning.
+- **Annealed readouts' durable-movement operator (ANN-opt-7)** — the causal counterpart
+  of TRJ-1's statistical split (movement that survives annealing is river movement by
+  construction); the two projects share the trajectory accessor and the noise floor.
 
-- `../topics/reference/evaluation-methodology-literature.md` — the Signal-and-Noise entry
-  (the framework this project is the dual of) and the "where eval variance actually
-  lives" entry that fixes TRJ-6's three components.
-- `../topics/reference/landscape-literature.md` — the river-valley picture TRJ-2 tests,
-  including Wen et al.'s interpolation signature and the loss-curve-collapse
-  comparability idea.
-- `../topics/reference/moe-literature.md` — the routing follow-up's prior art (FLAME-MoE,
-  OLMoE router saturation, load-balance phases, router robustness, the Myth of Expert
-  Specialization) and the MoE comparability warning.
-- `../topics/reference/grokking-and-hidden-progress.md` — why matched-loss pairing (TRJ-3)
-  is a necessary-but-insufficient control.
-- `../topics/reference/nonstationarity-accounting.md` — the program frame in which the LR
-  schedule is exogenous non-stationarity and the drift/diffusion split is one of its
-  accounting instruments.
-- `../topics/reference/datadecide-data-pipeline.md` — the reproduction record behind the
-  2026-08-22 spread-to-noise and crossings entries (with Danielle's provenance caveat on
-  the agent-written verification code) and the small-scale density observation.
-- `../open-questions-answered.md` — the resolved checkpoint-spacing gate (the table that
-  retires TRJ-5 as a prerequisite) and the 750M truncation note.
-- `../dataset-analysis-idea-map.md` §L2 (I1) — the earliest written statement of the
-  decomposition, its tests, and its feeds.
-- `../litreview/citation-verification-ledger.md` — citation provenance; the
-  Signal-and-Noise identifier 2508.13144 is a Claude-added row (hallucination-prone by
-  the ledger's own note) and nothing in the ledger is verified.
+In-repo empirical context, not literature: the spread-to-noise Spearman ≈0.798 across
+160 task/metric observations and the 15,523-crossings recount come from Danielle's
+DataDecide reproduction and carry her caveat that the numbers are from agent-written
+verification code she has not read, debugged, run, or analyzed. All identifiers above are
+agent-supplied and unverified.
 
-**Starting inventory for the synthesis** (assembled at intake 2026-08-24; detail in the
-dated §4 entries):
-
-- **The direct dual:** Heineman et al., *Signal and Noise: A Framework for Reducing
-  Uncertainty in Language Model Evaluation* (NeurIPS 2025 per the record; arXiv 2508.13144
-  per the ledger, unverified). Signal = a benchmark's ability to separate better from
-  worse models; noise = sensitivity to random variability between training steps;
-  interventions = continuous metrics beat accuracy on both, and filtering noisy subtasks
-  improves aggregate reliability. Release: ~900K evaluation results on 465 open-weight
-  models including OLMo intermediate checkpoints, DataDecide, and the ladder runs. The
-  2026-08-18 origin entry states the relation explicitly — same data, opposite marginal —
-  and TRJ-4 is the re-derivation of their metric-choice finding. Their windowed noise
-  estimate assumes within-window drift is negligible; the decomposition is recorded as
-  checking and correcting that assumption.
-- **The suite under analysis:** Magnusson et al., *DataDecide: How to Predict Best
-  Pretraining Data with Small Experiments* (Ai2, ICML 2025; arXiv 2504.11393) — 25
-  corpora, sizes to 1B, 3 seeds; single-small-size ranking predicts the 1B best dataset
-  ~80% of the time; continuous likelihood metrics as low-noise proxies. Summarized in
-  `pretraining-to-posttraining.md`.
-- **The river-valley claim TRJ-2 tests without training:** Wen et al., *Understanding
-  Warmup-Stable-Decay Learning Rates: A River Valley Loss Landscape View* (arXiv
-  2410.05192) — high-LR phase drives along-river progress, decay drives the mountain
-  direction; their interpolation signature is called "the closest thing to a 'river
-  test'"; they also attribute the valley geometry to token determinism. *Scaling with
-  Collapse* (arXiv 2509.25087) is recorded in the same file as a curves-only cross-run
-  comparability criterion. Unverified.
-- **Boundary conditions on matched-loss comparison (TRJ-3):** Power et al. grokking and
-  Nanda et al. progress measures — two checkpoints matched on train *and* test loss can
-  sit at different points of hidden circuit maturity, making matched-loss pairs "a
-  necessary but provably insufficient control"; Nakkiran et al. deep double descent as the
-  non-monotonicity warning. (`grokking-and-hidden-progress.md`.) The 2026-08-18 §4 entry
-  adds the equal-loss-vs-equal-tokens pairing control.
-- **The IRT overlap flagged in §4:** TRJ-3's matched-loss signatures and recipe-DIF are
-  recorded as close enough that reviewers will ask why both; the IRT accumulator
-  (`../topics/reference/irt-literature.md`) notes the binary-vs-margin comparison would
-  replicate Signal-and-Noise's metric-choice finding inside one framework.
-- **Routing-follow-up prior art (`moe-literature.md`):** FLAME-MoE ("DataDecide-for-MoE":
-  seven models 38M–1.7B active, 64 experts, top-8, released checkpoints, routing logs and
-  evals; specialization emerging early, co-activation sparse and stable); OLMoE's router
-  saturation (top-k overlap with convergence, rising sharply early, deeper layers faster)
-  as the field's existing metric that TRJ-moe-1's reverting-vs-persistent split extends;
-  *Three Phases of Expert Routing* (load balance → specialization → relaxation, with
-  annealing checkpoints); *Continual Pre-training of MoEs: How Robust Is Your Router?*
-  (early-layer routing reorganization and forgetting); *The Myth of Expert Specialization*
-  (routing reflects geometry; independently trained MoEs pick unrelated specializations).
-  The 2026-08-21 §4 entries add that no public multi-recipe MoE suite exists (FLAME-MoE,
-  OLMoE, OpenMoE are each one recipe; the open-weights wave is closed-data) — recorded as
-  unverified claims.
-- **In-repo empirical context, not literature:** the 2026-08-22 §4 entry's spread-to-noise
-  Spearman ≈ 0.798 across 160 task/metric observations and the 15,523-crossings recount
-  come from Danielle's DataDecide reproduction and carry her explicit caveat that the
-  numbers are from agent-written verification code she has not yet read, debugged, run, or
-  analyzed; the framing pressure recorded there is that the paper must deliver more than
-  the correlation the original authors already report.
+Full inventory: `related-work/trajectory-statistics.md`. Main accumulators:
+`../topics/reference/evaluation-methodology-literature.md`,
+`../topics/reference/landscape-literature.md`,
+`../topics/reference/moe-literature.md`,
+`../topics/reference/grokking-and-hidden-progress.md`,
+`../topics/reference/nonstationarity-accounting.md`,
+`../open-questions-answered.md`, `../dataset-analysis-idea-map.md` §L2,
+`../litreview/citation-verification-ledger.md`.

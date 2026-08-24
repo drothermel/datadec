@@ -456,97 +456,55 @@ are Danielle's to make; agent-supplied literature claims anywhere in this docume
 are unverified leads, not established facts.*
 
 **Status: raw material assembled from repository records (2026-08-24); positioning not yet
-written.**
+written.** The full high-recall inventory — every possibly-relevant item on record, with
+repo sources — is in `related-work/functional-featurization.md`. Below are the
+load-bearing items only.
 
-**Where the raw material lives:**
+- **Nearest neighbours, as recorded in §4 (unverified reviewer characterizations):** data
+  attribution (influence functions, datamodels/TRAK) is "retrospective… and mostly
+  stage-blind"; mixture optimization (DoReMi, RegMix) is "prospective but operate[s] at
+  coarse source granularity with a single scalar objective"; **Skill-It** touches
+  stage-ordering "but with predefined skills."
+- **Component-decomposition precedent:** source/domain labels; learned taxonomies
+  (WebOrganizer-style topic × format, embedding-cluster decompositions, Skill-It's skill
+  graphs); functional decompositions (instruction-like web text, reasoning-dense passages,
+  the determinism/entropy profile). No identifiers on record for these.
+- **Zhang et al. (2512.07783)**, *Interplay of Pre-Training, Mid-Training, and RL* — the
+  one carried result: under fixed compute, midtraining on task-relevant data moves the
+  competence boundary more efficiently than RL-only post-training. SciSpace-sourced,
+  unverified. The same topic's intake note names the actual skeleton the review missed:
+  DAPT/TAPT (Gururangan et al. 2020), STILTs, the annealing-data line, OctoThinker
+  (2506.20512), targeted selection (DSIR, DoReMi, DsDm), Blakeney et al.
+- **The annealing-data line the §4 note says to anchor on:** Llama 3 annealing data,
+  Blakeney et al. "Does your data spark joy?", OLMo 2 / Dolmino (2501.00656), MiniCPM
+  (2404.06395) — every one a coarse, single-cell instance of the U_c(t) map. **TREC**
+  (2509.25380) is the closest published mechanism for a stage axis (a receptivity valley,
+  predictable from AdamW's EMA timescale); flagged verify-before-building-on.
+- **Task vectors, FUNC-4/FUNC-5 (Danielle-supplied IDs, not under the unverified caveat):**
+  Ilharco et al. (2212.04089) — the delta as a composable direction, negation/addition as
+  the add-vs-cancel readout; Zhou et al. (2508.16082) — a one-epoch task vector equals the
+  scaled negative gradient and the first-epoch gradient dominates, the direct support for
+  the cheapest surrogate tier; Kim et al. (2503.06921) for quantized endpoint storage;
+  Rinaldi et al. (2602.12952) for functional rather than parametric task identity.
+  Cross-task linearity and model soups bound all of this to within-basin validity.
+- **Predicted stage structure:** Achille, Rovere & Soatto (ICLR 2019) with Information
+  Plasticity and the Fisher trace; Dohare et al. (2306.13812) and Lyle et al. (2303.01486,
+  2402.18762), whose cheap training statistics (curvature, feature rank, dead units, weight
+  norm) are the proposed response-vector components; Hernandez-Garcia et al. (2606.24752)
+  on whether scale rescues plasticity.
+- **Uncited but on-point, per §4:** the HyperCLOVA X stage table ("folklore encoded as
+  percentages"), an unnamed paper on LR decay wasting the best data, and an unnamed
+  data-ordering study finding curriculum effects invisible in final performance. The §4
+  header flags all related-work claims in quoted text as unverified.
+- **Recorded caution:** "stage-conditioned data influence has precedent in
+  online/curriculum selection and the critical-period work; the unclaimed part is
+  specifically recipe × stage × response-profile on an open suite," against curriculum
+  learning's "long history of weak-at-scale results."
 
-- `../topics/reference/targeted-pretraining-midtraining-literature.md` — the
-  midtraining-as-intervention record (SciSpace deep review, agent-characterized and
-  unverified) plus the intake note listing the LM midtraining canon the review missed.
-- `../topics/reference/task-vectors.md` — the weight-space task-vector entries Danielle
-  supplied with arXiv IDs on 2026-08-22; these back FUNC-4's direction readout and FUNC-5's
-  cheapest surrogate tier and are explicitly *not* under the unverified-claims caveat.
-- `../topics/reference/plasticity.md` and `../topics/reference/critical-periods.md` — the
-  plasticity-cost and stage-dependence flank (FUNC-opt-2), including the diagnostic-panel
-  statistics proposed as response-vector components.
-- `../topics/reference/schedules-and-annealing-literature.md` — the branch/decay machinery
-  FUNC consumes and the annealing-data line the §4 note says the related work should anchor
-  on.
-- `../topics/reference/data-featurization-literature.md` — the intrinsic/model-mediated/
-  similarity families FUNC is positioned against as a proposed fourth (functional) family.
-- `../topics/reference/nonstationarity-accounting.md` — the program's mechanism pillar;
-  midtraining as "institutionalized distribution shift" and the implicit self-curriculum.
-- `../open-questions-answered.md` — the open per-window realized-mixture gate, named there as
-  gating "every timing/curriculum claim built on DataDecide (including the stage-dependent
-  data-value ideas in `functional-featurization.md`)."
-- `../litreview/citation-verification-ledger.md` — the `Feeds: FUNC` rows (all from
-  `targeted-pretraining-midtraining-literature` plus one
-  `small-scale-evaluation-metrics-literature` row); nothing there is verified.
-
-**Starting inventory for the synthesis** (assembled at intake 2026-08-24; detail in the
-dated §4 entries):
-
-- **The nearest-neighbour framing on record** (2026-08-21 §4 entry): data attribution
-  (influence functions, datamodels/TRAK) and mixture optimization (DoReMi, RegMix) are named
-  as the nearest neighbours, with the recorded distinctions that attribution is
-  "retrospective… and mostly stage-blind" and mixture methods are "prospective but operate at
-  coarse source granularity with a single scalar objective." Skill-It is named as touching
-  stage-ordering "but with predefined skills." These are the reviewer's characterizations,
-  unverified.
-- **The component-decomposition line:** source/domain labels (what DoReMi and RegMix
-  reweight); *learned* taxonomies — WebOrganizer-style topic × format classification of web
-  data, embedding-cluster decompositions used for mixture optimization, Skill-It's skill
-  graphs; *functional* decompositions — instruction-like text in web crawl, reasoning-dense
-  passages, and the determinism/entropy profile at token granularity (2026-08-21 §4;
-  no identifiers given).
-- **The stage/timing axis, as recorded:** multi-stage pretraining as standard practice with
-  mid-training framed as curriculum-style scheduling; published stage tables (HyperCLOVA X:
-  code 12%→25%, math 8.6%→25.3% across four stages, instruction data only late) described
-  as "folklore encoded as percentages"; an unnamed paper on learning-rate decay wasting the
-  best data; and an unnamed pretraining-data-ordering study finding curriculum effects
-  invisible in final performance. **All named without citations in the §4 entry** — the
-  §4 header itself flags related-work claims in the quoted text as unverified.
-- **The one carried result from the midtraining review:** Zhang et al. 2025, *On the
-  Interplay of Pre-Training, Mid-Training, and RL on Reasoning Language Models*
-  (2512.07783) — under fixed compute, midtraining on task-relevant data moves the competence
-  boundary more efficiently than RL-only post-training when pretraining leaves headroom.
-  Per the SciSpace review, unverified. The same topic's intake note says the review missed
-  the LM literature "midtraining" now denotes and lists it as the actual related-work
-  skeleton: DAPT/TAPT (Gururangan et al. 2020), STILTs / intermediate-task transfer, the
-  annealing-data line (MiniCPM, Llama 3, OLMo 2 / Dolmino, SmolLM, Nemotron), OctoThinker
-  (2506.20512), Phi-style targeted synthetic pretraining, targeted data selection (DSIR,
-  DoReMi, DsDm), and Blakeney et al. on late upweighting. The §4 entry of 2026-08-22 states
-  the related-work section "should anchor on the annealing-data line… rather than on its
-  graph/vision entries." Other rows carried from that review: Dery et al. 2021 end-task
-  aware training; van der Goot 2023 (MaChAmp); Qiu et al. 2021; Gan et al. 2023; Luo et al.
-  2021; task-robust minimax pretraining (2306.12070).
-- **Task-vector support for FUNC-4/FUNC-5** (Danielle-supplied identifiers, 2026-08-22):
-  Ilharco et al., *Editing Models with Task Arithmetic* (ICLR 2023, 2212.04089) — the
-  fine-tuned-minus-pretrained delta as a composable direction, with negation and addition as
-  the readout for whether two data types' effects add or cancel; Zhou et al., *On Task
-  Vectors and Gradients* (2508.16082) — a one-epoch task vector "is exactly equivalent to
-  the negative gradient of the loss, scaled by the learning rate," and "the first-epoch
-  gradient dominates the finetuning trajectory in both norm and direction"; Kim et al.
-  (2503.06921) on quantized task vectors as a way to store branch endpoints; Rinaldi et al.
-  (Theseus, 2602.12952) on functional rather than parametric task identity. Also on record:
-  cross-task linearity and model soups as why task arithmetic works only within a basin.
-- **Plasticity and critical periods as the predicted stage structure** (2026-08-21 §4 entry
-  names "the critical-period and plasticity-loss literatures (Achille et al.;
-  Dohare/Lyle-style loss of plasticity)" as predicting a strongly non-uniform stage axis).
-  Detail in the topics: Achille, Rovere & Soatto, *Critical Learning Periods in Deep
-  Networks* (ICLR 2019) with Information Plasticity and the Fisher trace; Dohare et al.
-  (Nature 2024; 2306.13812); Lyle et al. 2303.01486 and 2402.18762 (plasticity loss as
-  loss-landscape curvature); Hernandez-Garcia et al., *Can Scale Save Us From Plasticity
-  Loss in LLMs?* (2606.24752); Nikishin et al. plasticity injection (2305.15555). The
-  plasticity topic lists Lyle's cheap training statistics (curvature, feature rank, dead
-  units, weight norm) — plus the Fisher trace — as candidate response-vector components.
-- **Recorded caution and narrow framing:** the 2026-08-21 pushback entry states that
-  "stage-conditioned data influence has precedent in online/curriculum selection and the
-  critical-period work; the unclaimed part is specifically recipe × stage × response-profile
-  on an open suite," and warns of the reviewer prior from curriculum learning's "long history
-  of weak-at-scale results." The MoE variant's claims (expert-level update attribution,
-  reroute-vs-rewrite, modular plasticity) are recorded in §4 with no citations; supporting
-  MoE literature is in `../topics/reference/moe-literature.md`.
-- **Ranked-list attribution** (`../portfolio-rankings.md`, §4): cut from the workshop-sized
-  list as "second-act by construction"; full-conference #10, "The Functional Types of
-  Pretraining Data," with the highest ceiling on that list.
+Full inventory with sources: `related-work/functional-featurization.md`. Main
+accumulators: `../topics/reference/targeted-pretraining-midtraining-literature.md`,
+`task-vectors.md`, `plasticity.md`, `critical-periods.md`,
+`schedules-and-annealing-literature.md`, `data-featurization-literature.md`,
+`nonstationarity-accounting.md`, `token-level-literature.md`; gate in
+`../open-questions-answered.md`; provenance in
+`../litreview/citation-verification-ledger.md`.

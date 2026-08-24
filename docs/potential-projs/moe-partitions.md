@@ -382,78 +382,53 @@ are Danielle's to make; agent-supplied literature claims anywhere in this docume
 are unverified leads, not established facts.*
 
 **Status: raw material assembled from repository records (2026-08-24); positioning not
-yet written.**
+yet written. The full high-recall inventory now lives in
+`related-work/moe-partitions.md`; what follows is the load-bearing core.**
 
-**Where the raw material lives:**
-
-- `../topics/reference/moe-literature.md` — the primary accumulator: the 2026-08-18
-  suites-and-metrics entry (the Myth of Expert Specialization, FLAME-MoE, OLMoE, the
-  three load-balance phases, router robustness under continual pretraining), the
-  2026-08-22 Mixture of Parrots entry, and the ensemble→MoE design-space entry with its
-  placement table and reading list.
-- `../topics/reference/identifiability-literature.md` — expert assignment as the concrete
-  non-identifiable latent (2026-08-18 entry) inside the broader CRL/identifiability frame
-  (Schölkopf et al.; Hyvärinen nonlinear ICA; Khemakhem iVAE; the Platonic Representation
-  Hypothesis; *Beyond Structural Symmetries: LMC via Neuron Identifiability*).
-- `../topics/reference/landscape-literature.md` — the permutation-alignment toolkit
-  PART-4 is the MoE analogue of: Entezari et al. on permutation invariance and LMC,
-  Ainsworth et al. *Git Re-Basin*, and the re-basin critique (*Unveiling LMC of Re-Basin
-  from Neuron Distribution Perspective*).
-- `../topics/reference/task-vectors.md` — the 2026-08-22 Danielle-supplied papers,
-  including Theseus (Rinaldi et al., ICML 2026, arXiv 2602.12952), flagged there as the
-  same move PART-4 needs (functional rather than parametric task identity, via orthogonal
-  Procrustes alignment of activations).
-- `../topics/reference/reinit-and-transfer-literature.md` §(d) — LMC of MoEs
-  (arXiv 2509.11348) and the Butterfly Effect seed-sensitivity caution.
-- `../topics/reference/regularization-literature.md` — the load-balancing / z-loss /
-  expert-dropout inventory behind the "the balancer distorts the instrument" caveat.
-- `../open-questions-answered.md` (2026-08-21) — the artifact gate: all final
-  Slicing-and-Dicing checkpoints exist; no intermediate checkpoints from the original
-  sweep. `../portfolio-rankings.md` — the ranked-list entries for the sweep reanalysis.
-- `../litreview/citation-verification-ledger.md` — provenance for the design-space
-  identifiers (rows feeding `MOVE/PART/MSUITE`); nothing verified.
-
-**Starting inventory for the synthesis** (assembled at intake 2026-08-24; detail in the
-dated §4 entries):
-
-- **The closest prior art named in the record:** *The Myth of Expert Specialization in
-  MoEs: Why Routing Reflects Geometry, Not Necessarily Domain Expertise* — expert overlap
+- **The closest prior art:** *The Myth of Expert Specialization in MoEs* — expert overlap
   between different models answering the same question no higher than between entirely
-  different questions (independently trained MoEs pick unrelated specialization
-  solutions); routers are linear maps, so hidden-state similarity is necessary and
+  different questions; routers are linear maps so hidden-state similarity is necessary and
   sufficient to explain expert-usage similarity; load-balancing loss provably suppresses
-  shared hidden directions. The 2026-08-18 §4 entry names it as prior art for PART-5's
-  invariance question (it predicts non-invariance across independent runs) and for the
-  load-balancing caveat. Characterization quoted from the Research Trajectory intake,
-  unverified.
-- **The mechanism citation for the "why" analysis:** Jelassi et al., *Mixture of Parrots:
-  Experts Improve Memorization More Than Reasoning* (ICLR 2025) — width-bounded experts
-  provably cannot solve certain graph problems a slightly wider dense model solves;
-  memorization capacity tracks total rather than active parameters; pretrained series
-  (65B tokens) shows expert-count gains on TriviaQA / Natural Questions but not GSM8K /
-  MATH / ARC. Full text is on disk; the §4 entry of 2026-08-22 marks it unverified beyond
-  the agent summary and abstract, and names its fixed-active-parameter MoE-vs-dense series
-  as the template to reproduce on the sweep (`../topics/reference/moe-literature.md`).
-- **The matching-method flank:** Git Re-Basin and permutation-aligned barriers as the
-  dense antecedents; the 2026-08-18 warning that MoE re-basin is immature and "how to
-  quotient MoE symmetries for checkpoint comparison" is an open gap; Theseus (2602.12952)
-  as the functional-matching-on-activations starting point supplied by Danielle;
-  LMC of MoEs (2509.11348) as the connectivity-side record
-  (`../topics/reference/landscape-literature.md`, `../topics/reference/task-vectors.md`,
-  `../topics/reference/reinit-and-transfer-literature.md`).
-- **The observational-crowding claim on record:** the 2026-08-21 §4 entry states that
-  observational MoE routing analysis is "a moderately crowded area — expert-specialization
-  papers exist for most released models," with the free artifacts (OLMoE, FLAME-MoE,
-  Mixtral/DeepSeek-style open-weights models) as the validation set rather than the
-  contribution. It also records the shallow-routing finding (assignments correlating with
-  token identity and frequency more than semantics, especially in early layers) that PART-3
-  is built to control for. Both are unverified claims from external review text.
-- **The suite context:** FLAME-MoE / OLMoE / OpenMoE each one data recipe; the 2025–26
-  open-weights MoE wave (Llama 4, DeepSeek V4, Qwen 3.6, Kimi K2.6, gpt-oss, Command A+)
-  open-weights and closed-data — i.e. the record's claim that no public multi-recipe MoE
-  suite exists (`../topics/reference/moe-literature.md`, §4 of 2026-08-21).
-- **Architectural vocabulary for the granularity axis:** the design-space entry's three-axis
-  frame and reading list (DeepSeekMoE 2401.06066 shared+routed experts, fine-grained-MoE
-  scaling laws 2402.07871, Soft MoE 2308.00951, Mixtral 2401.04088, Mixture-of-Depths
-  2404.02258, Sparsely-Gated MoE 1701.06538). Identifiers agent-supplied/Claude-added and
-  unverified per the ledger.
+  shared hidden directions. It is named as prior art for PART-5 (it predicts non-invariance
+  across independent runs) and as the mechanism behind the load-balancing caveat.
+  Characterization quoted from the 2026-08-18 intake, unverified.
+- **The mechanism citation for the "why" analysis:** Jelassi et al., *Mixture of Parrots*
+  (ICLR 2025) — width-bounded experts provably cannot solve certain graph problems a
+  slightly wider dense model solves; memorization tracks total not active parameters; a
+  fixed-active-parameter MoE-vs-dense pretraining series scored on TriviaQA/NQ vs.
+  GSM8K/MATH/ARC. That series is the template PART-opt-3(a) reproduces on the sweep. Full
+  text on disk; unverified beyond the agent summary and abstract.
+- **The matching-method flank (PART-4):** Git Re-Basin and Entezari et al. as the dense
+  permutation-alignment antecedents, with the recorded warning that MoE re-basin is immature
+  and "how to quotient MoE symmetries for checkpoint comparison" is an open gap; Theseus
+  (Rinaldi et al., ICML 2026, arXiv 2602.12952, Danielle-supplied) as the functional-matching-
+  on-activations route via orthogonal Procrustes; LMC of MoEs (2509.11348) as the
+  connectivity-side MoE record.
+- **The precedent for PART-5's second outcome:** Juneja et al., *Linear Connectivity Reveals
+  Generalization Strategies* — models in different basins implement different generalization
+  strategies at similar in-distribution accuracy; the record's strongest existing evidence
+  that quality-equivalent models can be internally non-equivalent.
+- **The identifiability frame:** expert assignment as a textbook non-identifiable latent
+  (permutation-invariant objective), inside the CRL/nonlinear-ICA line (Schölkopf; Hyvärinen;
+  Khemakhem iVAE) with the Platonic Representation Hypothesis as the conjecture that
+  invariance should grow with scale — i.e. a scale ceiling on whatever PART finds.
+- **The measurement caveats the sweep is said to defuse:** shallow routing (assignments
+  correlating with token identity and frequency more than semantics, especially early),
+  handled by PART-3's covariate regression on the reference-entropy scorer; and the
+  load-balancing objective distorting the instrument, handled by the sweep's
+  balancing-mechanism arm at matched everything-else.
+- **The crowding and artifact context:** the record calls observational MoE routing analysis
+  "a moderately crowded area," with OLMoE / FLAME-MoE / Mixtral-style releases as the
+  validation set; each public suite is one data recipe, and the 2025–26 open-weights wave is
+  closed-data.
+- **Artifact status:** all final Slicing-and-Dicing checkpoints exist (no intermediates from
+  the original sweep) — `../open-questions-answered.md`.
+
+All characterizations above except the Danielle-supplied task-vector papers are quoted from
+external-review or agent-generated intake and are unverified; design-space identifiers are
+agent-supplied per `../litreview/citation-verification-ledger.md`. Full inventory:
+`related-work/moe-partitions.md`. Main accumulators:
+`../topics/reference/moe-literature.md`,
+`../topics/reference/identifiability-literature.md`,
+`../topics/reference/landscape-literature.md`, `../topics/reference/task-vectors.md`,
+`../topics/reference/regularization-literature.md`.

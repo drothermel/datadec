@@ -494,102 +494,61 @@ current-state statement: rewrite it as understanding changes. Positioning claims
 are Danielle's to make; agent-supplied literature claims anywhere in this document
 are unverified leads, not established facts.*
 
-**Status: raw material assembled from repository records (2026-08-24); positioning not
-yet written.**
+*Purpose: the paper-facing synthesis — the prior-art landscape, this project's
+position in it, and what each closest neighbor lacks. Unlike §4 (a dated intake
+log, which grows by appending new entries **above this section**), §5 is a
+current-state statement: rewrite it as understanding changes. Positioning claims
+are Danielle's to make; agent-supplied literature claims anywhere in this document
+are unverified leads, not established facts.*
 
-**Where the raw material lives:**
+**Status: inventory assembled from repository records (2026-08-24); positioning not yet
+written. Full recall corpus: `related-work/intervention-grid.md`.**
 
-- §4 of this doc — the densest source: the 2026-08-18 entries naming the three founding
-  papers, the fourth (control) cell, the unification argument, the deconstruction axes, the
-  money figure, and the identifiability reading.
-- `../topics/reference/critical-periods.md` — the Achille–Soatto line and Information
-  Plasticity / Fisher trace; also the claim that critical periods anchor the plasticity,
-  warm-starting, basin, and Task2Vec threads.
-- `../topics/reference/plasticity.md` — the warm-starting entry (three live hypotheses),
-  the Dohare/Lyle diagnostic-panel papers, and the reinit-pass additions.
-- `../topics/reference/identifiability-literature.md` — the CRL/nonlinear-ICA formalism, the
-  symmetry group to quotient, the functional-identifiability tests, and the assembled
-  "critical period as identifiability phase transition" claim with each founding paper's
-  sub-claim.
-- `../topics/reference/nonstationarity-accounting.md` — ITER and the "three communities, one
-  claim" framing; fixes read as stabilizers.
-- `../topics/reference/landscape-literature.md` and `../topics/staging/checkpoint-tomography.md`
-  — the barrier/commitment-clock instruments the grid borrows (Frankle sibling
-  connectivity; the twin-branch probe; the LLC).
-- `../topics/reference/reinit-and-transfer-literature.md` — the ITER entry with its
-  identifier, the reset-family framing, and the many-seed substrate (PolyPythias).
-- `../research-hypothesis.md` — the program-level statement in which the warm-start
-  factorial is "the oldest, smallest instance" of the re-tuning claim, plus the
-  historical-base-rates and optimum-displacement measurements.
-- `../past-projects/cnn-deconstruction-ladder.md` — the CIFAR ablation-ladder lineage and
-  its own recipe-ablation reading list.
+- **Achille, Rovere & Soatto, *Critical Learning Periods in Deep Networks*** (ICLR 2019) —
+  blur/downsample deficit, onset- and duration-dependent permanent impairment, Information
+  Plasticity via the Fisher trace, with the vertical-flip control. *Founding cell; GRID-2's
+  reproduction target and GRID-4's protocol template.*
+- **Ash & Adams, *On Warm-Starting Neural Network Training*** (NeurIPS 2020) — stationary
+  incremental setting, worse generalization at similar training loss, shrink-and-perturb as
+  the fix, gradient-norm imbalance as a diagnosis the record calls "a symptom, not a
+  mechanism." *Founding cell; the acceptance-test reproduction.*
+- **Igl et al., ITER / *Transient Non-Stationarity and Generalisation in Deep RL*** (ICLR
+  2021, 2006.05826) — a memory effect fixed by distilling into a fresh network, students
+  beating teachers. *Founding cell; source of GRID-4's distillation arm and its
+  undamaged-teacher control.*
+- **Rothermel et al., *Don't Sweep your Learning Rate under the Rug*** (2107.12460) — an
+  apparent history effect that vanished under fair tuning. *The fourth cell: the control for
+  "real scar vs. measurement artifact."*
+- **DASH** (NeurIPS 2024) and ***What Can Grokking Teach Us About Learning Under
+  Non-Stationarity*** (2025) — noise memorization with direction-aware shrinking (and the
+  claim that non-stationarity-motivated fixes do not apply in the stationary setting) vs.
+  effective-LR re-warming closing the gap with dead-unit counts not predicting it. *The two
+  live competing explanations GRID-3's factorial adjudicates.*
+- **Dohare et al.** (Nature 2024; 2306.13812) and **Lyle et al.** (2303.01486, 2402.18762) —
+  continual backprop and the finding that curvature "comes closest" among cheap statistics.
+  *Source of the diagnostic panel logged at matched training loss.*
+- **Zaidi et al., *When Does Re-initialization Work?*** (2206.10011) — >15,000 vision models;
+  reinit's benefit largely disappears once regularization is tuned. *Contrast case: the
+  tuning-artifact null every arm must clear.*
+- **Frankle et al., linear mode connectivity** — sibling runs linearly connected only after a
+  critical number of steps. *Precedent for GRID-6's commitment clock; Git Re-Basin /
+  Entezari supply the raw-vs-aligned barrier reading.*
+- **The local learning coefficient** (Watanabe; Lau, Murfet et al.) — per-checkpoint
+  degeneracy whose jumps track phase transitions. *Fourth instrument in the alignment figure,
+  alongside Fisher-trace peak and LMC onset; router saturation (OLMoE) is GRID-opt-5's fifth.*
+- **Juneja et al.** (ICLR 2023) — linearly-disconnected basins implement different
+  generalization strategies at similar in-distribution accuracy. *The behavioral existence
+  proof that solution classes are real, which GRID-8's identifiability reading rests on.*
+- **Melis et al. 2018** and the **RLVR corrections** (Spurious Rewards 2506.10947; A Sober
+  Look 2504.07086) — conclusions inverting under equalized tuning; elicitation variance
+  masquerading as training effects. *Re-tuning base rates for GRID-opt-4 and the hygiene
+  standard for the grid's demonstrations.*
 
-**Starting inventory for the synthesis** (assembled at intake 2026-08-24; detail in the
-dated §4 entries and the topic files):
-
-- **The three founding papers, and the fourth cell.** Achille, Rovere & Soatto, *Critical
-  Learning Periods in Deep Networks* (ICLR 2019) — blur/downsample deficit, onset- and
-  duration-dependent permanent impairment, Information Plasticity via the Fisher trace, with
-  the high-level-deficit (vertical flip) control; Ash & Adams, *On Warm-Starting Neural
-  Network Training* (NeurIPS 2020) — stationary incremental setting, warm-started models
-  generalize worse at similar training loss, shrink-and-perturb as the fix, gradient-norm
-  imbalance as a diagnosis the §4 record calls "a symptom, not a mechanism"; Igl, Farquhar,
-  Luketina, Böhmer & Whiteson, ITER / *Transient Non-Stationarity and Generalisation in Deep
-  RL* (ICLR 2021, arXiv 2006.05826) — a memory effect from transient non-stationarity, fixed
-  by distilling into a freshly initialised network. The fourth cell is Danielle's own
-  *Don't Sweep your Learning Rate under the Rug* (arXiv 2107.12460), which the 2026-08-18
-  entry calls "the founding example of the opposite outcome."
-  (`critical-periods.md`, `plasticity.md`, `nonstationarity-accounting.md`,
-  `reinit-and-transfer-literature.md`, §4.)
-- **Competing explanations of the warm-start gap.** DASH (NeurIPS 2024) — noise memorization
-  in the stationary setting, direction-aware shrinking, and the argument that
-  non-stationarity-motivated plasticity fixes do *not* apply there; *What Can Grokking Teach
-  Us About Learning Under Non-Stationarity* (2025) — effective-LR re-warming closes the gap,
-  dead-unit counts do not predict it; and the mundane candidates (optimizer-state reset,
-  weight decay, warmup, AdamW). The record's statement: "nobody has run the factorial that
-  adjudicates them on the original benchmark." (`plasticity.md`, §4.)
-- **The plasticity diagnostic panel.** Dohare et al., *Loss of plasticity in deep continual
-  learning* (Nature 2024; arXiv 2306.13812) with continual backprop; Lyle et al.,
-  *Understanding Plasticity in Neural Networks* (ICML 2023, 2303.01486) and *Disentangling
-  the Causes of Plasticity Loss* (2402.18762) — curvature as the statistic that "comes
-  closest"; Hernandez-Garcia, Figliolia & Millidge, *Can Scale Save Us From Plasticity Loss
-  in LLMs?* (2606.24752); Nikishin et al., plasticity injection (2305.15555) as a
-  binding-or-not diagnostic; Zaidi et al., *When Does Re-initialization Work?* (2206.10011).
-  (`plasticity.md`, `reinit-and-transfer-literature.md`.)
-- **Commitment-clock instruments and their precedents.** Frankle et al., linear mode
-  connectivity and the lottery ticket hypothesis (sibling runs linearly connected only after
-  a critical number of steps); Fort et al., *Deep Learning vs. Kernel Learning* (2010.15110,
-  rapid early NTK rotation then stabilization); the local learning coefficient (Watanabe;
-  Lau, Murfet et al.'s estimator) and the developmental-interpretability work; Git Re-Basin /
-  Entezari permutation alignment, with the raw-vs-aligned barrier difference as the signal;
-  router-saturation timestamps as a fourth clock (GRID-opt-5; `moe-literature.md`).
-  (`identifiability-literature.md`, `landscape-literature.md`,
-  `../topics/staging/checkpoint-tomography.md`.)
-- **Functional-identifiability tests for the Stage-2 reading.** Roeder, Metz & Kingma 2021
-  (linear identifiability of learned representations); model stitching — Lenc & Vedaldi 2015,
-  Bansal, Nakkiran & Barak 2021; CKA (Kornblith et al.) as the scalable proxy with the
-  caveat that it can disagree with stitching. (`identifiability-literature.md`.)
-- **The identifiability frame.** Hyvärinen & Pajunen (1999) nonlinear ICA non-identifiability;
-  Khemakhem et al. iVAE (2020); Schölkopf et al., *Toward Causal Representation Learning*;
-  Brehmer et al. 2022; Ahuja et al.; von Kügelgen et al. 2021; Sussmann 1992 on the known
-  symmetry group; *Beyond Structural Symmetries: LMC via Neuron Identifiability* (2026); Huh
-  et al. 2024, Platonic Representation Hypothesis ("identifiability improves with scale").
-  The record's own honesty note: CRL identifies latents in *data* from interventions on
-  *data*, whereas the grid identifies structure in *training dynamics* — "your contribution
-  is operationalizing the logic at the new level, not applying an existing theorem."
-  (`identifiability-literature.md`.)
-- **Behavioral evidence that solution classes are real.** Juneja et al. (ICLR 2023) —
-  linearly-disconnected basins implement different generalization strategies at similar
-  in-distribution accuracy, cited in `identifiability-literature.md` as "the NLP existence
-  proof"; implicit-bias / simplicity-bias and shortcut-learning literatures as the selection
-  principle. (`landscape-literature.md`, `identifiability-literature.md`.)
-- **Re-tuning precedents for GRID-opt-4** (from `../research-hypothesis.md`): Rothermel et
-  al. 2021; Melis et al. 2018 (LSTM-vs-transformer conclusions inverting under equalized
-  tuning budgets); the ELR/warm-starting results; the Qwen-RLVR corrections; Spurious Rewards
-  and the pass@k results on the elicitation side.
-- **Gaps and adjacency claimed in the record** (attributions, not positioning): the
-  critical-periods entry notes the literature "has noticed the adjacency (papers on relearning
-  cite both works side by side)" but that no factorial tests whether the Fisher trajectory
-  predicts which fix works; and `nonstationarity-accounting.md` records that the three
-  founding papers state one claim with "none citing the others' framing." Both are
-  agent-supplied and unverified.
+Full enumeration with sources: `related-work/intervention-grid.md`. Main accumulators:
+`../topics/reference/critical-periods.md`, `../topics/reference/plasticity.md`,
+`../topics/reference/identifiability-literature.md`,
+`../topics/reference/nonstationarity-accounting.md`,
+`../topics/reference/reinit-and-transfer-literature.md`, with
+`../topics/reference/landscape-literature.md` and
+`../topics/staging/checkpoint-tomography.md` for the barrier instruments and
+`../research-hypothesis.md` for the re-tuning frame.

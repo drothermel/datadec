@@ -5332,3 +5332,17 @@ source-attributed; no downstream. Preserved as
 and TLC §4; §5 raw-material bullet upgraded (the aggregate = the closest existing
 thing to a completed §5 comparison table, with its flaws listed). Chain fully
 pulled: 7 reviews → 7 tables → aggregate. No new papers; no ledger rows.
+
+### 2026-08-24 — two-tier related-work restructure (recall corpora + curated §5)
+
+> so I'm in the process of cleaning the notion paper db data with the cheap fast notion agents, so lets hold off until then for pulling in more info or grabbing PDFs or verifying.  but I would love to do a pass now on cleaning all of the section 5 sets based on what we have so far.  I want the highest recall version of the related works section for each project to be clearly enumerated somewhere, but I'm open to the idea of having a separate document per proposed project that enumerates the possibly relevatn papers along with why they might be relevant and keeping the shorter list you propose in teh doc you described.  what do you think?
+
+Adopted as the two-tier convention: per-project high-recall corpora in
+[potential-projs/related-work/](potential-projs/related-work/) (22 files, one per
+project; TLC's is the largest at ~100+ items) + §5 trimmed to curated cores (5–12
+load-bearing items with roles, each ending in a pointer to its recall corpus).
+Executed via a 9-worker read-only Opus fan-out (phase 2 of the contract at
+`~/drotherm/data/.claude/datadec/2026-08-24/1321-section5-fill-contract.md`);
+repo-sourced only, no positioning claims, unverified caveats carried. TLC's
+hand-curated §5 kept, pointer appended. Notion pulls / PDF fetches / verification
+all held pending Danielle's paper-DB cleanup.

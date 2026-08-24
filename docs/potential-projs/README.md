@@ -83,8 +83,12 @@ document ends with a §5 holding the paper-facing synthesis: the prior-art
 landscape, the project's position in it, and what each closest neighbor lacks. §4
 remains the dated intake log — new §4 entries are appended *before* the §5 header.
 §5 is a current-state statement, rewritten rather than appended, and its
-positioning claims are Danielle's. As of 2026-08-24 all are scaffolds except
-`text-latent-code-autoencoder.md`, which carries a starting inventory.
+positioning claims are Danielle's. **Two-tier convention (2026-08-24 evening):**
+§5 holds the short curated precision cut (5–12 load-bearing items with roles);
+the highest-recall enumeration of everything possibly relevant lives in
+[`related-work/<same-filename>`](related-work/) — one line per item with a
+why-relevant clause and repo source, err-toward-inclusion, agent-maintained at
+intake. Every §5 points to its recall corpus.
 
 ### 2026-08-22 — conformal prediction as a cross-project tool (Danielle's flag)
 

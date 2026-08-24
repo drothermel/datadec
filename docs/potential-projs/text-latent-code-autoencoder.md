@@ -3373,3 +3373,9 @@ the dated §4 entries):
   submitted version's closest-to-draft section; three near-verbatim contrast
   sentences); close R3's GEPA gap (GEPA as baseline, not citation); write the
   positioning to survive the union of the three novelty-check readings.
+
+**Recall corpus (two-tier convention, 2026-08-24):** the highest-recall
+enumeration of everything on record possibly relevant to TLC — 100+ items grouped
+by the litreview plan's concerns — lives at
+[`related-work/text-latent-code-autoencoder.md`](related-work/text-latent-code-autoencoder.md).
+This §5 stays the curated precision cut.

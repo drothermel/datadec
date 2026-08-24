@@ -519,100 +519,60 @@ are Danielle's to make; agent-supplied literature claims anywhere in this docume
 are unverified leads, not established facts.*
 
 **Status: raw material assembled from repository records (2026-08-24); positioning not
-yet written.**
+yet written. Full inventory: `related-work/elicitation-gain.md`.**
 
-**Where the raw material lives:**
+The load-bearing items on record, with the role each plays (all SciSpace/agent-sourced
+unless noted, and unverified):
 
-- `../topics/reference/prompt-optimization-landscape.md` — the SciSpace deep review of
-  automatic prompt optimization (agent-generated, identifiers unverified) plus later
-  chunks: the system-level cluster the intake note calls "the positioning references" for
-  ELI's outer loop, the missing-canon list, and the 2026-08-23 re-evaluation conversation.
-- `../topics/reference/prompt-compression-and-optimization-literature.md` — PCRL,
-  Nano-Capsulator, EPiC in detail from a SciSpace summary (unverified); EPiC's ATSP is
-  flagged there as the closest published analog of ELI's budget accounting.
-- `../topics/reference/structured-output-literature.md` — the external evidence base for
-  the wrapper-vs-skill split and for the feasibility waterfall (agent characterizations,
-  unverified).
-- `../topics/reference/code-benchmarks-landscape.md` and
-  `../topics/reference/code-feature-extraction-tooling.md` — task-set and verifier-suite
-  sources shared with TLC (SciSpace readings, identifiers unverified).
-- `../topics/reference/estimation-and-calibration-methods.md` — the estimation toolkit
-  (§4, 2026-08-22) including conformal prediction, Danielle's cross-project tool flag.
-- `../topics/reference/pretraining-to-posttraining.md` — DataDecide, Tülu, the
-  "post-training did nothing" first-hand account behind ELI-3, and the FollowIR
-  mis-guess; the open item is tracked in `../open-questions-answered.md`.
-- `../litreview/tlc-litreview-plan.md` row **E** ("Elicitation and wrapper-only
-  competence — shared with ELI") and row **B** (prompt/harness optimization), plus
-  `../litreview/citation-verification-ledger.md`, whose Feeds column marks ~40 rows as
-  feeding TLC/ELI. Nothing in the ledger is verified.
-- `../topics/reference/icl-literature.md` — the small-scale elicitation headwind ELI's
-  §2 cites.
+- **AlphaCodium** (2401.08500) — the named wrapper-only precedent: multi-stage, test-based
+  flow engineering raising pass@k with no weight change. The existence proof that the
+  interface alone moves verifiable success. (§4 closing-summary entry; ledger notes a
+  competing ID 2401.19489, resolved to 2401.08500.)
+- **EPiC** (Saluja et al., 2408.11198) — the nearest published outer-optimizer *with budget
+  accounting*: evolutionary prompt search on test pass rate, and the **ATSP** metric
+  (additional tokens per solved problem), the closest analog of ΔS-at-budget and
+  iterations-to-threshold. Its cheap synonym mutator beating the LLM mutator on cost is a
+  design data point. (`../topics/reference/prompt-compression-and-optimization-literature.md`)
+- **The system-level optimizer cluster** — Trace/OptoPrime (2406.16218), LLM-AutoDiff
+  (2501.16673), SPRIG (2410.14826), RePrompt (2406.11132), and Lin et al.'s compound-AI
+  survey (2410.16392), whose target list is the ELI action space. §4 names these as "the
+  outer loop's positioning set." (`../topics/reference/prompt-optimization-landscape.md`)
+- **OPRO (2309.03409) and *The Limitations of Small-Scale LLMs as Optimizers* (2405.10276)**
+  — the optimizer canon plus the finding that small models are weak *as optimizers*,
+  which bears on fixing one strong outer model. **GEPA** (2507.19457) is the closest
+  published shape of the scalar-plus-textual-feedback critique channel.
+- **PCRL** (DOI 10.1109/ACCESS.2024.3403426) and **Nano-Capsulator** (2402.18700) —
+  evidence that discrete, gradient-free interface optimization works against black-box
+  executors and transfers across models; the extractive vs. abstractive axis.
+  **PromptBridge** (2512.01420) is the published analogue of ELI-opt-1's transfer matrix.
+- **"The Hidden Cost of Structure" (RANLP 2025)** — the contrast case with a direct
+  prediction for ELI-3: base models often *benefit* from constrained decoding while
+  instruction-tuned models degrade, and DataDecide checkpoints are base models. **SLOT**
+  (EMNLP Industry 2025) shows the wrapper can itself be a tiny model.
+  (`../topics/reference/structured-output-literature.md`)
+- **The valid-format-≠-correct-content benchmarks** (Structured Output Benchmark 2604.25359,
+  ExtractBench 2602.12247, LLMStructBench 2602.14743, VAREX 2603.15118) — off-the-shelf
+  instruments for the feasibility waterfall's format/content split; LLMStructBench also
+  reports no monotonic size → reliability relation.
+- **Lester, Al-Rfou & Constant 2021 (prompt tuning)** — the known headwind: elicitation is
+  weak below ~10B, so the honest claim is about an external, large-model-fit interface.
+  Flagged "from memory; verify."
+- **DS-1000** (2211.11501) — the direct precedent for the pandas/data-manipulation task
+  family, with surface-form constraints already implementing adherence beyond pass@1.
+- **𝒱-information** (Xu et al., 2002.10689) — the measurement language shared with TLC:
+  ELI's competence-vs-size curves are I_𝒱(model → task) for a declared wrapper family.
 
-**Starting inventory for the synthesis** (as recorded; all SciSpace/agent-sourced items
-unverified):
+Program context rather than literature: **DataDecide** (2504.11393) and **Tülu 3** as the
+checkpoint and post-training families; **FollowIR** (2403.15246) is on record as a
+*mismatched* guess at the AI2 dataset behind ELI-3, unresolved in
+`../open-questions-answered.md`.
 
-- **System-level prompt/interface optimization — the §4 entry of 2026-08-22 names this as
-  "the outer loop's positioning set":** Trace / OptoPrime (2406.16218; workflows as graphs,
-  an LLM optimizer over prompts, hyperparameters and code), LLM-AutoDiff (2501.16673;
-  textual gradients through multi-stage pipelines), SPRIG (2410.14826; system-prompt
-  components by genetic search across 47 tasks), RePrompt (2406.11132; agent instructions
-  from trajectories), and Lin et al.'s compound-AI optimization survey (2410.16392), whose
-  target list — prompt components, sampling parameters, tool specs, orchestration — the
-  entry calls the ELI action space.
-  (`../topics/reference/prompt-optimization-landscape.md`; SciSpace review, unverified)
-- **The broader prompt-optimization families from the same review:** Promptbreeder
-  (2309.16797), PhaseEvo (2402.11347), AMPO (2410.08696), PromptWizard (2405.18369), Tang
-  et al. 2402.17564, Learning from Contrastive Prompts (2409.15199), QPO (2408.10504),
-  Davari et al. (2507.09839), Wan et al. joint instruction × exemplar (2406.15708); code /
-  verifiable branch: Prochemy (2503.11085, execution-driven refinement) and EPiC
-  (2408.11198). The intake note records the review's omissions (APE, OPRO, ProTeGi,
-  TextGrad, DSPy/MIPROv2, GEPA, EvoPrompt, RLPrompt); later entries recover GEPA
-  (2507.19457), OPRO (2309.03409), *The Limitations of Small-Scale LLMs as Optimizers*
-  (2405.10276), LEO (2403.02054), PromptBridge (2512.01420), the two 2025 APO surveys
-  (2502.16923, 2502.11560), and — via the Feb-2026 Claude novelty check — EvoPrompt
-  (2309.08532) alongside OPRO and PromptBreeder.
-- **Budgeted, gradient-free optimization against black-box executors:** EPiC (Saluja et al.
-  2024, 2408.11198) — evolutionary prompt search on test pass rate, fitness-weighted
-  selection, LLM vs. cheap synonym mutator (the cheap one wins on cost), with the **ATSP**
-  metric (additional tokens per solved problem); PCRL (Jung & Kim 2024, IEEE Access,
-  DOI 10.1109/ACCESS.2024.3403426) and Nano-Capsulator (2402.18700) as discrete/abstractive
-  prompt compression that transfers across black-box models. The §4 entry of 2026-08-22
-  calls EPiC "the nearest published outer-optimizer with budget accounting."
-  (`../topics/reference/prompt-compression-and-optimization-literature.md`)
-- **Wrapper-only competence precedent:** AlphaCodium (2401.08500) — multi-stage, test-based
-  "flow engineering" raising pass@k with no weight change; §4's closing-summary entry names
-  it as "the named wrapper-only precedent" (agent-supplied related-work map, unverified;
-  the ledger notes a competing ID 2401.19489 for it, resolved to 2401.08500).
-- **Structured output as a separate skill (external evidence for the premise):** "The
-  Hidden Cost of Structure" (RANLP 2025) — base models often benefit from constrained
-  decoding while instruction-tuned models degrade on generation, recorded as a direct
-  prediction for ELI's pre/post axis since DataDecide checkpoints are base models; SLOT
-  (EMNLP Industry 2025) — a 1B fine-tuned post-processing structurer, i.e. the wrapper can
-  itself be a tiny model; and the valid-format-≠-correct-content benchmarks that instrument
-  the waterfall separately: Structured Output Benchmark (2604.25359), ExtractBench
-  (2602.12247), LLMStructBench (2602.14743), JSONSchemaBench (2501.10868), VAREX
-  (2603.15118), "When Correct Isn't Usable" (2605.02363), plus tiny-structurer options
-  (NuExtract 0.5–8B, GLiNER2 2507.18546, ScrapeGraphAI-100k 2602.15189) and schema-side
-  methods (Schema RL 2502.18878, RL-Struct 2512.00319, schema key wording 2604.14862,
-  PA-Tool 2510.07248). (`../topics/reference/structured-output-literature.md`; the ledger
-  marks these thirteen IDs agent-supplied, several with very recent numbers whose title–ID
-  pairing is the thing to verify.)
-- **Known headwind on record:** Lester, Al-Rfou & Constant 2021 (*The Power of Scale for
-  Parameter-Efficient Prompt Tuning*) — prompt tuning matches full fine-tuning only above
-  ~10B and lags at small sizes; the §4 intake note flags it "from memory; verify" and draws
-  the consequence that the honest claim is about an external, large-model-fit interface,
-  not the tiny model's own promptability. Related small-model leads listed there as
-  from-memory and unverified: TinyStories (Eldan & Li 2023), the phi-1 line, small-model
-  DSL/semantic-parsing work, and "Distilling step-by-step" (Hsieh et al. 2023).
-- **Measurement language shared with TLC:** predictive 𝒱-information (Xu et al. 2002.10689)
-  — §4 (2026-08-22) records ELI's competence-vs-size curves as I_𝒱(model → task) for a
-  declared wrapper family 𝒱; estimation toolkit (block bootstrap, Wilson/Jeffreys,
-  calibrate-after-selection, split conformal — with Lei et al. 1604.04173, Angelopoulos et
-  al. 2208.02814, and the pass@k estimator 2107.03374 ledgered as feeding TLC/ELI/EDP).
-- **Program context rather than literature:** DataDecide (Magnusson et al., 2504.11393) and
-  Tülu 3 as the checkpoint and post-training families; FollowIR (2403.15246) is recorded as
-  a *mismatched* guess at the AI2 dataset behind ELI-3, unresolved in
-  `../open-questions-answered.md`. In-program neighbors: `text-latent-code-autoencoder.md`
-  (the harness and cliff-bisection machinery), `icl-elicitability.md` (the hand-tuned
-  counterpart of the same null), `movement-microscope.md`, `irt-reanalysis.md` (IRT-10 as
-  the first concrete instance), `tiny-scale-measurement.md`.
+Full enumeration with sources in `related-work/elicitation-gain.md`. Main accumulators:
+`../topics/reference/prompt-optimization-landscape.md`,
+`../topics/reference/prompt-compression-and-optimization-literature.md`,
+`../topics/reference/structured-output-literature.md`,
+`../topics/reference/code-benchmarks-landscape.md`,
+`../topics/reference/estimation-and-calibration-methods.md`,
+`../topics/reference/pretraining-to-posttraining.md`,
+`../topics/reference/nl-bottleneck-prior-art.md`, and `../litreview/tlc-litreview-plan.md`
+rows B/D/E plus `../litreview/citation-verification-ledger.md` (nothing verified).

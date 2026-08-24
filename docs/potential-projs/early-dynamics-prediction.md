@@ -982,84 +982,55 @@ current-state statement: rewrite it as understanding changes. Positioning claims
 are Danielle's to make; agent-supplied literature claims anywhere in this document
 are unverified leads, not established facts.*
 
-**Status: raw material assembled from repository records (2026-08-24); positioning not
-yet written.**
+*Purpose: the paper-facing synthesis — the prior-art landscape, this project's
+position in it, and what each closest neighbor lacks. Unlike §4 (a dated intake
+log, which grows by appending new entries **above this section**), §5 is a
+current-state statement: rewrite it as understanding changes. Positioning claims
+are Danielle's to make; agent-supplied literature claims anywhere in this document
+are unverified leads, not established facts.*
 
-**Where the raw material lives:**
+**Status: inventory assembled from repository records (2026-08-24); positioning not yet
+written. Full recall corpus: `related-work/early-dynamics-prediction.md`.**
 
-- `../topics/reference/loss-curve-forecasting.md` — the primary accumulator for
-  "early curve → final performance": the two-round related-work search Danielle ran on
-  exactly EDP's question, the learning-curve-extrapolation table, the multi-power-law /
-  loss→accuracy thread, and the flag that the linearity premise has no found literature
-  support.
-- `../topics/reference/nas-literature.md` — states explicitly that the
-  performance-estimation half of NAS (zero-cost proxies, learning-curve extrapolation) is
-  "the closest established prior-art line" EDP must position against, plus the rank-collapse
-  caution for top-k evaluation.
-- `../topics/reference/small-scale-evaluation-metrics-literature.md` — the 2026-08-22
-  SciSpace review seeded on Patel et al.; holds the downstream-accuracy-forecasting flank
-  (proxy metrics, neural predictors, downstream scaling laws) and the intake notes
-  cataloguing that review's fabrications.
-- §4 of this doc — the 2026-08-22 "training-time forecasting prior art" entry, the
-  CIFAR-10 loss-slope lineage entry, and the **related-work gate** (added 2026-08-22),
-  which lists the exact lines to verify before any write-up.
-- `../past-projects/loss-slope-prediction.md` and `../past-projects/cnn-deconstruction-ladder.md`
-  — the CNN-scale precursor study (its findings, its unresolved confounds) and the
-  recipe-ablation papers that doc says it should be positioned against.
-- `../topics/reference/grokking-and-hidden-progress.md` — double descent as the stated
-  boundary condition on any loss→capability prediction law.
-- `../topics/reference/ntk-literature.md` — the eNTK-motion-is-early result, flagged there
-  as "exactly the kind of early-dynamics signal EDP … care[s] about."
-- `../litreview/citation-verification-ledger.md` — rows tagged as feeding EDP (the whole
-  `small-scale-evaluation-metrics` block, the `estimation-and-calibration-methods` ranking
-  metrics rows, 2407.17465); nothing there is verified.
+- **LC-PFN** (Adriaensen et al., NeurIPS 2023, 2310.20447) — the modern learning-curve
+  extrapolation baseline the record says any early-window predictor must be compared
+  against. *Baseline.*
+- **Baker et al. 2017, "Accelerating NAS using performance prediction"** (no ID) — regressor
+  over early partial curves plus configuration features; characterized in-repo as the
+  closest methodological match to EDP and the CIFAR loss-slope study. *Closest neighbor
+  (method).* Memory-sourced, unverified.
+- **Domhan, Springenberg & Hutter 2015** (no ID) and **Klein et al. 2017 (LC-Net)** (no ID) —
+  the parametric-curve-family ancestors; a linear-in-log-x fit is one member of Domhan's
+  family. *Ancestor line / feature-family precedent.*
+- **Patel, Reddy, Mosbach & Bahdanau 2026** (2605.18607) — token-level proxies rank the 25
+  DataDecide corpora at ~10⁻⁵ of target compute and extrapolate downstream accuracy along an
+  OLMo-3-7B trajectory over an 18× horizon at ~half the RMSE of loss baselines, one
+  architecture/scale. *Closest published neighbor at LM scale.* SciSpace-sourced, unverified.
+- **NeuNeu, "Neural Neural Scaling Laws"** (2601.19831) — accuracy-trajectory extrapolation,
+  2.04% MAE on 66 tasks vs. 3.29% for logistic fits, zero-shot to unseen families.
+  *Closest neighbor (target formulation).* Agent-sourced, unverified.
+- **Zero-cost NAS proxies** — TE-NAS, NASWOT, Abdelfattah et al. 2021, AZ-NAS (2403.19232) —
+  the init-time end of the same spectrum, and the source of the rank-collapse-within-top-k
+  caution that constrains EDP's metric design. *Design constraint on evaluation.*
+- **Kaplan-style scaling-law extrapolation** and **DataDecide's own published baselines**
+  (Magnusson et al., 2504.11393) — the incumbent practice the reviews require as the leftmost
+  baseline column; whether DataDecide's published fits already answer the comparison is an
+  open question on record. *Baseline / open positioning question.*
+- **Multi-power law** (Luo et al., 2503.12811), **FLP** (2410.08527), **Gadre et al.**
+  (2403.08540), **model ladders** (Bhagia et al., 2412.04403) — the loss-curve-shape and
+  loss→accuracy laws EDP's targets sit on top of. *Metric/target precedents.*
+- **Nakkiran et al., epoch-wise double descent** (no ID) — capability is not monotone in loss
+  along a run. *Stated boundary condition on any prediction law.*
+- **The linearity premise** — two literature searches found no support for "more linear loss
+  curves indicate better training"; the CNN pilot (`../past-projects/loss-slope-prediction.md`)
+  found early slope predicts (|r| = 0.71) while higher R² tracks *lower* accuracy. *Contrast
+  case: the premise is a hypothesis under test, not a citable belief.*
 
-**Starting inventory for the synthesis** (assembled at intake 2026-08-24; detail in the
-dated §4 entries and the topic files):
-
-- **Learning-curve extrapolation (the named direct ancestor line).** Domhan,
-  Springenberg & Hutter 2015 (parametric curve-family ensemble, predicts the asymptote,
-  CIFAR-10 CNNs among the testbeds); Klein et al. 2017 (LC-Net); Baker et al. 2017,
-  "Accelerating NAS using performance prediction" — characterized in
-  `loss-curve-forecasting.md` as "the closest methodological match to the loss-slope study
-  and EDP"; LC-PFN (Adriaensen et al., NeurIPS 2023, 2310.20447), "the modern extrapolation
-  baseline any early-window predictor should be compared against"; Ding et al. 2024
-  (2412.15554, architecture-aware neural ODE). (Round-2 search table in
-  `loss-curve-forecasting.md`; identifiers unverified.)
-- **Zero-cost / training-free NAS proxies.** TE-NAS (NTK condition number at init), NASWOT
-  (Mellor et al.), Abdelfattah et al. 2021 (synflow/snip/grasp/jacob_cov/fisher, weak-to-
-  moderate rank predictors), AZ-NAS (2403.19232), FreeREA; plus neural capacitance
-  (2201.04194) as the non-curve early-dynamics predictor. The `nas-literature.md` intake
-  note records the rank-collapse-within-the-top-k caution as a design constraint on EDP's
-  metrics. (Agent/memory-sourced and unverified per that file's own header.)
-- **LM-scale training-time forecasting (the newest and closest).** Patel, Reddy, Mosbach &
-  Bahdanau 2026 (2605.18607) — 80 token-level proxy metrics over expert trajectories;
-  DataDecide corpus ranking at ~10⁻⁵ of target compute, and downstream-accuracy
-  extrapolation along the OLMo-3-7B trajectory over an 18× horizon at ~half the RMSE of
-  loss baselines, one architecture/scale; NeuNeu "Neural Neural Scaling Laws" (2601.19831)
-  — accuracy-trajectory extrapolation, 2.04% MAE on 66 tasks vs. 3.29% for logistic fits.
-  The §4 entry of 2026-08-22 records that both "belong in the related-work gate beside the
-  LC-PFN / Domhan / Klein line." (Per the SciSpace review, unverified; that review's
-  version 2 also fabricated the seed paper's author list.)
-- **Loss-curve shape and loss→accuracy laws.** Multi-power law (Luo et al., 2503.12811);
-  FLP two-stage FLOPs→loss→downstream (2410.08527); Gadre et al. (downstream accuracy as an
-  exponential of training loss; 2403.08540); compute-efficient model ladders (Bhagia et al.,
-  2412.04403); observational scaling laws (2405.10938). Boundary condition on record:
-  Nakkiran et al.'s epoch-wise double descent (`grokking-and-hidden-progress.md`).
-- **The premise flag.** Both literature searches on "do more linear loss curves indicate
-  better training?" found no support; `loss-curve-forecasting.md` records the honest summary
-  ("no established belief about linearity exists") and the requirement that EDP's
-  linearity/R² features be framed as a hypothesis under test. The CNN pilot in
-  `../past-projects/loss-slope-prediction.md` cuts the same way (4-epoch slope |r| = 0.71;
-  higher R² ↔ *lower* accuracy).
-- **Differentiators already stated in the record** (attributed, not adopted here): both
-  `nas-literature.md` and `loss-curve-forecasting.md` name the axis varied (data recipe
-  across scales) and the target (downstream benchmark scores, ranking/decision metrics) as
-  the differentiators — "not the curve feature itself."
-- **Ranking-metric methodology** (from the 2026-08-22 metric-suite entry): weighted Kendall τ
-  (Vigna 1404.3325) and rank-biased overlap (Webber, Moffat & Zobel 2010), both
-  Claude-added to the ledger and unverified; discussion in
-  `../topics/reference/estimation-and-calibration-methods.md`.
-- **Open positioning question on record:** whether DataDecide's own published scaling-law
-  baselines have since answered the "does early dynamics beat scaling-law extrapolation"
-  comparison (§4 open questions).
+Full enumeration with sources: `related-work/early-dynamics-prediction.md`. Main
+accumulators: `../topics/reference/loss-curve-forecasting.md`,
+`../topics/reference/nas-literature.md`,
+`../topics/reference/small-scale-evaluation-metrics-literature.md`, with
+`../topics/reference/grokking-and-hidden-progress.md`,
+`../topics/reference/estimation-and-calibration-methods.md`, and
+`../topics/reference/ntk-literature.md` for the boundary conditions, ranking metrics, and
+extended early-dynamics readouts; the related-work gate in §4 lists what to verify first.

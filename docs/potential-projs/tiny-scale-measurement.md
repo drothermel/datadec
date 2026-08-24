@@ -416,88 +416,57 @@ are Danielle's to make; agent-supplied literature claims anywhere in this docume
 are unverified leads, not established facts.*
 
 **Status: raw material assembled from repository records (2026-08-24); positioning not yet
-written.**
+written.** All identifiers below are unverified; several come from agent-generated SciSpace
+reviews whose bibliographies contain swapped and fabricated entries.
 
-**Where the raw material lives:**
+**The load-bearing items and the role each plays:**
 
-- `../topics/reference/small-scale-evaluation-metrics-literature.md` — the proxy-metric /
-  downstream-forecasting accumulator, seeded on Patel et al. 2026 (arXiv 2605.18607); holds
-  the landscape by theme (why CE fails as a selection signal, learned predictors, probes,
-  small-model benchmarks, downstream scaling laws, mixture laws, emergence, contamination)
-  plus the intake notes on that review's fabricated author list and swapped bibliography
-  entries. Bundle `INDEX.md` on disk (path in the file header).
-- `../topics/reference/loss-alternative-metrics-literature.md` — the loss-replacement
-  literature behind TINY-opt-5's which-loss axis: token-selected/reweighted NLL,
-  tokenization-independent likelihoods, representation-side readouts, compression scores,
-  plus its own missing-canon list.
-- `../topics/reference/evaluation-methodology-literature.md` — Signal and Noise, OLMES, and
-  the "what can and cannot be averaged at a fixed checkpoint" rule that constrains TINY-3.
-- `../topics/reference/pretraining-to-posttraining.md` — the prior art for the RL /
-  post-training options (small-model SFT regressions, RLVR reproducibility, spurious
-  rewards, seed-count arguments).
-- `../topics/reference/reinit-and-transfer-literature.md` — many-seed substrates and
-  scaling results in the 5M–410M range.
-- `../topics/reference/irt-literature.md` — the IRT prior art TINY-2's derived eval inherits
-  via `irt-reanalysis.md`.
-- `../topics/reference/identifiability-literature.md` — the Platonic-Representation reading
-  of the scale ladder as an identifiability-vs-scale instrument (§4, 2026-08-18).
-- `../topics/reference/datadecide-data-pipeline.md` and
-  `../topics/staging/datadecide-dense.md` — the substrate thread (DataDecide-dense, WSD
-  arms) rather than literature.
-- `../litreview/citation-verification-ledger.md` — provenance for every arXiv ID above;
-  the rows tagged `TINY` are agent-supplied or Claude-added and nothing is verified.
+- **Patel, Reddy, Mosbach & Bahdanau 2026, *Forecasting Downstream Performance of LLMs With
+  Proxy Metrics*** (arXiv 2605.18607) — *the incumbent*. 80 token-level proxies over
+  expert-written solution trajectories rank DataDecide's 25 corpora for the 1B target at
+  decision accuracy > 0.85 at ~10⁻⁵ of target compute, from the same tables TINY-1 uses.
+  Their proxy family must sit on TINY-1's method axis, and their expert-trajectory trick is
+  the natural addition to it. Per the SciSpace review, unverified.
+- **Heineman et al., *Signal and Noise*** (NeurIPS 2025 per the record; ledger 2508.13144) —
+  *the measurement-intervention precedent*: continuous metrics beat accuracy, noisy subtasks
+  filtered, ~900K results over 465 models including DataDecide.
+- **OLMES, *A Standard for Language Model Evaluations*** — *the harness and the metric
+  definitions*; its per-character correct probability is TINY-opt-5's gold-span case.
+- **DataDecide (Magnusson et al., ICML 2025, 2504.11393)** — *the premise TINY extends
+  downward*: 150M decisions predict 1B rankings ~80% of the time; continuous proxies at
+  0.01% compute.
+- **LongPPL key-token perplexity (Fang et al., 2410.23771)** — *metric precedent* for
+  TINY-opt-5: the published template for computing loss only on reference-model-selected
+  tokens. Companions on the same axis: bits-per-byte (Biderman et al. 2405.14782; Paloma's
+  per-domain protocol 2312.10523) and tokenization-marginal likelihood (Cao & Rimell 2021;
+  Vieira et al. 2412.03719).
+- **ADO (2410.11820) and Pechi et al. (2305.17266)** — *contrast cases*: small proxies often
+  fail to predict larger models, and a small-scale break below ~2.2e15 FLOPs — the bounds a
+  frontier measurement has to sit against.
+- **PolyPythias (2503.09543)** — *the many-seed substrate in range* (9 seeds × 5 sizes,
+  14M–410M, ~7,000 checkpoints), alongside sublinear plasticity-loss scaling at 5M–314M
+  (2606.24752) and *The Butterfly Effect* (2506.13234) as the seed-count argument.
+- **Hochlehnert et al., *A Sober Look…*** (COLM 2025; 2504.07086) — *the replicate-design
+  citation*: small benchmarks give unstable estimates, so multiple seeds are essential;
+  with Chen et al. 2505.17988 and Shao et al. 2506.10947 as the small-model post-training
+  cautions behind the RL options.
+- **The fixed-checkpoint variance rule** — re-evaluating a fixed checkpoint with new seeds
+  buys nothing, so TINY-3's minimum detectable effects come from training-side replicates
+  and item bootstraps, not eval reruns.
+- **u-µP (Blake et al., 2407.17465)** — *the TINY-opt-4 hook*: DataDecide is not
+  µP-parametrized, so its cross-size comparisons carry a "was the small model's LR optimal"
+  confound.
+- **TinyStories, the BabyLM line, and the nanoGPT-speedrun culture** — *folk precedents*
+  named in the 2026-08-21 origin responses for TINY-opt-1 and TINY-opt-4; external text,
+  no citations on record.
 
-**Starting inventory for the synthesis**
-
-- **The incumbent proxy family.** Patel, Reddy, Mosbach & Bahdanau 2026, *Forecasting
-  Downstream Performance of LLMs With Proxy Metrics* (arXiv 2605.18607; Mila/McGill +
-  ServiceNow): 80 proxies = 10 token-level statistics × 8 weightings from one forward pass
-  over expert-written solutions; RankSVM ρ 0.81 vs. 0.36 for cross-entropy and 0.33 for
-  rBridge; ranks DataDecide's 25 corpora for the 1B target at decision accuracy > 0.85 at
-  ~10⁻⁵ of target compute. The §4 entry of 2026-08-22 names it as the incumbent TINY-1 must
-  include in its method axis and the source of the expert-trajectory trick. Per the SciSpace
-  review, unverified beyond two agent summaries.
-- **The which-loss axis (TINY-opt-5).** LongPPL key-token perplexity (Fang et al.
-  2410.23771) as the published template for reference-model token selection; PPLqa
-  (2411.15320); bits-per-byte / per-character normalization (Biderman et al. 2405.14782, and
-  Paloma's per-domain BPB protocol 2312.10523); tokenization-marginal likelihood (Cao &
-  Rimell EMNLP 2021; Vieira et al. 2412.03719; Takahashi et al. 2019); Rho-1 / "Not all
-  tokens are what you need" (2404.07965) as a training-time selector whose scorer defines an
-  eval subset; Diff-eRank (2401.17139) and Matrix Nuclear-Norm (2410.10672) recorded as a
-  separate hidden-state family the §4 entry rules out as a TINY method
-  (`../topics/reference/loss-alternative-metrics-literature.md`; SciSpace review,
-  unverified).
-- **Measurement-intervention precedent.** Heineman et al., *Signal and Noise* (NeurIPS 2025
-  per the record; 2508.13144 in the ledger, Claude-added): signal/noise decomposition,
-  continuous metrics beating accuracy, noisy-subtask filtering, ~900K results over 465
-  models including DataDecide; and OLMES as the standardized loglikelihood harness
-  (`../topics/reference/evaluation-methodology-literature.md`).
-- **Forecasting and scaling-law neighbors** (all from the SciSpace landscape, unverified):
-  Gadre et al. 2403.08540; FLP two-stage loss→performance 2410.08527; model ladders
-  2412.04403; observational scaling laws 2405.10938; NeuNeu 2601.19831; Ye et al. BIG-bench
-  predictability 2305.14947; Pechi et al. 2305.17266 (small-scale break below ~2.2e15
-  FLOPs); ADO 2410.11820 (small proxies often fail to predict larger models); emergence:
-  Wei et al. 2206.07682 vs. Schaeffer et al. mirage 2304.15004.
-- **Small-model benchmark and eval-quality flank** (same source, unverified): SLM-Bench
-  2508.15478, SLM survey 2409.15790, ReTraceQA 2510.09351, generative→NLU reformulation
-  2506.03592, Informedness over accuracy/F1 2401.03831.
-- **Post-training / RL prior art for the options.** Chen et al. 2505.17988 (small-scale SFT
-  on Qwen2.5-1.5B lowering MATH-500 while eliciting reasoning style); *Through the Valley*
-  (Luo et al., EMNLP 2025; 2506.07712, Long-CoT degradation); Shao et al. *Spurious Rewards*
-  (ICML 2026; 2506.10947, Qwen-specific gains); Hochlehnert et al. *A Sober Look…* (COLM
-  2025; 2504.07086, "multiple seed runs essential"); Yue et al. 2504.13837 (pass@k limits);
-  TinyZero and the RLVR-backtracking synthetic testbed as the "RL works small on synthetic
-  families" evidence (`../topics/reference/pretraining-to-posttraining.md`).
-- **Named folk precedents from the 2026-08-21 origin responses** (external text, unverified):
-  TinyStories and the BabyLM line for capability-per-parameter under distribution narrowing
-  (TINY-opt-1); the nanoGPT-speedrun / modded-nanoGPT culture as the existing evidence for
-  "design decisions are tuned for larger models" (TINY-opt-4).
-- **Many-seed substrates in range.** PolyPythias (ICLR 2025; 2503.09543 — 9 seeds × 5 sizes,
-  14M–410M, ~7,000 checkpoints); *Can Scale Save Us From Plasticity Loss in LLMs?*
-  (2606.24752 — sublinear plasticity-loss scaling at 5M–314M); *The Butterfly Effect*
-  (2506.13234 — seed sensitivity as a seed-count argument)
-  (`../topics/reference/reinit-and-transfer-literature.md`).
-- **Ladder-as-instrument thread.** The Platonic Representation Hypothesis (Huh et al. 2024)
-  read in §4 (2026-08-18) as an empirical claim that identifiability improves with scale,
-  making the scale ladder a measurement rather than only an external-validity check
-  (`../topics/reference/identifiability-literature.md`).
+Full inventory (every possibly relevant item on record, grouped by theme) in
+`related-work/tiny-scale-measurement.md`. Main accumulators:
+`../topics/reference/small-scale-evaluation-metrics-literature.md`,
+`../topics/reference/loss-alternative-metrics-literature.md`,
+`../topics/reference/evaluation-methodology-literature.md`,
+`../topics/reference/pretraining-to-posttraining.md`,
+`../topics/reference/reinit-and-transfer-literature.md`,
+`../topics/reference/parametrization-and-hp-transfer.md`,
+`../topics/reference/identifiability-literature.md`; provenance in
+`../litreview/citation-verification-ledger.md`.
