@@ -5251,3 +5251,13 @@ bundle's `summary-tables/`; table layer introduced in
 [topics/reference/nl-bottleneck-prior-art.md](topics/reference/nl-bottleneck-prior-art.md)
 and TLC §4; §5 raw-material list gained the tables pointer. No ledger rows (no new
 identifiers).
+
+### 2026-08-24 — summary-table intake, Claude table
+
+> next: https://app.notion.com/p/Claude-Lit-Review-Summary-Table-2fdde135cd1f80879b75e5490b71facf?v=2fcde135cd1f8087ae97000c181d4a2e
+
+15 rows, no new papers; preserved as `summary-tables/claude-summary-table.md` in the
+bundle. Second schema (gaps + tiered overlap %) noted in the table-layer entry of
+[topics/reference/nl-bottleneck-prior-art.md](topics/reference/nl-bottleneck-prior-art.md)
+as the better §5 template; PlanSearch "frozen CodeLlama" distillation-drift caveat
+recorded. No ledger rows.

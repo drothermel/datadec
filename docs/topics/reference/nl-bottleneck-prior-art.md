@@ -435,4 +435,9 @@ value is the schema — a ready-made related-work comparison-table template for 
 §5 positioning work, with useful column discipline (Frozen vs. Frozen-prompted vs.
 Fine-tuned decoder distinctions; "Not in source" for unstated methods). The tables'
 own downstream note is an **"NL Latents Lit Review Aggregate Summary"** (not yet
-pulled) — the cross-review aggregate. Pulled so far: ChatGPT (8 rows).
+pulled) — the cross-review aggregate. Pulled so far: ChatGPT (8 rows); Claude (15
+rows — a second, richer schema adding **Critical Gaps/Missing Elements** and a
+tiered **Overlap Percentage** column (High 60–85 / Moderate 40–60 / Component <40),
+which is the better §5 positioning-table template; distillation-drift caveat: its
+PlanSearch row says "frozen CodeLlama" where the source review said Claude
+3.5/GPT-4 — treat cell contents as unverified).
