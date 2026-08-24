@@ -4567,3 +4567,88 @@ Routed to [potential-projs/text-latent-code-autoencoder.md](potential-projs/text
 train only and post-hoc cap sweep from realized costs — the drafted templates, the
 rewrite-provenance note with a §3.2 spot-check, and a Claude-added note that the
 drafted AUC(N) Figure-2 plan partially changed before submission). No new identifiers.
+
+### Writing-sprint conversation, chunk 4 (one prompt — her consolidated working document; 2026-02-16)
+
+Reproduced with the same representation as the bundle transcript (unquoted because of
+nested formatting; bracketed placeholders stand in for chunk-3 assistant material her
+document embedded wholesale, preserved verbatim in the transcript's chunk 3):
+
+<<<BEGIN DANIELLE CHUNK 4>>>
+Ok, so this is the structure I'm working towards, any last changes before I start updating our writeup to match this & making the plots?
+
+```
+### Framing
+
+1. **Task**: behavioral code compression with black-box LLM encoder-decoder system and unit test based behavioral equivalence criterion.
+2. **Metric:** compression-correctness frontier (task coverage vs compression rate)
+3. **Algorithms:** bandit baselines + LLM in the loop optimizer as a general search policy
+4. **Findings:** regime dependent tradeoffs; LLM opt scales to larger spaces and remains competitive under tight eval budgets.
+
+**Our primary metric is task coverage: whether a method discovers at least one passing reconstruction under a given cost cap within N evaluations. This differs from estimating the per-attempt success probability.**
+
+### Goal
+
+Answer the question: How good is the Pareto frontier we discover given N evaluations with each of the algorithms.
+
+- Black-box multi-objective optimization
+- Cost = length of intermediate representation (the thing we want to minimize)
+- Quality = passes tests, 0/1 (the constraint)
+
+### Figure 1: Given budget N, which method finds the best cost-success tradeoff?
+
+*Per-Method Empirical Pareto Front*
+
+→ **We evaluate methods in a best-of-N offline selection setting: after N evaluations over the encoder-prompt search space, the method selects the minimum-cost intermediate representation found which is decoded into a program that passes the original program’s test suite, our behavioral equivalence criterion.  We define cost as the intermediate representation length in characters.  If no passing candidate is found within  N evaluations, the run is counted as a failure.**
+
+Let m be a method, s be a task (function) and each evaluation produces (c_i, y_i) with cost c_i in r and y in  0,1
+
+- Per spec: S_{m,s}(c; N) = max over specs seen up to current step i, over cost_i less than c of y_i
+    - → By cost c, did method m find at least one passing reconstruction for spec s with N evaluations?
+    - → after spending N attempts, did we get at least one success
+- Aggregate across specs (plot this)
+    - S_m(c, N) = 1/|S| sum_s S_{m,s} (c, N) → [0, 1] → fraction of specs solvable under cost ≤ c after N evaluations.
+- x = IR Length (chars)
+- y = fraction of tasks solved (unit test pass) at IR length ≤ x → best observed success among attempts with cost ≤ c (per spec, then averaged)
+
+→ coverage vs cost
+
+<aside>
+**Figure 1:** Compression–correctness frontier. For each method mmm, we plot Sm(c;N)S_m(c;N)Sm(c;N), the fraction of specs for which the method found at least one reconstruction that passes the unit tests with intermediate representation length ≤ ccc, after NNN total evaluations.
+</aside>
+
+### Figure 2: Pareto Frontier Quality vs Number of Evaluations
+
+- x = number of evaluations spent (same for all methods)
+- y = AUC of success-vs-cost up to a max cost C_max
+- C_max → largest IR char length you consider meaningful
+- How to compute it, the details
+
+    [embedded verbatim copy of the chunk-3 AUC recipe, code snippet, and gotchas]
+
+<aside>
+[embedded verbatim copy of the chunk-3 Figure-2 caption and methods-intro drafts]
+</aside>
+
+### Generalization Experiments
+
+<aside>
+[embedded verbatim copy of the chunk-3 drafted generalization-intro paragraph]
+</aside>
+
+```python
+
+### Recommend a prompt **for a target operating point**
+
+[embedded verbatim copy of the chunk-3 points 1–6: Score(a; c_0) selection; c_0 from
+train only; k decodes with coverage/pass@k-under-cap; post-hoc cap sweep not
+instructed-budget sweep; per-method prompt-selection fairness; final train/test
+structure]
+
+```
+```
+<<<END DANIELLE CHUNK 4>>>
+
+Routed to [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+§4 (writing-sprint chunk-4 entry: the four final calibration edits and their landing
+in the paper; the notes-layer provenance observation). No new identifiers.

@@ -2621,3 +2621,27 @@ submitted paper's Figure 3(b) plots cumulative success rate vs. evaluation numbe
 instead, with normalized frontier AUC appearing as the OOD summary panel (Figure 2,
 right); and the np.trapz-level question arriving in the same session as the framing
 decision is a fair snapshot of the sprint's working conditions.
+
+### 2026-08-23 — The writing-sprint conversation, chunk 4 (the working document and the final calibration pass; 2026-02-16)
+
+Her consolidated Notion-style working document — the intermediate artifact between the
+conversation and the paper (framing bullets, goal, Figure 1/2 definitions, the
+generalization protocol, with the chunk-3 drafts embedded wholesale as asides) — and
+the assistant's four final corrections, all of which visibly landed in the submitted
+paper: (1) reserve "Pareto" for prose; the math object is the empirical
+compression–correctness frontier / coverage–cost curve (the paper's usage matches);
+(2) drop the "selects the minimum-cost IR" framing — the frontier is a property of
+the attempt *set*, not a selection (the paper's Figure-1 text uses the set-of-attempts
+form); (3) the cleaned per-spec formula (the paper's Eq. 1 exactly); (4) the
+evaluation-accounting sentence — "one evaluation = one end-to-end encode→decode→test
+execution; all methods compared at the same total N" — flagged as preventing "80% of
+fairness questions" (the paper: budget "measured in number of end-to-end
+reconstructions and test-suite executions"). Nice-to-haves: specify C_max and the
+train-only c_0 rule.
+
+**(Claude-added:)** the working document itself is provenance-relevant: it embedded
+assistant drafts verbatim as asides, i.e., the verbatim material lived in the *notes*
+layer, with the intended rewrite happening at notes→paper — which is exactly the step
+her intake note says she can't remember completing everywhere. The transcript
+preserves the document with explicit placeholders for the re-embedded chunk-3
+material (byte-identical text already in the same file), noted inline.
