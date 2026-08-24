@@ -29,6 +29,15 @@ is the durable part.
 
 ## 2026-08-24 — NotebookLM notebooks
 
+- [LLM evaluation / meta-evaluation notebook (NotebookLM, undated, ≥2026 sources)](https://notebook.google.com/notebook/2f70b7f0-4156-4e90-ab47-a34dac85ddc1)
+  — data table + two reports over 16 paper sources (incl. DataDecide,
+  Signal-and-Noise, model ladders — the program's own foundations); new
+  meta-evaluation cluster with IDs (PSN-IRT, EffiEval, ONEBench, Federiakin,
+  ResampledBench, SparseEval) → routed: `topics/reference/irt-literature.md`
+  (main entry), `topics/reference/evaluation-methodology-literature.md`
+  (proxies/perturbation/predictability), irt-reanalysis §5 bullet + recall
+  corpus, 14 ledger rows.
+
 - [Continual Learning notebook (NotebookLM, assembled ≥2024-10)](https://notebook.google.com/notebook/040273e8-020f-4926-b7ab-6af42dee3505)
   — data table + source list + two synthesis reports over CoLLAs 2022/23 talks
   (Sutton CBP, Lyle plasticity, Van Roy CCRL, Bing Liu CL/OOD, Rish scale,

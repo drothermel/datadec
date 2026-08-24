@@ -310,3 +310,35 @@ submitted, "or even close" (Danielle). The only submission was the LLA bandits p
 (TLC doc §4, submission-record entry). The spec remains implementation-ready and
 unexecuted; promoted to `../staging/model-behavioral-divergence.md` by decision
 2026-08-23.**
+
+## 2026-08-24 — from the NotebookLM evaluation notebook: predictive proxies, perturbation robustness, predictability
+
+Companion routing to the main entry in `irt-literature.md` (same intake; bundle
+`nblm-llm-evaluation-notebook.md`; agent-supplied, unverified). Items on the
+methodology side rather than the IRT/compression side:
+
+- **Pre-training indicators at fixed scale (Hansi Zeng; source PDF titled "Can
+  Pre-training Indicators Reliably Predict Fine-tuning Outcomes of LLMs?", report
+  retitles it "When Scale is Fixed…" — dual-title flag).** 50 same-size 1B
+  variants: conventional causal-LM perplexity is *worse than chance* for picking
+  the better checkpoint for SFT (error > 60%); span-corruption perplexity
+  (PPL-SC) and k-shot target-task performance are the reliable proxies; the
+  Learning-to-Compare supervised combiner (20-dim feature vector) halves error.
+  Directly relevant to the pipeline-stage-comparison confound thread: the proxy
+  that works across scales fails within a scale.
+- **Owen 2024, "How predictable is language model benchmark performance?"** —
+  sigmoid fits on compute-equivalent scale; aggregate benchmarks more
+  predictable than individual tasks (BBH ~6pp MAE over one order of magnitude);
+  prediction is hardest before models exceed chance — convergent with the
+  program's small-scale-signal concerns.
+- **RUPBench (Yuqing Wang 2024, no ID)** — nine lexical/syntactic/semantic
+  perturbation types with Performance Drop Rate; lexical perturbations
+  (leetspeak, typos) hurt most; larger models more robust. The general-reasoning
+  sibling of the code-side ReCode/NLPerturbator flank.
+- **SciRIFF / SciRIFF-Eval (Wadden, no ID)** + SciLitLLM — scientific-literature
+  instruction following with structured-JSON, evidence-grounded outputs;
+  relevant to the structured-output thread's constraint-cost question.
+- The meta-metric vocabulary (CAD / DS / CBRC / BQS) and the
+  alignment-vs-discriminability trade-off are recorded in the irt-literature
+  entry; HELM-Lite's quoted cost anchor (4k GPU-hours / ~$10k per run) is the
+  efficiency motivation the compression cluster answers.

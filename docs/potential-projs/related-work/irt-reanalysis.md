@@ -386,3 +386,32 @@ claims; inventory and attribution only.*
   title–ID verification — (source: docs/topics/reference/structured-output-literature.md).
 - Every arXiv ID above traces to `docs/litreview/citation-verification-ledger.md`, where rows
   are marked *agent-supplied* or *Claude-added* and **nothing is verified**.
+
+**2026-08-24 NBLM evaluation-notebook cluster (agent-supplied; IDs from the
+notebook's report 2, unverified):**
+
+- **PSN-IRT / "Lost in Benchmarks?"** (2505.15055) — 4PL pseudo-Siamese neural
+  IRT for benchmark-quality diagnosis; closest new neighbor to
+  IRT-as-measurement-instrument — (source:
+  `../../topics/reference/irt-literature.md`, 2026-08-24 entry)
+- **Federiakin, psychometric leaderboard methodology** (2501.17200) — factor
+  analysis / g-factor / anchor items / DIF on HF leaderboards; the
+  reanalysis-of-existing-results cousin — (source: same)
+- **EffiEval** (2508.09662) — capability-coverage subset selection (MUI), τ>0.9
+  at 5% data — (source: same)
+- **Benchmark²** (no ID; Qi Qian 2025) — CAD/DS/CBRC/BQS benchmark meta-metrics;
+  the ARC alignment-vs-discriminability paradox — (source: same)
+- **ONEBench** (2412.06745) — sample-level pooling + Plackett-Luce aggregation;
+  robustness to missing measurements — (source: same)
+- **ResampledBench** (2504.09979) — FPS-based 1% subsets — (source: same)
+- **SparseEval** (2602.07909) — sparse-optimization evaluation — (source: same)
+- **Amortized model-based evaluation** (no ID; Truong 2024) — Fisher-information
+  adaptive testing, amortized (content-based) calibration, difficulty-targeted
+  question generation — (source: same)
+- **EvaLearn** (no ID; NeurIPS 2025) — sequential learning-capability metrics;
+  an ability axis static θ misses — (source: same)
+- **ADeLe** (no ID) — item-demand cognitive rubrics; content-side complement to
+  fitted item parameters — (source: same)
+- **gp-IRT estimator detail** (tinyBenchmarks) — convex raw/IRT combination,
+  robust to specialized-model distribution shift; anchor coverage limits
+  (46/57, metabench 37/57) — (source: same)

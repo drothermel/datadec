@@ -549,6 +549,14 @@ review conversations or agent-generated literature passes.
   and tinyBenchmarks are named as the accepted main-venue precedents, with the pattern read
   in them being "IRT plus a claim or payoff, never IRT as reanalysis." No IDs on record;
   attributions unverified.
+- **The 2024–2026 meta-evaluation cluster (intaken 2026-08-24, NBLM evaluation
+  notebook)** — *the compression line's current frontier*: PSN-IRT / "Lost in
+  Benchmarks?" 2505.15055 (neural 4PL IRT used to diagnose benchmark quality —
+  nearest new neighbor to IRT-as-instrument), Federiakin 2501.17200 (psychometric
+  leaderboard reanalysis: factor analysis, anchor items, DIF), EffiEval
+  2508.09662, Benchmark² (CAD/DS meta-metrics, no ID), ONEBench 2412.06745
+  (Plackett-Luce sample-level pooling), SparseEval 2602.07909. IDs
+  notebook-supplied, unverified; full roles in `related-work/irt-reanalysis.md`.
 - **Heineman et al., *Signal and Noise*** (NeurIPS 2025 per the record; ledger 2508.13144) —
   *the metric-choice precedent IRT-5 replicates inside one framework*, and the filtering
   whose 0/1 item weights IRT-2 replaces with estimated discriminations.

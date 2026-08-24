@@ -35,3 +35,67 @@ framework."
 **Later additions (from the full-conference discussion, recorded in the IRT project §4):**
 Rodriguez et al. (ACL 2021) and tinyBenchmarks (ICML 2024) as accepted main-venue IRT
 papers; the pattern "IRT plus a claim or payoff, never IRT as reanalysis."
+
+## 2026-08-24 — NotebookLM evaluation notebook: the 2024–2026 meta-evaluation cluster (IDs recovered)
+
+Danielle supplied a NotebookLM notebook on LLM evaluation (bundle:
+`nblm-llm-evaluation-notebook.md` in the 2026-08-24 intake bundle; data table +
+two synthesis reports over 16 paper sources). Three of the sources are the
+program's own foundations (DataDecide, Signal-and-Noise, model ladders) — those
+rows restate what `datadecide-data-pipeline.md` and the ledger already hold. The
+new material is the meta-evaluation cluster around this project's
+benchmark-compression prior art, **with arXiv IDs supplied by the notebook's
+report 2** (agent-supplied, unverified; NotebookLM inaccuracy caveat applies):
+
+- **PSN-IRT / "Lost in Benchmarks?" 2505.15055** (Hongli Zhou 2025) —
+  pseudo-Siamese neural IRT with a 4PL formulation, two pathways (model / item);
+  used to *diagnose benchmark quality*, not just compress — the closest new
+  neighbor to this project's IRT-as-measurement-instrument move, though still on
+  diverse converged models rather than a structured recipe × scale × seed × step
+  model axis. Fisher-information selection beats random for preference alignment.
+- **EffiEval 2508.09662** (Yaoning Wang 2025) — capability-coverage maximization
+  via a Model Utility Index; Kendall's τ > 0.9 with 5% of data;
+  performance-independent selection as the fairness argument.
+- **Benchmark² (no ID; Qi Qian 2025)** — benchmark meta-metrics: Capability
+  Alignment Deviation (within-family hierarchy inversions), Discriminability
+  Score, Cross-Benchmark Ranking Consistency, Benchmark Quality Score; 35% of
+  data at 0.93 ranking consistency. Per-benchmark scores in the table (OmniMath
+  DS 0.79 vs ARC DS 0.11 with CAD 0.87 — the alignment-vs-discriminability
+  trade-off; SIQA flagged low-quality across families). Note: report 1 quotes
+  ARC "DS = 0.03" against the table's 0.11 — internal inconsistency, unresolved.
+- **ONEBench 2412.06745** (Ghosh 2024) — sample-level pooled benchmarking with
+  Plackett-Luce rank aggregation; robust to >95% missing measurements; the
+  aggregation-theory flank (vs Elo / Bradley-Terry / Borda, all shown less
+  robust).
+- **Federiakin 2501.17200** — psychometric reanalysis of the HF leaderboards:
+  factor analysis, g-factor claim, anti-guessing normalization raising
+  McDonald's ω 0.579 → 0.789, anchor items across leaderboard versions,
+  DIF/measurement-invariance as an open problem; the naive-average-masks-
+  plateau argument. The closest methodological cousin to IRT-as-reanalysis on
+  the leaderboard axis.
+- **ResampledBench 2504.09979** (2025) — farthest-point sampling in feature
+  space; 1% of data at >0.96 rank correlation (27 VLMs).
+- **SparseEval 2602.07909** (Taolin Zhang 2026) — sparse-optimization
+  evaluation; report 2 lists it as a source but the table does not row it.
+- **Amortized model-based evaluation (no ID; Sang Truong 2024)** — adaptive
+  testing with Fisher-information acquisition (53% avg query reduction);
+  *amortized calibration* (content-based difficulty prediction, constant- rather
+  than linear-cost item calibration) and a *conditional question generator*
+  (difficulty-targeted, PPO-trained, 10× better difficulty targeting than SFT)
+  — the generative-item-bank flank.
+- **EvaLearn (no ID; Shihan Dou, NeurIPS 2025)** — sequential problem-solving
+  evaluation measuring learning capability (slope, first-attempt vs post-warmup
+  accuracy); a different "ability" axis than static θ.
+- **ADeLe (no ID)** — cognitive-rubric item-demand features for interpretable
+  capability profiles; content-side complement to fitted item parameters.
+- Detail upgrades on known items: tinyBenchmarks' **gp-IRT** estimator (convex
+  combination of raw data and IRT predictions; robust to specialized-model
+  distribution shift where correctness-clustering fails) and its coverage
+  limitation (46/57 MMLU subtasks; metabench 37/57); stratified random sampling
+  needs ~400+ samples/task to match IRT anchors.
+
+Report 2's framing worth keeping (Federiakin-derived, agent-synthesized):
+Representativism vs a causal theory of measurement; construct validity /
+Evidence-Centered Design as the missing discipline; fit indices (RMSEA/CFI/TLI)
+as the test of whether an aggregate mirrors structure or averages noise. All
+unverified; IDs to confirm at verification.

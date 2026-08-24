@@ -5570,3 +5570,29 @@ drift-taxonomy + stream-evaluation entry in
 [topics/reference/nonstationarity-accounting.md](topics/reference/nonstationarity-accounting.md);
 15 no-ID ledger rows (the notebook supplies no arXiv IDs anywhere).
 Ingest-link-index row added under a new NotebookLM group.
+
+### 2026-08-24 — NotebookLM LLM-evaluation notebook ingested
+
+> link: https://notebook.google.com/notebook/2f70b7f0-4156-4e90-ab47-a34dac85ddc1
+
+(Followed by the data table, source list, and two synthesis reports — verbatim in
+the bundle, `nblm-llm-evaluation-notebook.md`.) Second NotebookLM notebook of the
+day: LLM evaluation / meta-evaluation over 16 paper sources, three of which are
+the program's own foundations (DataDecide, Signal-and-Noise, model ladders —
+those rows restate canonical repo content). New material routed: the
+2024–2026 meta-evaluation cluster in
+[topics/reference/irt-literature.md](topics/reference/irt-literature.md) —
+PSN-IRT 2505.15055 (neural 4PL benchmark diagnosis; nearest new neighbor to
+IRT-as-instrument), Federiakin 2501.17200 (psychometric leaderboard reanalysis),
+EffiEval 2508.09662, Benchmark² (CAD/DS/CBRC/BQS meta-metrics + the ARC
+alignment-vs-discriminability paradox), ONEBench 2412.06745, ResampledBench
+2504.09979, SparseEval 2602.07909, amortized calibration / difficulty-targeted
+question generation (Truong), EvaLearn, ADeLe, gp-IRT detail; methodology-side
+items in
+[topics/reference/evaluation-methodology-literature.md](topics/reference/evaluation-methodology-literature.md)
+(Zeng's fixed-scale perplexity paradox — PPL-CLM worse than chance for SFT
+checkpoint selection, dual-title flag; Owen predictability; RUPBench; SciRIFF).
+irt-reanalysis §5 got a new curated bullet (the compression line's current
+frontier) + a recall-corpus section; 14 ledger rows (6 with notebook-supplied
+IDs). Flagged: table-vs-report ARC discriminability inconsistency (0.11 vs
+0.03). Ingest-link-index row added.
