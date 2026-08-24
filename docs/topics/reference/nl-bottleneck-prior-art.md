@@ -442,4 +442,6 @@ which is the better §5 positioning-table template; distillation-drift caveat: i
 PlanSearch row says "frozen CodeLlama" where the source review said Claude
 3.5/GPT-4 — treat cell contents as unverified); Consensus (8 rows — third schema
 with per-paper **Prior Art Justification** gap sentences; covers only the
-closest-matches tier, dropping the review's related-but-missing tier).
+closest-matches tier, dropping the review's related-but-missing tier); Gemini (7
+rows — fourth schema: domain × latent-type × optimization × frozen-decoder, the
+component matrix as a table; drops LINT/Zip2Zip/ReFIne from its source).

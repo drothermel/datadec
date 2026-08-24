@@ -5271,3 +5271,11 @@ Third schema (per-paper prior-art-justification gap sentences); covers only the
 closest-matches tier. Table-layer entry extended in
 [topics/reference/nl-bottleneck-prior-art.md](topics/reference/nl-bottleneck-prior-art.md).
 No ledger rows.
+
+### 2026-08-24 — summary-table intake, Gemini table
+
+> next: https://app.notion.com/p/Gemini-Lit-Review-Summary-Table-2fdde135cd1f80868b03ed296a6e81c2?v=2fcde135cd1f8087ae97000c181d4a2e
+
+7 rows, no new papers; preserved as `summary-tables/gemini-summary-table.md`.
+Fourth schema (component-matrix style); drops LINT/Zip2Zip/ReFIne from source.
+Table-layer entry extended. No ledger rows.
