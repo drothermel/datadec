@@ -2763,3 +2763,20 @@ the 27-arm calibration space, and the per-method best-prompt table shows
 coverage@c_0 of only 0.073/0.034/0.030 (Thompson/UCB1/LLM-Opt) — tiny absolute
 coverage at the operating point, with Thompson's selection nominally best, another
 face of the no-differentiation finding.
+
+### 2026-08-23 — The writing-sprint conversation, chunk 8 (title, keywords, 7:25am; 2026-02-16/17)
+
+Three short exchanges closing out the sprint's documented portion. (1) **The submitted
+title is the assistant's recommended pick verbatim** — she asked for something better
+than "Multi-Armed Bandits can Optimize Code Summarization Prompts" (note the old
+title's summarization framing and its implicit bandits-win claim); from twelve options
+the assistant bet on "Prompt Optimization for Behavioral Code Compression: Bandits vs
+LLM-in-the-Loop Search," which is the submission's title exactly. Two unused options
+worth remembering for the program's future vocabulary: "Training Without Weights" and
+"Compression Without Gradients" — the framing-C banner phrases, shelved with framing
+C. (2) OpenReview keywords. (3) Her intake note timestamps the moment: "I think this
+is when I realized the deadline was really extended to 6pm not 6am, it was 7:25am, I
+was very tired" — followed by the sanity check "does it make sense for 3 slots with 3
+discrete phrasings each to have 27 arms?" (3³ = 27; consistent with the submitted
+appendix's Table 6). The sprint's working conditions, in one exchange: verifying
+single-digit exponentiation at 7:25am while discovering eleven unexpected extra hours.

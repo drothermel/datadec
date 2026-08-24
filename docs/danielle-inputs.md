@@ -4869,3 +4869,19 @@ COMP-NL/COMP-SHORT full text, ANTI-CHEATING-CONSTRAINTS, the 8-category failure
 taxonomy, the 140/280/560 budget tiers, and the H_θ harness formalism surviving in
 the appendix after its chunk-5 removal from the main text). No new identifiers
 (Gilbert 2023 = 2304.12512, already in the ledger).
+
+### Writing-sprint conversation, chunk 8 (three prompts; 2026-02-16/17 — title, keywords, 7:25am)
+
+Her intake note on the third prompt (verbatim): "note, I think this is when I realized
+the deadline was really extended to 6pm not 6am, it was 7:25am, I was very tired"
+
+> great, suggestions for title better than "Multi-Armed Bandits can Optimize Code Summarization Prompts"
+
+> then, keywords for open review?
+
+> does it make sense for 3 slots with 3 discrete phrasings each to have 27 arms?
+
+Routed to [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+§4 (writing-sprint chunk-8 entry: the submitted title as the assistant's recommended
+pick verbatim, with the shelved framing-C banner titles noted; keywords; the 7:25am
+deadline realization and the 3³ = 27 sanity check). No new identifiers.
