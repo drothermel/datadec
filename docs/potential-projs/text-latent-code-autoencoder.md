@@ -3394,6 +3394,27 @@ NL-documented ones — an NL-necessity-adjacent datum; AutoDoc failure modes),
 concrete RL4QE detail (previously a bare name), and three new names (LAPS,
 O'Connor & Andreas 2021, Self-consistency).
 
+### 2026-08-24 — NBLM IR notebook: NL-in-the-Middle content, the Perplexity Paradox, RTCE
+
+Five TLC-core papers via the tenth NotebookLM notebook of the day (bundle:
+`nblm-intermediate-representations-notebook.md`; entries in
+`../topics/reference/nl-bottleneck-prior-art.md` and
+`../topics/reference/code-compression-literature.md`, same date; no IDs;
+agent-generated, unverified). Anchor-tier additions: **"NL in the Middle"
+content finally on record** (CoT-NL beats zero-shot and two-step pipelines —
+intermediate errors propagate in code→IR→code chains; NL-before-AST ordering
+matters; code-specialized models benefit less); **NL-Debugging format detail**
+(Sketch > Pseudocode > Key Points, but model-capacity-dependent — a
+capacity×abstraction-length interaction for the NL-likeness ladder);
+**the Perplexity Paradox** (code's 79×-perplexity keywords survive
+perplexity-based compressors while math's low-perplexity numbers get pruned;
+signature re-injection recovers +34pp — the signature is the load-bearing NL,
+convergent with ShortenDoc's method-name dependency); **RTCE** (bijective
+round-trip execution collapses under inversion — flag: distinct from RTC
+2402.08699 despite the near-identical name); **Proof2Silicon/PREFACE**
+(PPO-trained prompt repair against a Dafny/SMT verifier — verifier-as-reward
+outer loop over a frozen decoder).
+
 ## 5. Related work and positioning
 
 *Purpose: the paper-facing synthesis — the prior-art landscape, this project's
@@ -3477,7 +3498,8 @@ the dated §4 entries):
   secure-code, Meta-Prompting industrial — optimized prompts are model-specific,
   load-bearing for the cross-decoder falsifier); LM-CC (behavior-preserving
   rewriting guided by an LLM-aware complexity metric); NL-in-the-Middle elevated
-  by her own endorsement.
+  by her own endorsement — content on record as of the 2026-08-24 NBLM IR
+  notebook (CoT-NL beats two-step IR pipelines; NL-before-AST ordering).
 - **Added by the fourth check (Gemini):** LBM 2506.16982 (architectural precedent;
   headline match of two independent checks, unread gate-1 item) with GRPO
   2402.03300 as its optimizer; SPAE 2306.17842 (frozen-LLM lexical-token

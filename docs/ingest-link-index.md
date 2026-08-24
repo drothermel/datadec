@@ -29,6 +29,15 @@ is the durable part.
 
 ## 2026-08-24 — NotebookLM notebooks
 
+- [Intermediate-representations / invertibility notebook (NotebookLM, undated)](https://notebook.google.com/notebook/beaf7015-f9ee-43e8-80a2-bd0089c5402d)
+  — five TLC-core papers: NL in the Middle (content lands for the aggregate
+  5.5★ item), NL-Debugging detail, RTCE bijection benchmark, Proof2Silicon/
+  PREFACE, the Perplexity Paradox → routed:
+  `topics/reference/nl-bottleneck-prior-art.md` (main entry),
+  `topics/reference/code-compression-literature.md` (Perplexity Paradox),
+  TLC §4 entry + §5 NL-in-the-Middle enrichment + recall corpus (5 lines),
+  4 ledger rows + NL-Debugging row note.
+
 - [AI4SE notebook: prompt learning, translation/repair, compression, probing (NotebookLM, undated)](https://notebook.google.com/notebook/04e09363-31e7-4bf5-acb3-a4fddbcc795e)
   — 8 sources: ShortenDoc full detail + method-name dependency, Prochemy
   detail, PromptCS, Fluorine restart-beats-repair, LANTERN cross-language

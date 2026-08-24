@@ -861,3 +861,24 @@ supplied):**
   negatively correlated with human ratings for LLM-generated summaries;
   GPT-4-as-judge closest to humans — bears on measuring d quality — (source:
   `../../topics/reference/code-compression-literature.md`, 2026-08-24 entry)
+
+**NBLM IR-notebook additions (intake 2026-08-24; agent-generated, no IDs
+supplied):**
+
+- **NL in the Middle** (no ID; aggregate 5.5★) — CoT-NL beats zero-shot and
+  two-step code→IR→code pipelines (error propagation); NL-before-AST ordering;
+  specialists benefit less — (source:
+  `../../topics/reference/nl-bottleneck-prior-art.md`, 2026-08-24 IR entry)
+- **NL-Debugging format detail** (2505.15356, listed above) — Sketch > Pseudocode
+  > Key Points; capacity×abstraction-length interaction; NL-space repair makes
+  larger AST/control-flow edits — (source: same)
+- **RTCE / "Can LLMs Compress (and Decompress)?"** (no ID) — bijective
+  round-trip execution benchmark; inversion collapses; NOT RTC 2402.08699
+  (name-collision flag) — (source: same)
+- **Proof2Silicon / PREFACE** (no ID) — PPO prompt repair with a Dafny/SMT
+  verifier as reward over a frozen LLM; verifier-grounded outer loop —
+  (source: same)
+- **The Perplexity Paradox + TAAC** (no ID) — code keywords 79× perplexity
+  survive compressors, math numbers pruned; signature re-injection +34pp;
+  compression should target task necessity not predictability — (source:
+  `../../topics/reference/code-compression-literature.md`, 2026-08-24 entry)

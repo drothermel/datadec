@@ -316,7 +316,7 @@ Context column = the ~80 characters preceding the ID in the topic, as a memory a
 | 1711.07163 | dynamic neural program embeddings from execution traces | `nl-bottleneck-prior-art` (measurement) | agent-supplied | TLC | |
 | 2411.15594 | LLM-as-a-judge survey | `nl-bottleneck-prior-art` (measurement) | agent-supplied | TLC | |
 | 2407.05411 | intermediate languages for code generation (NL vs pseudocode vs PL) | `nl-bottleneck-prior-art` (measurement) | agent-supplied | TLC | |
-| 2505.15356 | NL-Debugging — NL as intermediate representation for debugging | `nl-bottleneck-prior-art` (measurement) | agent-supplied | TLC | |
+| 2505.15356 | NL-Debugging — NL as intermediate representation for debugging | `nl-bottleneck-prior-art` (measurement) | agent-supplied | TLC | NBLM IR notebook (2026-08-24) adds format-comparison detail (Sketch > Pseudocode > Key Points; capacity-dependent) |
 | 2305.04388 | Turpin et al. — language models don't always say what they think (CoT faithfulness) | `nl-bottleneck-prior-art` (measurement) | agent-supplied | TLC | |
 
 Rows: 208 (181 agent-supplied, 27 Claude-added, 5 named without ID).
@@ -586,3 +586,7 @@ WizardCoder; `chang2024effective` there is 2402.04177 (different paper) and
 | (no ID) | TransAgent — multi-agent translation with CFG-block execution alignment; contamination-free post-2023-08 benchmark | `prompt-optimization-landscape` + `code-compression-literature` (2026-08-24 NBLM entries) | agent-supplied (NotebookLM AI4SE notebook) | TLC |  |
 | (no ID) | LANTERN — cross-language repair hypothesis (translate bug to strong language); Rust +22% Pass@10 | `prompt-optimization-landscape` + `code-compression-literature` (2026-08-24 NBLM entries) | agent-supplied (NotebookLM AI4SE notebook) | TLC (representation choice) |  |
 | (no ID) | On LLMs' Internal Representation of Code Correctness (RepE/LAT) — extractable correctness direction; test-free ranking beats RankEF at ~3.75s vs 172h | `prompt-optimization-landscape` + `code-compression-literature` (2026-08-24 NBLM entries) | agent-supplied (NotebookLM AI4SE notebook) | TLC, ELI |  |
+| (no ID) | NL in the Middle — code translation with NL/AST IRs; CoT-NL wins, two-step pipelines propagate errors | `nl-bottleneck-prior-art` + `code-compression-literature` (2026-08-24 NBLM IR entries) | agent-supplied (NotebookLM IR notebook) | TLC (anchor; aggregate 5.5★) | first content on record for the aggregate table's single-source top item |
+| (no ID) | RTCE / Can LLMs Compress (and Decompress)? — bijective round-trip execution over LZW/AE/RLE/Huffman | `nl-bottleneck-prior-art` + `code-compression-literature` (2026-08-24 NBLM IR entries) | agent-supplied (NotebookLM IR notebook) | TLC | name-collision flag: distinct from RTC 2402.08699 |
+| (no ID) | Proof2Silicon / PREFACE — PPO prompt repair vs Dafny/SMT verifier reward; FPGA synthesis downstream | `nl-bottleneck-prior-art` + `code-compression-literature` (2026-08-24 NBLM IR entries) | agent-supplied (NotebookLM IR notebook) | TLC-opt (verifier-grounded outer loop) |  |
+| (no ID) | The Perplexity Paradox — code keywords 79× perplexity vs pruned math numbers; signature re-injection +34pp; TAAC | `nl-bottleneck-prior-art` + `code-compression-literature` (2026-08-24 NBLM IR entries) | agent-supplied (NotebookLM IR notebook) | TLC (compression frontier) |  |

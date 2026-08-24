@@ -5756,3 +5756,31 @@ cross-decoder/NL-likeness adjacent), and **RepE correctness probing** (test-free
 ranking from an extractable internal correctness direction, ~3.75s vs RankEF's
 172h). TLC recall corpus +6 lines; ShortenDoc ledger row annotated; 6 new
 ledger rows. Ingest-link-index row added.
+
+### 2026-08-24 — NotebookLM intermediate-representations notebook ingested
+
+> link: https://notebook.google.com/notebook/beaf7015-f9ee-43e8-80a2-bd0089c5402d
+
+(Followed by the five-source synthesis and the mechanistic-coherence report —
+verbatim in the bundle, `nblm-intermediate-representations-notebook.md`.) Tenth
+NotebookLM notebook of the day; all five papers TLC-core; no arXiv IDs
+supplied. Headline: **"NL in the Middle" finally has content on the record**
+(previously only its name, aggregate 5.5★ score, and her April endorsement):
+CoT-with-NL-summary beats both zero-shot and two-step code→IR→code pipelines
+(intermediate errors propagate), NL-before-AST ordering matters, and
+code-specialized models benefit less. Also: NL-Debugging format detail (Sketch
+> Pseudocode > Key Points, capacity-dependent — a capacity×abstraction-length
+interaction for the NL-likeness ladder); **RTCE** bijective round-trip
+execution benchmark (inversion collapses; name-collision flag vs RTC
+2402.08699); **Proof2Silicon/PREFACE** (PPO prompt repair with a Dafny/SMT
+verifier as reward over a frozen decoder); and **the Perplexity Paradox**
+(code keywords carry ~79× perplexity and survive perplexity-based compressors
+while math numbers get pruned; signature re-injection recovers +34pp — the
+signature is the load-bearing NL, convergent with ShortenDoc's method-name
+dependency; TAAC). Routed to
+[topics/reference/nl-bottleneck-prior-art.md](topics/reference/nl-bottleneck-prior-art.md)
+(main) and
+[topics/reference/code-compression-literature.md](topics/reference/code-compression-literature.md)
+(Perplexity Paradox); TLC §4 dated entry + §5 NL-in-the-Middle clause enriched
++ 5 recall-corpus lines; 4 ledger rows + NL-Debugging row note.
+Ingest-link-index row added.

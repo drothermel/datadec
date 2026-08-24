@@ -532,3 +532,52 @@ NotebookLM inaccuracy caveat):
   (LoRA/PPO query refiner over a fixed DeepSeek generator, attention-projections-
   only updates best, DS-1000 + MBPP) — the record previously held RL4QE as a
   bare name.
+
+## 2026-08-24 — NBLM intermediate-representations notebook: NL-in-the-Middle content lands; RTCE; Proof2Silicon
+
+The tenth NotebookLM notebook of the day (bundle:
+`nblm-intermediate-representations-notebook.md`; no IDs supplied;
+agent-generated, unverified) — five papers, all TLC-core. Compression-side
+material (the Perplexity Paradox) routed to `code-compression-literature.md`
+(same date):
+
+- **"NL in the Middle" — content on record at last** (the aggregate summary's
+  5.5★ *single-source* item, previously only a name + Danielle's April
+  endorsement). Cross-language code translation with NL summaries and ASTs as
+  intermediate representations across ten prompt variants: **CoT with an
+  intermediate NL summary wins** (+13.8% CodeNet / +6.7% AVATAR over zero-shot
+  for Open GPT4 8X7B); **two-step pipelines (code → IR → code) lose because
+  intermediate errors propagate** — the CoT-vs-pipeline distinction matters for
+  any e→d→x̂ chain; representation *ordering* matters (NL-before-AST beats
+  AST-before-NL); code-specialized models (StarCoder, CodeGen) benefit far
+  less from IRs than generalists. "NL summaries as semantic glue."
+- **NL-Debugging (2505.15356), format-comparison detail** beyond the headline:
+  **Sketch beats Pseudocode and Key Points** overall — but model-dependent
+  (strong-NL models want rich sketches; DeepSeek-Coder-V2-Lite 16B does better
+  with terse key points — a capacity–abstraction-length interaction echoing
+  the NL-likeness/level-of-d questions); NL-space repair produces much larger
+  AST edit distances and control-flow-depth changes than code-level debugging
+  (the global-vs-local edit claim, quantified); o1-style long CoT underperforms
+  structured sketch refinement.
+- **RTCE — "Can LLMs Compress (and Decompress)?"** (no ID; **name-collision
+  flag: not RTC 2402.08699**, which is round-trip *evaluation via NL*; RTCE is
+  round-trip *execution of compression algorithms*). Bijective
+  forward/backward execution over LZW/AE/RLE/Huffman, 25+ models: consistent
+  hierarchy Output > Output-inverted > Input > Input-inverted; inversion
+  collapses; self-reflection plateaus fast; LoRA on execution traces overfits
+  distribution-specifically. Evidence that forward-execution competence is
+  surface pattern matching — relevant context for what reconstruction-from-d
+  does and doesn't demonstrate about mechanistic understanding.
+- **Proof2Silicon / PREFACE** (no ID) — an RL prompt-repair loop with a
+  *formal verifier* as reward: a PPO-trained small LM adapts meta-prompts for
+  a frozen base LLM against Dafny/SMT verification (up to +21% absolute
+  verification success; Gemini-2-Flash 33%→55%), then compiles verified code
+  to FPGA RTL (72.4% synthesis success). The trained-outer-loop-over-frozen-
+  decoder shape with a sound verifier instead of unit tests — sits beside
+  RL4QE/PREFACE-style optimizers in the C2 space and the Misu Dafny row in
+  plan row D.
+
+Report framing worth keeping: semantic equivalence (pass rate) vs exact data
+identity (bijection) as distinct evaluation norms; the self-refinement
+saturation point (reflection fixes shallow errors, not algorithmic
+misunderstanding).

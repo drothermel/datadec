@@ -339,3 +339,30 @@ Compression-side material; the prompt-opt/repair half is in
   GPT-4 on "Why" and "Property" intent categories. A caution for any
   d-quality measurement that leans on overlap metrics: the explain→regenerate
   protocol's execution-based scoring dodges exactly this failure.
+
+## 2026-08-24 — The Perplexity Paradox: why code compresses better than math (NBLM IR notebook)
+
+From the tenth NotebookLM notebook (bundle:
+`nblm-intermediate-representations-notebook.md`; main entry in
+`nl-bottleneck-prior-art.md`, same date; no ID supplied; agent-generated,
+unverified):
+
+- **The mechanism.** Per-token perplexity analysis (723 tokens, 12 categories):
+  **Python syntax keywords carry ~79× higher perplexity than content words**,
+  so perplexity-based compressors (LLMLingua-1/2, Selective Context) naturally
+  retain them — while critical numbers in math word problems sit in highly
+  predictable grammatical slots, get *low* perplexity, and are pruned first.
+  Hence code prompts survive aggressive compression and math prompts degrade
+  linearly — perplexity-based importance is task-confounded. ANCOVA rules out
+  prompt length as the confound.
+- **Signature preservation, causally tested:** re-injecting function signatures
+  under aggressive compression recovers **+34pp pass rate** and drops
+  NameError rates 86.1% → 6.1% — convergent with ShortenDoc's
+  signature-isolation design and the method-name-dependency finding (the
+  signature is the load-bearing NL).
+- **TAAC** (Task-Aware Adaptive Compression): quality-gated, task-adaptive
+  ratios; 22% cost reduction at 96% quality, +6.5% over fixed-ratio.
+- Closing recommendation aligned with the TLC framing: compression should
+  target *semantic/logical task necessity*, not raw linguistic
+  predictability — essentially the argument for optimizing d against
+  downstream reconstruction rather than proxy token importance.
