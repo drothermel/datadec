@@ -453,4 +453,12 @@ distillation but the **Dec-2025 SciSpace six-component rubric's scored
 partial-match list** (Nano-Capsulator 4/6, EPiC 3.5/6, RLPrompt 3/6, four 2/6
 rows), i.e. the scored-rubric table this record's Dec-2025 entry describes,
 rendered as a table — the most §5-useful single schema: score + components-present
-+ critical-gaps columns).
++ critical-gaps columns); SciSpace (18 rows, 12 columns — the richest: adds
+**Applied to Programs?** and **Is Fidelity Reference In Paper** columns and X/6
+match scores; **GPT-C at 4.5/6 is the highest score in any scored table**, with
+applied-to-programs ✅ — elevating it to top-scored closest match; EPiC the only
+other programs-✅ prompt-side row; score drift vs. the Dec-2025-rubric table on
+PCRL/SPELL/ICAE/Sentence-Bottleneck/Latent-Programmer — all scores agent-assigned,
+unverified; new item SAPS 2018, tree-to-tree structure-aware program synthesis,
+1.5/6, no ID; its Source Note points at an **unpulled SciSpace Lit Review page**,
+`2fdde135-cd1f-804a-b0d2-e05f44ed95c9`).

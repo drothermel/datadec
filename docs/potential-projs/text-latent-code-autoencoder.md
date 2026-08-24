@@ -3323,6 +3323,13 @@ the dated §4 entries):
   2012.00377 and de Bruin 2108.07129 (trained-latent autoencoding); Proto-tokens
   2502.13063 (reconstruction capacity without an NL latent — the capacity
   counterpoint the NL-necessity falsifiers must engage).
+- **Top-scored closest match (SciSpace summary table, 2026-08-24):** GPT-C
+  (Generative PrompT Compression, from the Undermind review's RL subset) at
+  **4.5/6** with applied-to-programs ✅ — the highest match score in any scored
+  table, above Nano-Capsulator's 4/6; scores agent-assigned, unverified, and
+  GPT-C has no arXiv ID on record yet (recover from its Notion paper page or at
+  verification). The positioning table should place GPT-C alongside LBM and
+  Gilbert in the closest-neighbor tier.
 - **Added by the fourth check (Gemini):** LBM 2506.16982 (architectural precedent;
   headline match of two independent checks, unread gate-1 item) with GRPO
   2402.03300 as its optimizer; SPAE 2306.17842 (frozen-LLM lexical-token

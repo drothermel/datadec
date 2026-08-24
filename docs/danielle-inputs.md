@@ -5299,3 +5299,14 @@ is the Dec-2025 SciSpace six-component rubric's scored list (Nano-Capsulator 4/6
 EPiC 3.5/6, ...), not a distillation of the Undermind prompt-compression review its
 Source Note points at. All papers already tracked; no ledger rows. Schema (score +
 components + gaps) noted as the most §5-useful single table.
+
+### 2026-08-24 — summary-table intake, SciSpace table
+
+> next: https://app.notion.com/p/SciSpace-Lit-Review-Summary-Table-2fdde135cd1f802ba656c26d12197e35?v=2fcde135cd1f8087ae97000c181d4a2e
+
+18 rows, 12-column scored schema; preserved as
+`summary-tables/scispace-summary-table.md`. GPT-C = 4.5/6 top-scored closest match
+(applied-to-programs ✅) — elevated in TLC §5's anchor set; score drift vs. the
+Dec-2025-rubric table recorded; SAPS (2018, no ID) new → one ledger row. Source
+Note reveals an unpulled SciSpace Lit Review page
+(`2fdde135-cd1f-804a-b0d2-e05f44ed95c9`).
