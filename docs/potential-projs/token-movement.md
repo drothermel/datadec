@@ -438,7 +438,74 @@ current-state statement: rewrite it as understanding changes. Positioning claims
 are Danielle's to make; agent-supplied literature claims anywhere in this document
 are unverified leads, not established facts.*
 
-**Status: not yet drafted.** Raw material: the dated entries in §4, the theme
-accumulators under `../topics/reference/` (index: `../topics/README.md`), and
-`../litreview/citation-verification-ledger.md` (citation provenance; nothing there
-is verified).
+**Status: raw material assembled from repository records (2026-08-24); positioning not
+yet written.**
+
+**Where the raw material lives:**
+
+- `../topics/reference/token-level-literature.md` — the primary accumulator: the
+  river/wall mapping and its static validation, the epistemic/aleatoric split, the
+  loss-trajectory taxonomy, and the RLVR token-regime results.
+- `../topics/reference/landscape-literature.md` — Wen et al.'s own statement of the
+  river-valley picture, the interpolation "river test", and the cooldown-dynamics and
+  curve-collapse entries.
+- `../topics/reference/training-objective-alternatives-literature.md` — the training-side
+  mirror (which tokens training *should* weight); a SciSpace review, characterizations and
+  identifiers agent-generated and unverified.
+- `../topics/reference/evaluation-methodology-literature.md` — Signal and Noise, the
+  framework TOK-obs-4's eval-construction corollary attaches to.
+- `../topics/reference/moe-literature.md` — the routing-flip channel behind TOK-obs-5
+  (FLAME-MoE, OLMoE saturation, the load-balance-phases and Myth-of-specialization papers).
+- `../topics/reference/nonstationarity-accounting.md` — the endogenous self-curriculum
+  reading of TOK-opt-2 and TOK-4.
+- `../topics/reference/pretraining-to-posttraining.md` — the post-training token regimes
+  TOK-opt-4 would compare the wall bucket against.
+- `../litreview/citation-verification-ledger.md` — the ~27 rows tagged `TOK, dense` (all
+  from the `training-objective-alternatives-literature` intake; agent-supplied or
+  Claude-added, none verified). `../litreview/recipe-featurization-litreview-plan.md` row C
+  is the reading row for this cluster.
+- `../portfolio-rankings.md` — TOK's three ranked positions (Tier 1 #1 flagship; #8
+  workshop; #9 full-conference).
+
+**Starting inventory for the synthesis** (assembled at intake 2026-08-24; detail in the
+dated §4 entries):
+
+- **The anchor:** Wen et al., *Understanding Warmup-Stable-Decay Learning Rates: A River
+  Valley Loss Landscape View* (arXiv 2410.05192) — deterministic tokens as river, uncertain
+  tokens as walls; toy bigram language (origin of TOK-opt-5); correlational validation on
+  real data (Spearman ~0.39 between token uncertainty and local sharpness). The 2026-08-18
+  entry records the verdict that the mapping "has been made statically… the full 'watch the
+  bucket assignment evolve over training' study doesn't exist."
+- **Uncertainty decomposition (TOK-2):** *Token-Level Uncertainty-Aware Objective for
+  Language Model Post-Training* — epistemic vs. aleatoric per token, epistemic draining
+  faster for low-aleatoric examples; recorded as "the closest existing measurement" of the
+  migration, "though it never connects to landscape geometry."
+- **Loss-trajectory taxonomy (TOK-opt-2):** Rho-1, *Not All Tokens Are What You Need for
+  Pretraining* (2404.07965) — persistently-high/low, descending, fluctuating categories;
+  characterized as "literally a token-bucket-over-time taxonomy… with no landscape
+  interpretation attached."
+- **Token-selection / reweighting objectives (TOK-opt-6), per the SciSpace review —
+  unverified:** MiLe (predictive entropy), Rho-1 (reference-model excess loss), ESLM
+  (2505.19893, value-at-risk on per-token loss), VCORE (2510.27462, gradient utility), TALR
+  (2509.20758), RFT (2412.14780), IR-DRO (2402.14270), Power-Law Decay Loss (2505.16900),
+  multi-token prediction (Gloeckle et al. 2404.19737, implicit upweighting of choice-point
+  tokens). The §4 entry of 2026-08-22 frames these as the prescriptive converse of TOK's
+  descriptive claim, and the source of the T0 coincidence test.
+- **Post-training token regimes (TOK-opt-4):** *Beyond the 80/20 Rule: High-Entropy Minority
+  Tokens Drive Effective Reinforcement Learning for LLM Reasoning*; *Revisiting Entropy in
+  Reinforcement Learning for Large Reasoning Models*; Wu & Choi (ICML 2025 AI-for-Math
+  workshop, RLVR as support-preserving entropy-reducing reweighting); Yue et al. (NeurIPS
+  2025, arXiv 2504.13837); counterpoints *The Invisible Leash* (2507.14843) and 2506.14245.
+  The recorded reading: "the tokens that form the valley walls in pretraining look like the
+  same tokens where RL does its work," a bridge the entry says "nobody has drawn explicitly."
+- **Eval-side frame:** Signal and Noise (Heineman et al.) — signal/noise definitions, ~900K
+  eval results on 465 models including DataDecide; TOK-obs-4's dividend is stated as a
+  principled low-noise eval construction against their empirical subtask filtering. Item
+  flips (TOK-obs-2) are attributed to "the churn literature's measure"; layerwise drift
+  (TOK-obs-3) uses CKA, whose literature §2 calls crowded.
+- **MoE twin (TOK-obs-5):** FLAME-MoE (38M–1.7B active, 64 experts, top-8, released routing
+  logs); OLMoE router saturation (top-k overlap vs. convergence, deeper layers saturating
+  first); *Three Phases of Expert Routing*; *Continual Pre-training of MoEs: How Robust Is
+  Your Router?*; *The Myth of Expert Specialization in MoEs*. Caveats on record: the
+  OpenMoE token-identity-clustering claim is unverified, and the load-balancing objective
+  confounds observed assignments.

@@ -219,7 +219,82 @@ current-state statement: rewrite it as understanding changes. Positioning claims
 are Danielle's to make; agent-supplied literature claims anywhere in this document
 are unverified leads, not established facts.*
 
-**Status: not yet drafted.** Raw material: the dated entries in §4, the theme
-accumulators under `../topics/reference/` (index: `../topics/README.md`), and
-`../litreview/citation-verification-ledger.md` (citation provenance; nothing there
-is verified).
+**Status: raw material assembled from repository records (2026-08-24); positioning not
+yet written.**
+
+**Where the raw material lives:**
+
+- `../topics/reference/reinit-and-transfer-literature.md` — the primary and by far the
+  richest record: the 2026-08-18 "reset-the-embeddings lineage" entry, Danielle's own paper
+  in the thread, and the 2026-08-22 targeted literature pass (Opus subagent) organized as
+  five sub-threads (a–e) plus the ranked gap list G1–G10 this project is built from. Full
+  subagent report at
+  `~/drotherm/data/.claude/datadec/2026-08-22/0031-reinit-transfer-litpass.md`; all its
+  verdicts rest on abstracts, with no full-PDF reads and no forward-citation sweep.
+- `../topics/reference/plasticity.md` — the RESET-opt-2 arm (plasticity injection, the
+  Dohare/Lyle panel, the LLM-scale plasticity-loss result).
+- `../topics/reference/critical-periods.md` — the interpretive frame behind RESET-opt-4
+  (interface resets as basin-preserving, early deficits as basin-determining; the
+  critical-period-reopening reading of resets).
+- `../topics/reference/landscape-literature.md` — the barrier / LMC toolkit RESET-opt-1
+  borrows (interpolation barrier raw and permutation-aligned, feature-space connectivity).
+- `../topics/staging/checkpoint-tomography.md` — the absorbed reset-response probe (G7),
+  the cross-listing for RESET-opt-4; `../topics/staging/frozen-body-transfer-audit.md` —
+  the sibling gaps G5/G6 split off from the same pass.
+- `../danielle-inputs.md` Toggle 14 — the verbatim origin prompt for the lineage question.
+
+**Starting inventory for the synthesis** (assembled at intake 2026-08-24; detail in the
+dated §4 entries and the literature pass):
+
+- **The lineage the record says landed on Danielle's early result:** Artetxe et al. 2020
+  (*On the Cross-lingual Transferability of Monolingual Representations* — embedding-only
+  retraining against a frozen body); *How to Do a Vocab Swap?* (OpenReview MsjB2ohCJO1, no
+  confirmed venue); vocabulary-extension-plus-CPT practice (Chinese LLaMA-2, Korean
+  SOLAR/Phi-2, ALLaM arXiv 2407.15390 — mechanism not confirmed); Lu et al., *Pretrained
+  Transformers as Universal Computation Engines* (arXiv 2103.05247).
+- **Danielle's own entry (verified: her paper):** Rothermel, Li, Rocktäschel & Foerster,
+  *Don't Sweep your Learning Rate under the Rug* (arXiv 2107.12460, ICML 2021 SSL
+  workshop) — the load-bearing rebuttal of the frozen-body claim; the record notes no
+  2022–2026 paper re-audits frozen-vs-finetuned claims for LR-tuning asymmetry (G5, resting
+  on keyword absence, not a citation sweep).
+- **Initialization methods (RESET-4):** WECHSEL; FVT (method confirmed, citation not);
+  FOCUS; ZeTT (arXiv 2405.07883, NeurIPS 2024 — prior init heuristics near-chance in true
+  zero-shot transfer); OMP transplantation (arXiv 2506.06607); MATT (arXiv 2510.21954);
+  *Teaching Old Tokenizers New Words* (arXiv 2512.03989); Dobler & de Melo (2408.15793);
+  convex-hull init (2407.05841); Learned Embedding Propagation (2412.21140).
+- **The recovery-cost estimates RESET-1 exists to reconcile:** *Beyond Initialization Loss*
+  (arXiv 2608.03494 — >20 init strategies on a 30B MoE, 6× CPT reduction, **input and
+  output embeddings have distinct optimal inits** (the RESET-2 observation), init loss/BPB
+  unreliable as a convergence predictor); EEVE (arXiv 2402.14714 — proficiency within 2B
+  tokens); Dagan, Synnaeve & Rozière (ICML 2024, arXiv 2402.01035) — **the ">50B tokens to
+  recover" reading is a recorded misreading**, corrected in the 2026-08-22 pass to a
+  statement about when specialization pays off. The pass's summary: estimates "range across
+  three orders of magnitude (500 steps to >50B tokens) with no controlled study reconciling
+  them."
+- **Reset methods and plasticity (RESET-3, RESET-opt-2, RESET-opt-3):** *When Does
+  Re-initialization Work?* (Zaidi, Berariu, Kim, Bornschein, Clopath, Teh, Pascanu; arXiv
+  2206.10011 — >15,000 vision models; effect largely disappears once regularization is
+  tuned); plasticity injection (Nikishin et al., arXiv 2305.15555 — "the most directly
+  borrowable *instrument*"); Reset & Distill (2403.05066); the RL plasticity-loss survey
+  (2411.04832 — "last layers" belief recorded as belief, not evidence); *Can Scale Save Us
+  From Plasticity Loss in LLMs?* (Hernandez-Garcia, Figliolia, Millidge; arXiv 2606.24752 —
+  5M–314M, sublinear scaling law, continual *and stationary*); calibrated partial resets
+  (2607.24996); spectral collapse (2509.22335); activation design (2509.22562);
+  Fisher-guided selective forgetting (2502.00802); ITER (Igl et al., ICLR 2021, arXiv
+  2006.05826 — distill-into-fresh-network, "the only one that separates *function* from
+  *trajectory*").
+- **Basin instruments (RESET-opt-1):** layer-wise LMC (arXiv 2307.06966 — per-layer
+  barriers insignificant, **middle layers create barriers**, hence the near-barrier-free
+  prediction for interface resets); LMC of MoEs (2509.11348); *Landscaping LMC* (2406.16300);
+  *The Butterfly Effect* (2506.13234 — seed sensitivity, hence many seeds); model stitching
+  (Lenc & Vedaldi 2015; Bansal, Nakkiran & Barak 2021), recorded as "literally your
+  embedding-reset experiment as a measurement rather than a method."
+- **Substrate and stage probe:** PolyPythias (van der Wal, Lesci, Müller-Eberstein, Saphra,
+  Schoelkopf, Zuidema, Biderman; ICLR 2025, arXiv 2503.09543); critical periods in LM
+  finetuning (TACL, doi:10.1162/tacl_a_00725 — data-side deficits, the counterpart to the
+  weight-side reset probe); *Smooth Scaling Laws Hide Stepwise Token Learning* (2606.29858);
+  representation-plasticity timeline in LLMs (2410.06225).
+- **On record as having no paper behind it:** the "interface resets are basin-preserving /
+  early deficits are basin-determining" reading — the pass calls it an interpretive frame
+  whose absence *is* gap G3, the one described as "the single best-shaped question for
+  Danielle's program."

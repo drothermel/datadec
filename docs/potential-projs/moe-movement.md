@@ -297,7 +297,78 @@ current-state statement: rewrite it as understanding changes. Positioning claims
 are Danielle's to make; agent-supplied literature claims anywhere in this document
 are unverified leads, not established facts.*
 
-**Status: not yet drafted.** Raw material: the dated entries in §4, the theme
-accumulators under `../topics/reference/` (index: `../topics/README.md`), and
-`../litreview/citation-verification-ledger.md` (citation provenance; nothing there
-is verified).
+**Status: raw material assembled from repository records (2026-08-24); positioning not
+yet written.**
+
+**Where the raw material lives:**
+
+- `../topics/reference/moe-literature.md` — the primary accumulator for this project:
+  the 2026-08-18 suites-and-metrics entry (FLAME-MoE, OLMoE router saturation, the
+  three-load-balance-phases paper, router robustness under continual pretraining, the
+  Myth of Expert Specialization), the MoE comparability warning, and the 2026-08-22
+  ensemble→MoE design-space entry with its 13-paper reading list.
+- `../topics/reference/nonstationarity-accounting.md` — the canonical text of the
+  mechanism pillar that Stage 2 instantiates (exogenous vs. endogenous non-stationarity;
+  the stabilizer-accounting framing; the frozen-routing hypothesis as its first case
+  study). §1 Stage 2 and §4 of this doc are where its four discriminating experiments
+  were moved.
+- `../topics/reference/identifiability-literature.md` (2026-08-18 entry) and
+  `../topics/reference/landscape-literature.md` — expert permutation as a
+  non-identifiable latent, and the dense re-basin/permutation-alignment toolkit
+  (Entezari et al.; Git Re-Basin; REPAIR; the 2026 neuron-identifiability framework)
+  that MOVE-1's swap evaluation inherits.
+- `../topics/reference/reinit-and-transfer-literature.md` §(d) — the
+  landscape/connectivity sub-thread, including LMC of MoEs (2509.11348) and the
+  Butterfly Effect seed-sensitivity caution.
+- `../litreview/citation-verification-ledger.md` — provenance for the design-space
+  identifiers (rows tagged `moe-literature` / feeds `MOVE/PART/MSUITE`); nothing in the
+  ledger is verified.
+- Sibling project docs carrying overlapping records: `trajectory-statistics.md` §4 (the
+  routing follow-up as the MoE dual of drift/diffusion) and `token-movement.md`
+  (TOK-obs-5, flips by token entropy on FLAME-MoE).
+
+**Starting inventory for the synthesis** (assembled at intake 2026-08-24; detail in the
+dated §4 entries):
+
+- **The commitment-clock precedents:** OLMoE's router saturation — top-k overlap at step
+  t vs. convergence, rising sharply within the first few thousand steps, deeper layers
+  saturating faster; *Three Phases of Expert Routing* (early balance-prioritizing,
+  stabilization/specialization, late relaxation — non-monotone and, per the record,
+  "stable during fine-tuning"); the OpenMoE analysis (routing dominated by token ID with
+  minimal context relevance, assignments fixed early). All characterizations are quoted
+  from the 2026-08-18 Research Trajectory intake and are unverified
+  (`../topics/reference/moe-literature.md`).
+- **The MoE-native warm-start precedent:** *Continual Pre-training of MoEs: How Robust Is
+  Your Router?* — routing changes most in early layers, with no-replay showing the most
+  reorganization and forgetting (same source, unverified).
+- **The suites MOVE-1 would run on:** FLAME-MoE (38M–1.7B active, 64 experts, top-8, open
+  code/data/checkpoints/routing logs/evals), OLMoE (open intermediate checkpoints),
+  OpenMoE; the record notes each is one data recipe, so they are a scale ladder plus
+  validation points, not a treatment axis (`../topics/reference/moe-literature.md`,
+  `trajectory-statistics.md` §4).
+- **The comparability obstacle named in the record:** the symmetry group includes expert
+  permutations, so interpolation barriers, checkpoint merging, and stitching all need an
+  expert-alignment step, and "re-basin methods for MoE are immature" — the §4 entry of
+  2026-08-18 calls "how to quotient MoE symmetries for checkpoint comparison" an open gap
+  (`../topics/reference/identifiability-literature.md`,
+  `../topics/reference/moe-literature.md`).
+- **The evidence the frozen-routing hypothesis is argued against:** hash-routing results
+  (fixed, content-free assignment performing close to learned routing) and the
+  Slicing-and-Dicing sweep's own finding that the load-balancing mechanism barely affects
+  final quality — both invoked in the 2026-08-21 §4 entry without citations on record.
+  The alternative hypothesis on record is dense-model early commitment (critical periods,
+  early symmetry breaking, lottery-ticket structure) plus a self-reinforcing "commitment
+  ratchet"; the two-timescale/target-network analogy from RL and GANs is the framing the
+  same entry uses.
+- **Architectural vocabulary carried in for "what is an expert":** the design-space entry's
+  three axes (routing unit / parameter sharing / selection type) and its reading list —
+  Sparsely-Gated MoE 1701.06538, Switch/ST-MoE, DeepSeekMoE 2401.06066, Mixtral
+  2401.04088, Soft MoE 2308.00951, Mixture-of-Depths 2404.02258, SwitchHead 2312.07987,
+  fine-grained-MoE scaling laws 2402.07871, Branch-Train-Merge 2208.03306 /
+  Branch-Train-MiX 2403.07816, model soups 2203.05482. Identifiers are agent-supplied or
+  Claude-added and unverified per the ledger; the intake notes flag the author pairs as
+  fabrication-prone.
+- **Where the record places the two papers:** the 2026-08-21 rankings entry —
+  workshop-sized #9/#10 and full-conference #7 ("Reroute or Rewrite?") and #8 ("Does MoE
+  Training Suppress Its Own Non-Stationarity?"), with #8 said to need #7's machinery
+  (`../portfolio-rankings.md`).

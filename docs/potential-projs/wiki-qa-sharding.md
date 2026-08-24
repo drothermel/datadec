@@ -478,7 +478,66 @@ current-state statement: rewrite it as understanding changes. Positioning claims
 are Danielle's to make; agent-supplied literature claims anywhere in this document
 are unverified leads, not established facts.*
 
-**Status: not yet drafted.** Raw material: the dated entries in §4, the theme
-accumulators under `../topics/reference/` (index: `../topics/README.md`), and
-`../litreview/citation-verification-ledger.md` (citation provenance; nothing there
-is verified).
+**Status: little related-work material on record (2026-08-24); positioning not yet
+written.** What exists is one dated conversation record — the 2026-08-16 "Turn wiki
+corpus into shards" entry in §4 — whose literature attributions the entry itself marks
+unverified; there is no theme accumulator devoted to sharding or graph partitioning, and
+no ledger rows for `SHARD`.
+
+**Where the raw material lives:**
+
+- §4 of this document, "2026-08-16 — Turn wiki corpus into shards" — the only
+  literature-bearing record: partitioning algorithm families, the QA-graph paragraph
+  (explicitly headed "unverified attributions"), and the claimed gap.
+- `../topics/reference/retrieval-storage-tooling.md` — the tooling flank (DuckDB vs.
+  LanceDB, the entity–page sparse-retrieval reframing, CSR/mmap, LMDB/RocksDB,
+  head-entity strategies); product claims marked unverified. The engine survey
+  (Pyserini, LanceDB, Vespa, OpenSearch, Qdrant, Milvus, ColBERT/PLAID) and the LanceDB
+  and Qdrant deep-dives live in §4 of this document, which that file points back to.
+- `../topics/reference/entity-linking-at-scale.md` — the linking stack behind SHARD-opt-1
+  (ReLiK, ReFinED, BELA, `entity-linkings`); respondent's claims, unverified.
+- `../topics/reference/multi-answer-qa-literature.md` and
+  `../refs/multi-answer-qa-state-of-research-2026.md` — the workload side, relevant to
+  SHARD-opt-3's question of whether list-QA evidence is sharding-friendly at all;
+  agent-produced deep-search report, unverified.
+- `../danielle-inputs.md` ("MAQA Next Steps" intake, 2026-08-22) — Danielle's verbatim
+  framing prompt, and the 2026-08-22 decision splitting `SHARD` out as a post-PhD /
+  "engineering break" project.
+- `../litreview/citation-verification-ledger.md` — no `SHARD` rows; nothing below has
+  been verified.
+
+**Starting inventory for the synthesis** (everything here is from the 2026-08-16 response
+and carries its unverified flag):
+
+- **Partitioning formulation and tools named:** weighted balanced k-way graph partitioning
+  (not unconstrained min-cut, whose trivial optimum is one giant shard) with multilevel
+  heuristics — METIS, KaHIP, KaMinPar; hypergraph partitioning with the connectivity
+  objective Σ f_q(λ_q − 1) via Mt-KaHyPar; spectral/normalized cut; Leiden/Louvain
+  (noted: GraphRAG uses hierarchical Leiden for navigation, not physical sharding);
+  vertex cuts / replication, cited to PowerGraph; streaming partitioning for updates.
+- **QA-graph prior art (the entry's own "unverified attributions" list):** Learning to
+  Retrieve Reasoning Paths over the Wikipedia Graph (Asai et al., ICLR 2020); multi-step
+  entity-centric retrieval (Das et al., 2019); CogQA (Ding et al., 2019); Multi-hop Dense
+  Retrieval (Xiong et al., ICLR); HippoRAG (entity/passage graphs with personalized
+  PageRank). The entry characterizes all of these as using graph structure for
+  retrieval/reasoning rather than physical placement.
+- **Routing/ANN neighbor:** "Unleashing Graph Partitioning for Large-Scale Nearest
+  Neighbor Search" (PVLDB), named as the closest thing on record to graph partitioning
+  with an explicit router.
+- **Database-placement neighbor:** workload-aware placement with partitioning, balancing,
+  and replication, cited to Golab et al. — recorded as existing, but not in the
+  Wikipedia-QA combination.
+- **Datasets usable as workload hyperedges:** HotpotQA (~113k), WikiHop,
+  2WikiMultiHopQA (explicit reasoning paths), MuSiQue (25k, 2–4 hops), plus QAMPARI
+  evidence sets (§1, SHARD-1).
+- **Corpus/graph artifacts surveyed** (2026-08-16 storage and link-graph entries, sizes
+  and schemas unverified): the `wikimedia/structured-wikipedia` Parquet dataset; the SQL
+  dump graph tables (`page`, `linktarget`, `pagelinks`, `redirect`, ≈11 GB) as the
+  completeness check; and the ready-made alternatives — HotpotQA Wikipedia corpus with
+  links (HF `ParthMandaliya/hotpotqa-wiki`, Oct-2017), USearchWiki (HF
+  `unum-cloud/USearchWiki`, Aug 2025), SNAP enwiki-2013, WikiLinkGraphs (arXiv 1902.04298).
+- **The gap claim itself, attributed not asserted:** the 2026-08-16 entry states that to
+  "physically shard all of Wikipedia by observed QA evidence locality and evaluate
+  end-to-end QA latency is not a saturated research problem." §2 of this document flags
+  it as unverified, and the §4 open questions list "verify the gap claim and the tool/paper
+  citations above" as outstanding.

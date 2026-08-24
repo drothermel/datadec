@@ -449,7 +449,96 @@ current-state statement: rewrite it as understanding changes. Positioning claims
 are Danielle's to make; agent-supplied literature claims anywhere in this document
 are unverified leads, not established facts.*
 
-**Status: not yet drafted.** Raw material: the dated entries in §4, the theme
-accumulators under `../topics/reference/` (index: `../topics/README.md`), and
-`../litreview/citation-verification-ledger.md` (citation provenance; nothing there
-is verified).
+**Status: raw material assembled from repository records (2026-08-24); positioning not yet
+written.**
+
+**Where the raw material lives:**
+
+- `../topics/reference/data-featurization-literature.md` — the primary accumulator: the
+  three-family split of how the field currently quantifies dataset differences
+  (model-mediated / similarity-embedding / intrinsic), the determinism-profile entry, and
+  the pointer to task-side querying and near-duplicate infrastructure.
+- `../litreview/recipe-featurization-litreview-plan.md` and
+  `../litreview/recipe-featurization-litreview-process.md` — the approved design and the
+  as-run process for this project's dedicated literature review (subdomains A–E; working
+  packet, cards, and the final `recipe-featurization-litreview.md` live outside this repo
+  in `~/drotherm/data/.claude/datadec/2026-08-21/1412-recipe-featurization-litreview/`).
+- `../topics/reference/synthetic-data-literature.md` — the syntheticity / rephrasing axis
+  DataDecide does not span (SciSpace-sourced, unverified).
+- `../topics/reference/schedules-and-annealing-literature.md` — the annealing/decay-branch
+  and checkpoint-merging line REC-4/REC-6/REC-7 depend on.
+- `../topics/reference/small-scale-evaluation-metrics-literature.md` — the proxy-metric and
+  downstream-forecasting flank REC-3 is measured against (SciSpace-sourced, unverified).
+- `../topics/reference/generalization-and-ood-literature.md` — the 2025-01 question sequence
+  whose unanswered half ("predict performance conditioned on the method") this project and
+  EDP now occupy; its citations are explicitly unverified.
+- `../topics/reference/icl-literature.md`, `../topics/reference/critical-periods.md` — the
+  causal anchor for intrinsic statistics (Chan et al.) and the Fisher/Task2Vec lineage.
+- `../litreview/citation-verification-ledger.md` — provenance for every arXiv ID that
+  entered the topics in the 2026-08-22 SciSpace intake; the `Feeds: REC` rows are all in
+  `synthetic-data-literature`. Nothing in the ledger is verified.
+
+**Starting inventory for the synthesis** (assembled at intake 2026-08-24; detail in the
+dated §4 entries):
+
+- **The three feature families as the field's current toolkit** (from the 2026-08-18
+  Research Trajectory entry, recorded in `data-featurization-literature.md`):
+  *model-mediated* — perplexity correlations (losses of 90 public LLMs over web domains),
+  RegMix, DoReMi, Data Mixing Laws, BiMix; the recorded criticism is that they featurize a
+  corpus as "mixture weights over named domains" and "don't tell you *what property* of the
+  data mattered." *Similarity embeddings* — Task2Vec, the alignment-coefficient work,
+  Miranda et al.'s diversity coefficient, with *Data Similarity is Not Enough to Explain
+  Language Model Performance* as the negative result to respect. *Intrinsic statistics* —
+  WIMBD (Elazar et al.), compression/entropy-law measures, Zipf/burstiness/type-token
+  statistics; called "closest to your instinct, least developed."
+- **The causal anchor for intrinsic features:** Chan et al. 2022, *Data distributional
+  properties drive emergent in-context learning in transformers* — the §4 entry names it as
+  "the one place intrinsic data statistics have been causally tied to a capability"; the
+  ICL topic adds Raventós et al. on a task-diversity threshold (with a flagged citation gap).
+- **Machinery for REC-2 (determinism profile):** DoReMi's excess loss and Rho-1's
+  reference-model excess-loss scoring, characterized in §4 as "per-token *epistemic*
+  measurements… the machinery is exactly what you'd need, pointed at a different goal";
+  Wen et al. (2410.05192, in `token-level-literature.md`) as the river/wall determinism
+  mapping computed within one distribution, "never comparatively across corpora."
+- **The crowded-vs-open map** (2026-08-21 external assessment, §4): crowded — WIMBD-style
+  descriptive statistics, quality-filtering ablations (DCLM, FineWeb), mixture optimization
+  (DoReMi, RegMix, data mixing laws); open — features that predict *dynamics* rather than
+  endpoints, cross-suite transfer of feature→outcome maps, midtraining/annealing data
+  ("folklore plus internal lab knowledge" post-MiniCPM), post-training data, and the
+  measurement layer itself ("a 'measured data cards' effort… is the WIMBD sequel that hasn't
+  been written"). The same entry names other controlled suites — DCLM runs, FineWeb
+  ablations, RegMix's 1000+ small models — as the outcome-side options for REC-11.
+- **Syntheticity as a candidate REC-1 feature** (2026-08-22 §4 entry, from the SciSpace
+  synthetic-data review — agent-generated, unverified): the teacher-measured
+  "effective tokens = diversity × syntheticity" construct (2410.03083), the synthetic-data
+  diversity study (2410.15226), model collapse as a change of scaling laws (2402.07043,
+  "A Tale of Tails") and the verification remedy (2406.07515) as the references for any
+  REC-10 arm that trains on generated text. The wider set (BeyondWeb 2508.10975,
+  data-constrained scaling 2305.16264, WRAP, Self-Instruct 2212.10560, GLAN 2402.13064,
+  two surveys 2406.15126 / 2410.12896) is in `synthetic-data-literature.md`.
+- **Annealing / schedule prior art for REC-4, REC-6, REC-7** (from
+  `schedules-and-annealing-literature.md`, unverified working list): Hägele et al.
+  2405.18392 and MiniCPM 2404.06395 (stable-phase + decay-branch methodology), Llama 3
+  annealing data and Blakeney et al. "Does your data spark joy?" (late domain upsampling as
+  data valuation), OLMo 2 / Dolmino 2501.00656, WSM and Nemotron 3 (checkpoint merging as
+  pseudo-annealing), and the multi-power law (Luo et al. 2503.12811) as the analytic
+  correction REC-7 fits.
+- **Task-side querying and perturbation-sequence method families** (undated §4 entry): the
+  response's four families — direct corpus querying (n-gram / MinHash / SimHash / Bloom
+  filters, entity and template retrieval, embedding retrieval), corpus profiling,
+  behavioral attribution (TracIn-style influence, membership inference), and perturbation
+  sequences as system identification — carry **no citations and are recorded as unsourced**;
+  the reference topic notes the WIMBD / infini-gram near-duplicate line as the prerequisite
+  infrastructure and cross-references `retrieval-storage-tooling.md`.
+- **The dedicated lit review's own subdomain partition** (A dataset featurization and
+  intrinsic statistics; B model-mediated valuation and mixing laws; C token-level
+  uncertainty and landscape geometry; D scaling suites, proxy metrics, evaluation noise and
+  annealing protocols; E data attribution and per-source effects) plus the three
+  cross-cutting gaps the scope judge assigned — G1 small-n methodology, G2 QC-variant /
+  filter-strength, G3 **data-card precedent** — are the intended skeleton of this section;
+  post-training amplification work was scoped out.
+- **Ranked-list attributions on record** (`../portfolio-rankings.md`, §4): workshop list #1
+  (REC-a + REC-5) and #7 (realized-exposure audit + order-effect experiment);
+  full-conference #2 "What Is Actually in DataDecide"; P2 in the four-main-conference list,
+  with scoop risk called "medium — the label correction is discoverable by anyone who looks,
+  but nobody seems to be looking."

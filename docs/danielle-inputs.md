@@ -5182,3 +5182,16 @@ pointers; §4 stays the dated log, new entries insert before the §5 header).
 additionally carries a starting inventory (novelty-check corpus + anchor set +
 resubmission obligations). Convention documented in the README. This is Danielle's
 next work surface after ingestion.
+
+### 2026-08-24 — §5 filled from repository records via subagent fan-out
+
+> can you use subagents to pull out existing related work from the rest of the pages, notes etc for the existing projects and fill in the section 5 as best as possible?
+
+Executed as a Claude Workflow: eight read-only Opus extractors (Explore-type), one
+per project cluster, under the contract at
+`~/drotherm/data/.claude/datadec/2026-08-24/1321-section5-fill-contract.md`
+(repo-sourced citations only; no positioning claims; agent-generated records marked
+unverified in-line). All 21 scaffolded §5 sections in
+[potential-projs/](potential-projs/) now carry a raw-material map and starting
+inventory; positioning remains unwritten (Danielle's next work item). TLC's §5 was
+already populated and untouched.

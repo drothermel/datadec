@@ -228,7 +228,84 @@ current-state statement: rewrite it as understanding changes. Positioning claims
 are Danielle's to make; agent-supplied literature claims anywhere in this document
 are unverified leads, not established facts.*
 
-**Status: not yet drafted.** Raw material: the dated entries in §4, the theme
-accumulators under `../topics/reference/` (index: `../topics/README.md`), and
-`../litreview/citation-verification-ledger.md` (citation provenance; nothing there
-is verified).
+**Status: raw material assembled from repository records (2026-08-24); positioning not
+yet written.**
+
+**Where the raw material lives:**
+
+- `../topics/reference/schedules-and-annealing-literature.md` — the primary accumulator
+  for this project: the maintained "working list" of keepers with the role each plays for
+  `WSD`/`ANN`/`FUNC`, the 2026-08-18 stable-phase-plus-decay-branch entry, three separate
+  agent answers to Danielle's annealing-data question (survey, interactive-app report,
+  and a two-version pair), and a standing "known drift and term collisions" list.
+- `../topics/reference/pretraining-to-posttraining.md` — the prior art for WSD-opt-2
+  (post-training from branch endpoints): the DataDecide entry, the
+  pretraining-choices→post-training cluster, and the "post-training did nothing"
+  cluster that reframes the earlier negative result.
+- `../topics/reference/landscape-literature.md` and
+  `../topics/reference/token-level-literature.md` — the river-valley picture the stable
+  phase / decay split is described in, including Wen et al.'s own validation.
+- `../topics/staging/rewritten-anneal-slice.md` — the rewriting-vs-selection variant of
+  WSD-opt-4, pulled out on 2026-08-22 so it is not lost; its four lead papers are
+  ungated.
+- `../topics/staging/datadecide-dense.md` — the small many-seed retrain substrate this
+  suite's pilot would run inside (design constraints, tuning-parity and
+  branch-data-consumption cautions).
+- `../topics/reference/datadecide-data-pipeline.md` — the data-layer conversation that
+  produced the DataDecide-dense framing and Danielle's own statement about wanting WSD
+  alongside it.
+- `../topics/reference/moe-literature.md` — the MoE sibling flank (FLAME-MoE, OLMoE)
+  behind the 2026-08-21 note about an MoE counterpart of this suite.
+- `../litreview/citation-verification-ledger.md` — provenance for the annealing-batch
+  identifiers (rows tagged `ANN, WSD`); all agent-supplied, nothing verified.
+
+**Starting inventory for the synthesis** (assembled at intake 2026-08-24; detail in the
+dated §4 entries and in the accumulator above):
+
+- **The methodology lineage the §4 origin entry names as the reason this dataset should
+  exist:** Hägele et al. 2024 / arXiv 2405.18392 (stable phase + cheap decay branches
+  instead of per-budget cosine runs; the (1-sqrt) cooldown and branch reuse as the cost
+  model) and MiniCPM arXiv 2404.06395 (the practical template — ~10% decay completes
+  convergence, new data mixed in strictly during decay, which is WSD-opt-4's basis).
+  Recorded 2026-08-18 with the accompanying claim that "'annealing branches as the correct
+  eval' is validated practice — but no *open, multi-recipe suite* has it."
+  (`../topics/reference/schedules-and-annealing-literature.md`; unverified.)
+- **The decay-data flank for WSD-opt-4:** Llama 3 annealing data (8B GSM8K +24 / MATH
+  +6.4, 405B negligible; final-40B 30/70 anneal used as data valuation), Databricks "Does
+  your data spark joy?" (Blakeney et al.; end-of-training domain upsampling, 10–20% of
+  training as the trade-off point), OLMo 2 / Dolmino 2501.00656 (the open reproducible
+  template, LR to zero), and OLMo itself as the training setup DataDecide inherits. Plus
+  the "when, not just what" line: TREC 2509.25380 (place the anneal at the receptivity
+  valley), Tissue et al. 2408.11029 (annealing-area term in the loss law), PDPC 2501.13126,
+  AutoScale 2407.20177, Data Mixing Laws 2403.16952, UtiliMax/MEDU 2501.11747. All
+  agent-supplied via the annealing-data survey and reports; unverified.
+- **The rewritten-slice cluster (2026-08-22 §4 entry, staged separately):** SwallowCode /
+  SwallowMath 2505.02881, ProX 2409.17115, FinerWeb-10BT 2501.07314, Nemotron-CC
+  rephrasing 2412.02595 — anneal-grade data by upgrading rather than selecting. The
+  staging note records that SwallowCode's numbers are for full pretraining on the
+  rewritten corpus, not an anneal slice.
+- **The post-training flank for WSD-opt-2:** the 2026-08-18 §4 entry names *Echo Chamber*
+  (Zhao, Meterez et al., COLM 2025; arXiv 2504.07912) as "the nearest existing design" to
+  post-training from this suite's branch endpoints, and *Similar Models Learn Differently:
+  Final-Window Pretraining Shapes Post-Training Beyond SFT* (arXiv 2607.25063) as the
+  late-pretraining-intervention version. The wider cluster (Front-Loading Reasoning
+  2510.03264; Early Data Exposure 2605.12705; The Finetuner's Fallacy 2603.16177;
+  Understanding Reasoning from Pretraining to Post-Training 2607.16097) and the
+  "post-training did nothing" counterpart cluster (A Sober Look 2504.07086; Spurious
+  Rewards 2506.10947) are in `../topics/reference/pretraining-to-posttraining.md`.
+- **The mechanism reading of the stable/decay split:** Wen et al. arXiv 2410.05192
+  (river-valley; the interpolation signature as the closest thing to a "river test"; the
+  WSD-S variant resuming from decayed checkpoints) — the cited basis for treating the
+  decay branch as a wall-height meter, per
+  `../topics/staging/checkpoint-tomography.md` and
+  `../topics/reference/landscape-literature.md`. Unverified.
+- **The MoE sibling:** the 2026-08-21 §4 entry points at the Slicing-and-Dicing MoE repo
+  as removing the "standing up MoE training infra" risk for a counterpart suite;
+  `../topics/reference/moe-literature.md` holds the artifact side (FLAME-MoE as
+  "DataDecide-for-MoE" at 38M–1.7B active; OLMoE) and the note that no public
+  multi-recipe MoE suite exists.
+- **Standing caveats to carry:** the whole annealing accumulator is agent-generated and
+  marked unverified; it also carries an explicit "do not re-flag" collision list
+  (instruction-tuning/continual-learning papers; Annealed-RLVR 2509.23629; RLHFuse; the
+  2020 "data annealing" paper 2004.13833) and one open ID check (2508.01483, possibly a
+  mis-ID paired with Tissue).

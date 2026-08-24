@@ -417,7 +417,91 @@ current-state statement: rewrite it as understanding changes. Positioning claims
 are Danielle's to make; agent-supplied literature claims anywhere in this document
 are unverified leads, not established facts.*
 
-**Status: not yet drafted.** Raw material: the dated entries in §4, the theme
-accumulators under `../topics/reference/` (index: `../topics/README.md`), and
-`../litreview/citation-verification-ledger.md` (citation provenance; nothing there
-is verified).
+**Status: raw material assembled from repository records (2026-08-24); positioning not
+yet written.**
+
+**Where the raw material lives:**
+
+- `../topics/reference/schedules-and-annealing-literature.md` — the core accumulator: the
+  2026-08-18 "annealing confound and its workarounds" entry (stable-phase + decay
+  branches; checkpoint merging as pseudo-annealing; analytic correction; the two caveats
+  that shaped ANN-6 and ANN-opt-1) plus three agent answers to Danielle's annealing-data
+  question and a standing term-collision list.
+- `../topics/reference/loss-curve-forecasting.md` — the multi-power law (ANN-5/ANN-2) and
+  the loss→accuracy links the decision-flip analysis depends on, with the
+  emergence-as-threshold caveat and the double-descent boundary condition.
+- `../topics/reference/landscape-literature.md` — the river-valley reading of the MPL
+  decay term and the interpolation-signature "river test"; basin/mode-connectivity
+  material behind the merging assumptions.
+- `../topics/reference/pretraining-to-posttraining.md` — ANN-opt-3 and ANN-opt-8's prior
+  art (final-window interventions; the "post-training did nothing" cluster).
+- `../topics/reference/grokking-and-hidden-progress.md` — the anti-grokking-instrument
+  reading of the decay branch and the matched-loss-is-insufficient argument.
+- `../topics/staging/checkpoint-tomography.md` — the decay branch positioned among four
+  short-branch probes, with the sharpest existing statement of what is and is not
+  established about branching.
+- `../topics/reference/targeted-pretraining-midtraining-literature.md` — the
+  changed-mixture version of ANN-3 (midtraining toward a target suite).
+- `../topics/reference/moe-literature.md` — why ANN-1 is dense-only (expert matching
+  first).
+- `../topics/reference/datadecide-data-pipeline.md` — the reproduction record behind the
+  2026-08-22 compute-matched entry, with Danielle's provenance caveat on the
+  agent-written verification code.
+- `../litreview/citation-verification-ledger.md` — provenance for the annealing-batch
+  identifiers (rows tagged `ANN`); agent-supplied, nothing verified.
+
+**Starting inventory for the synthesis** (assembled at intake 2026-08-24; detail in the
+dated §4 entries):
+
+- **The confound and its three workarounds, as first framed 2026-08-18:** stable phase +
+  decay branches (Hägele et al. 2024 / 2405.18392; MiniCPM 2404.06395; Llama 3 annealing
+  data; Blakeney et al. "Does your data spark joy?"; OLMo as DataDecide's training setup);
+  checkpoint merging as pseudo-annealing (WSM — merging recent checkpoints with weights
+  from an emulated decay curve; Nemotron 3's sliding-window merging, ~16% FLOP savings
+  claimed); and analytic correction via the multi-power law. The record's own open
+  question is whether merging-as-annealing-proxy works on *cosine* mid-run checkpoints
+  rather than stable-phase ones — Danielle's seed 2. (All unverified.)
+- **The MPL anchor:** Kairong Luo et al., *A Multi-Power Law for Loss Curve Prediction
+  Across Learning Rate Schedules* (arXiv 2503.12811, ICLR 2025) — power law on the sum of
+  learning rates plus decay-drop terms; fitted on a few runs it extrapolates to unseen
+  schedules and discovers a WSD-like schedule. The §4 entry of 2026-08-18 also records the
+  paper's own river-valley reading of its decay term.
+- **The loss→accuracy links the flip analysis rides on:** Gadre et al. 2024 (exponential
+  link), FLP two-stage (Chen et al., arXiv 2410.08527), model ladders (Bhagia et al.,
+  2412.04403), with the recorded caveat that hard accuracy metrics can look emergent and
+  the mapping gets fragile at threshold; Nakkiran et al. double descent as the
+  non-monotonicity boundary condition. (`loss-curve-forecasting.md`,
+  `grokking-and-hidden-progress.md`.)
+- **The landscape reading:** Wen et al., arXiv 2410.05192 — the canonical river-valley
+  statement; the interpolation signature as the closest thing to a river test; per
+  `checkpoint-tomography.md` they validate by branching a constant-LR run and
+  interpolating, and their WSD-S variant resumes from decayed checkpoints. The same entry
+  records what the respondent judged established ("branch + decay + measure the loss
+  drop") versus not (doing it on cosine mid-run checkpoints; treating the per-token
+  profile of the drop as the statistic). Unverified.
+- **The MiniCPM decay-phase gradient statistics** (2026-08-22 §4 entry, from a second
+  annealing-data report, figures unverified): weights move less than in the stable phase
+  while loss falls faster, gradient norm diminishes, consecutive-update cosine turns
+  predominantly positive — proposed as a mechanism-level companion readout for the
+  branch runner, with Hägele 2405.18392 as the decay-shape citation.
+- **The evaluation-side neighbor:** Heineman et al., *Signal and Noise* (NeurIPS 2025 per
+  the record; arXiv 2508.13144 as a Claude-added ledger row, unverified) — the noise term
+  that ANN-opt-7's durable-movement operator proposes to decompose into measurement
+  noise, wall oscillation, and unresolved drift. Its authors are also flagged in the
+  2026-08-21 §4 entries as the obvious people to run the T0 reanalysis themselves.
+- **The post-training flank (ANN-opt-3, ANN-opt-8):** *Similar Models Learn Differently:
+  Final-Window Pretraining Shapes Post-Training Beyond SFT* (arXiv 2607.25063) as the
+  closest published design; *Echo Chamber* (2504.07912); the "post-training did nothing"
+  cluster (A Sober Look 2504.07086; Spurious Rewards 2506.10947; Yue et al. 2504.13837)
+  as the hindsight reading of the earlier project. Full list in
+  `pretraining-to-posttraining.md`.
+- **The changed-mixture branch (2026-08-22 §4 entry):** the pre-/mid-training/RL interplay
+  study 2512.07783, from Danielle's SciSpace midtraining review — per that review,
+  unverified, and the review is noted to have surfaced little else LM-specific.
+- **Merging flank and adjacencies:** Branch-and-Merge 2407.08699 (merge subset-finetuned
+  models; smaller but higher-quality weight changes) is filed as adjacent to ANN-opt-7;
+  the MoE caution (merging needs expert matching first, PART-4) is in `moe-literature.md`.
+- **Provenance to carry:** every annealing-literature entry is agent-generated and marked
+  unverified in its own file; the 2026-08-22 compute-matched entry carries Danielle's
+  explicit caveat that the reproduction numbers come from agent-written verification code
+  she has not read or run, and its headline was withdrawn as a verifier bug.

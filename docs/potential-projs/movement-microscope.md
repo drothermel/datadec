@@ -312,7 +312,69 @@ current-state statement: rewrite it as understanding changes. Positioning claims
 are Danielle's to make; agent-supplied literature claims anywhere in this document
 are unverified leads, not established facts.*
 
-**Status: not yet drafted.** Raw material: the dated entries in §4, the theme
-accumulators under `../topics/reference/` (index: `../topics/README.md`), and
-`../litreview/citation-verification-ledger.md` (citation provenance; nothing there
-is verified).
+**Status: raw material assembled from repository records (2026-08-24); positioning not
+yet written.**
+
+**Where the raw material lives:**
+
+- `../topics/reference/pretraining-to-posttraining.md` — the primary accumulator for this
+  project: DataDecide itself, the "pretraining choices → post-training success at matched
+  final loss" cluster, the "post-training did nothing — not alone" cluster, the RLVR
+  token-regime papers, and Danielle's verbatim first-hand account of the earlier negative
+  result (the SFT-on-Tulu observation MIC-opt-1 re-measures).
+- `../topics/reference/distillation-literature.md` — the distillation arm (MIC-2's
+  KL-to-teacher axis and MIC-opt-5); a SciSpace six-question review, characterizations
+  agent-generated and unverified.
+- `../topics/reference/evaluation-methodology-literature.md` — Signal and Noise, and the
+  "where eval variance actually lives" entry that bounds what MIC-1's noise floor can
+  measure.
+- `../topics/reference/plasticity.md` and `../topics/reference/critical-periods.md` — the
+  diagnostic-panel lineage (curvature, feature rank, dead units, weight norm, Fisher trace)
+  that the movement metrics draw on.
+- `../litreview/citation-verification-ledger.md` — ~17 rows tagged `MIC` (all from the
+  `distillation-literature` intake, all marked agent-supplied and unverified).
+- `../open-questions-answered.md` — the open item on the AI2 "dataset that moves
+  specific-task metrics" (co-author "Kyle"), which gates MIC-opt-1's choice of
+  post-training data.
+
+**Starting inventory for the synthesis** (assembled at intake 2026-08-24; detail in the
+dated §4 entries and the files above):
+
+- **The substrate and the original hypothesis:** DataDecide (Magnusson et al., Ai2, ICML
+  2025, arXiv 2504.11393) — 25 corpora, ≤1B params, 3 seeds; continuous likelihood metrics
+  as small-scale proxies (`pretraining-to-posttraining.md`).
+- **"Pretraining shapes post-training beyond final loss":** *Similar Models Learn
+  Differently: Final-Window Pretraining Shapes Post-Training Beyond SFT* (arXiv 2607.25063,
+  named there as "closest to your exact experimental design"); *Echo Chamber* (Zhao,
+  Meterez et al., COLM 2025, arXiv 2504.07912); *Front-Loading Reasoning* (Akter et al.,
+  arXiv 2510.03264); *Early Data Exposure…* (arXiv 2605.12705); *The Finetuner's Fallacy*
+  (arXiv 2603.16177); *Understanding Reasoning from Pretraining to Post-Training* (arXiv
+  2607.16097, flagged as in tension with the original hypothesis).
+- **The "no movement" neighbors (MIC-opt-1, MIC-opt-3):** *A Sober Look at Progress in
+  Language Model Reasoning* (Hochlehnert et al., COLM 2025, arXiv 2504.07086 — the variance
+  analysis MIC-opt-3 proposes the post-training-power-analysis counterpart of); *Spurious
+  Rewards* (Shao et al., arXiv 2506.10947); Yue et al. (arXiv 2504.13837); Wu & Choi (ICML
+  2025 AI-for-Math workshop) with counterpoints *The Invisible Leash* (arXiv 2507.14843)
+  and arXiv 2506.14245; small-model SFT degradation (arXiv 2505.17988) and *Through the
+  Valley* (arXiv 2506.07712).
+- **Within-reach-task precedents (MIC-2):** TinyZero ("RL visibly works at 0.5–3B on
+  countdown and simple arithmetic") and *Provable Benefits of RLVR over SFT for Reasoning
+  Models: Learning to Backtrack Efficiently* as the synthetic-testbed style, both from the
+  2026-08-18 experiment-design entry.
+- **Distillation arm (MIC-2, MIC-opt-5), per the SciSpace review — unverified:** reverse KL
+  (MiniLLM) and skew/JSD variants as the default objective, with ToDi (2505.16297), BiLD
+  (2406.13555), DSKD (2406.17328); teacher/student ratios from Minitron (2407.14679) to
+  ADPA (2502.17927), design-space study 2410.16215, DDK 2407.16154; KD-vs-scratch evidence
+  from Bui et al. (2404.19319) and GLMD (2306.06625); pre- vs. post-trained teachers
+  (MiniPLM 2410.17215; 2509.26497). The review reports **no controlled sequential-vs-direct
+  comparison exists** — the claim MIC-opt-5 rests on. Missing canon flagged by the §4 entry:
+  distillation scaling laws (2502.08606), on-policy GKD (2306.13649), DistiLLM (2402.03898).
+- **Instrument lineage:** Signal and Noise (Heineman et al., NeurIPS 2025 per the record) —
+  noise as step-to-step wander, continuous metrics beating accuracy; the
+  evaluation-methodology entry that re-evaluating a fixed checkpoint with new seeds buys
+  nothing (variance lives in training). Plasticity panel: Lyle et al. (2303.01486,
+  2402.18762), Dohare et al. (Nature 2024 / 2306.13812), Achille–Rovere–Soatto Fisher trace.
+- **Unresolved provenance item:** the FollowIR identification (arXiv 2403.15246) for the
+  AI2 dataset is recorded as a guess and explicitly not a match; the "Olmo-3.1-32B-Instruct"
+  citation in the same response is flagged as looking fabricated
+  (`pretraining-to-posttraining.md` intake notes).

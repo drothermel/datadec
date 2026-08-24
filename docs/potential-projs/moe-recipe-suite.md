@@ -200,7 +200,75 @@ current-state statement: rewrite it as understanding changes. Positioning claims
 are Danielle's to make; agent-supplied literature claims anywhere in this document
 are unverified leads, not established facts.*
 
-**Status: not yet drafted.** Raw material: the dated entries in §4, the theme
-accumulators under `../topics/reference/` (index: `../topics/README.md`), and
-`../litreview/citation-verification-ledger.md` (citation provenance; nothing there
-is verified).
+**Status: raw material assembled from repository records (2026-08-24); positioning not
+yet written.**
+
+**Where the raw material lives:**
+
+- `../topics/reference/regularization-literature.md` — the record behind the 2026-08-22
+  §4 entry: Danielle's SciSpace review of regularization for MoE LMs on repeated data
+  (report characterizations are the SciSpace agent's, unverified), plus the intake notes
+  listing the missing multi-epoch canon. Bundle `INDEX.md` on disk.
+- `../topics/reference/moe-literature.md` — the suites, metrics, and vocabulary the
+  readouts (MSUITE-4) are defined against: FLAME-MoE, OLMoE router saturation, the three
+  load-balance phases, the OpenMoE token-ID routing finding, the Myth of Expert
+  Specialization, and the 2026-08-22 ensemble→MoE design-space entry (its granularity axis
+  is the MSUITE architecture knob).
+- `../topics/reference/nonstationarity-accounting.md` — the mechanism pillar the routing
+  readouts feed; `../topics/reference/plasticity.md` for the "modular plasticity" reading
+  of the MoE projects.
+- `../topics/staging/datadecide-dense.md` — the sibling substrate carrying the same
+  regularization-recipe decision (dropout onset, weight decay, expert dropout / z-loss,
+  epochs recorded in the frozen spec).
+- `../portfolio-rankings.md` — the 6–12-month flagship list entry (Tier 1 #2, "Does the
+  data choose the experts?") and the record that the tiny-MoE floor was deliberately cut;
+  `../open-questions-answered.md` for the FLAME-MoE routing-log gate and the
+  Slicing-and-Dicing checkpoint answer.
+- `../litreview/citation-verification-ledger.md` — provenance for every identifier below
+  (rows tagged `regularization-literature`, feeds "MSUITE, dense", plus the
+  `moe-literature` design-space rows); nothing verified, and the ledger distinguishes
+  agent-supplied from Claude-added rows.
+- Sibling project docs: `wsd-suite.md` §4 (this suite named as its MoE counterpart) and
+  `trajectory-statistics.md` §4 / `token-movement.md` (the FLAME-MoE routing follow-up
+  this suite is said to rescue from orphan status).
+
+**Starting inventory for the synthesis** (assembled at intake 2026-08-24; detail in the
+dated §4 entries):
+
+- **The repeated-data skeleton** the §4 entry of 2026-08-22 names for the training-config
+  parity step: Xue et al. 2305.13230 (*To Repeat or Not To Repeat*: multi-epoch training of
+  dense and MoE LMs; dropout switched on late is the regularizer that works; MoE models
+  overfit repeated data more than dense ones), Muennighoff et al. 2305.16264 (repetition
+  up to ~4 epochs nearly free, then diminishing), Hernandez et al. 2205.10487
+  (repeated-data double descent disproportionately damaging induction heads). Per the
+  ledger these three are Claude-added identifiers in the intake note — not from the
+  SciSpace bundle — and are unverified.
+- **The MoE-specific regularizer inventory** from the SciSpace review (unverified, and the
+  intake notes flag several off-target citations): load-balancing auxiliary loss (Shazeer
+  et al. 2017; Switch, Fedus et al. 2022), expert / cluster-level expert dropout (MoEC
+  2207.09094; Elbayad et al. Findings ACL 2023 — gating dropout, conditional routing,
+  curriculum), Dirichlet-prior shaping of router outputs for upcycled MoEs (2510.01185),
+  ST-MoE router z-loss (Zoph et al. 2022). Listed as missing on the MoE side: Switch's
+  expert dropout, ST-MoE's fine-tuning-overfitting finding, Gating Dropout 2205.14336,
+  StableMoE, DeepSeek's auxiliary-loss-free balancing, OLMoE's stability recipe.
+- **The readout precedents** the suite would report against: OLMoE router saturation as
+  the field's existing commitment metric; the three-phase load-balance trajectory; the
+  OpenMoE token-ID-dominated routing finding, which MSUITE-4 tests across recipes; the
+  Myth of Expert Specialization on cross-model specialization overlap. All quoted from the
+  2026-08-18 Research Trajectory intake, unverified
+  (`../topics/reference/moe-literature.md`).
+- **The external validation points and the artifact gap:** FLAME-MoE (38M–1.7B active, 64
+  experts, top-8, full openness) and OLMoE as validation rather than treatment variation —
+  the record's claim across §4 and `../portfolio-rankings.md` is that no public
+  multi-recipe MoE suite exists, which is the gap this suite is built to fill. The
+  FLAME-MoE routing-log contents (which checkpoints, token recoverability) remain an open
+  gate in `../open-questions-answered.md`.
+- **Measurement cautions on record:** Signal-and-Noise's finding that eval noise worsens as
+  scale shrinks, with routing discreteness plausibly adding variance (so the noise-floor
+  stage is "more necessary"), and the caution that MoE knobs are folklore-tuned at large
+  scale and may be mis-set at 20–50M active — from the 2026-08-18 §4 entry, superseded in
+  part by the sweep's own validated defaults.
+- **The Slicing-and-Dicing sweep as the fixed-architecture prior:** its own findings (total
+  parameters always help even at 128× ratios; optimal expert size depends only on active
+  parameters; other knobs second-order) are the defaults MSUITE-2 adopts, recorded in §4
+  and in `moe-partitions.md`.

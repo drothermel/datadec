@@ -462,7 +462,83 @@ current-state statement: rewrite it as understanding changes. Positioning claims
 are Danielle's to make; agent-supplied literature claims anywhere in this document
 are unverified leads, not established facts.*
 
-**Status: not yet drafted.** Raw material: the dated entries in §4, the theme
-accumulators under `../topics/reference/` (index: `../topics/README.md`), and
-`../litreview/citation-verification-ledger.md` (citation provenance; nothing there
-is verified).
+**Status: raw material assembled from repository records (2026-08-24); positioning not
+yet written.**
+
+**Where the raw material lives:**
+
+- `../topics/reference/multi-answer-qa-literature.md` — the primary literature record
+  for this project: the QAMPARI/QUEST/RoMQA lineage and its successors, closed-book vs.
+  retrieved vs. oracle result rows, the F1-5 capped-recall caveat, the
+  dataset-cleaning/verification thread, and the 2026-08-17 second validation pass
+  (GraphRAG lineage, MoNaCo date correction, "no published cleaned QAMPARI").
+- `../refs/multi-answer-qa-state-of-research-2026.md` — the verbatim external deep-search
+  report ("Exhaustive Multi-Answer Question Answering over Unstructured Corpora",
+  2026-08-16) the accumulator distils, including a 16-entry annotated primary-source
+  bibliography with venue links. Header states citations are unverified; it was produced
+  by a browsing deep-search assistant, so treat every number as an agent claim.
+- `../topics/reference/entity-linking-at-scale.md` — the linking flank: retriever–reader
+  linkers, the "every mention" problem, the four-tier cascade, and the bake-off protocol
+  behind MAQA-opt-2 (respondent's claims, unverified).
+- `../topics/reference/project-approach-principles.md` — the methodology source for the
+  bounded dataset-noise work and the error-driven-annotation sampling frame.
+- `../danielle-inputs.md` ("MAQA Next Steps" intake, 2026-08-22) — Danielle's verbatim
+  prompts behind the state-of-field and cleaner-datasets responses.
+- `../litreview/citation-verification-ledger.md` — provenance ledger; it currently
+  contains **no MAQA rows**, so nothing in the inventory below has been verified.
+
+**Starting inventory for the synthesis** (all figures are the deep-search report's
+unverified claims unless noted; detail in the accumulator and in §4):
+
+- **The three original datasets** (report §2): QAMPARI (Amouyal et al., GeM 2023 — ≥5
+  answers, ~13 average, Aug-2021 Wikipedia; best original system 32.8 F1, davinci-003
+  closed-book 13.8, BM25 reader 18.8, oracle passage selection 62.4 dev); QUEST
+  (Malaviya et al., ACL 2023 — 3,357 set-operation queries, mean complete recall@100 only
+  0.142); RoMQA (Zhong et al., Findings EMNLP 2023 — BART+retrieval 63.8 F1 / 37.9 robust,
+  gold evidence 95.0/83.4, GPT-3 open generation 4.4/0.4).
+- **Coverage-and-verification successors** — the branch closest to the ladder's retrieval
+  and evidence-budget rungs: Joint Passage Ranking (EMNLP 2021); LLatrieval (NAACL 2024,
+  on ALCE-QAMPARI under the F1-5 cap); RI2VER (Dhole et al., Findings ACL 2025 —
+  inter-passage verification; the cleanest closed-book-vs-corpus row on QAMPARI, 24.59 →
+  40.70, and RoMQA 12.20 → 19.24); RVR (arXiv 2602.18425, 2026 — 68.70 ordinary Recall@100
+  on QAMPARI but 33.70% *complete* recall). The accumulator states the objective has
+  shifted to selecting passages whose union covers the answer set.
+- **Closed-book, long-context, and logic flanks:** Mallen et al. (Findings NAACL 2024,
+  knowledge-aware demo selection); LOFT (Findings NAACL 2025 — Gemini 1.5 Pro at 128K,
+  QAMPARI 0.61 vs. 0.57, QUEST 0.30 vs. 0.54, with capped relevant docs); Does Dense
+  Retrieval Understand Boolean Logic? (Findings EMNLP 2024); LOGICOL (EMNLP 2025);
+  Reproducing Complex Set-Compositional IR (arXiv 2605.03824, SIGIR 2026 — ~0.42 R@100 on
+  QUEST collapsing below 0.02 on LIMIT+).
+- **Successor benchmarks:** MoNaCo (Wolfson et al., arXiv 2508.11133; TACL — the
+  2026-08-17 pass calls it "arguably the flagship benchmark for exactly your setting" and
+  corrects its date to 2025/2026, not the original era; recall 61–66% at 2–20 items →
+  27.6% at 101–500 → 2.5% above 500; GPT-4o 48.98 closed-book / 37.28 BM25 top-20 / 58.67
+  oracle; o3 fully correct on 38.7%); FanOutQA (ACL 2024); TANQ (TACL 2025); WideSearch
+  (arXiv 2508.07999, ICLR 2026); plus ALCE (arXiv 2305.14627), AmbigQA, GRANOLA-QA,
+  MulTiple, DeepAmbigQA, LIMIT+.
+- **The eval-audit thread** (the accumulator's 2026-08-16 "Cleaner datasets" entry) —
+  material for MAQA-1's noise audit and MAQA-opt-1: QAMPARI's own ExtendedSet study
+  (200 questions, median +2 / mean +3.13 answers; NLI check removed 70% of co-occurrence
+  false positives at 7.5% of correct alignments); DREAM/BRIDGE (arXiv 2602.06526, ICLR
+  2026 — opposed-agent pooling, 95.2% labeling accuracy, 3.5% human review, 29,824
+  recovered chunks); *Judging Is Not Enumerating* (arXiv 2608.01000 — membership judging
+  ≈0.99 F1 vs. badly incomplete enumeration); ObliQA-MP (NLLP 2025 — 20.46% of accepted
+  passages not connected); GaRAGe (Findings ACL 2025); answer-matching work (Kamalloo et
+  al. ACL 2023, PEDANTS Findings EMNLP 2024, LongRecall arXiv 2508.15085); nugget work
+  (The Great Nugget Recall arXiv 2504.15068 and a 2026 QAMPARI reproduction, GeM 2026);
+  ExpertQA (NAACL 2024). The 2026-08-17 pass records that **no published cleaned
+  QAMPARI/QUEST/RoMQA was found**.
+- **The graph flank** (bearing on MAQA-opt-3): the 2026-08-17 pass says the entity-graph
+  approach "is now GraphRAG" and names Microsoft GraphRAG, HippoRAG, LightRAG, GFM-RAG,
+  HopRAG, RAPTOR, Think-on-Graph — with the caveat, recorded as a claim, that these
+  evaluate on 2–4-hop single-answer benchmarks (HotpotQA, MuSiQue, 2Wiki) and that
+  graph-based exhaustive retrieval on QAMPARI/QUEST/RoMQA/MoNaCo "appears genuinely
+  underexplored"; the §4 feedback of 2026-08-17 repeats this as a favorable gap.
+- **Linking prior art for MAQA-opt-2** (`entity-linking-at-scale.md`, unverified): ReLiK
+  (Findings ACL 2024), ReFinED (NAACL Industry 2022), BELA (Meta, 97 languages), and
+  `entity-linkings` (EACL 2026 demo) as the bake-off field.
+- **Recorded evaluation hazards to engage:** the F1-5 recall cap (ALCE/LLatrieval),
+  RoMQA P@10, LOFT's document caps, contamination of Aug-2021-Wikipedia-derived
+  benchmarks, and the entanglement of retrieval and generation — the report's own
+  prescription (report retrieval coverage, reader-given-gold, and final set accuracy
+  separately) is the shape of the ladder in §1.

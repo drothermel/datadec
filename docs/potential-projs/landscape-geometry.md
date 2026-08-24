@@ -246,7 +246,93 @@ current-state statement: rewrite it as understanding changes. Positioning claims
 are Danielle's to make; agent-supplied literature claims anywhere in this document
 are unverified leads, not established facts.*
 
-**Status: not yet drafted.** Raw material: the dated entries in §4, the theme
-accumulators under `../topics/reference/` (index: `../topics/README.md`), and
-`../litreview/citation-verification-ledger.md` (citation provenance; nothing there
-is verified).
+**Status: raw material assembled from repository records (2026-08-24); positioning not
+yet written.**
+
+**Where the raw material lives:**
+
+- `../topics/reference/landscape-literature.md` — the primary accumulator: the river-valley
+  papers and their interpolation-based "river test", the linear-mode-connectivity /
+  re-basin line, feature connectivity, cross-task linearity, neuron identifiability, and the
+  comparability precedent.
+- `../topics/reference/identifiability-literature.md` — the frame in which basin
+  distinctness is residual non-identifiability, the raw-vs-aligned barrier reading, and the
+  weight-free functional tests (linear-map residuals, stitching, CKA).
+- §4 of this doc — the 2026-08-18 origin entry (Danielle's project seed and the posed
+  question), the raw-vs-aligned interpretation entry, the pair-selection control, and the
+  2026-08-22 reinit-pass entry.
+- `../topics/staging/checkpoint-tomography.md` — the twin-branch probe as the causal version
+  of GEO-opt-5, the decay-branch instrument, and the SGLD/LLC probe, with the record's own
+  "prior-art check to do" note.
+- `../topics/reference/reinit-and-transfer-literature.md` — gap G3 (interface reset and the
+  barrier back to the pre-reset solution), the layer-wise-LMC prediction, and PolyPythias as
+  substrate; cross-listed here as GEO-opt-6.
+- `../topics/reference/critical-periods.md` — the "critical period = the window before basin
+  commitment" reading that links GEO-opt-5 to `intervention-grid.md`.
+- `../topics/reference/ntk-literature.md` — eNTK readouts named there as candidates "for the
+  ladder / GEO" (spectrum, effective rank, kernel velocity, kernel–target alignment).
+- `../portfolio-rankings.md` — GEO's placement (Tier 3 component; GEO-opt-3 folded into the
+  flagship) with the stated reason.
+
+**Starting inventory for the synthesis** (assembled at intake 2026-08-24; detail in the
+dated §4 entries and the topic files):
+
+- **River-valley / valley-position line.** Wen et al., *Understanding Warmup-Stable-Decay
+  Learning Rates: A River Valley Loss Landscape View* (arXiv 2410.05192) — the canonical
+  statement and the source of the interpolation signature (convex/unimodal between
+  stable-phase checkpoints vs. smooth monotone between decay-phase ones), "currently the
+  closest thing to a 'river test'", plus the toy-bigram validation and the ~0.39 Spearman
+  correlation between token-level uncertainty and local sharpness; *Training Dynamics of the
+  Cooldown Stage in WSD* (the pre-cooldown→final vs. local-Adam-step coordinates, GEO-opt-2's
+  figure); *Scaling with Collapse* (arXiv 2509.25087) — curve collapse as a weight-free
+  comparability criterion (GEO-opt-1); the multi-power law (Luo et al., 2503.12811) reading
+  the decay-induced drop as descent from the walls to the river.
+  (`landscape-literature.md`.)
+- **Basin identification / mode connectivity.** Frankle et al., *Linear Mode Connectivity and
+  the Lottery Ticket Hypothesis* (same-run-early-split models are linearly connected — the
+  precedent for GEO-opt-5); Entezari et al. on permutation invariance; Ainsworth et al., *Git
+  Re-Basin* (independently trained models connected only after permutation alignment — GEO's
+  alignment step); *Unveiling LMC of Re-Basin from a Neuron Distribution Perspective*
+  (re-basin "often reduce[s] barriers only marginally and work[s] poorly early in training,
+  with no unified theory of when they succeed" — the source of this doc's stated analysis
+  risk); *Going Beyond LMC: Layerwise Linear Feature Connectivity* (GEO-opt-4); *On the
+  Emergence of Cross-Task Linearity in the Pretraining-Finetuning Paradigm* and *Model soups*
+  (Wortsman et al.) as why merging works only within a basin; *Beyond Structural Symmetries:
+  LMC via Neuron Identifiability* (2026). (`landscape-literature.md`.)
+- **The comparability precedent named in §4.** The 2026-08-18 entry names Juneja et al.
+  (ICLR 2023), *Linear Connectivity Reveals Generalization Strategies*, as the precedent for
+  the core question: models in different linearly-connected basins "implement *different
+  generalization strategies*… despite similar in-distribution accuracy" — recorded there as
+  "the strongest existing evidence" that same-metric-value-different-basin can mean different
+  mechanisms.
+- **The gap statement on record** (attributed to the 2026-08-18 Research Trajectory entry,
+  agent-supplied and unverified): "Nobody has connected either literature to *metric
+  validity*: no paper says 'ICL scores / task vectors / plasticity statistics are comparable
+  iff models pass test X.'" The same entry supplies the design consequence — log raw and
+  aligned barriers for every compared pair and report comparisons conditional on barrier
+  height.
+- **Identifiability reading of the barrier pair.** Raw-high/aligned-low = "same solution
+  class, different parameterization" (benign); aligned-high = genuine solution-class
+  divergence. Weight-free complements: Roeder, Metz & Kingma 2021 (linear-map residuals);
+  model stitching (Lenc & Vedaldi 2015; Bansal, Nakkiran & Barak 2021) as ground truth; CKA
+  (Kornblith et al.) as the scalable proxy that "can be dominated by a few directions and
+  disagree with stitching." (`identifiability-literature.md`, §4 entry of 2026-08-18.)
+- **Reset-side and substrate items.** Layer-wise LMC (arXiv 2307.06966) — middle layers own
+  the barrier, per-layer perturbations near-barrier-free — with `reinit-and-transfer-
+  literature.md`'s gap G3 ("nobody has reset an interface and measured the barrier to the
+  pre-reset solution") as GEO-opt-6's stated opening; PolyPythias (van der Wal et al., ICLR
+  2025, arXiv 2503.09543; 50 runs, 14M–410M, ~7k checkpoints) as the many-seed substrate;
+  also listed there: LMC of MoEs (2509.11348), *Landscaping LMC* (2406.16300), *The Butterfly
+  Effect* (2506.13234, motivating many seeds).
+- **Adjacent instruments for the same statistic** (from `checkpoint-tomography.md`): Frankle-
+  style twin branches as the causal version of GEO-opt-5, with the caveats recorded there
+  (children trained to completion; short-child variants not standardized; mostly pre-LLM-scale
+  vision work; not run across data recipes); the devinterp/SGLD local-learning-coefficient
+  probe; single-checkpoint critical-sharpness and basin-emergence statistics as covariates.
+  That file also records a prior-art check still to do over the devinterp and WSD-followup
+  communities' 2025–26 output.
+- **Provenance caveat.** Almost all of the above entered the repo through the 2026-08-18
+  Research Trajectory conversations and the 2026-08-22 reinit pass; both source files carry
+  the standing header that related-work claims are unverified unless an identifier is given,
+  and the only GEO-tagged row in `../litreview/citation-verification-ledger.md` is 2407.17465
+  (u-µP, Danielle-supplied), still unverified.

@@ -537,7 +537,81 @@ current-state statement: rewrite it as understanding changes. Positioning claims
 are Danielle's to make; agent-supplied literature claims anywhere in this document
 are unverified leads, not established facts.*
 
-**Status: not yet drafted.** Raw material: the dated entries in §4, the theme
-accumulators under `../topics/reference/` (index: `../topics/README.md`), and
-`../litreview/citation-verification-ledger.md` (citation provenance; nothing there
-is verified).
+**Status: raw material assembled from repository records (2026-08-24); positioning not yet
+written.**
+
+**Where the raw material lives:**
+
+- `../topics/reference/irt-literature.md` — the primary prior-art record: the
+  "IRT over diverse converged models to compress benchmarks" line, what the DataDecide
+  setting adds, and the local-independence / binary-vs-margin cautions.
+- `../topics/reference/estimation-and-calibration-methods.md` — three method entries this
+  project draws on: the staged difficulty recipe from a 4-model × 8-prompt setting, the
+  training-free item-embedding-vs-difficulty metric stack (IRT-11), and the ranking-metric
+  entry (top-weighted τ / RBO / regret) for decision-accuracy saturation.
+- `../topics/reference/small-scale-evaluation-metrics-literature.md` — the proxy-metric
+  frontier IRT's decision-reliability sub compares against, seeded on Patel et al. 2026.
+- `../topics/reference/evaluation-methodology-literature.md` — Signal and Noise, OLMES, and
+  the fixed-checkpoint variance rule.
+- `../topics/reference/loss-curve-forecasting.md` — the loss→accuracy mappings and the
+  emergence-as-threshold caveat the emergence-as-measurement claim builds on.
+- `../topics/reference/structured-output-literature.md` — the expected-direction prior for
+  IRT-10's format intervention.
+- `../topics/reference/datadecide-data-pipeline.md` — the reproduction record behind the
+  response-model decision, the BoolQ anomaly, and the crossover recount (agent-written
+  verification code Danielle has not yet read or rerun; flags, not findings).
+- `../dataset-analysis-idea-map.md` (item I2) — the earliest written form of the five IRT
+  sub-results.
+- `../litreview/citation-verification-ledger.md` — provenance of the arXiv IDs; the rows
+  tagged `IRT` are agent-supplied or Claude-added and unverified.
+
+**Starting inventory for the synthesis**
+
+- **The IRT-for-NLP-evaluation line** (from `../topics/reference/irt-literature.md`,
+  2026-08-18, unverified attributions): Lalor et al., *Building an Evaluation Scale Using
+  Item Response Theory*; Rodriguez et al., *Evaluation Examples Are Not Equally
+  Informative…* (ACL 2021); Polo et al., *tinyBenchmarks* (ICML 2024, IRT-selected ~100-item
+  subsets preserving rankings); *metabench*. Recorded characterization: all fit IRT to
+  diverse converged models to compress benchmarks. The §4 entry of 2026-08-21 names
+  Rodriguez et al. and tinyBenchmarks as the accepted main-venue precedents and states the
+  pattern it reads in them — "IRT plus a claim or payoff, never IRT as reanalysis."
+- **Emergence-as-measurement neighbors:** Schaeffer et al.'s mirage paper (2304.15004) as
+  the metric-choice-manufactures-discontinuities result the §4 entry of 2026-08-21 says
+  lacked a principled framework; Wei et al. 2206.07682 as the emergence claim; proxy tasks
+  for emergent abilities 2412.07111
+  (`../topics/reference/small-scale-evaluation-metrics-literature.md`, SciSpace review,
+  unverified). The loss→accuracy side: Gadre et al. 2024 (exponential link), Chen et al.'s
+  FLP pipeline (2410.08527), Bhagia et al.'s model ladders (2412.04403), with the recorded
+  caveat that hard accuracy metrics look emergent where the loss→accuracy map is fragile
+  (`../topics/reference/loss-curve-forecasting.md`).
+- **The metric-choice precedent:** Heineman et al., *Signal and Noise* (NeurIPS 2025 per the
+  record; ledger ID 2508.13144, Claude-added) — continuous metrics beat accuracy, noisy
+  subtasks filtered; the §1 statement of IRT-5 is that the binary-vs-margin comparison
+  replicates this inside one framework. OLMES (*A Standard for Language Model Evaluations*)
+  is the harness; the fixed-checkpoint rule ("re-evaluating with new seeds buys nothing")
+  comes from the same accumulator.
+- **The proxy frontier to compare θ against:** Patel et al. 2026 (arXiv 2605.18607;
+  RankSVM over 80 token-level proxies on expert trajectories; ρ 0.81 vs. 0.36 for
+  cross-entropy, 0.33 for rBridge; DataDecide corpus ranking at 10⁻⁵ target compute). The
+  §4 entry of 2026-08-22 records the per-token vs. per-choice granularity mismatch with
+  `choices.parquet` and that their entropy-/frequency-weighted winners echo the
+  per-character normalization result. Per the SciSpace review, unverified.
+- **Format-intervention prior (IRT-10):** "The Hidden Cost of Structure" (RANLP 2025 —
+  constraints help base models, hurt instruction-tuned ones on generation) and the EACL
+  Findings 2026 structured-output study (sign depends on model, task, schema, prompt), cited
+  in §4 as the expected-direction prior and the reason to report per checkpoint
+  (`../topics/reference/structured-output-literature.md`; agent-generated pass, unverified).
+- **Psychometric method precedents on record** (`estimation-and-calibration-methods.md`,
+  method entries rather than citations): the staged smoothed-pass-rate → Rasch → many-facet
+  logistic mixed model → 2PL order, with leave-one-facet-out validation offered as the cheap
+  generalization check for IRT-3; and, for IRT-11, cluster R²/η², NMI/V-measure/ARI, kNN
+  difficulty smoothness against a shuffled-label null, and Mantel-style pairwise Spearman.
+- **Ranking-metric flank for the decision-reliability sub:** weighted Kendall τ (Vigna 2015,
+  1404.3325) and rank-biased overlap (Webber, Moffat & Zobel 2010, TOIS), plus top-k hit and
+  regret, recorded as the right families when pairwise decision accuracy saturates (both
+  Claude-added and unverified).
+- **The continual-learning pivot's stated hook** (§4, 2026-08-21, external response,
+  unverified): forgetting metrics conflating item difficulty with ability change, task
+  orderings not on a common scale, and measurement-invariance testing as the formal
+  criterion — offered as a recognized methodological hole rather than a set of citations; no
+  CL-measurement papers are named anywhere in the repo record.

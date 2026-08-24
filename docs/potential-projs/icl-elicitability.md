@@ -352,7 +352,103 @@ current-state statement: rewrite it as understanding changes. Positioning claims
 are Danielle's to make; agent-supplied literature claims anywhere in this document
 are unverified leads, not established facts.*
 
-**Status: not yet drafted.** Raw material: the dated entries in §4, the theme
-accumulators under `../topics/reference/` (index: `../topics/README.md`), and
-`../litreview/citation-verification-ledger.md` (citation provenance; nothing there
-is verified).
+**Status: raw material assembled from repository records (2026-08-24); positioning not
+yet written.**
+
+**Where the raw material lives:**
+
+- `../topics/reference/icl-literature.md` — the primary accumulator: emergence-of-ICL
+  results, the ICL-as-gradient-descent arc and its debunkings, the extractable-object
+  (task/function/state vector) family, the measurement statistics, the many-shot /
+  ICL-scaling leads, and the lightweight-adaptation-plus-ICL hybrids. Several entries
+  carry explicit reliability flags (one response's author/lab attributions are marked
+  as looking fabricated; several follow-ups produced no named papers at all).
+- `../topics/reference/task-vectors.md` — the two senses of "task vector" (weight-space
+  task arithmetic vs. activation-space ICL task vectors) with arXiv IDs supplied by
+  Danielle, i.e. not under the unverified-agent-claim caveat; this is protocol
+  statistic #4's reference set.
+- `../topics/reference/pretraining-to-posttraining.md` — the "ICL vs. fine-tuning as two
+  access routes to the same capabilities" entry (2026-08-18) and the DataDecide anchor.
+- `../topics/reference/plasticity.md` (2026-08-18 entry) — the plasticity group's move
+  into ICL-vs-fine-tuning adaptation.
+- `../topics/staging/frozen-body-transfer-audit.md` — gaps G5/G6, cross-listed here as
+  ICL-opt-5; the frozen/finetuned gap reframed as an elicitation-ceiling measurement.
+- `../topics/staging/clean-code-preference-icl.md` — the small practical ICL test whose
+  interactive-learning-curve design shares the (unique examples × repetitions) confound
+  with ICL-opt-7.
+- `../research-hypothesis.md` — the elicitation-as-instrument-calibration framing and
+  the strong-null statement; `../topics/reference/landscape-literature.md` via the
+  basin-comparability caveat in §4.
+- `../litreview/citation-verification-ledger.md` — provenance for repo-wide identifiers;
+  the ICL-topic citations largely arrived from Danielle or the Notion trajectory page
+  rather than the 2026-08-22 SciSpace batch, so most are not ledgered.
+
+**Starting inventory for the synthesis** (all characterizations as recorded in the repo;
+detail in the dated §4 entries):
+
+- **Emergence of ICL as a function of pretraining data:** Chan et al. 2022 (*Data
+  distributional properties drive emergent in-context learning in transformers* —
+  burstiness/skew/within-class variation change whether ICL emerges at all, often at
+  similar training loss) and Raventós et al. (task-diversity threshold for
+  linear-regression ICL; the topic file flags a citation gap on the Notion page). The
+  2026-08-18 §4 entry calls this literature "your hypothesis, already demonstrated in
+  miniature," framed as *when does ICL emerge* rather than as a functional of recipe.
+  (`../topics/reference/icl-literature.md`)
+- **ICL as gradient descent, and its debunking arc:** von Oswald et al.; Akyürek et al.;
+  Dai et al. (ICL as implicit finetuning / meta-optimization, with concrete
+  update-similarity statistics); Ahn et al. (preconditioned GD). Contradictions on
+  record: *In-context Learning and Gradient Descent Revisited* (untrained models reach
+  comparable ICL–GD similarity) and *The Initialization Determines Whether In-Context
+  Learning Is Gradient Descent*. Recorded consequence: use the similarity statistics only
+  with the untrained-model control. (`../topics/reference/icl-literature.md`)
+- **Task / function / state vectors:** Hendel et al. (*In-Context Learning Creates Task
+  Vectors*), Todd et al. (*Function Vectors in Large Language Models*), *In-Context
+  Learning State Vector with Inner and Momentum Optimization*, *Learning Task
+  Representations from In-Context Learning*; plus Danielle-supplied Dong et al. 2506.09048
+  (Linear Combination Conjecture; predicted failure on high-rank mappings) and Yang et al.
+  2509.24169 (learned rather than extracted task vectors; OV circuits, key heads, largely
+  linear propagation). Weight-space siblings in `../topics/reference/task-vectors.md`:
+  Ilharco et al. 2212.04089 (task arithmetic), Zhou et al. 2508.16082 (one-epoch task
+  vector = scaled negative gradient), Rinaldi et al. 2602.12952 (Theseus, cross-architecture
+  transport), Kim et al. 2503.06921 (task-vector quantization).
+- **Measurement statistics:** Olsson et al., *In-context Learning and Induction Heads*
+  (the original ICL score as a loss difference between early and late token positions;
+  prefix-matching/copying scores as the mechanistic correlate) and *What In-Context
+  Learning "Learns" In-Context: Disentangling Task Recognition and Task Learning*
+  (shuffled-label and format-only controls). These are protocol statistics 1–3.
+  (`../topics/reference/icl-literature.md`; §4 2026-08-18 protocol entry)
+- **ICL vs. fine-tuning as access routes:** *Eliciting Fine-Tuned Transformer Capabilities
+  via Inference-Time Techniques* (formal argument that SFT-acquired capabilities can be
+  approximated in-context) and Bornschein, Lyle, Pascanu et al., *Fine-Tuned In-Context
+  Learners for Efficient Adaptation* (prompt-based methods win few-shot, plateau with more
+  data). (`../topics/reference/pretraining-to-posttraining.md`,
+  `../topics/reference/plasticity.md`; both entries agent-sourced, unverified)
+- **Lightweight-adaptation hybrids and the soft-prompt continuum:** *Context Tuning for
+  In-Context Optimization* (2507.04221) and *You Only Fine-tune Once: Many-Shot In-Context
+  Fine-Tuning* (title only, no ID); the third "industry blog" example is recorded as
+  unsourced. Danielle-flagged lead: soft-prompt / learned-token steering (Lester et al.
+  prompt tuning, prefix tuning, P-tuning lineages) vs. natural-language ICL as a continuum
+  of "how many tuned parameters does elicitation get."
+  (`../topics/reference/icl-literature.md`, undated entry; unverified)
+- **ICL scaling / many-shot leads (weak provenance):** *Bayesian Scaling Laws for
+  In-Context Learning* (2410.16531), *Scaling Laws for Many-Shot In-Context Learning with
+  Self-Generated Annotations*, *MachineLearningLM: Scaling Many-Shot ICL via Continued
+  Pretraining*, and *In-Context Learning with Long-Context Models* (NAACL 2025,
+  2025.naacl-long.605). The topic's reliability note says the accompanying author/lab
+  attributions look fabricated and a fourth "paper" appears invented; keep titles and the
+  one ID as search leads only. (`../topics/reference/icl-literature.md`)
+- **Comparability constraint:** Juneja et al. (ICLR 2023) — basin-separated generalization
+  strategies, cited in §4 for the claim that mechanism-level metrics (task vectors,
+  GD-similarity) may not be comparable across basins; hence the barrier-conditioned
+  reporting rule. (§4 2026-08-18 loss-basins entry; `landscape-geometry.md`)
+- **Danielle's own prior work as the framing anchor:** Rothermel et al. 2021 (arXiv
+  2107.12460, *Don't Sweep your Learning Rate under the Rug*) — frozen variants lag full
+  fine-tuning; §4's 2026-08-18 entry frames the project as "quantifying the gap your 2021
+  paper discovered," and `../topics/staging/frozen-body-transfer-audit.md` G6 states that
+  no paper on record reframes the frozen/finetuned gap as an elicitation-ceiling
+  measurement (closest: 2107.12460, 2410.06225; verdict rests on abstracts, no
+  forward-citation sweep run).
+- **In-program neighbors to position against, not literature:** `elicitation-gain.md`
+  (`ELI`, the optimizer-driven counterpart of the tuned ceiling), `movement-microscope.md`
+  (the ICL curve as the proxy candidate), `intervention-grid.md` (critical-period and
+  distillation arms), `tiny-scale-measurement.md`.
