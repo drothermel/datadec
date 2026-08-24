@@ -5433,3 +5433,23 @@ dedup thread was live by early April); identity established — turn 2 is the so
 her curated lineage/overlap Notion note (the 6-step pipeline refines its
 multi-layer-graph proposal). Landscape section header dated; lineage-note entry
 cross-referenced; ingest-link-index row added.
+
+### 2026-08-24 — HumanEval-family tooling/leaderboards conversation ingested
+
+> link: https://chatgpt.com/c/69d7f822-f760-832e-9bde-06213ac73301
+
+> Is there a collection of human eval datasets and results somewhere, even better if
+> they are provided along with codebase and comparisons across different recent
+> models?
+
+New ingest (unlike the previous link, this one had not been routed before). One-turn
+ChatGPT conversation dated 2026-04-09 19:04 UTC via its ID timestamp (inferred) —
+same evening as the ecosystem/overlap conversation, about an hour earlier. Verbatim
+in the bundle (`chatgpt-humaneval-tooling-leaderboards-convo.md`). Routed: new dated
+entry in
+[topics/reference/code-benchmarks-landscape.md](topics/reference/code-benchmarks-landscape.md)
+(tooling map: BigCode Evaluation Harness — the Feb-paper HumanEvalExplain harness —
+EvalPlus leaderboard, Big Code Models Leaderboard with scriptable
+`code_eval_board.csv`, Awesome-Code-Benchmark discovery index, BigCodeBench with
+pre-generated model samples; REval = new name, link-list mention only). No ledger
+rows — resources, not citations. Ingest-link-index row added.

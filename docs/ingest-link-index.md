@@ -12,6 +12,14 @@ is the durable part.
 
 ## 2026-08-24 — ChatGPT source conversations (retro-provenance)
 
+- [HumanEval-family tooling and leaderboards (ChatGPT, 2026-04-09)](https://chatgpt.com/c/69d7f822-f760-832e-9bde-06213ac73301)
+  — one-turn conversation (same evening as the ecosystem/overlap one, ~1h earlier;
+  dated from ID timestamp, inferred); tooling map: BigCode Evaluation Harness,
+  EvalPlus leaderboard, Big Code Models Leaderboard, Awesome-Code-Benchmark,
+  BigCodeBench → routed: new dated entry in
+  `topics/reference/code-benchmarks-landscape.md` (resource pointers; REval new
+  name); no ledger rows (repos/leaderboards, not citations).
+
 - [HumanEval derivative ecosystem + cross-benchmark overlap/dedup (ChatGPT, 2026-04-09)](https://chatgpt.com/c/69d807bb-7c84-8333-9a18-c182475985ca)
   — two-turn conversation, first ingested 2026-08-22 as an unlinked paste; link + full
   verbatim supplied 2026-08-24; conversation dated from its ID timestamp (inferred).

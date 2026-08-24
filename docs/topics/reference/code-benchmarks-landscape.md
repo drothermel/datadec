@@ -324,3 +324,38 @@ components → human review) — the design sketch for line-of-work 3 and the
 machinery a rehabbed TLC task suite's dedup would use. Verification flag: the
 2501.10711 pairing (ledger: How2Bench; paper DB title: "Code Benchmarks Should
 Prioritize Rigor, Reliability, and Reproducibility").
+
+## 2026-04-09 (ChatGPT; intake 2026-08-24) — HumanEval-family tooling and leaderboards (one turn)
+
+Source conversation supplied with link (bundle:
+`chatgpt-humaneval-tooling-leaderboards-convo.md`); dated via its ID timestamp
+(inferred) to the same 2026-04-09 evening as the derivative-ecosystem/overlap
+conversation, about an hour earlier. Danielle's prompt: is there a collection of
+HumanEval datasets and results, ideally with codebase and cross-model comparisons?
+
+The response's tooling map (resource pointers, not papers):
+
+- **BigCode Evaluation Harness** (github: bigcode-project/bigcode-evaluation-harness)
+  — the broad runnable collection: HumanEval, HumanEval+, InstructHumanEval,
+  HumanEvalPack, MultiPL-E, ReCode, MBPP, MBPP+, APPS, DS-1000; multi-GPU + Docker.
+  Named "the closest practical answer" to all-descendants-in-one-place. This is the
+  harness the Feb-paper HumanEvalExplain baselines ran on (see
+  `humanevalexplain-results.md`).
+- **EvalPlus leaderboard** (evalplus.github.io/leaderboard.html) — greedy pass@1 on
+  HumanEval+/MBPP+; local models + API backends.
+- **Big Code Models Leaderboard** (HF Space bigcode/bigcode-models-leaderboard) —
+  open models on HumanEval + MultiPL-E with throughput; scriptable backing file
+  `data/code_eval_board.csv` with per-language columns.
+- **Awesome-Code-Benchmark** (github: tongye98/Awesome-Code-Benchmark) — discovery
+  index linking benchmarks (incl. EvoEval, REval, LiveCodeBench) with GitHub/dataset/
+  leaderboard links side by side. REval is a new name in this record (link-list
+  mention only, nothing else known).
+- Canonical dataset pages: openai/human-eval, HumanEvalPack, MultiPL-E, HumanEval-X;
+  **BigCodeBench** as the "HumanEval-like but more realistic" adjacent family (with
+  pre-generated samples from evaluated models — relevant if a rehabbed suite wants
+  existing generations to reanalyze).
+
+Recommended stack per the response: harness for breadth, EvalPlus for current
+rankings, HF board for open-model browsing, Awesome-Code-Benchmark for long-tail
+discovery. Offered next artifact (not produced): a dataset × task type × languages ×
+codebase × leaderboard availability matrix for the HumanEval family.
