@@ -308,3 +308,34 @@ unverified:
   so compression claims need code long enough that the trivial baseline saturates
   (~15–20% on ClassEval-length classes). This is the cleanest statement on record
   of why the compression-correctness frontier needs a length axis.
+
+## 2026-08-24 — ShortenDoc full detail + summarization-metric findings (NBLM AI4SE notebook)
+
+From the ninth NotebookLM notebook of the day (bundle:
+`nblm-ai4se-code-notebook.md`; no IDs supplied; agent-generated, unverified).
+Compression-side material; the prompt-opt/repair half is in
+`prompt-optimization-landscape.md` (same date):
+
+- **ShortenDoc, method detail** (previously a name + headline here and in the
+  April notes): task-specific adaptive *subword-level* docstring compression —
+  signature isolated from the docstring; stop-word filtering by semantic
+  similarity; token significance sorted by conditional entropy +
+  perplexity-difference (small CodeGPT scorer, 0.23GB); iterative subword
+  removal until next-token logit cosine similarity drops below τ ≥ 0.999.
+  25–40% compression preserving or improving Pass@1; 17.6–20% FLOPs saved.
+  **General-purpose compressors (Selective_Context, LLMLingua2) fail past ~10%
+  on code** — they discard code-specific semantics. **The method-name
+  dependency finding:** descriptive method names carry redundant information
+  and permit aggressive docstring compression; generic names ('foo') force
+  reliance on context — i.e., how much NL a code task needs is a function of
+  how much NL is already in the identifiers. Directly relevant to the
+  compression-correctness frontier and the NL-necessity framing (identifier
+  NL and docstring NL trade off).
+- **Summarization-metric findings** (empirical study, 4 LLMs × 10 languages):
+  BLEU/METEOR/BERTScore correlate weakly or *negatively* with human quality
+  ratings (references are brief/outdated; detailed LLM summaries get
+  penalized); **GPT-4-as-evaluator aligns closest with humans**; advanced
+  prompting doesn't consistently beat zero-shot; CodeLlama-Instruct-7B beats
+  GPT-4 on "Why" and "Property" intent categories. A caution for any
+  d-quality measurement that leans on overlap metrics: the explain→regenerate
+  protocol's execution-based scoring dodges exactly this failure.

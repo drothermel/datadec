@@ -29,6 +29,15 @@ is the durable part.
 
 ## 2026-08-24 — NotebookLM notebooks
 
+- [AI4SE notebook: prompt learning, translation/repair, compression, probing (NotebookLM, undated)](https://notebook.google.com/notebook/04e09363-31e7-4bf5-acb3-a4fddbcc795e)
+  — 8 sources: ShortenDoc full detail + method-name dependency, Prochemy
+  detail, PromptCS, Fluorine restart-beats-repair, LANTERN cross-language
+  repair, RepE correctness probing, TransAgent, summarization-metrics study →
+  routed: `topics/reference/code-compression-literature.md` (ShortenDoc +
+  metric findings), `topics/reference/prompt-optimization-landscape.md`
+  (Prochemy/PromptCS/feedback paradox/LANTERN/RepE/TransAgent), TLC recall
+  corpus (6 lines), ShortenDoc ledger-row note + 6 new rows.
+
 - [Tokenization / vocabulary-scaling notebook (NotebookLM, undated)](https://notebook.google.com/notebook/1d9de7a7-815a-4a65-a933-1abde72c1ff4)
   — 11 sources: Hayou √d-rule (embedding LR in the large-vocab regime),
   byte-level cross-tokenizer distillation, BPE-dropout unification, mT5/ByT5

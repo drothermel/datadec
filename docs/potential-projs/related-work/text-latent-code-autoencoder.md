@@ -834,3 +834,30 @@ given):**
 - **Stitch performance detail** — branch-and-bound refactoring 1,000–10,000×
   faster than DreamCoder compression; enables per-iteration deep refactoring —
   (source: same)
+
+**NBLM AI4SE notebook additions (intake 2026-08-24; agent-generated, no IDs
+supplied):**
+
+- **ShortenDoc method-name dependency** — descriptive identifiers permit
+  aggressive docstring compression, generic names don't: identifier NL and
+  docstring NL trade off; plus full method detail (subword-level, entropy
+  sorting, τ≥0.999 logit-similarity stopping; general compressors fail past
+  ~10% on code) — (source:
+  `../../topics/reference/code-compression-literature.md`, 2026-08-24 entry)
+- **RepE code-correctness probing** (no ID) — extractable internal correctness
+  direction; test-free candidate ranking beating trained rankers at ~zero cost;
+  white-box-only verifier signal — (source:
+  `../../topics/reference/prompt-optimization-landscape.md`, 2026-08-24 entry)
+- **LANTERN cross-language repair hypothesis** (no ID) — translating a bug into
+  the model's strong language beats deeper iteration in place; representation-
+  surface choice changes frozen-model capability (cross-decoder/NL-likeness
+  adjacent) — (source: same)
+- **Fluorine feedback paradox** (no ID) — raw counterexample feedback confuses;
+  restart beats conversational repair 7–21%; localized execution state
+  (TransAgent) helps — optimizer-loop design datum — (source: same)
+- **PromptCS** (no ID) — trained continuous prompt agent over a frozen LLM; the
+  soft-prompt contrast case to NL prompt search — (source: same)
+- **Summarization-metric caution** (no ID) — BLEU/METEOR/BERTScore weakly or
+  negatively correlated with human ratings for LLM-generated summaries;
+  GPT-4-as-judge closest to humans — bears on measuring d quality — (source:
+  `../../topics/reference/code-compression-literature.md`, 2026-08-24 entry)

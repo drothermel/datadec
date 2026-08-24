@@ -5729,3 +5729,30 @@ tokenizer economics; VocabTailor). Two off-topic notebook sources (TinyOS
 history, a commercial market report) flagged in the bundle header, not routed.
 8 ledger rows (Sennrich 1508.07909 and mT5 2010.11934 as Claude-added canonical
 IDs). Ingest-link-index row added.
+
+### 2026-08-24 — NotebookLM AI4SE notebook ingested
+
+> link: https://notebook.google.com/notebook/04e09363-31e7-4bf5-acb3-a4fddbcc795e
+
+(Followed by the eight-source synthesis and the AI4SE report — verbatim in the
+bundle, `nblm-ai4se-code-notebook.md`.) Ninth NotebookLM notebook of the day;
+no arXiv IDs supplied. Two known names got full detail: **ShortenDoc** (subword-
+level entropy-sorted compression, 25–40% preserving/improving Pass@1, general
+compressors fail past ~10% on code, and the **method-name dependency** —
+identifier NL and docstring NL trade off, a direct NL-necessity/frontier datum)
+routed to
+[topics/reference/code-compression-literature.md](topics/reference/code-compression-literature.md)
+along with the summarization-metric findings (BLEU/METEOR/BERTScore
+anti-correlate with human ratings; GPT-4-as-judge closest — a caution for
+d-quality measurement); **Prochemy** (mutation→execution-scored
+evaluation→selection; works on o1-mini) routed to
+[topics/reference/prompt-optimization-landscape.md](topics/reference/prompt-optimization-landscape.md)
+with the new material: PromptCS (soft-prompt contrast case), the **Fluorine
+feedback paradox** (raw counterexample feedback confuses; restart beats
+conversational repair 7–21%; localized execution state helps — TransAgent/
+LANTERN contrast), **LANTERN's cross-language repair hypothesis**
+(representation-surface choice changes frozen-model capability —
+cross-decoder/NL-likeness adjacent), and **RepE correctness probing** (test-free
+ranking from an extractable internal correctness direction, ~3.75s vs RankEF's
+172h). TLC recall corpus +6 lines; ShortenDoc ledger row annotated; 6 new
+ledger rows. Ingest-link-index row added.

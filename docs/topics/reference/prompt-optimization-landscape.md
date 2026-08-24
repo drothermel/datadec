@@ -325,3 +325,46 @@ conclusion:
   of-LLMs, GI-for-LLM-code (PSB2; helps small models, saturates at GPT-4),
   LLMize (OPRO-style numerical optimization; LLM proposes the annealing
   cooling rate).
+
+## 2026-08-24 — AI4SE prompt-opt / repair-loop findings (NBLM AI4SE notebook)
+
+Companion to the compression-side entry in `code-compression-literature.md`
+(same date; bundle `nblm-ai4se-code-notebook.md`; no IDs; agent-generated,
+unverified):
+
+- **Prochemy, framework detail** (2503.11085, already on record as a name):
+  execution-driven prompt refinement — mutation (LLM rewrites the prompt) →
+  evaluation (Pass@1 on a contamination-free training set with
+  complexity-weighted scoring) → selection, with early stopping. Plug-and-play
+  over CoT/LDB/Self-Collaboration; +4.04% zero-shot average; Prochemy+LDB
+  reaches 96.3% HumanEval on GPT-4o; **works on o1-mini too** (LiveCodeBench
+  40.6 → 44.6) — reasoning models still benefit from optimized instructions.
+- **PromptCS** — the *continuous*-prompt contrast case: frozen LLM + trained
+  prompt agent (BiLSTM encoder + MLP over meaningless learnable tokens)
+  matches or beats task fine-tuning on summarization at a fraction of cost
+  (67h vs 211h for 7B), works from ~100 samples. Soft prompts as the
+  non-NL-latent counterpart to NL prompt search (cf. gist tokens /
+  Proto-tokens on the compression side).
+- **The feedback paradox (Fluorine)** — an optimizer-loop design datum:
+  feeding fuzzer-generated counterexamples back into the prompt *confuses*
+  the model (large textual repr, random values); **restart-from-scratch beats
+  conversational repair by 7–21%** on real-world C/Go→Rust translation
+  (success collapses past ~100 LoC). Contrast: TransAgent and LANTERN find
+  *localized* execution state (aligned CFG-block variable values) does help —
+  the fault line is raw-global vs localized feedback, not feedback per se.
+- **LANTERN's cross-language repair hypothesis** — when a bug resists repair
+  in its native language, translating it into the model's strong language and
+  back beats iterating deeper in place (Rust +22% Pass@10; harder bugs become
+  solvable). A striking representation-choice datum: changing the linguistic
+  surface of the same problem changes what the frozen model can do — adjacent
+  to TLC's cross-decoder and NL-likeness questions.
+- **RepE code-correctness probing** — LLMs encode an extractable correctness
+  direction (LAT: PCA over paired correct/incorrect hidden states at the last
+  token); projection scores beat log-likelihood and verbalized confidence for
+  ranking candidates, +21.3% Pass@1 on HumanEval (vs RankEF's +17.7% at 172
+  GPU-hours; the PCA fit takes ~3.75s); strong OOD generalization. A
+  test-free inner-loop verifier signal — relevant wherever candidate ranking
+  under budget matters (C2's eval-matched framing; white-box only.)
+- **TransAgent** — four-agent translation with CFG-block execution alignment
+  (95.8–100% block-mapping accuracy; contamination-free post-2023-08
+  benchmark; stable in LoC/complexity).
