@@ -4845,3 +4845,27 @@ the Auer 2002 / Thompson 1933 citation additions — both in the submitted refer
 the recurring spec-sampling truth check, resolved as uniform in the paper). No new
 arXiv identifiers (both canonical citations are journal papers already implicit in the
 submitted bibliography).
+
+### Writing-sprint conversation, chunk 7 (four prompts; 2026-02-16 — figures, intro, citations, appendix)
+
+> Can you give me really, really specific instructions for my floating language model for how to create figure one? Um, it created a single plot with budget fifty as opposed to using all the budgets and doing the bucketing and stuff. Um, I think that it's capable of doing it with more specific instructions, but I don't have time to write them?
+
+> ok, can  you give me a general purpose intro I can use with like a placeholder for any findings we might have based on the pltos we're currently making? sorry, I mean an introduction seciton for the paper, has to be super short because we're near page limit
+
+> so if i cite ucb1 and thompson sampling in the intro do I cite them again in the later sections or is once enough?
+
+> ok, can you give me a plausible appendix? we use gpt 5 nano for enc/dec and haiku 4.5 for the llm as optim.  our generalization is flash lite for the model gen.   the prompt info in here is correct, basically everything else is outdated:
+>
+> [her old appendix, provided in full — reproduced here abridged only where noted: the synthetic-dataset section with empty task-families table; the empty description-length-bottleneck section; the Black Box LLMs section with the full 21-row model pricing table ("prices gathered on February 5, 2026" — gpt-oss-20b through claude-haiku-4.5); the Candidate Prompts section (correct per her note) with the 8-part clause template, prompt example, and the full Prompt Clause Options table (BUDGET ×8, TASK ×9, GOAL ×4, CONSTRAINT ×7, ROLE ×6, BREVITY ×6 phrasings); the sampling-parameters table (Direct Generation / Direct Compression / Bottleneck conditions, top-p 0.95, temperatures 0.2); the commented-out 8-category failure classification (latent missing/too long, latent contains code, decoder format, signature/output type, restrictions not followed, doesn't parse, doesn't run, tests don't pass); an Additional Results stub; the old formal-definitions appendix (θ = (θ_E, θ_D) configurations, ENC/DEC sampling equation, semantic correctness, the Feas waterfall Eq., Succ, J(θ), and the harness-fitting paragraph "We propose optimizing this objective by fitting a parametric program, specified as the system harness, H_θ, where θ ∈ Θ includes all design variables in the system such as prompts, templates, latent format, generation decomposition into stages, tool use, memory, and sampling hyperparameters"); and, in comments, the complete pitch-era prompt suite — DG-MINIMAL / DG-SIGNATURE / DG-STRICT with FB-SIGNATURE/FB-SPEC and synthetic contracts; ANTI-CHEATING-CONSTRAINTS; ENC-BASIC / ENC-FAITHFUL / ENC-STRUCTURED (full text); the two-step compression pipeline attributed to "(Gilbert 2023 Semantic Compression with LLMs)" with COMP-NL and COMP-SHORT full prompt text; the FizzBuzz two-outputs contract-variation figure with caption; the bottleneck-design experimental sketch including cross-model reconstruction; and an "Outer Loop LLM Based Optimization" stretch-goal stub]
+
+(The fourth prompt's full old-appendix LaTeX is preserved verbatim as the bundle
+artifact `lla-old-appendix-pre-rewrite.tex`; the transcript and this log carry it
+abridged with pointers.) Routed to
+[potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+§4 (writing-sprint chunk-7 entry: the figure-agent instruction block and the
+instructed-vs-realized confusion recurring in the tooling; the submission's model
+roles; the pre-rewrite appendix as primary source — pitch-era prompt suite including
+COMP-NL/COMP-SHORT full text, ANTI-CHEATING-CONSTRAINTS, the 8-category failure
+taxonomy, the 140/280/560 budget tiers, and the H_θ harness formalism surviving in
+the appendix after its chunk-5 removal from the main text). No new identifiers
+(Gilbert 2023 = 2304.12512, already in the ledger).

@@ -2707,3 +2707,37 @@ optimizer needs no citation as her method but should nod to OPRO — all three l
 compares the strategies in exactly this three-part structure). The uniform-vs-adaptive
 spec-sampling truth check recurs a third time (as a footnote to resolve); the
 submitted paper states specs are sampled uniformly at random.
+
+### 2026-08-23 — The writing-sprint conversation, chunk 7 (figure-agent instructions, intro, and the appendix's archaeological layer; 2026-02-16)
+
+Four exchanges. (1) **Delegated-agent instruction writing:** her plotting agent ("my
+floating language model") had produced Figure 1 conditioned on instructed budget = 50;
+the fix was an explicit instruction block — logging schema, budget-vs-realized-cost
+rules, per-spec-then-average order of operations, "critical checks," and the key
+clause "Do not condition on the instructed budget field at all… Budget only affects
+what the model tried; it is not the x-axis." An early instance of the
+bound-the-delegated-agent's-task discipline, and the instructed-vs-realized confusion
+appearing one level down, in the tooling. (2) Three placeholder-intro options
+(page-limit constrained). (3) Cite-once-plus-at-definition rule for the bandit
+citations. (4) **The appendix rewrite — with the submission's model roles stated
+plainly: gpt-5-nano as both encoder and decoder, claude-haiku-4.5 as the
+LLM-as-optimizer, gemini-2.5-flash-lite for model-transfer generalization.**
+
+**The old appendix is preserved verbatim in the bundle**
+(`lla-old-appendix-pre-rewrite.tex`) because its comments are TLC primary source: the
+complete pitch-era prompt suite — DG-MINIMAL/SIGNATURE/STRICT,
+**ANTI-CHEATING-CONSTRAINTS** (the anti-leakage clause set), ENC-BASIC/FAITHFUL/
+STRUCTURED, and the full text of **COMP-NL and COMP-SHORT** (the two-stage compression
+prompts this doc's earlier entries discuss abstractly — here is their exact text),
+with the two-step pipeline explicitly attributed to Gilbert 2023 (semantic
+compression, 2304.12512) as its source; plus the 8-category failure classification
+(a finer-grained taxonomy than the paper's waterfall: adds latent-contains-code,
+signature/output-type, restrictions-not-followed), the FizzBuzz contract-variation
+figure caption, the B1/B2/B3 = 140/280/560-char budget tiers, the cross-model
+reconstruction sketch, and the harness-fitting formalism paragraph (θ ∈ Θ covering
+"prompts, templates, latent format, generation decomposition into stages, tool use,
+memory, and sampling hyperparameters" — the pitch's H_θ, surviving here in the
+appendix after being cut from the main text in chunk 5). Two rewrite notes from the
+assistant: the "prices gathered on February 5, 2026" claim flagged as a liability
+(the submitted paper kept the pricing table and the date); and the recurring
+balanced-vs-uniform sampling truth check.
