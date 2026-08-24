@@ -2738,6 +2738,28 @@ reconstruction sketch, and the harness-fitting formalism paragraph (θ ∈ Θ co
 "prompts, templates, latent format, generation decomposition into stages, tool use,
 memory, and sampling hyperparameters" — the pitch's H_θ, surviving here in the
 appendix after being cut from the main text in chunk 5). Two rewrite notes from the
-assistant: the "prices gathered on February 5, 2026" claim flagged as a liability
-(the submitted paper kept the pricing table and the date); and the recurring
-balanced-vs-uniform sampling truth check.
+assistant: the "prices gathered on February 5, 2026" claim flagged as a liability, and
+the recurring balanced-vs-uniform sampling truth check. **Correction (verified against
+the submitted PDF's appendix, pages 7–11):** the pricing table did *not* survive into
+the submission — the liability advice was taken; the Feb-5-dated Table 5 exists in the
+*pitch*, not the submitted paper. Likewise the old formal-definitions appendix (H_θ)
+did not survive: the submitted appendix is the chunk-7 rewrite with real values, so
+the harness formalism exited the submission entirely — main text in chunk 5, appendix
+here.
+
+**Verified submitted-appendix facts worth recording:** (a) the enumerable 27-arm
+space is Task × Goal × Constraint with three values each (token-named:
+noop_task/summarize_code/generate_nl_sketch × noop_goal/as_detailed_as_possible/
+detailed_for_llm_reconstruction × noop_constraint/omit_unnecessary_details/
+high_level) — a 3-slot calibration subset of the full 6-slot clause space; (b) the
+LLM-in-the-loop optimizer uses a **descriptor-token action protocol** — Haiku 4.5
+must return only structured descriptor tokens (no JSON, no prose; unrecognized tokens
+ignored; a spelling alias DESCRIBE_BEHAVIOR→DESCRIBE_BEHAVIOUR; unparseable turn ⇒
+resample the previous prompt), conditioned on a 20-turn history with score history
+and current rendered prompt — i.e., the optimizer's action space was itself
+grammar-constrained, a small structured-output design worth remembering for
+code-comp; (c) prompt selection for OOD used budget=200, **c_0 = 129 chars**, N=50 on
+the 27-arm calibration space, and the per-method best-prompt table shows
+coverage@c_0 of only 0.073/0.034/0.030 (Thompson/UCB1/LLM-Opt) — tiny absolute
+coverage at the operating point, with Thompson's selection nominally best, another
+face of the no-differentiation finding.
