@@ -235,6 +235,10 @@ the frozen-model distribution-compatibility constraint. Metadata verified agains
 PDF (bundle: `miao-blunsom-2016-language-as-a-latent-variable.pdf`). Candidate
 gate-1 must-read; details in the TLC doc §4 (submission-record entry).
 
+*Provenance addendum (2026-08-24):* Miao & Blunsom already appears in Danielle's own
+2026-02-04 Claude novelty check (component-feasibility list, entry below) — the paper
+was in the project's orbit before the advisor's recommendation.
+
 ## 2026-08-24 — The 2026-02-03 ChatGPT novelty check (Danielle's Notion "Lit Review" page)
 
 Verbatim copy with resolved citation links:
@@ -306,3 +310,31 @@ property-indexed equivalence and behavior-preserving normalization) and **Genera
 Equivalent Representations of Code by Self-Reflection, 2410.03351**. Authorship
 discrepancy for the parked verification pass: 2507.08627 "Wong et al." (ledger, from
 the submitted bibliography) vs "Tai, Nie, Golab & Wong, CASCON 2025" (this review).
+
+## 2026-08-24 — The 2026-02-04 Claude novelty check (Danielle's Notion "Lit Review" page #3)
+
+Verbatim copy with resolved citation links:
+`~/drotherm/data/convo-artifacts/2026/2026-08-24-notion-lit-reviews/lit-review-claude-novelty-check.md`.
+Claude-generated, created four minutes before the Consensus page; characterizations
+are the generating agent's. Verdict: **"appears novel," 85–90%**, by explicit
+novelty-of-combination over a four-component rubric with a component-feasibility
+matrix. The broadest of the three novelty checks: it surfaced the union of the
+ChatGPT review's cluster (PlanSearch, RTC, Gilbert) and the Consensus review's
+compression cluster (ICAE, gist tokens 2304.08467) plus FunSearch, Latent
+Programmer, and Miao & Blunsom — supporting Danielle's prompt-interpretation note
+with a third data point: broadest reading, per-component search, combination
+verdict.
+
+New to this record from its lists: **Proto-tokens** (Kuratov et al., ACL 2025,
+2502.13063 — frozen-LLM reconstruction of ~1.5k tokens from 1–2 trained embeddings;
+evidence that reconstruction capacity does not require an NL latent — directly
+relevant to the NL-necessity falsifiers), **CodeT** (2207.10397), **EvoPrompt**
+(2309.08532 — distinct from EvoPrompting 2302.14838 already in plan row A),
+**de Bruin et al., Autoencoders as Tools for Program Synthesis** (2108.07129 —
+program VAE with gradient-free evolutionary search over a *neural* latent; the
+non-NL-latent counterpart of the TLC setup), **Self-Planning** (2303.06689),
+**Tree of Thoughts** (2305.10601), and the DreamCoder/AutoDoc lineage
+(NL-as-documentation vs NL-as-representation distinction). Its closing
+recommendations (Gilbert-then-differentiate; RTC as eval-not-learning; FunSearch
+minus bottleneck; prompt-opt canon then novel application) are recognizably the
+submitted paper's related-work skeleton.

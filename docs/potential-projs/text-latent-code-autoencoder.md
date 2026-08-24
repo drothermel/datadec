@@ -3106,3 +3106,49 @@ Consensus; characterizations are the generating agent's):
   flagged for the parked verification pass: 2507.08627 is "Wong et al." in the
   ledger (from the submitted bibliography) but "Tai, Nie, Golab & Wong, CASCON 2025"
   in this review's references.
+
+### 2026-08-24 — The 2026-02-04 novelty check #3 (Notion "Lit Review" page, Claude-generated; historical)
+
+The third of the 2026-02-03/04 trio (created four minutes before the Consensus page;
+verbatim copy with resolved citation links in the bundle; characterizations are the
+generating agent's). **The broadest of the three** — it surfaced the union of the
+other two reviews' literatures (PlanSearch/RTC/Gilbert AND the prompt/context-
+compression cluster AND FunSearch/Latent Programmer) plus items neither found — and
+still concluded **"appears novel," 85–90%**, via an explicit novelty-by-combination
+argument. Under Danielle's prompt-interpretation lens: this review read the proposal
+as "all four components jointly" and searched each component's literature separately.
+
+- **The component-feasibility matrix** (its core analytic move): each of the four
+  components exists in the literature (NL-as-program-representation → Gilbert;
+  frozen decoder → ICAE/FunSearch; gradient-free prompt optimization →
+  EvoPrompt/OPRO; program autoencoding → Latent Programmer/de Bruin) but never in
+  combination — "No paper combines: Natural language latent + frozen LLM decoder +
+  gradient-free optimization + program reconstruction objective."
+- **Gilbert et al. (2304.12512) named the closest prior art**, with the sharpest
+  statement of its gap: "only tests 3 manually crafted prompts — there is no
+  automated optimization … the encoder prompt is completely fixed." The submitted
+  paper did cite Gilbert, matching this review's recommendation #1.
+- **The citation strategy it recommends is recognizably the submitted paper's
+  related-work skeleton** (cite Gilbert for feasibility then differentiate on
+  optimization; RTC as metrics-for-evaluation-not-learning; FunSearch minus the
+  bottleneck; prompt-opt literature then the novel application), and its suggested
+  frame — "the first method to jointly optimize encoder and decoder prompts for
+  semantic compression of programs through natural language bottlenecks" — is the
+  positioning the pitch adopted.
+- **Miao & Blunsom (1609.07317) appears in its component-feasibility list** — i.e.,
+  the advisor-recommended closest formal ancestor was already in Danielle's own
+  2026-02-04 lit review, months before the recommendation.
+- **New component-feasibility items with TLC relevance:** Proto-tokens (Kuratov et
+  al., ACL 2025, 2502.13063 — frozen LLMs can reconstruct ~1.5k tokens from 1–2
+  trained embeddings; directly relevant to the NL-necessity falsifiers' non-NL
+  rungs: reconstruction capacity exists without NL), CodeT (2207.10397,
+  selection-based non-gradient optimization), the prompt-opt canon
+  (EvoPrompt 2309.08532, OPRO 2309.03409, PromptBreeder 2309.16797 — present here
+  in February although the August SciSpace reviews were faulted for omitting them),
+  de Bruin program VAE (2108.07129), Self-Planning (2303.06689), Tree of Thoughts
+  (2305.10601), DreamCoder/AutoDoc lineage (NL documentation as retrieval aid, not
+  representation).
+- Its "remaining gaps" list (unpublished lab work; Nov–Dec 2025 preprints not yet
+  indexed) dates the underlying search to the Dec-2025 window, consistent with the
+  page's Date field. Downstream Note ("Claude Lit Review Summary Table") not yet
+  pulled.

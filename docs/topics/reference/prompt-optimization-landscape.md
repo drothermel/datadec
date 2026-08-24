@@ -186,3 +186,13 @@ posttraining-collapse hypothesis (optimizer competence vs. task competence; tran
 Full detail in the TLC project doc §4 (2026-08-23 entry); transcript and pitch PDF in
 the convo-artifacts bundle. Chunk 2 supplied no new identifiers, but the pitch's own
 bibliography settles two earlier attribution conflicts (see ledger).
+
+## 2026-08-24 — the Feb-2026 Claude novelty check already held part of the missing-anchor list
+
+Danielle's 2026-02-04 Claude-generated novelty check (bundle:
+`~/drotherm/data/convo-artifacts/2026/2026-08-24-notion-lit-reviews/lit-review-claude-novelty-check.md`)
+cites OPRO 2309.03409, EvoPrompt 2309.08532, and PromptBreeder 2309.16797 as
+component-feasibility evidence for gradient-free prompt optimization — three of the
+anchors the August 2026 SciSpace reviews were faulted for omitting were already in
+the project's February record. EvoPrompt (Guo et al.) is distinct from EvoPrompting
+2302.14838 (Chen et al., neural-architecture prompts) — both are now ledgered.

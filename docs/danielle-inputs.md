@@ -5155,3 +5155,16 @@ Routed: verbatim copy in the batch bundle; dated entries in
 (her note verbatim in both; yesterday's "rubric strictness" framing corrected to her
 prompt-interpretation read); nine ledger rows + an authorship-discrepancy note on
 2507.08627. No new identifiers.
+
+### 2026-08-24 — Notion lit-review intake, page 3 (Claude)
+
+> ok, next: https://app.notion.com/p/Lit-Review-2fdde135cd1f808d9386c7142796f3f7
+
+Routed: verbatim copy in the batch bundle; dated entries in
+[potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+§4, [topics/reference/nl-bottleneck-prior-art.md](topics/reference/nl-bottleneck-prior-art.md)
+(plus a Miao & Blunsom provenance addendum — it was in this 2026-02-04 review before
+the advisor recommended it), and
+[topics/reference/prompt-optimization-landscape.md](topics/reference/prompt-optimization-landscape.md)
+(the Feb record already held OPRO/EvoPrompt/PromptBreeder); seven ledger rows. No
+new identifiers.
