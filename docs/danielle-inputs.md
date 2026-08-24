@@ -5359,3 +5359,13 @@ placeholder-only staging doc
 [topics/staging/whetstone-minigrid-env.md](topics/staging/whetstone-minigrid-env.md)
 (+ staging table row) with an explicit do-not-expand-until-she-initiates note.
 Notion Ingested flags: Danielle flipped them herself.
+
+### 2026-08-24 — prompt-interpretation principle adopted
+
+> you can also update the prompt-interpretation principle in the project-approach-principles.md doc
+
+Dated standing-principle entry added to
+[topics/reference/project-approach-principles.md](topics/reference/project-approach-principles.md):
+novelty verdicts are interpretation samples (her note verbatim; six-checks
+evidence; how-to-apply = multi-platform commissioning, union-for-recall,
+spread-maps-the-readings, never single-verdict-settled).

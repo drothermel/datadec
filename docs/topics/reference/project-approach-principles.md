@@ -310,3 +310,33 @@ caveats**, subordinate to the first two.
    principle — it governs how discovered structure is *presented* mid-stream, and does
    not defer the obligation (principle 1) to eventually test whether the lens buys
    anything.
+
+## 2026-08-24 — Novelty verdicts are interpretation samples (Danielle; standing principle)
+
+Danielle's observation from the Feb-2026 novelty-check corpus, verbatim: "my
+reading of these different lit reviews is that each interpreted my prompt
+differently and therefore the 'novelty' conclusion varied substantially based on
+what they thought I was proposing and therefore what related literature they
+considered."
+
+**The principle:** an agent novelty check's verdict measures *its interpretation of
+the prompt* as much as the literature. Each reviewer constructs a proposal from the
+prompt and searches the literature of *that* proposal; different constructions
+select nearly disjoint literatures and can produce opposite verdicts on the same
+idea.
+
+**The evidence:** six checks on the same idea in one ~7-hour session (2026-02-03/04)
+returned six distinct verdicts spanning the full range — Consensus "novel, 90–95%"
+(strict conjunction → compression-cluster literature), Claude "novel by
+combination" (per-component search → the union), Gemini "partially novel"
+(architecture-first → LBM), ChatGPT "published in parts" (loose match →
+mechanism-neighbors), Perplexity "already published" (framework-subsumption →
+LBM + a blog PDF), Undermind "poised for extension" (prompt-compression flank).
+Record: `nl-bottleneck-prior-art.md` and the 2026-08-24 bundle.
+
+**How to apply:** commission novelty checks across multiple platforms/agents and
+read the verdicts as interpretation samples, not measurements — the *union of the
+literatures* is the recall value, and the *spread of interpretations* maps the
+readings a related-work section must survive. Never let a single check's verdict
+(in either direction) settle a novelty question; when a check dismisses or blesses
+the idea, first identify which proposal it thought it was judging.
