@@ -5703,3 +5703,29 @@ optimization; the RL-adjacent trio (Language Feedback Models,
 sequential-decision-making reward-vs-action modeling, planning survey) tagged
 for the minigrid context. AlphaEvolve's earlier no-ID ledger row filled with
 2506.13131; 22 new ledger rows (7 with notebook-supplied IDs).
+
+### 2026-08-24 — LLM-optimization notebook link supplied; tokenization notebook ingested
+
+> ahh, the previous link was: https://notebook.google.com/notebook/5439c587-5feb-432d-a779-a23c454ebf25
+>
+> link: https://notebook.google.com/notebook/1d9de7a7-815a-4a65-a933-1abde72c1ff4
+
+Link fill: the LLM-driven-optimization notebook's pending link recorded in the
+ingest-link-index row, bundle header, and INDEX entry. Then the eighth
+NotebookLM notebook ingested (verbatim in the bundle,
+`nblm-tokenization-vocabulary-notebook.md`): tokenization / vocabulary scaling
+/ cross-tokenizer transfer. Routed: Hayou's Large Vocabulary Parametrization +
+√d-rule (µP's embedding rules break when vocabulary scales with width;
+LR_emb/LR_hidden ≈ Θ(√d); flagged as directly relevant to
+embedding-reset-dynamics and µP-based sweep design) in
+[topics/reference/parametrization-and-hp-transfer.md](topics/reference/parametrization-and-hp-transfer.md);
+the tokenizer/vocabulary flank in
+[topics/reference/reinit-and-transfer-literature.md](topics/reference/reinit-and-transfer-literature.md)
+(byte-level cross-tokenizer distillation with its IFEval collapse — the
+contemporary answer to the tokenizer-change-cost question that record tracks;
+BPE-dropout one-checkpoint segmentation unification; mT5-vs-ByT5 morphology
+probing with the layer-depth and irregularity×data-share results; Llama 3
+tokenizer economics; VocabTailor). Two off-topic notebook sources (TinyOS
+history, a commercial market report) flagged in the bundle header, not routed.
+8 ledger rows (Sennrich 1508.07909 and mT5 2010.11934 as Claude-added canonical
+IDs). Ingest-link-index row added.

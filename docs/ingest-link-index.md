@@ -29,8 +29,18 @@ is the durable part.
 
 ## 2026-08-24 — NotebookLM notebooks
 
-- LLM-driven-optimization notebook (NotebookLM; **link not supplied — Danielle's
-  message had an empty `link:` line; add it here when available**) — 25 sources
+- [Tokenization / vocabulary-scaling notebook (NotebookLM, undated)](https://notebook.google.com/notebook/1d9de7a7-815a-4a65-a933-1abde72c1ff4)
+  — 11 sources: Hayou √d-rule (embedding LR in the large-vocab regime),
+  byte-level cross-tokenizer distillation, BPE-dropout unification, mT5/ByT5
+  morphology probing, Llama 3 tokenizer, VocabTailor, Sennrich BPE, mT5 (+2
+  off-topic sources flagged) → routed:
+  `topics/reference/parametrization-and-hp-transfer.md` (LVP/√d-rule entry,
+  embedding-reset relevance), `topics/reference/reinit-and-transfer-literature.md`
+  (tokenizer/vocabulary flank: BLD, BPE-dropout, VocabTailor, probing), 8
+  ledger rows (2 Claude-added canonical IDs).
+
+- [LLM-driven-optimization notebook (NotebookLM)](https://notebook.google.com/notebook/5439c587-5feb-432d-a779-a23c454ebf25)
+  — 25 sources
   on LLMs + classical optimization/EAs/search (standalone-fails-hybrids-win
   verdict; Centaur; evolutionary-beats-RL idea search; MCTS hybrids;
   agent-scaffold optimization; AlphaEvolve 2506.13131 ID fill) → routed:

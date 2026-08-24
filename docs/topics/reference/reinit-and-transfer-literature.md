@@ -232,3 +232,40 @@ version [of functional identifiability]: if a trained adapter layer lets model A
 half drive model B's top half at low penalty, they're functionally interchangeable at that
 depth — and note this is *literally your embedding-reset experiment* as a measurement
 rather than a method." Relevant to the interface-reset staging topics.
+
+## 2026-08-24 — tokenizer/vocabulary flank from the NBLM tokenization notebook
+
+From the eighth NotebookLM notebook of 2026-08-24 (bundle:
+`nblm-tokenization-vocabulary-notebook.md`; first authors only, no IDs;
+agent-generated, unverified). New vocabulary/tokenizer-interface material
+adjacent to this record's vocab-swap lineage:
+
+- **Cross-Tokenizer Distillation via a byte-level interface (BLD; Singh)** —
+  alignment-free transfer between mismatched tokenizers: map teacher token
+  distributions to byte probabilities, give the student parallel byte heads.
+  Competitive on reasoning (SOTA 62.55 GSM8K distillation) but **collapses on
+  instruction following** (IFEval 30.58 vs MinED 62.83) — semantic
+  preservation across tokenizer changes remains unsolved. The
+  contemporary answer to the tokenizer-change-cost question this record
+  tracks; bytes as the universal interface vs the ULD/optimal-transport
+  alignment school.
+- **BPE-dropout as segmentation unification (Kiyono)** — pretrain once with
+  p=0.1 merge-rule dropout, then set p per downstream task (0.0 subword, 1.0
+  character); matches dedicated subword BERT and beats character-only BERT,
+  halving pretraining cost. One checkpoint spanning segmentations instead of
+  a swap.
+- **mT5-vs-ByT5 morphology probing (Dang)** — same-data minimal pair: nearly
+  identical average probing accuracy (82.57 vs 82.86) but byte-level models
+  need more layers to reconstruct morphology and represent it later; language
+  irregularity × data-share interaction (irregular grammars need a larger
+  pretraining share).
+- **Vocabulary-scale economics:** Llama 3's 32K→128K tokenizer (15–50% token
+  compression, paid for in embedding/head memory, offset by GQA);
+  **VocabTailor (Zhang)** — dynamic input-aware vocabulary residency (full
+  tokenizer kept; embeddings offloaded to CPU/LMDB; up to 99% vocab-memory
+  compression, 22–23% peak-VRAM savings, TTFT 124ms → 3.7ms) vs static
+  pruning's OOD errors.
+- Canon anchors also in the notebook: Sennrich BPE, mT5 (mC4, α=0.3 sampling,
+  byte-fallback; DPT fixing zero-shot accidental translation). Two off-topic
+  sources (TinyOS networking history; a commercial tokenization market
+  report) noted in the bundle header only.

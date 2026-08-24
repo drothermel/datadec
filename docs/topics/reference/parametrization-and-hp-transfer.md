@@ -89,3 +89,24 @@ Convergent claim across both: batch size is a dataset-size story, not a
 model-size story. Directly relevant to the small-scale sweep designs
 (wsd-suite, tiny-scale-measurement): these laws say which HP axes must be
 re-tuned per scale and which can be fixed by formula.
+
+## 2026-08-24 — the vocabulary-size/embedding-LR result (NBLM tokenization notebook)
+
+From the eighth NotebookLM notebook of the day (bundle:
+`nblm-tokenization-vocabulary-notebook.md`; no IDs supplied; agent-generated,
+unverified):
+
+- **Hayou et al., "Optimal Embedding Learning Rate in LLMs: The Effect of
+  Vocabulary Size"** — µP's embedding rules break in the **large-vocabulary
+  regime** (m ≫ d, m scaling with width): Zipf-Mandelbrot token frequencies
+  make embedding updates sparse and frequency-skewed, so the µP-predicted
+  LR_emb/LR_hidden ratios (Θ(1) or Θ(d)) are wrong. Their **Large Vocabulary
+  Parametrization (LVP)** derives a **√d-rule** — LR_emb/LR_hidden ≈ Θ(√d) —
+  from SignSGD dynamics in the joint infinite-width/large-vocab limit;
+  validated at 1B/1.75T tokens (faster convergence, better final loss).
+  Specific to Adam-like element-wise-normalized optimizers. Open per the
+  report: whether the rule survives on the full residual stream, and a
+  parametrization with training duration t as a free scaling variable —
+  the same token-horizon axis CompleteP (entry above) handles empirically.
+  Directly relevant to embedding-reset-dynamics (the embedding LR is the
+  knob that project varies) and to µP-based sweep design.
