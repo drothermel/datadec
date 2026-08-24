@@ -5346,3 +5346,16 @@ Executed via a 9-worker read-only Opus fan-out (phase 2 of the contract at
 repo-sourced only, no positioning claims, unverified caveats carried. TLC's
 hand-curated §5 kept, pointer appended. Notion pulls / PDF fetches / verification
 all held pending Danielle's paper-DB cleanup.
+
+### 2026-08-24 — submission-rule annotation + minigrid placeholder
+
+> ok, I already flipped the ingest flags, update the submission rule annotations and just make a placeholder doc for the whetstone-envs minigrid spec out but not actually spec it out yet
+
+Routed: dated annotation under module-or-kill in
+[topics/reference/project-approach-principles.md](topics/reference/project-approach-principles.md)
+(submit when results are true + claims calibrated to verification; preparation
+target = framing settled before the push; permissible-vs-strategic split);
+placeholder-only staging doc
+[topics/staging/whetstone-minigrid-env.md](topics/staging/whetstone-minigrid-env.md)
+(+ staging table row) with an explicit do-not-expand-until-she-initiates note.
+Notion Ingested flags: Danielle flipped them herself.

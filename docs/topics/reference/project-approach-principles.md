@@ -281,6 +281,20 @@ caveats**, subordinate to the first two.
    which big-paper module the tiny paper becomes on success and what it kills on
    failure; if neither answer exists, deprioritize.
 
+   *Annotation (2026-08-24) — Danielle's submission rule, from the February-2026
+   retrospective (recorded at the 2026-08-23 intake; approved 2026-08-24):*
+   submitting is a good choice **when the results are true (even if not good) and
+   the claims are calibrated to what was actually verified** — her verbatim
+   standard: "submitting isn't a bad choice as long as you believe your results are
+   true (if not good)." The preparation target that makes a deadline push
+   survivable: **framing settled before the push**, so the sprint spends itself on
+   results and writing rather than on deciding what the paper is. (Context: all
+   February results were produced inside the ~42-hour window — the setup first ran
+   during the push — while the conceptual framing came from the 2026-02-06/08
+   conversation.) This annotates module-or-kill rather than replacing it: the rule
+   governs when submitting is *permissible*; module-or-kill governs when it is
+   *strategic*.
+
 3. **One knob, one plot** *(technique-level, with caveat).* Name the knob, name the
    y-axis, hold everything else fixed, run the smallest study that shows a curve, make
    one figure that answers the question (flat = a result; non-monotonic = a story;
