@@ -242,7 +242,9 @@ Verbatim copy with resolved citation links:
 ChatGPT-generated two days before the pitch (Notion Date field 2025-12-11);
 characterizations are the generating agent's. Verdict: **"published in parts — Yes,"**
 against this record's Dec-2025 SciSpace verdict of "appears novel" (378 papers,
-six-component rubric) — the difference is matching strictness, not new literature.
+six-component rubric) — per Danielle's note (2026-08-24, Consensus entry below), the
+verdicts track how each review interpreted the prompt, and hence which literature it
+considered.
 
 Its prior-art map, relative to what this record already holds:
 
@@ -269,3 +271,38 @@ Its prior-art map, relative to what this record already holds:
   (NeurIPS 2019)" (ledgered as 1910.05923 via the submitted bibliography) and
   "RL4Prompt" (name unresolved; possibly RLPrompt, which row A of the litreview plan
   already lists).
+
+## 2026-08-24 — The 2026-02-04 Consensus novelty check (Danielle's Notion "Lit Review" page #2)
+
+Verbatim copy with resolved citation links:
+`~/drotherm/data/convo-artifacts/2026/2026-08-24-notion-lit-reviews/lit-review-consensus-novelty-check.md`.
+Consensus-generated one day after the ChatGPT check; characterizations are the
+generating agent's. Verdict: **"appears novel," 90–95% confidence**, under a strict
+four-component conjunction (explicit NL-bottleneck latent; frozen LLM decoder;
+gradient-free encoder/decoder optimization; semantic code compression goal).
+
+**Danielle's meta-note on the whole novelty-check corpus (verbatim, 2026-08-24):**
+
+> "my reading of these different lit reviews is that each interpreted my prompt
+> differently and therefore the 'novelty' conclusion varied substantially based on
+> what they thought I was proposing and therefore what related literature they
+> considered."
+
+Read every verdict in this record through that lens. Concretely here: this review's
+closest matches are the prompt/context-compression cluster (SelfCP 2405.17052,
+Semantic Compression 2304.12512, LLMLingua 2310.05736, ICAE 2307.06945, NL in the
+Middle 2507.08627, Hidden CoT 2409.08561, CodePromptZip 2502.14925, Latent
+Programmer) — it never surfaced NL-Debugging or PlanSearch, and the ChatGPT review
+never surfaced the compression cluster. Largely disjoint literatures, opposite
+verdicts. Its uniform miss-axis across all near-matches is the optimization method
+(learned connectors / instruction tuning / fine-tuning, never gradient-free search
+over a frozen pair), which restates the pitch's claimed gap from the other side.
+
+Related-but-missing tier: FunSearch (Nature 2023; LLM as generator/mutator, no
+bottleneck), LLaMEA 2405.20132, SCoT 2310.10698, compressed-hierarchy code model
+(EMSE 2025, no arXiv). Survey-toggle standouts worth pulling forward: **CETBench
+2506.04019** (code-equivalence benchmark via program transformations — relevant to
+property-indexed equivalence and behavior-preserving normalization) and **Generating
+Equivalent Representations of Code by Self-Reflection, 2410.03351**. Authorship
+discrepancy for the parked verification pass: 2507.08627 "Wong et al." (ledger, from
+the submitted bibliography) vs "Tai, Nie, Golab & Wong, CASCON 2025" (this review).

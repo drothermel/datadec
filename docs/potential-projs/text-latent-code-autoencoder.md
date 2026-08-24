@@ -3046,10 +3046,11 @@ platform ChatGPT. Characterizations are the generating agent's.
   project through this review and appear in the submitted bibliography.
 - **Tension with the Dec-2025 SciSpace verdict**, recorded rather than resolved: the
   strict six-component sweep (378 papers, 2025-12-10) concluded "appears novel,"
-  while this review's looser matching standard concluded "published in parts." Both
-  are agent verdicts over overlapping literature; the difference is the rubric, and
-  any resubmission's related-work section should be written to survive the stricter
-  reading of both.
+  while this review's looser matching standard concluded "published in parts." Per
+  Danielle's read (2026-08-24, next entry): the verdicts track how each review
+  *interpreted the prompt* — each understood a different proposal and therefore
+  searched different literature. A resubmission's related work should be written to
+  survive the union of their readings.
 - Secondary strands mapped: Self-Debug (2304.05128) and Reflexion as
   single-model NL-reasoning loops (no separated encoder/decoder); Yuan et al. (Sci.
   Rep. 2025) as RL query-rephrasing for a fixed generator; CodePlan (Bairi et al.,
@@ -3058,3 +3059,50 @@ platform ChatGPT. Characterizations are the generating agent's.
   1910.05923 from the submitted bibliography; "RL4Prompt," unresolved name) and
   remain unverified.
 - The page's Downstream Note ("ChatGPT Lit Review Summary Table") is not yet pulled.
+
+### 2026-08-24 — The 2026-02-04 novelty check #2 (Notion "Lit Review" page, Consensus-generated; historical) — and Danielle's read of the novelty-check corpus
+
+**Danielle, at intake (verbatim):** "I would note that my reading of these different
+lit reviews is that each interpreted my prompt differently and therefore the
+'novelty' conclusion varied substantially based on what they thought I was proposing
+and therefore what related literature they considered." This is the frame for every
+novelty verdict on record — the verdicts measure prompt interpretation as much as
+the literature.
+
+The review itself (verbatim copy with resolved citation links in the bundle at
+`~/drotherm/data/convo-artifacts/2026/2026-08-24-notion-lit-reviews/`; created
+2026-02-04, one day after the ChatGPT check; Notion Date field 2025-12-11; platform
+Consensus; characterizations are the generating agent's):
+
+- **Verdict: "No publication matches the described method — appears novel," 90–95%
+  confidence** (50 top papers / 1000+ candidates). Rubric: a strict four-component
+  conjunction — explicit language bottleneck as latent, frozen LLM decoder,
+  gradient-free encoder/decoder optimization, semantic code compression as the goal.
+- **Interpretation divergence, concretely:** its closest-match list is the
+  prompt/context-compression cluster — SelfCP (2405.17052, frozen-LLM
+  self-compression via a learned connector), Semantic Compression with LLMs
+  (Gilbert et al., 2304.12512 — already in the submitted bibliography), LLMLingua
+  (2310.05736), ICAE (2307.06945), plus NL in the Middle (2507.08627), Hidden CoT
+  (2409.08561), CodePromptZip (2502.14925), Latent Programmer. It never surfaced
+  NL-Debugging or PlanSearch — the ChatGPT review's headline overlaps — and the
+  ChatGPT review never surfaced the compression cluster. Two checks, largely
+  disjoint literatures, opposite verdicts.
+- **Every "close" paper misses on the same axis:** the optimization method — learned
+  connectors, instruction tuning, or fine-tuning rather than gradient-free search
+  over a frozen pair. The gap statement matches the pitch's claimed novelty from the
+  other direction: "no paper jointly optimizes both encoder and decoder
+  prompts/templates … using only gradient-free methods."
+- Related-but-missing tier: FunSearch (LLM as generator/mutator, no bottleneck),
+  LLaMEA (2405.20132), SCoT (2310.10698), a compressed-hierarchy code model (EMSE
+  2025, no arXiv).
+- The surveys toggle (~35 refs, preserved verbatim in the bundle, not individually
+  ledgered) contains at least two directly TLC-relevant standouts: **CETBench**
+  (2506.04019 — code-equivalence checking benchmark built by transformations over
+  programs; relevant to the property-indexed-equivalence machinery) and **Generating
+  Equivalent Representations of Code by Self-Reflection** (2410.03351).
+- Page metadata notes: this page is marked Ingested: true in Notion (the ChatGPT one
+  is Ingested: false) and was last edited 2026-08-24. Its Downstream Note
+  ("Consensus Lit Review Summary Table") is not yet pulled. Authorship discrepancy
+  flagged for the parked verification pass: 2507.08627 is "Wong et al." in the
+  ledger (from the submitted bibliography) but "Tai, Nie, Golab & Wong, CASCON 2025"
+  in this review's references.

@@ -5142,3 +5142,16 @@ there); dated entries in
 five ledger rows (RTC 2402.08699, Self-Debug 2304.05128, CodePlan 2309.12499,
 Reflexion and Yuan et al. without IDs); RTC added to litreview plan row A. No new
 identifiers assigned.
+
+### 2026-08-24 — Notion lit-review intake, page 2 (Consensus) + her read of the novelty-check corpus
+
+> I would note that my reading of these different lit reviews is that each interpreted my prompt differently and therefore the "novelty" conclusion varied substantially based on what they thought I was proposing and therefore what related literature they considered.
+>
+> next: https://app.notion.com/p/Lit-Review-2fdde135cd1f8021a3f7d2f93d64bdbc?v=2fcde135cd1f8087ae97000c181d4a2e
+
+Routed: verbatim copy in the batch bundle; dated entries in
+[potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+§4 and [topics/reference/nl-bottleneck-prior-art.md](topics/reference/nl-bottleneck-prior-art.md)
+(her note verbatim in both; yesterday's "rubric strictness" framing corrected to her
+prompt-interpretation read); nine ledger rows + an authorship-discrepancy note on
+2507.08627. No new identifiers.
