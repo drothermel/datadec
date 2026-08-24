@@ -5661,3 +5661,22 @@ procedural-knowledge influence functions — code/math documents drive reasoning
 queries, answer documents drive factual ones — recipe-composition relevance);
 4 ledger rows, one with a Claude-added ID (2411.12580, inferred from the title,
 plausibly Ruis et al.). Ingest-link-index row added.
+
+### 2026-08-24 — NotebookLM world-models notebook ingested
+
+> link: https://notebook.google.com/notebook/ecbd81fa-0e71-42bf-b86d-b1b0f3d32478
+
+(Followed by the two-source synthesis and the convergence report — verbatim in
+the bundle, `nblm-world-models-notebook.md`.) Sixth NotebookLM notebook of the
+day. No existing accumulator covered world models, so this founded
+[topics/reference/world-models-literature.md](topics/reference/world-models-literature.md)
+(+ topics README row): "From Word to World" (SFT'd LLMs as reliable text-based
+world models; structured environments saturate ~20K trajectories vs
+non-saturating open-ended ones; irreversible-action gating, synthetic
+trajectories, RL warm-starting; mixed-agent trajectories beat expert-only —
+failure-state coverage matters) and "General agents contain world models"
+(Richens — regret-bounded multi-step agents provably encode transition
+probabilities, extractable from policy behavior alone; myopic agents don't; ID
+2506.01622 Claude-added, inferred). Positioned as the model-based flank of the
+LLM-in-classic-RL thread (DICL cross-ref) and minigrid spec-out background.
+2 ledger rows. Ingest-link-index row added.

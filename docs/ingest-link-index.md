@@ -29,6 +29,13 @@ is the durable part.
 
 ## 2026-08-24 — NotebookLM notebooks
 
+- [World-models notebook (NotebookLM, undated)](https://notebook.google.com/notebook/ecbd81fa-0e71-42bf-b86d-b1b0f3d32478)
+  — two papers: LLMs as text-based world models (From Word to World) and the
+  no-model-free-shortcut theory (Richens, plausibly 2506.01622) + convergence
+  report → routed: **new accumulator**
+  `topics/reference/world-models-literature.md` (+ topics README row), 2 ledger
+  rows (one Claude-added ID).
+
 - [Reasoning-mechanisms notebook (NotebookLM, undated, 2025–26-era)](https://notebook.google.com/notebook/19a583a2-ee35-40b7-bc03-cb0710e594bd)
   — four papers: encoder-vs-decoder causal reasoning (NL-vs-NNL ablation), OCR
   generalization/hallucination duality, SFT-vs-RL atomic-skill profiles,
