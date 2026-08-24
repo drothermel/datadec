@@ -5310,3 +5310,13 @@ components + gaps) noted as the most §5-useful single table.
 Dec-2025-rubric table recorded; SAPS (2018, no ID) new → one ledger row. Source
 Note reveals an unpulled SciSpace Lit Review page
 (`2fdde135-cd1f-804a-b0d2-e05f44ed95c9`).
+
+### 2026-08-24 — the SciSpace review page (+ Prior Work Supplemental sub-page)
+
+> the scispace page: https://app.notion.com/p/Lit-Review-2fdde135cd1f804ab0d2e05f44ed95c9?v=2fcde135cd1f8087ae97000c181d4a2e&t=3c6de135cd1f8038ae8000a9369dcd7a
+
+Identity: the Notion copy of the Dec-2025 SciSpace verdict (already intaken
+2026-08-22 from disk); new = its Prior Work Supplemental sub-page (search strategy
++ per-paper checklists), both preserved in the bundle. Settles both scored tables'
+derivation. PCRL = 2308.08758 and SAPS = 1810.09717 recovered (ledger + plan row A
+updated); MIPS/APICoder/SAMMO added as no-ID rows. TLC §4/§5 updated.

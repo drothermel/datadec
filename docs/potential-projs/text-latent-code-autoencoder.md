@@ -3262,6 +3262,19 @@ ready-made template for the §5 comparison table. The tables' downstream note is
 "NL Latents Lit Review Aggregate Summary" (cross-review aggregate, not yet
 pulled). First pulled: the ChatGPT table (8 rows).
 
+### 2026-08-24 — The seventh Notion review page: the Dec-2025 SciSpace verdict's Notion copy + its Prior Work Supplemental
+
+The SciSpace summary table's Source Note led to a seventh "Lit Review" page —
+which turns out to be the **Notion copy of the Dec-2025 SciSpace verdict** (378
+papers, six-component rubric, "appears novel"), saved into Notion during the
+Feb-4 session (04:11, marked Ingested: true) and already intaken 2026-08-22 from
+the disk bundle. New here: its **"Prior Work Supplemental"** sub-page — the search
+strategy and per-paper component checklists behind the verdict (both preserved in
+the bundle). This settles the scored tables' derivation: both the mislabeled
+"Undermind" table and the SciSpace table distill this verdict, not the Feb-2026
+platform reviews. ID recoveries: PCRL = 2308.08758, SAPS = 1810.09717.
+Supplemental items new to the record: MIPS, APICoder, SAMMO (no IDs in source).
+
 ## 5. Related work and positioning
 
 *Purpose: the paper-facing synthesis — the prior-art landscape, this project's
@@ -3307,7 +3320,9 @@ the dated §4 entries):
   (the sixth check, 21-paper prompt-compression map): ingredients established for
   prompts, structured-object compression absent, field "poised for direct
   extensions to your target setting" — the counterweight to Perplexity's
-  dismissal; use the pair.
+  dismissal; use the pair. The session also re-saved the Dec-2025 SciSpace
+  verdict into Notion as a seventh page (its supplemental now on file; both
+  scored summary tables derive from it).
   Danielle's read: the verdicts track how each review interpreted
   the prompt, and hence which literature it considered. The Claude check's
   component-feasibility matrix (each of the four components exists; the combination

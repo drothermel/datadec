@@ -87,6 +87,18 @@ code/artifacts listed in `REPRODUCIBLE_PAPERS_WITH_CODE.md`.
   editorializing, dropped; the rubric and partial list are kept because they are the
   related-work skeleton.
 
+*Addendum 2026-08-24: the Dec-2025 verdict's Notion copy located
+(`scispace-dec2025-verdict.md` in the 2026-08-24 bundle; created in Notion
+2026-02-04 04:11, marked Ingested: true), together with its previously unseen
+"Prior Work Supplemental" sub-page (`scispace-dec2025-prior-work-supplemental.md`)
+— the per-paper component checklists and search strategy behind the 378-paper
+verdict. Both scored NBLM summary tables derive from this verdict, settling the
+"Undermind" table's content mismatch. ID recoveries from the supplemental: PCRL =
+2308.08758 (Jung & Kim), SAPS = 1810.09717. Supplemental category C/D items new to
+this record: MIPS (program synthesis via mechanistic interpretability), APICoder
+(private-library code generation), SAMMO (symbolic prompt program search) — no IDs
+in source, ledgered as such.*
+
 ## 2026-08-22 — second novelty check (different agent, prompt not kept): "equivalent method already published"
 
 *Identity resolved 2026-08-24: this check is the **Perplexity**-generated Notion
