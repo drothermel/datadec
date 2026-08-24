@@ -440,4 +440,6 @@ rows — a second, richer schema adding **Critical Gaps/Missing Elements** and a
 tiered **Overlap Percentage** column (High 60–85 / Moderate 40–60 / Component <40),
 which is the better §5 positioning-table template; distillation-drift caveat: its
 PlanSearch row says "frozen CodeLlama" where the source review said Claude
-3.5/GPT-4 — treat cell contents as unverified).
+3.5/GPT-4 — treat cell contents as unverified); Consensus (8 rows — third schema
+with per-paper **Prior Art Justification** gap sentences; covers only the
+closest-matches tier, dropping the review's related-but-missing tier).

@@ -5261,3 +5261,13 @@ bundle. Second schema (gaps + tiered overlap %) noted in the table-layer entry o
 [topics/reference/nl-bottleneck-prior-art.md](topics/reference/nl-bottleneck-prior-art.md)
 as the better §5 template; PlanSearch "frozen CodeLlama" distillation-drift caveat
 recorded. No ledger rows.
+
+### 2026-08-24 — summary-table intake, Consensus table
+
+> next: https://app.notion.com/p/Consensus-Lit-Review-Summary-Table-2fdde135cd1f8016b7d5ce46a8b2bec4?v=2fcde135cd1f8087ae97000c181d4a2e&pvs=25
+
+8 rows, no new papers; preserved as `summary-tables/consensus-summary-table.md`.
+Third schema (per-paper prior-art-justification gap sentences); covers only the
+closest-matches tier. Table-layer entry extended in
+[topics/reference/nl-bottleneck-prior-art.md](topics/reference/nl-bottleneck-prior-art.md).
+No ledger rows.
