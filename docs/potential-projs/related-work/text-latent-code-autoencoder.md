@@ -707,3 +707,48 @@ semantics, representation similarity**
   precedent sentence; decide whether to report a distortion–rate curve or a fixed-budget
   point; verify the curriculum-in-prompt-optimization novelty claim; resolve the
   Gilbert 2304.12512 vs. 2406.01989 ID conflict and the 2507.08627 authorship discrepancy.
+
+
+**Added 2026-08-24 — from Danielle's April-2026 reflection notes (first-hand; bundle:
+`reflection-april-2026-code-comp-nl-latents.md`; no arXiv IDs on record yet — IDs to
+come from the Notion paper DB):**
+
+- **More Than a Score / PartialOrderEval** (no ID) — prompt-detail→pass@1 ladder on
+  HumanEval; the frontier's published cousin and a baseline-calibration warning —
+  (source: TLC §4 2026-08-24 reflection entry)
+- **Exploring LM Code Generation with Auxiliary Functions / HumanExtension** (no ID)
+  — oracle-context upper bound: auxiliary function from the canonical solution
+  triples pass@1 — (same source)
+- **PromptBridge** (no ID) — cross-model prompt transfer; "model drifting," 50–70%
+  relative loss on xCodeEval within-family — cross-decoder-falsifier evidence —
+  (same source)
+- **Discrete prompt optimization via GA for secure Python code** (no ID; JSS 232,
+  112682, Feb 2026) — security-specific mutations; prompts don't transfer across
+  LLMs — (same source)
+- **Tuning LLM-based Code Optimization via Meta-Prompting** (no ID) — industrial;
+  prompts optimized for one LLM fail on others; 366h runtime benchmarking — (same)
+- **Guidelines to Prompt LLMs for Code Generation** (no ID) — 10 empirical
+  prompt-improvement guidelines — (same)
+- **LM-CC / Rethinking Code Complexity Through the Lens of LLMs** (no ID) —
+  token-entropy semantic units; rewrites lowering LM-CC improve downstream pass@1 at
+  constant cyclomatic complexity — normalization-thread adjacent — (same)
+- **How do Humans and LLMs Process Confusing Code?** (no ID) — atoms of confusion →
+  perplexity spikes correlated with human confusion markers — (same)
+- **LongCodeZip** (no ID) — code-RAG surface-form critique; compression beating
+  uncompressed on RepoQA; 500M proxy perplexities for Claude Sonnet — (same)
+- **TRAAC / Think Right** (no ID) — adaptive attentive compression as an outer
+  loop — (same)
+- **Fault in our Stars** (no ID) — benchmark prompt-quality audit, 3,566 prompts /
+  9 benchmarks — evaluation-confound flank — (same)
+- **Non-determinism of ChatGPT in Code Generation** (no ID) — temperature 0 is not
+  deterministic; stochasticity accounting for prompt comparisons — (same)
+- **RepoAgent** (no ID) — amortized repo-doc updates; format-constrained per-chunk
+  output — implementation reference — (same)
+- **AVATAR** (no ID) — Java↔Python parallel corpus, candidate task source — (same)
+- **CodeBLEU** (no ID) — code-similarity metric, flagged to learn — (same)
+- Task-family taxonomy + candidate benchmark suite (RepoQA, LiveCodeBench,
+  CrossCodeEval, Defects4J/HumanEvalFix, JMigBench, SWE-Refactor, MultiFileTest,
+  CRUXEval, R2-Eval, CodeSearchNet, SecVulEval, CodeMMLU, REval, xCodeEval,
+  AlphaCode/CodeContests, BugsInPy, QuixBugs, Vul4J/ManyVuls4J/VJBench, HEJ-Robust,
+  CodeTaste, PyCommits/Coeditor, CoEdPilot, RepoCoder…) — (routed in full to
+  `../../topics/reference/code-benchmarks-landscape.md`, 2026-08-24 entry)

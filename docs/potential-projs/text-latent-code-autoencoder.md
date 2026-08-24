@@ -3288,6 +3288,56 @@ incomplete (Nano-Capsulator, EPiC duplicated); everything agent-generated and
 unverified. The full Notion chain is now on disk: 7 review pages → 7 NBLM tables
 → this aggregate.
 
+### 2026-08-24 — Danielle's April-2026 reflection notes (first-hand; raw capture dated 2026-04-17)
+
+Her own working notes on code comp + NL latents, raw-captured **2026-04-17** —
+establishing that the direction stayed active through mid-April 2026 — and
+re-sorted thematically during tonight's Notion cleanup (verbatim copy in the
+bundle; the raw capture quotes an assistant in places). First-hand highlights:
+
+- **Method self-labeling:** "we're doing black box compression (working without
+  access to model internals) as compared to white box compression"; abstractive
+  (rewrite) not extractive compressor, with Cmprsr as the case for abstraction.
+- **Her endorsement, verbatim:** "NL in the middle is a super strong argument for
+  my proposed approach" — English intermediate beat AST for translation, both beat
+  raw code, both-together best but English must come first.
+- **PartialOrderEval (in "More Than a Score") — a published cousin of the
+  compression-correctness frontier:** pass@1 on HumanEval as a function of prompt
+  detail for Qwen2.5-Coder-14B-Instruct — 0.280 minimal / 0.799 @50-word summary /
+  0.860 @100w / 0.921 @200w / 0.860 fully detailed / 0.866 original. Removing the
+  description crushes performance; adding solution-derived detail does not reliably
+  beat the default. The detail-vs-pass@1 ladder is the frontier's x-axis measured
+  by someone else. Oracle upper bound: HumanExtension's auxiliary-function
+  condition (StarCoder 16B 0.19→0.56 pass@1).
+- **The cross-model transfer trio** — PromptBridge ("model drifting," 50–70%
+  relative loss on xCodeEval for some within-family transfers), the GA
+  secure-code-generation pipeline (JSS Feb 2026: "prompts optimized on one LLM
+  showed lack of transferability"), and Meta-Prompting industrial code
+  optimization (same finding, 366h of runtime benchmarking). Directly load-bearing
+  for the cross-decoder-transfer falsifier and for optimizer-portability questions:
+  the literature says optimized prompts are model-specific.
+- **LM-CC ("Rethinking Code Complexity Through the Lens of LLMs"):**
+  token-entropy semantic-unit boundaries → hierarchical complexity metric →
+  semantics-preserving rewrites that lower LM-CC improve downstream pass@1 (13.4→
+  16.2 repair; 42.2→46.5 translation) at constant cyclomatic complexity —
+  LLM-aware behavior-preserving rewriting, adjacent to the normalization thread.
+- **LongCodeZip:** embedding models over-index on surface form (weak for code
+  RAG); compression can *beat* uncompressed source on RepoQA; a 500M model
+  predicts the perplexities needed to pack the knapsack for Claude Sonnet.
+- **Task-design material:** a six-family taxonomy of one-turn code tasks with
+  representative benchmarks and a candidate suite (RepoQA, HumanEval/
+  LiveCodeBench, RepoBench/CrossCodeEval, Defects4J/HumanEvalFix, JMigBench/
+  SWE-Refactor, MultiFileTest, CRUXEval/R2-Eval, CodeSearchNet/SecVulEval) —
+  routed to code-benchmarks-landscape.
+- **Open questions in her words**, including the transfer matrix from April:
+  "can we use different encoders to encode into the same space from different
+  source types and use different decoders to decode from that space into
+  different shapes?" — and whether NL retrieval maturity is itself an argument
+  for NL representations; whether soft-prompt compression is how tools like
+  Cursor index codebases.
+- Venue flag: **LLM4Code 2026**. Tools: Jedi (Python parsing); add diffusion
+  coding models to the model set.
+
 ## 5. Related work and positioning
 
 *Purpose: the paper-facing synthesis — the prior-art landscape, this project's
@@ -3361,6 +3411,15 @@ the dated §4 entries):
   GPT-C has no arXiv ID on record yet (recover from its Notion paper page or at
   verification). The positioning table should place GPT-C alongside LBM and
   Gilbert in the closest-neighbor tier.
+- **From Danielle's April-2026 notes (first-hand, intaken 2026-08-24):**
+  PartialOrderEval / "More Than a Score" (the published prompt-detail→pass@1
+  ladder — the frontier's nearest published cousin; also the sharpest
+  baseline-calibration warning: solution-derived detail doesn't reliably beat the
+  default prompt); the cross-model prompt-transfer trio (PromptBridge, GA
+  secure-code, Meta-Prompting industrial — optimized prompts are model-specific,
+  load-bearing for the cross-decoder falsifier); LM-CC (behavior-preserving
+  rewriting guided by an LLM-aware complexity metric); NL-in-the-Middle elevated
+  by her own endorsement.
 - **Added by the fourth check (Gemini):** LBM 2506.16982 (architectural precedent;
   headline match of two independent checks, unread gate-1 item) with GRPO
   2402.03300 as its optimizer; SPAE 2306.17842 (frozen-LLM lexical-token

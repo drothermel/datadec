@@ -267,3 +267,24 @@ generation (generate code meeting a complexity constraint), validated by
 profiling/curve-fitting. The nearest prior art to the asymptotic-choice slice of the
 decision-quality probe; differs in unit (predict/generate under constraint, not
 choose-then-commit under a scenario).
+
+## 2026-08-24 — Danielle's April-2026 task-family taxonomy and evaluation-confound notes (first-hand)
+
+From her 2026-04-17 reflection notes (bundle:
+`reflection-april-2026-code-comp-nl-latents.md`, 2026-08-24 Notion batch; some
+passages quote an assistant; no arXiv IDs on record — the Notion paper DB holds the
+links). Six one-turn task families with representatives: context→missing-code
+(RepoBench, RepoCoder, CrossCodeEval); buggy/unsafe→patch (Defects4J, BugsInPy,
+QuixBugs, HumanEvalFix, Vul4J/ManyVuls4J/VJBench, HEJ-Robust); code+goal→new code
+(JMigBench Java 8→11, SWE-Refactor, CodeTaste, PyCommits/Coeditor, CoEdPilot);
+codebase→tests (MultiFileTest — multi-file, three languages); code→answer/trace
+(CRUXEval, REval, CodeMMLU, R2-Eval / real-world-context reasoning,
+reasoning-quality via "Beyond Output Correctness"); code→label/rank/retrieve
+(CodeSearchNet, SecVulEval statement-level C/C++). Candidate suite for the
+code-comp task set enumerated in the source. Evaluation-confound flank:
+**PartialOrderEval** (in "More Than a Score") — the prompt-detail→pass@1 ladder
+(0.280→0.921→0.860 non-monotone at full detail); **Fault in our Stars** (3,566
+prompts across 9 benchmarks; benchmark prompt quality is itself a confound);
+**ChatGPT non-determinism** (temp 0 ≠ deterministic; 829 problems); HumanExtension
+auxiliary-function oracle (pass@1 triples with leaked ground-truth structure).
+AVATAR flagged for Java↔Python. All unverified pending the paper-DB cleanup.

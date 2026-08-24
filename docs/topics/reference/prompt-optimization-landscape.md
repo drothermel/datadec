@@ -196,3 +196,20 @@ component-feasibility evidence for gradient-free prompt optimization — three o
 anchors the August 2026 SciSpace reviews were faulted for omitting were already in
 the project's February record. EvoPrompt (Guo et al.) is distinct from EvoPrompting
 2302.14838 (Chen et al., neural-architecture prompts) — both are now ledgered.
+
+## 2026-08-24 — the cross-model prompt-transfer cluster (Danielle's April-2026 notes, first-hand)
+
+From her 2026-04-17 reflection (bundle:
+`reflection-april-2026-code-comp-nl-latents.md`; no IDs on record yet). Three
+papers converging on prompt model-specificity: **PromptBridge** (cross-model
+prompt transfer; five coding benchmarks; "model drifting" with 50–70% relative
+loss on xCodeEval for some within-family transfers); **discrete GA prompt
+optimization for secure Python code** (JSS 232:112682, Feb 2026 — abstract pasted
+verbatim in the source; security-specific mutations; "prompts optimized on one LLM
+showed lack of transferability to others"); **Tuning LLM-based Code Optimization
+via Meta-Prompting** (industrial; five codebases, 366h runtime benchmarking, up to
+19.06% improvement; same transferability finding). Plus **Guidelines to Prompt
+LLMs for Code Generation** (10 empirical guidelines) and her flag to skim
+Prochemy/Prompt Alchemy (2503.11085, already row B). Bearing: optimizer outputs
+are model-specific — evidence for the cross-decoder-transfer falsifier and a
+design constraint for any shared-arm-space comparison. Unverified.

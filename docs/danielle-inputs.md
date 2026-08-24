@@ -5369,3 +5369,18 @@ Dated standing-principle entry added to
 novelty verdicts are interpretation samples (her note verbatim; six-checks
 evidence; how-to-apply = multi-platform commissioning, union-for-recall,
 spread-maps-the-readings, never single-verdict-settled).
+
+### 2026-08-24 — April-2026 reflection notes intaken
+
+> great, now, can you  ingest this please: https://app.notion.com/p/Reflection-on-NBLM-of-Code-Comp-NL-Latents-3c6de135cd1f80678d98de65ef823bed?t=3c6de135cd1f80aaa7e900a9e85dc5b1
+
+Her own April-2026 working notes (raw capture 2026-04-17; thematic re-sort created
+tonight in the Notion cleanup) — first-hand, Danielle-supplied provenance. Verbatim
+in the bundle. Routed: TLC §4 entry + §5 anchor-tier bullet (PartialOrderEval,
+cross-model transfer trio, LM-CC, NL-in-the-Middle endorsement); TLC recall-corpus
+dated section (all new items); dated entries in code-benchmarks-landscape
+(task-family taxonomy + evaluation confounds), code-compression-literature
+(black-box/abstractive self-labeling, LongCodeZip/TRAAC/ShortenDoc/LM-CC), and
+prompt-optimization-landscape (transfer trio); twelve no-ID ledger rows
+(Danielle-supplied; IDs to come from the paper DB). New timeline fact: the
+direction stayed active through mid-April 2026.

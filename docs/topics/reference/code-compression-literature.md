@@ -262,3 +262,24 @@ reduction, and learned library abstraction over DSLs or Python subsets.
   for subdomain C.
 - Eight new arXiv IDs to the ledger; the 1980s–2000s items have no arXiv IDs and need DOI
   or venue checks instead.
+
+## 2026-08-24 — Danielle's April-2026 compression notes (first-hand)
+
+From her 2026-04-17 reflection (bundle:
+`reflection-april-2026-code-comp-nl-latents.md`; no IDs on record yet). Method
+self-labeling for the TLC/code-comp approach: **black-box** (no model internals) vs
+white-box compression; **abstractive** (rewrite) vs extractive, with Cmprsr as the
+case for abstraction. **LongCodeZip**: embedding models over-index on surface form
+(weak code RAG); compression can *beat* uncompressed source on RepoQA; a 500M model
+predicts pack-the-knapsack perplexities for Claude Sonnet — small models match
+large-model distributions on some code tasks. **CodePromptZip** (2502.14925,
+ledgered): AST-based removal by structural impact, variable names kept as
+human-intent carriers; ablates dropping token types against downstream performance
+— the existing answer to her token-level-perturbation question. **TRAAC / Think
+Right**: adaptive attentive compression as an outer loop. **ShortenDoc / Less is
+More** (docstring compression): motivation for task-direct decodings.
+**LM-CC / Rethinking Code Complexity**: token-entropy unit boundaries; rewrites
+lowering the metric improve downstream pass@1 at constant cyclomatic complexity;
+plus the atoms-of-confusion perplexity-spike line ("How do Humans and LLMs Process
+Confusing Code?") — the LLM-aware rewriting flank adjacent to behavior-preserving
+normalization. All unverified.
