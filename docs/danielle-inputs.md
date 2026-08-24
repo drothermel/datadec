@@ -5596,3 +5596,22 @@ irt-reanalysis §5 got a new curated bullet (the compression line's current
 frontier) + a recall-corpus section; 14 ledger rows (6 with notebook-supplied
 IDs). Flagged: table-vs-report ARC discriminability inconsistency (0.11 vs
 0.03). Ingest-link-index row added.
+
+### 2026-08-24 — NotebookLM NL-latents/TLC notebook ingested
+
+> link: https://notebook.google.com/notebook/8d1031d0-06f1-4437-af7e-0cd819fb9695
+
+(Followed by the 24-source enumerated synthesis and the library-induction report
+— verbatim in the bundle, `nblm-nl-latents-tlc-notebook.md`.) Third NotebookLM
+notebook of the day, and the closest to home: the source set is her curated TLC /
+NL-latents paper collection — all but three names already ledgered with IDs.
+Routed: dated entry in
+[topics/reference/nl-bottleneck-prior-art.md](topics/reference/nl-bottleneck-prior-art.md)
+(the aggregate synthesis — discrete-NL-bottleneck + frozen-decoder +
+gradient-free optimization as the shared design; idea-space search beats
+code/token-space; frozen LLMs as "universal decompressors" — flagged as
+§5-grade raw material but partly circular since it synthesizes her own corpus;
+LILO/Stitch/AutoDoc depth incl. the code-obfuscation finding as an
+NL-necessity-adjacent datum; concrete RL4QE detail); TLC §4 dated entry;
+recall-corpus lines (LAPS, O'Connor & Andreas, Self-consistency, LILO/Stitch
+enrichment); 3 no-ID ledger rows. Ingest-link-index row added.

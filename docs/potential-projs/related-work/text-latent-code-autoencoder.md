@@ -815,3 +815,22 @@ agent-supplied, no IDs given):**
 - **FunSearch program-space principle** (no ID; +AlphaEvolve 2025) — search in
   program space with the LLM as mutation operator and a fast evaluator; the
   outer-loop-optimizer vs inner-loop-controller distinction — (source: same)
+
+**NBLM NL-latents notebook additions (intake 2026-08-24; agent-generated, no IDs
+given):**
+
+- **LAPS** (Wong et al. 2021, no ID) — language-grounded library learning; the
+  LILO precursor pairing NL annotations with program abstraction search —
+  (source: `../../topics/reference/nl-bottleneck-prior-art.md`, NBLM notebook entry)
+- **O'Connor & Andreas 2021** (no ID) — ordering effects / context-window
+  fragility; cited against transformer-attention-as-library arguments — (source: same)
+- **Self-consistency** (Wang et al. 2022, no ID) — cited as candidate AutoDoc
+  verification machinery — (source: same)
+- **LILO code-obfuscation finding + AutoDoc failure modes** (2310.19791, already
+  listed above) — anonymous `fn_42` abstractions degrade LLM synthesis vs
+  NL-documented ones (NL names load-bearing for frozen decoders); semantic
+  misattribution / naming cascade / contextual over-reliance — enrichment of the
+  library-learning cluster — (source: same)
+- **Stitch performance detail** — branch-and-bound refactoring 1,000–10,000×
+  faster than DreamCoder compression; enables per-iteration deep refactoring —
+  (source: same)

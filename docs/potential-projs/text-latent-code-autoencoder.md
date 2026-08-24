@@ -3378,6 +3378,22 @@ to its own ID 2503.05860, loosening the 2412.01526 triple-citation flag) — rou
 to `code-benchmarks-landscape.md`. All characterizations agent-supplied,
 unverified.
 
+### 2026-08-24 — NotebookLM NL-latents notebook: the curated corpus synthesized
+
+Danielle supplied a NotebookLM notebook over her 24-source TLC/NL-latents paper
+collection (bundle: `nblm-nl-latents-tlc-notebook.md`; full entry in
+`../topics/reference/nl-bottleneck-prior-art.md`, same date). Its aggregate
+synthesis states the literature's shared design (discrete NL bottleneck between
+an encoder and a frozen decoder, gradient-free optimization) and two headline
+conclusions — idea-space search beats code/token-space search, and frozen LLMs
+act as "universal decompressors" — the closest existing one-paragraph statement
+of the shared premise §5 will position against (agent-synthesized over her own
+curated corpus, so partly circular as novelty evidence; unverified). Adds LILO
+depth (code-obfuscation finding: anonymous abstractions degrade synthesis vs
+NL-documented ones — an NL-necessity-adjacent datum; AutoDoc failure modes),
+concrete RL4QE detail (previously a bare name), and three new names (LAPS,
+O'Connor & Andreas 2021, Self-consistency).
+
 ## 5. Related work and positioning
 
 *Purpose: the paper-facing synthesis — the prior-art landscape, this project's

@@ -490,3 +490,45 @@ verbatim: incomplete dedup (Nano-Capsulator and EPiC appear twice), all scores
 agent-generated/unverified, and the estimated tier mixes different reviews'
 non-comparable framings. The intake batch's chain is fully pulled: 7 review pages
 (6 platform checks + the Dec-2025 verdict copy) → 7 NBLM tables → this aggregate.
+
+## 2026-08-24 — NotebookLM NL-latents notebook: her curated 24-source corpus, synthesized (intake)
+
+Danielle supplied a NotebookLM notebook whose 24 sources are recognizably the
+curated TLC / NL-latents paper collection — nearly every item already on this
+record with an ID (bundle: `nblm-nl-latents-tlc-notebook.md`; full ID inventory
+in the bundle header). What the intake adds (agent-generated, unverified;
+NotebookLM inaccuracy caveat):
+
+- **The aggregate synthesis, in one place.** The notebook's cross-source
+  summary states the shared design — a discrete bottleneck (NL or discrete
+  latent tokens) between an encoding phase and a *frozen* decoding phase,
+  improved by gradient-free optimization (EAs, RL, meta-prompting) — and two
+  headline conclusions: (1) **searching/optimizing in idea space (high-level NL)
+  yields greater diversity and semantic accuracy than searching raw code or
+  token spaces**, and (2) **frozen LLMs act as "universal decompressors"**
+  reconstructing semantics from heavily condensed text. This is the closest
+  thing on record to a one-paragraph statement of the TLC literature's shared
+  premise — §5-grade raw material (with the caveat that it is an
+  agent-synthesized reading of her own curated corpus, so partly circular as
+  novelty evidence).
+- **LILO / library-induction depth** (from the notebook's report): Stitch's
+  branch-and-bound refactoring is 1,000–10,000× faster and 100× more
+  memory-efficient than DreamCoder's compression (two CPU-months → deep
+  refactoring every iteration); the **code-obfuscation finding** — anonymous
+  `fn_42`-style abstractions measurably degrade LLM synthesis vs documented
+  ones (NL names are load-bearing for frozen-decoder use — a small
+  NL-necessity-adjacent datum); **AutoDoc failure modes** — semantic
+  misattribution, sequential-naming cascade (early bad names inherited by
+  compositional descendants), contextual over-reliance. Open questions named:
+  imperative-language scaling (Python), Reflexion/self-consistency as AutoDoc
+  verification, retrieval-vs-compression boundary.
+- **New names:** LAPS (Wong et al. 2021 — language-grounded library learning,
+  the LILO precursor; no ID), O'Connor & Andreas 2021 (ordering effects /
+  context-window fragility citation; no ID), Self-consistency (Wang et al.
+  2022; no ID). Everything else in the source list is already ledgered.
+- Detail deltas worth noting: Proto-tokens quantified as **two** embedding
+  vectors per text with a 279× throughput figure (Fanfics, PG-19); Latent
+  Programmer's 5–7% margin over Seq2Seq/RobustFill; RL4QE described concretely
+  (LoRA/PPO query refiner over a fixed DeepSeek generator, attention-projections-
+  only updates best, DS-1000 + MBPP) — the record previously held RL4QE as a
+  bare name.

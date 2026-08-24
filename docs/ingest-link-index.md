@@ -29,6 +29,14 @@ is the durable part.
 
 ## 2026-08-24 — NotebookLM notebooks
 
+- [NL-latents / TLC source-collection notebook (NotebookLM, undated)](https://notebook.google.com/notebook/8d1031d0-06f1-4437-af7e-0cd819fb9695)
+  — synthesis over her curated 24-source TLC paper collection (all but three
+  names already on record with IDs) + a LILO/library-induction report → routed:
+  `topics/reference/nl-bottleneck-prior-art.md` (aggregate-synthesis entry:
+  idea-space > token-space, frozen LLMs as universal decompressors; LILO/Stitch/
+  AutoDoc depth), TLC §4 entry + recall-corpus lines, 3 no-ID ledger rows
+  (LAPS, O'Connor & Andreas, Self-consistency).
+
 - [LLM evaluation / meta-evaluation notebook (NotebookLM, undated, ≥2026 sources)](https://notebook.google.com/notebook/2f70b7f0-4156-4e90-ab47-a34dac85ddc1)
   — data table + two reports over 16 paper sources (incl. DataDecide,
   Signal-and-Noise, model ladders — the program's own foundations); new
