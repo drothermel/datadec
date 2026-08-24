@@ -2982,3 +2982,40 @@ project's intellectual record:
   analysis from chunk 9 as cheap outstanding items: the min-cost-to-first-success
   distribution per spec (option C) is also a natural bridge to the behavioral-
   divergence instrument's tail-risk metrics.
+
+### 2026-08-23 — The writing-sprint conversation, chunk 14 (the final exchanges; 2026-02-16, 12:54 and 14:32)
+
+Three exchanges (Danielle at intake: "these were the last two"), all executing salvage
+option B from chunk 13 — the early-N' frontiers that became the submitted appendix's
+Figure 4 multi-T panels (T = 5/10/25/50/90):
+
+- **Early-N' frontiers defined:** recompute S_m(c;N') using only the first N'
+  evaluations — a *prefix of the interaction trace* — for N' < N, overlaid on the
+  same coverage-vs-cost-cap axes. The point: methods that converge to similar
+  N=50 performance can differ in how quickly they get there; this makes the
+  AUC-vs-evals story visible on the frontier axes themselves. Requires no
+  re-running — only re-aggregation from logs, which is what made it executable
+  inside the deadline extension.
+- **The prefix-not-resample clarification (her 2:32pm question, the conversation's
+  last):** no resampling needed — "early-N'" means "what the method had discovered
+  after N' attempts," not "what it would discover if rerun with budget N'." Filter
+  by attempt index t < N'. **The bias warning:** filtering by cost instead changes
+  the definition from "after N' evaluations" to "among low-cost attempts" and
+  biases the curve — cost belongs only on the x-axis inside the frontier
+  computation. Worth keeping as a standing analysis rule for any TLC-0 frontier
+  reimplementation.
+- **Bucketing guidance:** S_m(c;N) is exactly a step function at observed unique
+  costs; plotted smoothness is visualization only. Rule of thumb: bucket width
+  giving ~30–60 x-points across the plotted range (step 10–20 chars for the
+  ~0–450-char range of the submitted Figure 1a). Don't bucket-then-average to
+  manufacture step-ness; compute at a fine grid and downsample the plot, not the
+  metric.
+- **Budget fairness, disentangled:** two budgets exist. The evaluation budget N
+  (attempt count) **must** be matched across methods — the key fairness
+  constraint. The instructed IR budget B (the "keep under X chars" instruction)
+  may be ignored on the frontier axes provided its distribution is not
+  systematically different across methods: either hold B fixed, use an identical
+  schedule, or make B part of a shared arm space (then "arms include budget
+  phrasing" and fairness comes from identical arm access). This is the
+  clean statement of B-as-conditioning-variable that the pitch's budget-tier
+  design (140/280/560) gestured at.

@@ -5105,3 +5105,25 @@ catalog with the Background-&-Methods counter-datapoint; the February ownership
 moment; the results diagnosis with the salvage menu — B and D executed before
 submission, A and C outstanding and bridged to the divergence instrument). No new
 identifiers.
+
+### 2026-08-23 — writing-sprint conversation, chunk 14 (final two exchanges; sent with the compaction request)
+
+> Note, these were the last two, and you're going to autocompact any moment so can you
+> give me a compaction instruction instead of filing these away so we can be sure to
+> preserve the important context during compaction?
+
+> [12:54pm] Okay, I have a question. You say add early end frontiers, but I don't know what that means. Is it basically that we had figure one where we have the compression versus success and that's for a fixed N and we bucket? It by actual cost, and we plot different curves for each of the different methods, but then if we were to introduce shorter N, then we would get different curves. Overlaid. That would look different because they were for shorter portions of fitting. Is that what we're talking about?
+
+> Okay, I have a new question. So if I were bucketing, how big does it make sense to make the buckets? Are we looking for a visible step function or something that looks more like a curve? Because it seems like we want a step function, and that's not quite what I have. But I feel like my plots look nice, but they also look boring.
+> Also, I know that we aren't including information about the budget because we're bucketing on cost, but is it important that I keep the budget set that I use in the evaluations fixed across the methods because it seems like it would be, but maybe it's not.
+
+> [2:32pm] Question. So if I'm going to add the n prime equals lower numbers, then do I actually need to resample for each of those lower numbers or can I just filter to those lower values for the length?
+
+Routed to [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+§4 (writing-sprint chunk-14 entry: early-N' frontiers = prefix filtering by attempt
+index, not resampling and not cost-filtering — the bias warning kept as a standing
+analysis rule; bucketing rule of thumb ~30–60 x-points; evaluation budget N must be
+matched across methods, instructed budget B fixed/scheduled/in-shared-arm-space; these
+became the submitted appendix Figure 4 multi-T panels). Transcript preserved first at
+her request (compaction-proofing), routing filed after. Conversation complete: 14
+chunks, all 2026-02-16, ending 14:32. No new identifiers.
