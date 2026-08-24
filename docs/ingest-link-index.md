@@ -29,6 +29,16 @@ is the durable part.
 
 ## 2026-08-24 — NotebookLM notebooks
 
+- [Pretraining optimization-dynamics notebook (NotebookLM, undated)](https://notebook.google.com/notebook/611a0dd1-628d-4b4b-8742-bc6d12767de0)
+  — 11 pretraining papers (Power Lines, Step Law, CompleteP, MPL, CPT dynamics,
+  mid-training survey, catastrophic overtraining, WD-improves-plasticity,
+  LoRA-LR-matters, IB-at-LLM-scale, PTQ robustness) + an MPL/PTQ synthesis
+  report → routed: `topics/reference/schedules-and-annealing-literature.md`
+  (main entry: PTQ-spikes-at-decay, sqrt-cube decay, CPT, mid-training, IB,
+  LoRA-LR), `topics/reference/parametrization-and-hp-transfer.md` (CompleteP
+  detail, Power Lines, Step Law), `topics/reference/plasticity.md` (the
+  LM-plasticity pair), wsd-suite recall corpus (6 lines), 10 no-ID ledger rows.
+
 - [NL-latents / TLC source-collection notebook (NotebookLM, undated)](https://notebook.google.com/notebook/8d1031d0-06f1-4437-af7e-0cd819fb9695)
   — synthesis over her curated 24-source TLC paper collection (all but three
   names already on record with IDs) + a LILO/library-induction report → routed:

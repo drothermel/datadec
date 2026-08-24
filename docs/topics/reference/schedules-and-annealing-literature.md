@@ -295,3 +295,53 @@ list.
 interactive-app report; this pair). The survey entry remains the usable one; this pair adds
 only the rewriting cluster, 2508.01483, and the mixture-cooldown idea. Search drift into
 fine-tuning is the dominant failure here, as with the SciSpace batch.
+
+## 2026-08-24 — NotebookLM pretraining-dynamics notebook (11 papers; main routing entry)
+
+Danielle supplied a NotebookLM notebook over eleven 2024–2025 pretraining papers
+(bundle: `nblm-pretraining-dynamics-notebook.md` in the 2026-08-24 intake
+bundle; **no arXiv IDs supplied anywhere** — agent-generated, unverified;
+NotebookLM inaccuracy caveat). The MPL (Luo 2503.12811), river-valley picture
+(Wen), and CompleteP-as-name were already on record; the rest is new. Companion
+entries: HP-scaling-law cluster in `parametrization-and-hp-transfer.md`,
+plasticity/overtraining pair in `plasticity.md` (same date).
+
+Schedule-side material:
+
+- **PTQ robustness vs training dynamics (paper 10; OLMo/SmolLM3 trajectories to
+  32B).** Quantization error diverges from validation loss **abruptly when the
+  LR decays** — the stable phase of WSD is PTQ-flat regardless of token count,
+  so the prior data-scale-degrades-quantization claim (Kumar et al. 2024) is
+  confounded by schedule. Mitigations: keep LR larger longer (WSD), LAWA weight
+  averaging, and **model souping along the decay trajectory** (the soup is more
+  PTQ-robust than any ingredient checkpoint). Report framing: the decay phase's
+  loss-reduction term settles the model into sharper river-valley minima
+  (λ_max vs 2/η, Edge of Stability), trading final loss against low-bit
+  deployability. A new consequence-of-anneal axis for the WSD/anneal program:
+  the anneal buys loss but costs quantization robustness.
+- **MPL report detail beyond the existing record:** the S1 cumulative-LR-sum
+  formulation (S1 beats token count as the loss predictor across schedules);
+  Theorem-1 link of the α/β exponents to Hessian-spectrum and noise-covariance
+  decay; the MPL-optimized schedule beating cosine *and* WSD, with symbolic
+  regression finding a **"sqrt-cube" decay** η_t ≈ η_max·(1−τ)^1.5 as the
+  efficient WSD decay shape (LAMBADA +2.17%, HellaSwag +0.62%); exponential-
+  vs-power-law decay-term disagreement (Momentum Law's exponential form yields
+  collapsed optimized schedules); coefficient stability degrading at high peak
+  LR as an open problem.
+- **CPT learning dynamics (paper 3).** A continual-pretraining scaling law
+  decoupling distribution shift from LR annealing; CPT loss as a transfer
+  curve; initial "loss potential" dictates downstream adaptability; replay
+  ratio and peak LR mathematically targetable for the in-domain/out-of-domain
+  balance.
+- **Mid-Training survey (paper 6).** First taxonomy of the mid-training stage:
+  data distribution (knowledge-dense curated sets beat raw scale late),
+  multi-stage LR annealing (WSD), long-context extension (ABF / YaRN).
+- **Learning is Forgetting (paper 5).** Information Bottleneck operationalized
+  at LLM scale via soft-entropy MI estimators on OLMo2/C4/Tulu: two-phase
+  expand-then-compress trajectory; proximity to the compression bound predicts
+  downstream performance — a candidate trajectory statistic.
+- **LoRA-LR-matters (paper 4).** Claimed advantages of LoRA variants
+  (PiSSA/MiLoRA/DoRA/Init[AB]) are largely LR-tuning artifacts; optimally tuned,
+  all converge; initialization sets the max Hessian eigenvalue and hence the
+  usable LR — an elicitation-tuning-equity datum for the pipeline-comparison
+  thread.

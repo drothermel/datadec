@@ -63,3 +63,29 @@ coincide for u-µP; the caption states standard µP fails under the same simple 
 - Related and absent (Claude-added, unverified): the original µP/µTransfer (Yang et al.,
   2203.03466); Unit Scaling (Blake et al., 2303.11257); depth-µP / CompleteP for
   depth-wise transfer; these are the obvious next entries if this topic grows.
+
+## 2026-08-24 — HP-scaling-law cluster from the NotebookLM pretraining notebook
+
+From the 11-paper NotebookLM notebook (bundle:
+`nblm-pretraining-dynamics-notebook.md`; main entry in
+`schedules-and-annealing-literature.md`, same date; no IDs supplied,
+agent-generated, unverified):
+
+- **CompleteP detail** (previously a bare "related and absent" name here):
+  extends µP with Query-Key-norm and AdamW-ε adjustments to unify width, depth,
+  batch-size, and token-horizon transfer; per-module HP optimization
+  (evolutionary search) at 50M transfers to a 420× larger compute scale with up
+  to a 1.32× training speedup.
+- **Power Lines** — WD/BS scaling laws from hundreds of µP models (111M–3.3B,
+  SlimPajama): the optimal AdamW timescale decreases as a power law of
+  tokens-per-parameter D/N (optimal weight decay pre-calculable); optimal and
+  critical batch sizes scale with **D alone, independent of N**.
+- **Step Law (Predictable Scale, Part I)** — 3,700 runs (dense + MoE, 60M–1B,
+  ≤100B tokens): the loss landscape is **strictly convex in (LR, BS)**; optimal
+  BS depends primarily on D, optimal LR jointly on N and D; transfers across
+  topologies, MoE sparsity, and data recipes.
+
+Convergent claim across both: batch size is a dataset-size story, not a
+model-size story. Directly relevant to the small-scale sweep designs
+(wsd-suite, tiny-scale-measurement): these laws say which HP axes must be
+re-tuned per scale and which can be fixed by formula.

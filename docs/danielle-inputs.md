@@ -5615,3 +5615,29 @@ LILO/Stitch/AutoDoc depth incl. the code-obfuscation finding as an
 NL-necessity-adjacent datum; concrete RL4QE detail); TLC §4 dated entry;
 recall-corpus lines (LAPS, O'Connor & Andreas, Self-consistency, LILO/Stitch
 enrichment); 3 no-ID ledger rows. Ingest-link-index row added.
+
+### 2026-08-24 — NotebookLM pretraining-dynamics notebook ingested
+
+> link: https://notebook.google.com/notebook/611a0dd1-628d-4b4b-8742-bc6d12767de0
+
+(Followed by the 11-source synthesis and the MPL/PTQ report — verbatim in the
+bundle, `nblm-pretraining-dynamics-notebook.md`.) Fourth NotebookLM notebook of
+the day, on the pretraining side — home turf for the schedule program. MPL,
+river valley, and CompleteP-as-name were already on record; the rest is new.
+Routed: main entry in
+[topics/reference/schedules-and-annealing-literature.md](topics/reference/schedules-and-annealing-literature.md)
+(the PTQ finding — quantization error spikes exactly at LR decay, stable phase
+PTQ-flat, souping/LAWA mitigate, a new consequence-of-anneal axis; MPL report
+detail incl. the sqrt-cube decay η_max·(1−τ)^1.5 beating cosine and WSD; CPT
+scaling law; mid-training taxonomy; IB-at-LLM-scale as a candidate trajectory
+statistic; LoRA-LR-matters as a tuning-equity datum); HP-scaling cluster in
+[topics/reference/parametrization-and-hp-transfer.md](topics/reference/parametrization-and-hp-transfer.md)
+(CompleteP detail fill; Power Lines — AdamW timescale ~ D/N power law, batch
+size scales with D alone; Step Law — strictly convex (LR,BS) landscape; the
+convergent BS-is-a-D-story claim); the LM-plasticity pair in
+[topics/reference/plasticity.md](topics/reference/plasticity.md) (catastrophic
+overtraining + weight-decay-improves-plasticity — partial answer to her
+standing where-did-plasticity-go interest, now at HP-selection level);
+wsd-suite recall-corpus lines (sqrt-cube arm candidate, PTQ axis, Power
+Lines/Step Law as fixes-by-formula for sweep design); 10 no-ID ledger rows (the
+notebook supplies no IDs). Ingest-link-index row added.

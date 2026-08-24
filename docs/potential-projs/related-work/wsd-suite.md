@@ -425,3 +425,28 @@ suite would validate against)**
   no source; "edu filtering works best during annealing" is a respondent inference;
   several sources are a Reddit thread and a blog mirror. (source:
   docs/topics/reference/schedules-and-annealing-literature.md, second entry)
+
+**NBLM pretraining-dynamics notebook additions (intake 2026-08-24;
+agent-generated, no IDs supplied):**
+
+- **MPL-optimized schedules + "sqrt-cube" decay** — the MPL's gradient-based
+  schedule search beats cosine and WSD; symbolic regression finds
+  η_t ≈ η_max·(1−τ)^1.5 as the efficient WSD decay shape — a concrete candidate
+  arm for schedule comparisons — (source:
+  `../../topics/reference/schedules-and-annealing-literature.md`, 2026-08-24
+  NBLM entry)
+- **PTQ robustness as a consequence-of-anneal axis** (no ID) — quantization
+  error spikes exactly at LR decay; stable phase PTQ-flat; souping/LAWA
+  mitigate — a new measurable the anneal trades against — (source: same)
+- **Power Lines** (no ID) — optimal AdamW timescale as a power law of D/N;
+  B_opt/B_crit scale with D alone — fixes-by-formula for sweep design —
+  (source: `../../topics/reference/parametrization-and-hp-transfer.md`,
+  2026-08-24 entry)
+- **Step Law** (no ID) — (LR, BS) loss landscape strictly convex; optimal LR
+  joint in (N, D), optimal BS in D — same role — (source: same)
+- **CPT learning-dynamics scaling law** (no ID) — decouples distribution shift
+  from LR annealing; replay ratio and peak LR targetable — relevant to
+  anneal-phase data-swap arms — (source:
+  `../../topics/reference/schedules-and-annealing-literature.md`, same entry)
+- **Mid-Training survey** (no ID) — taxonomy of the stage the anneal-slice arms
+  live in (data curation + WSD annealing + long-context) — (source: same)

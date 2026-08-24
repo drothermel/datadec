@@ -190,3 +190,30 @@ already above):
 Drift-taxonomy and evaluation vocabulary routed to
 `nonstationarity-accounting.md` (same intake). All claims talk-transcript-level,
 agent-distilled, unverified; no arXiv IDs supplied anywhere in the notebook.
+
+## 2026-08-24 — the LM-pretraining plasticity pair (NotebookLM pretraining notebook)
+
+Two sources from the 11-paper pretraining notebook (bundle:
+`nblm-pretraining-dynamics-notebook.md`; main entry in
+`schedules-and-annealing-literature.md`; no IDs supplied, unverified) answer
+part of Danielle's standing where-did-plasticity-go-for-LMs interest — the
+plasticity thread has arrived in LM pretraining hyperparameter space:
+
+- **"Overtrained Language Models Are Harder to Fine-Tune"** — defines
+  **catastrophic overtraining**: OLMo models (15M–90M, ≤128B tokens) pretrained
+  on more tokens become progressively more sensitive to parameter
+  transformations; under task misalignment, fine-tuning an overtrained model
+  degrades both in-domain and OOD performance. Pretraining-token budget is not
+  monotonically beneficial for adaptability.
+- **"Weight Decay Improves Language Model Plasticity"** — Llama-2/OLMo-2 to 4B:
+  higher pretraining weight decay improves fine-tuning accuracy and plasticity;
+  mechanism reported as linearly-separated representations and reduced
+  pseudo-rank of attention matrices. The headline for HP selection: choosing
+  pretraining HPs on pretraining loss alone does not yield the best post-trained
+  model — the same pretrain-vs-posttrain objective split the CL notebook's
+  stability–plasticity ledger formalizes, now at the HP-selection level.
+
+Related from the same notebook: the CPT paper's "loss potential" (initial loss
+level dictating adaptability) as a plasticity-adjacent quantity, and the
+CL-notebook convergence that these are the LM-scale descendants of the
+warm-starting / Ash & Adams line already anchored above.
