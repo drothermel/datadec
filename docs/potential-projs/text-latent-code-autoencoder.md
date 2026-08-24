@@ -2816,3 +2816,28 @@ generalization exps, but not enough time to thoroughly analyze." The paired
 difference-curve analysis recommended here was never run — it remains the cheapest
 outstanding item for any revival: the logs exist, and it would settle "modest but
 consistent" vs. noise definitively.
+
+### 2026-08-23 — The writing-sprint conversation, chunk 10 (the final polish loop; 2026-02-16, post-07:33)
+
+Five exchanges over an intermediate draft that no longer exists (Danielle's note: she
+attached a draft PDF she no longer has — the submitted PDF is the nearest surviving
+state). The abstract and intro were softened per the remove-comparisons decision
+(comparative clauses → "Across settings we observe a consistent cost–performance
+tradeoff"; "using semantic priors" → "conditioned on the search history"); the
+submitted abstract matches the softened version closely. The 5-page triage: figure
+plan settled as Fig 1 = frontier + AUC panels, Fig 2 = generalization grid (her
+placeholder was deliberate, for length estimation — a small miscommunication the
+checklist misread as an error); the §2 collapse advice ("keep the encoder→IR→decoder
+definition in 2–4 sentences; cut the feasibility waterfall to the appendix") — the
+submitted §2 matches the tight replacement's content. The glaring-issues checklist:
+leaked footnote instruction, Table ?? refs, "RELATED WORKS"→"RELATED WORK", typos —
+and, notably, **item 8 flagged the "expanded-space settings" sentence as overreach
+since only 27 arms existed at that point**, confirming the chunk-9 inference: the
+8,064-arm regime did not exist at 07:33 and was added later in the extension day.
+**(Claude-added:)** cross-checking the submitted PDF: the checklist items demonstrably
+got fixed in the main text (no placeholders, no leaked footnote, uniform-sampling
+sentence present), while the caption-level typo class survived ("intructed character
+budgets," "neumeartion pass rates" in the submitted Figure 1 caption) — the last
+edits under the least review. The final submitted figure numbering (Fig 1 two-panel,
+Fig 2 OOD grid, Fig 3 large-space regime) is this chunk's plan plus the
+afternoon's regime experiment appended as Figure 3.

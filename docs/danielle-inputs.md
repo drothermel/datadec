@@ -4906,3 +4906,36 @@ verbatim submission decision; Claude-added notes — the OOD data still running 
 decision time as the referent of the presentation's "not enough time to thoroughly
 analyze," and the never-run paired difference-curve analysis flagged as the cheapest
 outstanding item for any revival). No new identifiers.
+
+### Writing-sprint conversation, chunk 10 (six prompts; 2026-02-16 post-07:33 — final polish), with intake note
+
+Her intake note on the third prompt: "(I attached a draft that I no longer have)" —
+the intermediate draft between the section rewrites and submission is lost; the
+submitted PDF is the nearest surviving state.
+
+> so, changes to the abstract?
+>
+> We study code compression with a behavioral equivalence constraint, where an encoder maps a program to a compact intermediate representation (IR) and a decoder reconstructs executable code whose behavioral equivalence is evaluated by unit tests for the inital program.  We instantiate this as a black-box LLM autoencoder with frozen pretrained encoder and decoder models, and treat encoder prompt selection as black-box search. We compare classic multi-armed bandit baselins (UCB1 and Thompson sampling) to an LLM-in-the-loop optimizer that proposes prompts using semantic priors.  Under a fixed budget of decode-test evaluations, we evaluate methods by the compression–correctness frontier they discover, defined by task coverage (fraction of tasks solved) as a function of an IR length cap.  We also measure the sample efficiency of frontier discovery, observing a clear cost-performance tradeoff: bandits are competitive in small enumerable prompt spaces, while LLM-guided search remains effective in larger spaces and lower budget settings.  Finally, we evaluate transfer by freezing the selected prompt and testing out-of-distribution, including HumanEval++.
+
+> ok, and then the intro?
+>
+> Code compression differs from natural-language compression because correctness is primarily behavioral: a compressed representation is useful only if it supports reconstruction of code that behaves the same as the original. 
+> We study behavioral code compression with a black-box LLM encoder–decoder that maps programs to compact intermediate representations (IRs) and reconstructs executable code evaluated by unit tests. 
+> We treat encoder prompt selection as black-box search and compare bandit baselines (UCB1, Thompson sampling) to an LLM-in-the-loop optimizer. 
+> We evaluate methods by the compression–correctness frontier they discover under a fixed evaluation budget and by the sample efficiency of frontier discovery. 
+> Empirically, we observe \TODO{headline frontier result} and \TODO{headline sample-efficiency result}, and we test transfer by freezing the selected prompt and evaluating out-of-distribution, including HumanEval++.
+
+> ok, it needs to be 5 pages, the figure 3 should be a 4panel grid but can be squashed however.  highest level of importance thoughts?
+
+> so for section 2, remove the black box llm encoder-decoder section?
+
+> any glaring issues now?
+
+> I'm confused, so figure 1a and 1b are in the paper, figure 2 is going to be the generalization exps?  I left the placeholder to get a sense of the paper length
+
+Routed to [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+§4 (writing-sprint chunk-10 entry: softened abstract/intro traced to the submitted
+versions; figure plan settled; §2 collapse; the glaring-issues checklist with a
+cross-check of what got fixed vs. the caption typos that survived; item 8's
+27-arms-only overreach flag confirming the 8,064-arm regime postdates 07:33). No new
+identifiers.
