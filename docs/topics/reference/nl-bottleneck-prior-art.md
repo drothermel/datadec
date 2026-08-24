@@ -107,7 +107,7 @@ below is verified; the response cites by link, not by bibliography.
 | Item | Response's characterization | Status in this record |
 |---|---|---|
 | **Language Bottleneck Models** — Berthon & van der Schaar, arXiv 2506.16982 (June 2025) | Optimizable encoder LLM/prompt → short NL summary → *frozen* LLM decoder; encoder trained by group-relative policy optimization to maximize frozen-decoder performance; domain knowledge tracing, offered as a general framework for "inverse problems" with frozen LLMs | **New.** Not in any SciSpace pass. Needs Danielle's read (gate item alongside GenDLN). Weight-trained encoder, one side optimized, no code, prediction rather than reconstruction — on the Dec-2025 rubric that is roughly 3–4/6, but it is the *named* framework. **2026-08-24 update:** also the "definitive architectural precedent" (~90% overlap claim) of Danielle's 2026-02-04 Gemini novelty check — a two-independent-check headline match (the other: the 2026-02-04 Perplexity check, identified 2026-08-24; both from the same Feb-4 session), still unread |
-| **OverLang** — "Teaching LLMs to Speak in Pseudocode for Efficient Compression", `agents4agents.ai/media/OverLang.pdf` | RL-trained "pseudo-language" shorthand for code, decodable by other (possibly frozen) models, "semantic compression" | **New; provenance weak.** No arXiv ID or venue given; the host is not a publisher. Lead only until located. **2026-08-24:** source located — the 2026-02-04 Perplexity check; its "Paper:" link conflates OverLang with the Semantic-Compression page, so provenance remains weak |
+| **OverLang** — "Teaching LLMs to Speak in Pseudocode for Efficient Compression", `agents4agents.ai/media/OverLang.pdf` | RL-trained "pseudo-language" shorthand for code, decodable by other (possibly frozen) models, "semantic compression" | **New; provenance weak.** No arXiv ID or venue given; the host is not a publisher. Lead only until located. **2026-08-24:** source located — the 2026-02-04 Perplexity check; its "Paper:" link conflates OverLang with the Semantic-Compression page, so provenance remains weak. The Perplexity summary table labels it "(blog)" by **Agents4Agents** — a blog PDF, not a paper |
 | "Semantic Compression With Large Language Models" (academia.edu link) | LLMs compress text/code to short representations preserving functional equivalence; manual prompting, no joint optimization | Already on file (Gilbert et al. 2023, 2304.12512 in `code-compression-literature.md`) |
 | APRIL 2509.25196; Proof2Silicon 2509.06239 | RL optimizes prompts for frozen LLM code/hardware synthesis | New IDs; the response itself classes them as "the decoder half" |
 | Concept Bottleneck LLMs 2412.07992 | Text concepts as bottleneck for classification | New ID; interpretability lineage, not reconstruction |
@@ -444,4 +444,7 @@ PlanSearch row says "frozen CodeLlama" where the source review said Claude
 with per-paper **Prior Art Justification** gap sentences; covers only the
 closest-matches tier, dropping the review's related-but-missing tier); Gemini (7
 rows — fourth schema: domain × latent-type × optimization × frozen-decoder, the
-component matrix as a table; drops LINT/Zip2Zip/ReFIne from its source).
+component matrix as a table; drops LINT/Zip2Zip/ReFIne from its source);
+Perplexity (4 rows only — adds Architecture Name + Source-link columns; its
+OverLang row is labeled "(blog)" by Agents4Agents, and its Gilbert row repeats the
+2406.01989 link and conflates the architecture cell with TBM).

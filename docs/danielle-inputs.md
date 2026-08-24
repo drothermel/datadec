@@ -5279,3 +5279,13 @@ No ledger rows.
 7 rows, no new papers; preserved as `summary-tables/gemini-summary-table.md`.
 Fourth schema (component-matrix style); drops LINT/Zip2Zip/ReFIne from source.
 Table-layer entry extended. No ledger rows.
+
+### 2026-08-24 — summary-table intake, Perplexity table
+
+> next: https://app.notion.com/p/Perplexity-Lit-Review-Summary-Table-2fdde135cd1f80cf9cffff9a5d41c73b?v=2fcde135cd1f8087ae97000c181d4a2e
+
+4 rows only, no new papers; preserved as
+`summary-tables/perplexity-summary-table.md`. OverLang confirmed as an
+Agents4Agents blog PDF (row note updated); Gilbert row repeats the 2406.01989 ID
+conflict and conflates with TBM (evidence added to the existing flag). No ledger
+rows.
