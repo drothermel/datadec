@@ -5046,3 +5046,12 @@ T_{f_i} notation negotiation producing the submitted Task sentence essentially
 verbatim hers; the provenance ledger flip for the paper's front matter; her
 retrospective glad-I-submitted verdict resolving the chunk-11 open question). No new
 identifiers.
+
+### Correction during intake (2026-08-23)
+
+> thats actually not true, I only got the experimental setup running sometime in that
+> 42 hour period, so I got all the results during that period...
+
+(Correcting the intake agent's statement that the results pre-existed the writing
+push.) Applied as a scope-correction note in the TLC §4 writing-sprint chunk-12
+entry.

@@ -2900,6 +2900,15 @@ to move from one framing to another on no sleep... so I think future me would id
 come into the deadline push more prepared but I think submitting isn't a bad choice
 as long as you believe your results are true (if not good)."
 
+**Scope correction (Danielle, at intake, correcting the intake agent's reading):**
+the results did *not* exist before the push — "I only got the experimental setup
+running sometime in that 42 hour period, so I got all the results during that
+period." The two-night window therefore contained: standing up the experimental
+infrastructure, collecting every result in the paper, the framing translation, and
+the writing. (Her Feb-16 statement "I have a working implementation of everything and
+a lot of samples collected," quoted in the writing-conversation chunk-2 entry, was
+made from *inside* that window.)
+
 **Chunk-12 content — the ownership pass extending into Methods, with traced
 landings:** her restructure plan (collapse Tasks + Enc-Dec + Budget into one setup
 paragraph; prompt search and algorithms next; keep the coverage curve compact; AUC
