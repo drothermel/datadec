@@ -2937,3 +2937,48 @@ Works remains the closest-to-draft section. Her rate–distortion instinct here 
 the seed R1's review later asked to be grown ("is this formally analogous to a
 rate–distortion curve?") — the borrowed-style phrasing was the honest deadline
 choice, and the formalization remains the open follow-up.
+
+### 2026-08-23 — The writing-sprint conversation, chunk 13 (the ownership pass deepens; 2026-02-16)
+
+Fourteen exchanges; the richest chunk for tracing submitted-§2 phrases and for the
+project's intellectual record:
+
+- **"From my perspective we are training/learning, thats why I think the whole 'llm
+  as optim' is cool. but I realize we haven't really presented data to back this up
+  yet"** — the framing-C conviction restated mid-rewrite, with the claim-calibration
+  awareness attached. Resolution: "outer-loop learning problem," which is the
+  submitted §2's phrase verbatim. Likewise **"interaction trace (previous prompts and
+  observed outcomes)"** — her deliberate choice ("'trace' ties it to RL/Sequential
+  decision making, which is my goal"), landing verbatim in the submitted §2. The RL
+  vocabulary in the paper is intentional positioning, not accident.
+- **Her combination-novelty stance, stated as taste:** choosing the positioning
+  sentence that "makes it clear we're not claiming to be first for any of these
+  things individually, but does unify a collection of different topics which is more
+  some of the novelty" — landing (shortened) as the submitted intro's "We relate our
+  setup to prior work on prompt optimization, test-driven synthesis/repair, and code
+  representation learning in §5."
+- **Precision instincts, each landing:** "overreachy" check on "produce the shortest"
+  → "seek"; black-box must bind to the LLMs, not the pipeline → the submitted
+  "pipeline, built from black-box LLMs"; the parallel-list grammar objection. One
+  counter-datapoint: the suggested "Background & Methods" → "Methods" rename was
+  *not* taken — the submitted paper keeps "Background & Methods." Advice was
+  filtered, not swallowed.
+- **The ownership moment, in February's own words:** "sigh, I'm actually feeling more
+  positively towards this paper, probably because I feel more ownership again, the
+  words were yours but alot of the thoughts really were mine. but I also don't want
+  to want to push for a 6pm deadline. sigh" — the February original of her intake
+  retrospective, plus the not-embarrassed submission checklist and stake-in-the-
+  ground framing that preceded the submit decision.
+- **Her results diagnosis (verbatim):** "I can't have two plots that look basically
+  identical (despite supposedly plotting different things) that show that everything
+  I tried (1) behaved the same as each other and (2) did exactly what you'd expect
+  them to do. but the idea of digging into the code and trying to figure out how I
+  can salvage that is the daunting piece. the writing is fun." The salvage menu
+  (difference plots; early-N frontiers; heterogeneity/tail plots; the expanded-arm
+  regime) — of which **B and D were executed before submission** (the appendix's
+  multi-T frontier panels, Figure 4; and the large-space regime at 8,064 arms —
+  beyond the suggested 243), while **A (difference plots with CIs) and C
+  (per-spec heterogeneity/tails) were never run** and join the paired-difference
+  analysis from chunk 9 as cheap outstanding items: the min-cost-to-first-success
+  distribution per spec (option C) is also a natural bridge to the behavioral-
+  divergence instrument's tail-risk metrics.
