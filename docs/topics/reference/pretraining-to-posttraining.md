@@ -231,3 +231,37 @@ agent-generated, unverified):
   relevant to recipe-composition questions (why code/math fractions move
   reasoning benchmarks) and the retrieval-vs-strategy reading of benchmark
   performance.
+
+## 2026-08-24 — self-improvement / preference-optimization cluster (NBLM refactoring notebook, reference inventory)
+
+The second cluster of the eleventh NotebookLM notebook (bundle:
+`nblm-refactoring-selfimprovement-notebook.md`; agent-generated, unverified;
+no IDs except where noted). A post-training-algorithms inventory, kept compact:
+
+- **Preference-optimization algorithms:** DNO (Direct Nash Optimization —
+  batched on-policy contrastive objective toward a Nash equilibrium of general
+  pairwise preferences; Orca-2.5-7B 33% win vs GPT-4-Turbo); iterative DPO
+  study (multi-round DPO with verifiable pairs matches RL reasoning gains at
+  far less compute — but *amplifies existing patterns rather than instilling
+  new self-reflection*, converging with today's SFT-vs-RL and
+  evolutionary-vs-RL mode-collapse findings); SCPO (self-consistency as the
+  preference signal — most-frequent answer wins; +22.7pp GSM8K over two
+  iterations, near gold-label training); IRPO/GOLD (reward-based text
+  generation without RL loops); P3O/TPO/Nectar/Meta-Rewarding (comparative
+  feedback beats absolute scoring; thought-training helps beyond math).
+- **Self-rewarding line:** Self-Rewarding LMs (model as its own judge, DPO on
+  self-generated pairs, instruction-following and judging improve together) +
+  its theory paper (single-step success depends on initialization quality;
+  iteration neutralizes initial-model dependence with finite-sample bounds);
+  Temporal Self-Rewarding 2508.06026 (metadata only); Titans 2501.00663
+  (test-time memorization; metadata only).
+- **Surveys:** self-improvement lifecycle taxonomy (acquisition → selection →
+  optimization → inference refinement → autonomous evaluation) with **data
+  autophagy** (recursive-generation model collapse) flagged as the field's
+  urgent problem; pluralistic-alignment survey (Overton / steerable /
+  distributional; Overton under-researched).
+
+Program relevance is mostly contextual: the amplify-don't-instill and
+mode-collapse threads recur across today's intakes (SFT-vs-RL profiles,
+execution-grounded idea search, SEAL) — a consistent picture that cheap
+preference loops sharpen existing behavior rather than create new capability.

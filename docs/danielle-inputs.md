@@ -5784,3 +5784,30 @@ dependency; TAAC). Routed to
 (Perplexity Paradox); TLC §4 dated entry + §5 NL-in-the-Middle clause enriched
 + 5 recall-corpus lines; 4 ledger rows + NL-Debugging row note.
 Ingest-link-index row added.
+
+### 2026-08-24 — NotebookLM refactoring/self-improvement notebook ingested
+
+> link: https://notebook.google.com/notebook/a31f1767-9de4-4842-9754-76fe6eb7d41c
+
+(Followed by the 25-source enumeration and the agentic-refactoring report —
+verbatim in the bundle, `nblm-refactoring-selfimprovement-notebook.md`.)
+Eleventh NotebookLM notebook of the day, two clusters + one outlier. Routed:
+the **agentic refactoring cluster** to
+[topics/reference/code-benchmarks-landscape.md](topics/reference/code-benchmarks-landscape.md)
+(SWE-Refactor detail filled for its bare-name ledger row; RefactorBench's
+22%-vs-87% stateful-reasoning gap; CodeTaste's instructed-vs-open collapse;
+MANTRA's Reviewer-agent result; the agents-do-janitorial-not-architectural
+empirics incl. tangled commits and the readability-commits-reduce-
+maintainability finding — background for agentic-development/defensive-design
+interests); the **self-improvement/preference-optimization cluster** to
+[topics/reference/pretraining-to-posttraining.md](topics/reference/pretraining-to-posttraining.md)
+as a compact inventory (DNO, iterative-DPO's amplify-don't-instill finding —
+convergent with today's SFT-vs-RL and mode-collapse threads; SCPO;
+Self-Rewarding + its theory; data-autophagy warning); and **Scaling Laws for
+Precision** to
+[topics/reference/schedules-and-annealing-literature.md](topics/reference/schedules-and-annealing-literature.md)
+as the other side of the PTQ dispute (degradation-increases-with-overtraining
+vs the PTQ paper's LR-decay attribution — read together at verification; ID
+2411.04330 Claude-added). SWE-Refactor row annotated; 21 new ledger rows
+(2603.23443, 2508.06026, 2501.00663, 2411.04330 with IDs).
+Ingest-link-index row added.

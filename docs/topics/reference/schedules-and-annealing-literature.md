@@ -345,3 +345,19 @@ Schedule-side material:
   all converge; initialization sets the max Hessian eigenvalue and hence the
   usable LR — an elicitation-tuning-equity datum for the pipeline-comparison
   thread.
+
+## 2026-08-24 — Scaling Laws for Precision: the other side of the PTQ dispute (NBLM refactoring notebook)
+
+One outlier source in the eleventh NotebookLM notebook (bundle:
+`nblm-refactoring-selfimprovement-notebook.md`): **"Scaling Laws for
+Precision"** — recognizably the "Kumar et al. 2024" position that the
+PTQ-robustness paper in today's pretraining notebook argued is
+schedule-confounded. Both sides now on record: 465 OLMo-style pretraining
+sweeps on Dolma across 3–16-bit precision; low-precision training reduces
+*effective parameter count*; **quantization degradation increases with
+over-training on data** (the data-scale claim the PTQ paper attributes to LR
+decay instead); compute-optimal pretraining stabilizes around 7–8 bits.
+Note the overtraining connection: yet another cost of over-training joining
+catastrophic overtraining/plasticity (same-day plasticity entry). ID
+plausibly 2411.04330 (Claude-added, inferred). Verification should read the
+two papers together.

@@ -29,6 +29,17 @@ is the durable part.
 
 ## 2026-08-24 — NotebookLM notebooks
 
+- [Agentic refactoring + self-improvement notebook (NotebookLM, undated)](https://notebook.google.com/notebook/a31f1767-9de4-4842-9754-76fe6eb7d41c)
+  — 25 sources: refactoring cluster (SWE-Refactor detail, RefactorBench,
+  CodeTaste, MANTRA, agentic-behavior empirics, Dagstuhl APR),
+  self-improvement/preference-optimization cluster (DNO, iterative DPO, SCPO,
+  Self-Rewarding + theory, data-autophagy survey), and Scaling Laws for
+  Precision (the disputed side of the PTQ thread) → routed:
+  `topics/reference/code-benchmarks-landscape.md`,
+  `topics/reference/pretraining-to-posttraining.md`,
+  `topics/reference/schedules-and-annealing-literature.md` (PTQ cross-link);
+  SWE-Refactor row annotated; 21 new ledger rows (4 with IDs).
+
 - [Intermediate-representations / invertibility notebook (NotebookLM, undated)](https://notebook.google.com/notebook/beaf7015-f9ee-43e8-80a2-bd0089c5402d)
   — five TLC-core papers: NL in the Middle (content lands for the aggregate
   5.5★ item), NL-Debugging detail, RTCE bijection benchmark, Proof2Silicon/

@@ -420,3 +420,47 @@ contamination resistance comes free (novel by structure *and* origin). Proposed
 architecture: ClassEval base units + BigCodeBench modules, type-signature
 matching via inspect/mypy/AST, evaluate with Gilbert's SRE. Compression-side
 citations routed to `code-compression-literature.md`.
+
+## 2026-08-24 — agentic refactoring cluster (NBLM refactoring/self-improvement notebook)
+
+From the eleventh NotebookLM notebook of the day (bundle:
+`nblm-refactoring-selfimprovement-notebook.md`; agent-generated, unverified;
+the notebook's self-improvement/preference-optimization cluster is routed to
+`pretraining-to-posttraining.md`, and Scaling Laws for Precision to
+`schedules-and-annealing-literature.md`, same date):
+
+- **SWE-Refactor detail** (2602.03712, previously a bare name from the April
+  Perplexity table): 1,099 pure Java refactorings from 18 projects via
+  automated static-analysis mining; evaluation stack = compilation + AST-based
+  refactoring verification (RefactoringMiner ~99% precision, PurityChecker for
+  the purity debate) + CodeBLEU; frontier generalists beat small code models;
+  cross-file/compound transformations are the failure mode ("mismatched
+  edits"); OpenReview follow-up: GPT-4o 61.4%, Codex agent 75.5% — hard but
+  moving fast.
+- **RefactorBench** (no ID) — 100 multi-file Python tasks; stateful reasoning:
+  agents solve 22% vs humans' 87% on lazy instructions; conditioning on
+  past-state representations +43.9%.
+- **CodeTaste** (no ID) — instructed vs open tracks: up to 69.6% alignment with
+  human refactoring choices when instructed, single digits open-ended;
+  propose-then-implement doubles alignment.
+- **MANTRA** (no ID) — RAG + Developer/Reviewer/Repair agents with verbal RL:
+  582/703 successful method-level refactorings vs 61 raw-LLM; the external
+  Reviewer agent is the biggest contributor.
+- **Empirical agentic-behavior studies** (no IDs): Agentic Refactoring (15,451
+  refactorings, AIDev) — agents refactor often (26.1% of commits) but skew
+  low-level/janitorial (35.8% vs humans' 24.4%), 53.9% in tangled commits,
+  small structural gains, no dent in design smells; How-do-Agents-Refactor —
+  per-agent type preferences but human-comparable smell impact; readability
+  study (1.38M commits) — "readability" commits mostly add volume and *reduce*
+  maintainability indices; Where-Do-Agents-Fail (33k PRs) — docs/CI merge
+  easily, bug-fix/perf PRs fail (too large, CI failures, duplicates, no
+  coordination). Collectively: the empirical grounding for the
+  agents-do-janitorial-not-architectural claim — background relevant to
+  Danielle's agentic-development/defensive-design interests.
+- **Code-smell detection** (no ID) — LLMs beat static tools on size-based
+  smells, mixed on context-dependent ones; majority-voting hybrid maximizes
+  recall. **Dagstuhl 24431 APR seminar** (no ID) — explicit bug facts in
+  prompts help but too much context degrades; energy-vs-accuracy trade-off;
+  the "trust problem" (certificates/evidence for agentic changes);
+  AutoCodeRover→SonarSource acquisition noted. **Test generation under
+  software evolution** 2603.23443 (metadata only).
