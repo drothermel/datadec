@@ -5384,3 +5384,14 @@ dated section (all new items); dated entries in code-benchmarks-landscape
 prompt-optimization-landscape (transfer trio); twelve no-ID ledger rows
 (Danielle-supplied; IDs to come from the paper DB). New timeline fact: the
 direction stayed active through mid-April 2026.
+
+### 2026-08-24 — code-datasets lineage/overlap note intaken
+
+> ok, next: https://app.notion.com/p/Code-Datasets-Lineage-Overlap-and-Component-Analysis-33dde135cd1f804b93e2d120e8f0501f
+
+Her curated note (ChatGPT-sourced). Verbatim in the bundle. Routed: dated entry in
+[topics/reference/code-benchmarks-landscape.md](topics/reference/code-benchmarks-landscape.md)
+(three lines of work; per-benchmark exposure numbers; clone-depth × granularity ×
+representation backbone; her 6-step dedup pipeline); TLC recall-corpus line
+(dataset-rehab machinery); 2501.10711 title-pairing flag added to its ledger row.
+All five papers already ledgered — no new rows.

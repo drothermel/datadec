@@ -752,3 +752,11 @@ come from the Notion paper DB):**
   AlphaCode/CodeContests, BugsInPy, QuixBugs, Vul4J/ManyVuls4J/VJBench, HEJ-Robust,
   CodeTaste, PyCommits/Coeditor, CoEdPilot, RepoCoder…) — (routed in full to
   `../../topics/reference/code-benchmarks-landscape.md`, 2026-08-24 entry)
+
+- **Overlap/dedup machinery for the task-suite rehab (2026-08-24):** Danielle's
+  lineage/overlap note — clone-depth × granularity × representation-view
+  backbone and her 6-step component-analysis pipeline (exact-hash → MinHash →
+  clone edges → embedding edges → components → review); per-benchmark leakage
+  exposures for benchmark selection (QuixBugs 100% leaked, APPS 10.8%, …) —
+  (source: `../../topics/reference/code-benchmarks-landscape.md`, 2026-08-24
+  lineage entry; bundle `code-datasets-lineage-overlap-note.md`)

@@ -363,7 +363,7 @@ WizardCoder; `chang2024effective` there is 2402.04177 (different paper) and
 | 2410.12381 | HumanEval-V — visual context | `code-benchmarks-landscape` (HumanEval afterlife / overlap) | agent-supplied | TLC/ELI/IRT | |
 | 2406.14712 | Qiskit HumanEval | `code-benchmarks-landscape` (HumanEval afterlife / overlap) | agent-supplied | TLC/ELI/IRT | |
 | 2403.07974 | LiveCodeBench | `code-benchmarks-landscape` (HumanEval afterlife / overlap) | agent-supplied | TLC/ELI/IRT | |
-| 2501.10711 | How2Bench — audit of 274 code benchmarks | `code-benchmarks-landscape` (HumanEval afterlife / overlap) | agent-supplied | TLC/ELI/IRT | |
+| 2501.10711 | How2Bench — audit of 274 code benchmarks | `code-benchmarks-landscape` (HumanEval afterlife / overlap) | agent-supplied | TLC/ELI/IRT | title-pairing check: paper-DB page for this ID is titled "Code Benchmarks Should Prioritize Rigor, Reliability, and Reproducibility" (2026-08-24) |
 | 2502.06215 | LessLeak-Bench — 83 SE benchmarks vs pretraining corpora | `code-benchmarks-landscape` (HumanEval afterlife / overlap) | agent-supplied | TLC/ELI/IRT | |
 | 2401.07930 | CodeSearchNet inter-dataset duplication (SourcererCC) | `code-benchmarks-landscape` (HumanEval afterlife / overlap) | agent-supplied | TLC/ELI/IRT | |
 | 2602.05892 | ContextBench — pooled + deduplicated issue-resolution tasks | `code-benchmarks-landscape` (HumanEval afterlife / overlap) | agent-supplied | TLC/ELI/IRT | |

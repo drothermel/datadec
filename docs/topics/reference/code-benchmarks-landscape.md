@@ -288,3 +288,28 @@ prompts across 9 benchmarks; benchmark prompt quality is itself a confound);
 **ChatGPT non-determinism** (temp 0 ≠ deterministic; 829 problems); HumanExtension
 auxiliary-function oracle (pass@1 triples with leaked ground-truth structure).
 AVATAR flagged for Java↔Python. All unverified pending the paper-DB cleanup.
+
+## 2026-08-24 — Danielle's lineage/overlap note: the dedup thread structured (first-hand curation, ChatGPT-sourced)
+
+Her curated note (bundle: `code-datasets-lineage-overlap-note.md`) deepens this
+record's overlap section into a working structure. **Three lines of work:**
+benchmark-of-benchmark audits; cross-benchmark leakage/overlap studies; building
+new benchmarks by pooling + deduplicating old ones. **Evidence detail beyond the
+earlier entries:** LessLeak's per-benchmark exposures (QuixBugs 100%,
+BigCloneBench 55.7%, APPS 10.8%, SWE-Bench-Verified 10.6% — against modest
+aggregate leakage 4.8%/2.8%/0.7% for Py/Java/C++); the CSN study's inter-dataset
+duplication rates (CodeTrans 22.8%, Python-150 15.0%, the TLC *dataset* 13.8% —
+name collision with the TLC project, unrelated); Riddell 2024's impact numbers
+(72% vs 22% pass@1 on most- vs least-similar MBPP items; decontamination narrows
+the StarCoderBase–Pythia gap 23.8→13.9; LoRA/prefix tuning more
+leakage-susceptible than full fine-tuning); How2Bench's lineage finding (18% of
+benchmarks become sources for later ones — semantic overlap propagates through
+derivation even without string matches). **The categorization backbone:**
+clone-depth Types 1–4 × granularity (sample/function/file/repo/issue) ×
+representation view (prompt/docstring, lexical, AST, semantic) — "you need
+multiple views of similarity, not one." **Her 6-step component-analysis
+pipeline** (exact-hash → MinHash/LSH → clone edges → embedding edges → connected
+components → human review) — the design sketch for line-of-work 3 and the
+machinery a rehabbed TLC task suite's dedup would use. Verification flag: the
+2501.10711 pairing (ledger: How2Bench; paper DB title: "Code Benchmarks Should
+Prioritize Rigor, Reliability, and Reproducibility").
