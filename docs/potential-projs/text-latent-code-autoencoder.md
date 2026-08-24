@@ -3152,6 +3152,46 @@ as "all four components jointly" and searched each component's literature separa
   indexed) dates the underlying search to the Dec-2025 window, consistent with the
   page's Date field. Downstream Note ("Claude Lit Review Summary Table") not yet
   pulled.
+### 2026-08-24 — The 2026-02-04 novelty check #4 (Notion "Lit Review" page, Gemini-generated; historical)
+
+The fourth of the Feb-2026 set (created 12 minutes after the Consensus page; verbatim
+copy with resolved citation links in the bundle; characterizations are the generating
+agent's) — and a **fourth distinct verdict: "Partially Novel."** Gemini read the
+proposal architecture-first and found the architecture established:
+
+- **LBM (Language Bottleneck Models, Berthon & van der Schaar, 2506.16982) named the
+  "definitive architectural precedent"** — encoder → NL summary → frozen decoder,
+  optimized with GRPO (2402.03300); the review claims ~90% overlap, quotes LBM's
+  "learning the minimum natural-language summary that makes past answers explainable
+  and future answers predictable," and notes the authors themselves gesture at
+  predicting "the exact code a student will write." LBM was already row A's unread
+  headline item from a different check — it is now a **two-independent-check
+  headline match** and the sharpest single must-read in the litreview plan.
+- **The three-objectives contrast, a usable positioning frame:** LBM optimizes
+  interpretability/prediction (knowledge tracing); CyclePrompt (Diesendruck et al.,
+  2402.08756 — already in the submitted bibliography, likely via this review)
+  optimizes generation quality via cycle-consistency; the proposal optimizes
+  *compression* — MDL-style minimum description length under reconstruction
+  fidelity. Same skeleton, three objectives.
+- **LINT** (Assessing the Interpretability of Programmatic Policies with LLMs; no
+  ID in source): interpretability-as-reconstruction — "LINT provides the metric;
+  the user proposes the optimization loop." Directly TLC-0-relevant: it is the
+  explain→regenerate pipeline formalized as a score.
+- **SPAE (Yu et al., 2306.17842):** frozen-LLM autoencoding of images through
+  *lexical tokens* — "SPAE for Code" is the review's analogy. For the NL-necessity
+  question this is an existing non-prose rung: real words, not prose, decodable by
+  a frozen LLM after training a quantizer.
+- **CodeCloak (2404.09066):** the adversarial dual — a DRL agent modifying prompts
+  to *prevent* reconstruction while preserving utility. Maximize-reconstruction and
+  minimize-reconstruction share the architecture; relevant to the
+  leakage/anti-cheating thread.
+- Also surfaced: RLPrompt (Deng et al., 2205.12548 — row A's bare "RLPrompt" now
+  has its ID), CompLLM (2509.19228, context compression), Zip2Zip (2506.01084),
+  ReFIne (2510.09062). Verdict confidence: 95% components established; 80% the
+  specific "semantic code compressor via RL-optimized NL bottlenecks" title is
+  unclaimed.
+- Downstream Note ("Gemini Lit Review Summary Table") not yet pulled.
+
 ## 5. Related work and positioning
 
 *Purpose: the paper-facing synthesis — the prior-art landscape, this project's
@@ -3181,9 +3221,13 @@ work item after the Notion lit-review ingestion (2026-08-24).
 **Starting inventory for the synthesis** (assembled at intake 2026-08-24; detail in
 the dated §4 entries):
 
-- **The novelty-check corpus:** three Feb-2026 checks with divergent verdicts —
+- **The novelty-check corpus:** four Feb-2026 checks with divergent verdicts —
   ChatGPT "published in parts," Consensus "novel, 90–95%," Claude "novel, 85–90%
-  by combination." Danielle's read: the verdicts track how each review interpreted
+  by combination," Gemini "partially novel" (architecture established in LBM; the
+  code-compression application and MDL-style objective are the novel part; its
+  three-objectives contrast — LBM interpretability/prediction, CyclePrompt
+  generation quality, this proposal compression — is a usable positioning frame).
+  Danielle's read: the verdicts track how each review interpreted
   the prompt, and hence which literature it considered. The Claude check's
   component-feasibility matrix (each of the four components exists; the combination
   does not) is the closest existing artifact to a positioning statement, and its
@@ -3198,6 +3242,14 @@ the dated §4 entries):
   2012.00377 and de Bruin 2108.07129 (trained-latent autoencoding); Proto-tokens
   2502.13063 (reconstruction capacity without an NL latent — the capacity
   counterpoint the NL-necessity falsifiers must engage).
+- **Added by the fourth check (Gemini):** LBM 2506.16982 (architectural precedent;
+  headline match of two independent checks, unread gate-1 item) with GRPO
+  2402.03300 as its optimizer; SPAE 2306.17842 (frozen-LLM lexical-token
+  autoencoding — an existing non-prose rung on the NL-likeness axis); LINT
+  (interpretability-as-reconstruction score; no ID on record); CodeCloak
+  2404.09066 (the adversarial dual — anti-reconstruction; relevant to the
+  leakage thread); CyclePrompt 2402.08756 (cycle-consistency on code; already in
+  the submitted bibliography); RLPrompt 2205.12548.
 - **Known obligations for any resubmission:** rewrite Related Works first (the
   submitted version's closest-to-draft section; three near-verbatim contrast
   sentences); close R3's GEPA gap (GEPA as baseline, not citation); write the

@@ -5195,3 +5195,17 @@ unverified in-line). All 21 scaffolded §5 sections in
 [potential-projs/](potential-projs/) now carry a raw-material map and starting
 inventory; positioning remains unwritten (Danielle's next work item). TLC's §5 was
 already populated and untouched.
+
+### 2026-08-24 — Notion lit-review intake, page 4 (Gemini) + the §5-update convention
+
+> great! so from now on we should fill in the general locations + the RW sections.
+>
+> next: https://app.notion.com/p/Lit-Review-2fdde135cd1f8010b843eddc15898351
+
+Convention adopted: intake now updates both the usual routing targets and the
+relevant §5 "Related work and positioning" sections (raw-material maps +
+inventories stay current). Routed: verbatim copy in the batch bundle; TLC §4 entry
+(inserted above the §5 header) + §5 inventory updates (fourth check; LBM/GRPO/SPAE/
+LINT/CodeCloak/CyclePrompt/RLPrompt added to the anchor set); nl-bottleneck entry +
+LBM table-row update (two-check headline match); litreview plan row A (LBM
+parenthetical, RLPrompt ID, SPAE); eight ledger rows. No new identifiers.

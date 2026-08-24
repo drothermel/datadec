@@ -99,7 +99,7 @@ below is verified; the response cites by link, not by bibliography.
 
 | Item | Response's characterization | Status in this record |
 |---|---|---|
-| **Language Bottleneck Models** — Berthon & van der Schaar, arXiv 2506.16982 (June 2025) | Optimizable encoder LLM/prompt → short NL summary → *frozen* LLM decoder; encoder trained by group-relative policy optimization to maximize frozen-decoder performance; domain knowledge tracing, offered as a general framework for "inverse problems" with frozen LLMs | **New.** Not in any SciSpace pass. Needs Danielle's read (gate item alongside GenDLN). Weight-trained encoder, one side optimized, no code, prediction rather than reconstruction — on the Dec-2025 rubric that is roughly 3–4/6, but it is the *named* framework |
+| **Language Bottleneck Models** — Berthon & van der Schaar, arXiv 2506.16982 (June 2025) | Optimizable encoder LLM/prompt → short NL summary → *frozen* LLM decoder; encoder trained by group-relative policy optimization to maximize frozen-decoder performance; domain knowledge tracing, offered as a general framework for "inverse problems" with frozen LLMs | **New.** Not in any SciSpace pass. Needs Danielle's read (gate item alongside GenDLN). Weight-trained encoder, one side optimized, no code, prediction rather than reconstruction — on the Dec-2025 rubric that is roughly 3–4/6, but it is the *named* framework. **2026-08-24 update:** also the "definitive architectural precedent" (~90% overlap claim) of Danielle's 2026-02-04 Gemini novelty check — a two-independent-check headline match, still unread |
 | **OverLang** — "Teaching LLMs to Speak in Pseudocode for Efficient Compression", `agents4agents.ai/media/OverLang.pdf` | RL-trained "pseudo-language" shorthand for code, decodable by other (possibly frozen) models, "semantic compression" | **New; provenance weak.** No arXiv ID or venue given; the host is not a publisher. Lead only until located |
 | "Semantic Compression With Large Language Models" (academia.edu link) | LLMs compress text/code to short representations preserving functional equivalence; manual prompting, no joint optimization | Already on file (Gilbert et al. 2023, 2304.12512 in `code-compression-literature.md`) |
 | APRIL 2509.25196; Proof2Silicon 2509.06239 | RL optimizes prompts for frozen LLM code/hardware synthesis | New IDs; the response itself classes them as "the decoder half" |
@@ -338,3 +338,29 @@ non-NL-latent counterpart of the TLC setup), **Self-Planning** (2303.06689),
 recommendations (Gilbert-then-differentiate; RTC as eval-not-learning; FunSearch
 minus bottleneck; prompt-opt canon then novel application) are recognizably the
 submitted paper's related-work skeleton.
+
+## 2026-08-24 — The 2026-02-04 Gemini novelty check (Danielle's Notion "Lit Review" page #4)
+
+Verbatim copy with resolved citation links:
+`~/drotherm/data/convo-artifacts/2026/2026-08-24-notion-lit-reviews/lit-review-gemini-novelty-check.md`.
+Gemini-generated, 12 minutes after the Consensus page; characterizations are the
+generating agent's. **Fourth distinct verdict: "Partially Novel"** — the
+architecture (encoder → NL bottleneck → frozen decoder, gradient-free) is
+"established" in LBM 2506.16982 with GRPO 2402.03300; the novelty is the
+code-compression application (functional-equivalence rewards, MDL-style objective).
+A fourth prompt interpretation selecting a fourth literature, per Danielle's note.
+
+New to this record: **GRPO 2402.03300** (LBM's optimizer — group-relative scoring
+of candidate summaries against a frozen decoder, no value network); **SPAE
+2306.17842** (frozen-LLM autoencoding of images via *lexical tokens* — an existing
+non-prose rung for the NL-likeness axis; the review's "SPAE for Code" analogy);
+**LINT** (Assessing the Interpretability of Programmatic Policies with LLMs, no ID
+in source — explain→regenerate formalized as an interpretability score; "LINT
+provides the metric; the user proposes the optimization loop"); **CodeCloak
+2404.09066** (DRL prompt manipulation to *prevent* reconstruction — the adversarial
+dual, relevant to the leakage/anti-cheating thread); **RLPrompt 2205.12548** (row
+A's bare "RLPrompt" now has its ID); CompLLM 2509.19228; Zip2Zip 2506.01084;
+ReFIne 2510.09062. Its three-objectives contrast (LBM interpretability/prediction;
+CyclePrompt 2402.08756 generation quality; the proposal compression) is a usable
+positioning frame; CyclePrompt is already in the submitted bibliography, likely via
+this review.
