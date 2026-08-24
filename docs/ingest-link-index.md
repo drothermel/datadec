@@ -29,6 +29,15 @@ is the durable part.
 
 ## 2026-08-24 — NotebookLM notebooks
 
+- [Reasoning-mechanisms notebook (NotebookLM, undated, 2025–26-era)](https://notebook.google.com/notebook/19a583a2-ee35-40b7-bc03-cb0710e594bd)
+  — four papers: encoder-vs-decoder causal reasoning (NL-vs-NNL ablation), OCR
+  generalization/hallucination duality, SFT-vs-RL atomic-skill profiles,
+  procedural-knowledge influence functions → routed:
+  `topics/reference/generalization-and-ood-literature.md` (main entry),
+  `topics/reference/pretraining-to-posttraining.md` (SFT-vs-RL +
+  procedural-knowledge, recipe relevance), 4 ledger rows (one Claude-added ID:
+  2411.12580).
+
 - [Pretraining optimization-dynamics notebook (NotebookLM, undated)](https://notebook.google.com/notebook/611a0dd1-628d-4b4b-8742-bc6d12767de0)
   — 11 pretraining papers (Power Lines, Step Law, CompleteP, MPL, CPT dynamics,
   mid-training survey, catastrophic overtraining, WD-improves-plasticity,

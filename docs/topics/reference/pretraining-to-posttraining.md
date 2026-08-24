@@ -205,3 +205,29 @@ pairs if SFT moves a little.
   SFT → distillation → DPO on verifiable pairs*, with LR sweep flagged as mattering more
   than expected for small models — consistent with MIC's "guaranteed-effect calibration"
   step (memorization / distillation first, to prove the instrument can see movement at all).
+
+## 2026-08-24 — SFT-vs-RL skill profiles and procedural-knowledge influence (NBLM reasoning notebook)
+
+The training-paradigm half of the four-paper NotebookLM reasoning notebook
+(bundle: `nblm-reasoning-mechanisms-notebook.md`; main entry in
+`generalization-and-ood-literature.md`, same date; no IDs supplied,
+agent-generated, unverified):
+
+- **"How and Why LLMs Generalize" (fine-grained SFT-vs-RL).** Decomposes
+  reasoning into five atomic cognitive skills (calculation, enumeration,
+  simulation, fact retrieval, diagnostic) across four domains and traces how
+  post-training redistributes them in Qwen models: **RL preserves a balanced
+  skill profile that transfers out-of-domain; SFT induces jagged
+  over-specialization** — spikes in narrow skills with regressions in core ones
+  (simulation), reading as surface-pattern overfit. A skill-resolved instance
+  of the elicitation-vs-capability question: what post-training moves is the
+  profile, not just the aggregate score.
+- **"Procedural Knowledge in Pretraining Drives Reasoning"** (plausibly Ruis
+  et al. 2411.12580; identification inferred from the title). EK-FAC influence
+  functions over 5M pretraining documents, 7B/35B models: for factual queries
+  the answer documents dominate influence; **for reasoning queries the answers
+  rarely matter — influence concentrates on documents carrying similar
+  procedural knowledge, especially code and mathematical text**. Directly
+  relevant to recipe-composition questions (why code/math fractions move
+  reasoning benchmarks) and the retrieval-vs-strategy reading of benchmark
+  performance.

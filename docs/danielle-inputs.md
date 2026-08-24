@@ -5641,3 +5641,23 @@ standing where-did-plasticity-go interest, now at HP-selection level);
 wsd-suite recall-corpus lines (sqrt-cube arm candidate, PTQ axis, Power
 Lines/Step Law as fixes-by-formula for sweep design); 10 no-ID ledger rows (the
 notebook supplies no IDs). Ingest-link-index row added.
+
+### 2026-08-24 — NotebookLM reasoning-mechanisms notebook ingested
+
+> link: https://notebook.google.com/notebook/19a583a2-ee35-40b7-bc03-cb0710e594bd
+
+(Followed by the four-source synthesis and the architectures report — verbatim
+in the bundle, `nblm-reasoning-mechanisms-notebook.md`.) Fifth NotebookLM
+notebook of the day; no arXiv IDs supplied. Routed: main entry in
+[topics/reference/generalization-and-ood-literature.md](topics/reference/generalization-and-ood-literature.md)
+(encoder-vs-decoder FOL robustness with the NL-vs-NNL lexical ablation — a
+design worth remembering; curvature-similarity probes; the OCR
+generalization/hallucination duality via factorized matrices + nuclear-norm
+implicit bias); training-paradigm half in
+[topics/reference/pretraining-to-posttraining.md](topics/reference/pretraining-to-posttraining.md)
+(RL preserves balanced atomic-skill profiles while SFT induces jagged
+over-specialization — a skill-resolved instance of the elicitation question;
+procedural-knowledge influence functions — code/math documents drive reasoning
+queries, answer documents drive factual ones — recipe-composition relevance);
+4 ledger rows, one with a Claude-added ID (2411.12580, inferred from the title,
+plausibly Ruis et al.). Ingest-link-index row added.

@@ -64,3 +64,38 @@ early-window curve shape; here: the same question posed at the level of "method"
 citations look like plausible real papers (the titles match known work) but were not checked
 and may be mis-attributed in detail; the "SSL models exhibit smaller generalization gaps"
 claim in particular is an overstatement of whatever the cited paper shows.
+
+## 2026-08-24 — NotebookLM reasoning-mechanisms notebook (4 papers; main routing entry)
+
+Danielle supplied a NotebookLM notebook over four reasoning-mechanisms papers
+(bundle: `nblm-reasoning-mechanisms-notebook.md` in the 2026-08-24 intake
+bundle; **no arXiv IDs supplied**; agent-generated, unverified; NotebookLM
+inaccuracy caveat). Shared question: do LLMs reason or pattern-match. Companion
+entry for the training-paradigm half in `pretraining-to-posttraining.md` (same
+date).
+
+- **"Causal Reasoning Favors Encoders"** (2025–26-era; evaluates GPT-5, Claude
+  Opus 4.1). Synthetic FOL (SimpleLogic-style, Horn rules) with an NL-vs-NNL
+  ablation (lexical relations replaced by random strings) and depth
+  stratification (train 0–7, test 8–11). Encoders/encoder-decoders (BERT, BART,
+  T5) hold structural invariants at depth and survive the lexical ablation
+  (BERT-Base AUROC ~0.37 → 0.76 after fine-tuning); decoder-only models are
+  distributionally fragile (Claude Opus 4.1 drops 93% → 65% NL→NNL); only
+  GPT-5-scale compute compensates, at extreme cost (BART-Base 640 acc/hour vs
+  GPT-5 1.1). Curvature-similarity probe: BERT's representation-space
+  transformations stay geometrically stable across depths (0.78–0.86) while
+  Qwen's collapse (<0.60). The NL-vs-NNL ablation is a design worth remembering
+  for isolating structure from lexical priors.
+- **"Generalization or Hallucination?" (out-of-context reasoning).** OCR — the
+  ripple-effect association of injected facts — is one mechanism with two
+  faces: legitimate generalization when facts are causally related,
+  hallucination when spurious. Theory on a 1-layer linear-attention model:
+  **factorized output-value matrices + gradient descent's implicit nuclear-norm
+  minimization** drive rapid OCR; non-factorized equivalents only memorize.
+  Matrix factorization as the prerequisite for knowledge association; proposed
+  fix direction is geometric regularization against the nuclear-norm bias.
+
+Report framing worth keeping: the projective (encoder, global latent
+projection) vs recursive (decoder, stepwise aggregation with CoT priors)
+fault line, and the claim that small fine-tuned encoders beat massive decoders
+on short-horizon causal precision per unit compute.
