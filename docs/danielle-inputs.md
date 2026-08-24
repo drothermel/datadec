@@ -4652,3 +4652,175 @@ structure]
 Routed to [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
 §4 (writing-sprint chunk-4 entry: the four final calibration edits and their landing
 in the paper; the notes-layer provenance observation). No new identifiers.
+
+### Writing-sprint conversation, chunk 5 (six prompts; 2026-02-16 — the section rewrites)
+
+> Ok, I need help, looking at the current state of the draft there's no way I can rewrite from scratch fast enough. I'm going to ask you to take the section we have and give me a better one and thne I"m going to edit that down.  starting with the abstract:
+>
+> Code summarization is unlike natural text summarization. Code conforms to strict semantic and syntactic rules, and is primarily written to be executed, in contrast to natural text, in which style, sentiment, medium, function, and other aspects may all be crucial to its meaning. The meaning of code is in its function. Code summarization, then, can be judged on the basis of a simple metric: the success rate of \emph{reconstructing} code from the summary alone. We leverage this formulation of code summarization success for a novel autoencoder framework: we continually improve the prompt of a black box LLM for code-to-summary encoding, maximizing the code reconstruction success of a frozen black box LLM decoder. We experiment with several optimization algorithms: Upper Confidence Bound and Thompson sampling as baselines, and an LLM-as-an-optimizer approach.
+> Viewing summarization as compression, we also find a clear cost-performance tradeoff; maximum summary length (cost) modulates summary completeness and correctness (performance), as measured via code reconstruction success. Thus, we provide users with a mechanism to traverse this cost-performance Pareto frontier. Our findings generalize across LLMs, coding languages, task types, and datasets.
+
+> will this approx work?
+>
+> We study code compression with a behavioral equivalence constraint, where an encoder maps a program to a compact intermediate representation (IR) and a decoder reconstructs executable code whose behavioral equivalence is evaluated by unit tests for the inital program.  We use frozen weight pretrained LLMs for the encoder-decoder structure and treat encoder prompt selection as a black-box search, comparing UCB1 and Thompson sampling to an LLM-in-the-loop optimizer that proposes prompts using semantic priors.  Under a fixed budget of reconstruction-test evaluations, we evaluate methods by the compression–correctness frontier they discover, defined by task coverage as a function of maximum IR length.  Additionally we explore the sample efficiency of frontier discovery, finding a clear cost-performance tradeoff: bandits are competitive in small enumerable prompt sapces, while LLM-guided search reamins effective in larger spaces and low budget settings.  We further evaluate transfer by freezing the selected prompt and testing out-of-distribution, including HumanEval++.
+
+> ok, lets skip the intro for now because well rewrite it based on the findings.  so then, our background and methods are super out of date (ignore the comments).  these need to be completely rewritten
+>
+> ```
+> \section{Background \& Methods} \label{sec:definitions}
+> % \subsection{Formal Definitions}
+>
+> \paragraph{Data Samples}
+> Consider $\mathcal{D}$ to be the space of possible natural language descriptions for a function in the space of python functions $\mathcal{F}$.  
+> % We define $\mathcal{D}_{B} \subset \mathcal{D}$ to be the subset of $D$ with maximum length $B$ characters.
+> Our datasets in \S\ref{sec:expts} are sets of specs $s = \{f_s, T_s\}$, each consisting of a ground truth function $f_{s} \in \mathcal{F}$
+> % a ground truth description $d_{s} \in \mathcal{D}$, 
+> and a test suite $T_{s} = \{\tau_{s,1}, ..., \tau_{s,m_{s}}\}$. $f_{s}$ is one member of a class of semantically equivalent functions.
+> % with the behavior identified in $d_s$. 
+> $T_s$ tests for this functionality.
+>
+> \paragraph{Model}
+> We construct an autoencoder composed of one encoder that maps from code to natural language and one decoder that maps from natural language to code. The encoder and decoder are each defined by a black box LLM and a configuration, $\theta_{E}$ or $\theta_{D}$, respectively, resulting in an autoencoder configuration $\theta := (\theta_{E}, \theta_{D})$. These configurations do not include model weights, which are encapsulated in the black box LLMs, but consist of system parameters, such as system prompt, description length budget $B$, sampling parameters, generation process stages, user prompt template, and input formatting functions $\phi_{E}$ and $\phi_{D}$. 
+>
+> From the encoder, we sample a text string $\hat{d}$, intended to be a function description. From the decoder, we sample a text string $\hat{f}^{\textrm{text}}$. We attempt to parse $\hat{f}^{\textrm{text}}$ into a python function $\hat{f} \in \mathcal{F}$.
+> % \begin{equation}
+> % \label{eq:enc-dec}
+> % \begin{aligned}
+> %   \hat{d} \sim \textrm{ENC}_{\theta_{E}}(f)
+> % \end{aligned}
+> % \qquad \qquad
+> % \begin{aligned}
+> %   \hat{f}^{\textrm{text}} \sim \textrm{DEC}_{\theta_{D}}(\hat{d})
+> % \end{aligned}
+> % \end{equation}
+> For simplicity, we refer to both the raw text string $\hat{f}^{\textrm{text}}$ and the code we may extract from it as $\hat{f}$. For each spec $s$, we sample $n$ pairs of summaries and reconstructed code $(\hat{d}^{(i)}_{s}, \hat{f}^{(i)}_{s})$.
+>
+> \paragraph{Metric}
+> % We consider a decoder generation $\hat{f}^{\textrm{text}}$ to be \emph{feasible} if it
+> We define \emph{semantic correctness} $C_{s} : \mathcal{F} \rightarrow \{0,1\}$ to have value 1 if and only if $\hat{f}$ passes all tests: $C_{s}(\hat{f}) = \textbf{1}\{\hat{f} \textrm{ passes all tests in } T_{s}\}$.
+>
+> However, for any generation trajectory $(\hat{d}^{(i)}_{s}, \hat{f}^{(i)}_{s})$, there are multiple earlier points of failure: (1), $\hat{d}$ must remain under the length bottleneck $B$; (2), $\hat{f}^{(i)}_{s}$ must consist only of code; (3), the code in $\hat{f}^{(i)}_{s}$ must compile; (4), the code in $\hat{f}^{(i)}_{s}$ must run. Only at this point do we evaluate $C_s(\hat{f})$.
+> We define \emph{feasibility} $\textrm{Feas}(s, i; \theta) = \textbf{1}\{|\hat{d}^{(i)}_{s}| \leq B\} \cdot \textbf{1}\{\textrm{code-only}(\hat{f}^{(i)}_{s})\} \cdot \textbf{1}\{\textrm{compiles}(\hat{f}^{(i)}_{s})\} \cdot \textbf{1}\{\textrm{runs}(\hat{f}^{(i)}_{s})\}$. For a decoder-only setup, we omit the description length bottleneck term $\textbf{1}\{|\hat{d}^{(i)}_{s}| \leq B\}$.
+>
+> This allows us to define success, which requires both feasibility and semantic correctness:
+> % \begin{equation}
+> % \label{eq:success}
+> $\textrm{Succ}(s, i; \theta) = \textrm{Feas}(s, i; \theta) \cdot C_{s}(\hat{f}^{(i)}_{s})$
+> % \end{equation}
+>
+> \paragraph{Problem Formulation} We view this problem through the lens of multi-armed bandits (MABs). In each of $t$ rounds, the agent chooses 1 of $k$ possible arms, based on rewards in prior rounds. Its objective is minimizing regret, defined as the expected difference between the optimal and actual rewards. In our framing, the $k$ arms are possible encoder prompts.
+> % possible configurations $\theta$. The scope of our work focuses specifically on the effect of the encoder prompt. Since all other settings in the configurations are frozen, we can view the arms as possible encoder prompts.
+>
+> \paragraph{Optimization}
+> We employ 3 methods for selecting prompts. For both the Upper Confidence Bound algorithm (UCB) and Thompson Sampling, in each round, the agent chooses a prompt, observes its reward, and then performs Bayesian updates on a prior estimation of the rewards. In UCB, the agent chooses the action with the highest confidence interval \emph{upper} bound. In Thompson, the agent samples actions weighted by its prior. Unlike these approaches, our LLM-as-an-optimizer algorithm does not maintain an explicit posterior. At training time, the LLM is given, in context, prior prompts and their associated rewards, and chooses the next encoder prompt.
+>
+> % Using Equation~\ref{eq:success} 
+> We define a \emph{reward} or optimization objective $J(\theta) = \mathbb{E}_{s} \mathbb{E}_{i} \big[ \textrm{Succ}(s, i; \theta) \big]$. That is, we optimize for the expected number of successful trajectories. Since code reconstruction is verifiable, $\textrm{Succ}(s, i; \theta)$ is directly estimable, unlike prior work (\S\ref{sec:related_works}).
+> ```
+
+> I need another way to say this: For a given spec s and cost cap c,
+> we define the per-spec envelope (not envelope)
+
+> ok great, then, lets do the easier related works section, can we leave this as is?
+>
+> \section{Related Works} \label{sec:related_works}
+>
+> \paragraph{Code Autoencoders}
+> \citet{semanticcompression} studies autoencoders for compression of code and natural language text, but do \emph{not} impose a constraint that the latent must be natural language. \citet{cycleprompt} uses multiple cycles through an autoencoder to refine code generations, and \citet{NLDebugging} uses a similar approach with a specific application to debugging.
+>
+> \paragraph{Code Summarization}
+> \citet{wei2019codegenerationdualtask} do not use an autoencoder structure, but jointly train code summarization and generation models. \citet{nlinthemiddle} trains an encoder-decoder for code translation and find that the best objectives train the encoder to generate natural language summaries.
+>
+> \paragraph{Prompt Optimization}
+> Several studies have investigated RL for optimizing prompts in code generation \citep{nanocapsulator,epic} or to write a natural language knowledge summary \citep{languagebottleneck}.
+> Other optimization methods have also been applied: a combinatorial search over prompts for code generation \citep{PlanningInNL}, iterative code generation and math problem solving attempts from an LLM given prior best candidates \citep{OPRO},
+
+> amazing, then, another section that needs to be completely rewritten:
+>
+> ```
+> \section{Experiments} \label{sec:expts}
+>
+>
+> We create a synthetically generated set of \emph{specs}, as defined in \S\ref{sec:definitions}. We define 2 families of functions using Stateful Algorithms for the training set and Bit Operations to evaluate generalization (\S\ref{sec:gen_results}). Each vary along multiple axes (Appendix Table~\ref{tab:task_families}), with allowed value ranges for each axis. For each family we select a medium-difficulty set of axis values and we sample 50 specs from this range, balancing for each axis. Additional details in Appendix~\S\ref{sec:data_app}.
+>
+> In addition  use HumanEval \citep{humaneval} for generalization and analysis, and for held-out test sets. \TODO{delete if untrue}
+> % consisting of a base description, axes of variation, generated functions, tests and \emph{gold} prompts at 3 levels of brevity, each corresponding to one latent character budget setting.
+>
+> % \paragraph{Experimental Conditions.} Direct Generation, Autoencoder-like Setup \ml{possibly best to explain these in the subsections}
+>
+> \paragraph{Model Selection.} See Table~\ref{tab:models-by-experiment} for selected models for each experimental setting and see Appendix Table~\ref{tab:model-details-pricing} for details about cost comparison and model specifics.
+>
+> \paragraph{Prompts} We assemble candidate prompts modularly. We define 7 variable clauses to include in each prompt, which contain instructions about the LM's character budget, task, goal, additional constraints, role, and brevity. For each clause, we define a set of 4 to 8 possible phrasings, including the option to exclude that clause for some clauses. We generate all possible combinations that consist of exactly 1 chosen phrasing (or exclusion) for each clause, resulting in a set of \TODO{how many} possible prompts. These are the arms in our multi-armed bandit formulation. Exact prompts with all clauses and phrasings are in Appendix~\S\ref{sec:prompts_app}.
+>
+> \paragraph{Harness Settings} We use top-p sampling with $p=0.95$ and temperature 0.2 (Appendix~\S\ref{sec:hps_app}).
+>
+> \paragraph{Code Description Constraints} We impose a maximum length, or a character \emph{budget} $B$ on the descriptions. We vary $B$ in our experiments.
+> % We experiment with \TODO{update with final numbers} 3 variations: 0.25, 0.5, and 1 time(s) the length, in, characters, of a reference description length, determined in preliminary investigations to differentiate between setups. 
+> Additionally, descriptions may not contain code, as identified by common python signatures, indented blocks, or excessive code related characters. Details in Appendix~\S\ref{sec:bottleneck_app}.
+>
+> \paragraph{Metrics.} 
+> Our primary metric is average validation $\textrm{Succ}(s, i; \theta)$, as defined in \S\ref{sec:formal_metric}. 
+> % This is equivalent to the percentage of encoder, decoder generation pairs $(\hat{d}, \hat{f}^{\textrm{text}})$ which fulfill (1)  (2) description length budget (2) 
+> % We also define a classification of failure cases (Appendix \S\ref{sec:failure_class_app}). \TODO{do we use this}
+>
+> \begin{table}[!h]
+> \centering
+> \small
+> \caption{Models used in \S\ref{sec:expts}}
+> \label{tab:models-by-experiment}
+> \begin{tabular}{lcccc}
+> \toprule
+> \TODO{}
+> \\
+> % & \textbf{Provider} & \textbf{Cost Category} & \textbf{Variance Exps} & \textbf{Performance Exps}\\
+> % \hline
+> % \textbf{gpt-5-nano} & OpenAI & Low & Yes & Yes\\
+> % \textbf{gpt-5.1-codex-mini} & OpenAI & Medium & Yes & No\\
+> % \textbf{gemini-2.5-flash-lite} & Google & Low & Yes & Yes\\
+> % \textbf{gemini-2.5-flash} & Google & Medium & Yes & No\\
+> % \textbf{haiku-4.5} & Anthropic & Medium-High & Yes & No\\
+> % \hline
+> \bottomrule
+> \end{tabular}
+> \end{table}
+>
+> % \paragraph{Dataset.} We first use Fizzbuzz as a high sample variance test, sampling 100 generations on this spec from experimental setting. Additionally we sample 10 specs from each of the synthetic data families at difficulty level 3.  For each we sample 10 generations for each experimental setting.
+>
+> \subsection{Results} \label{sec:results}
+>
+> % \begin{figure}[!ht]
+> % \begin{center}
+> % %\framebox[4.0in]{$\;$}
+> % \fbox{\rule[-.5cm]{0cm}{4cm} \rule[-.5cm]{4cm}{0cm}}
+> % \end{center}
+> % \caption{varying encoder, decoder model pairing. Emphasize off-diagonal failures highlight that seemingly well formed compressions actually encode model-specific contracts instead of portable semantics.}
+> % \end{figure}
+> % To get a better estimate of the performance of each portion of the system for each of the Synthetic Data function families, we consider the three families at difficulty level 3, 4 and 5.  
+> For each pair of (task family, difficulty level in $\{3,4,5\}$), we sample 50 specs with a balanced sampling strategy that adheres to quotas across buckets of axis values for a few primary axes of variation per family.  For each spec we then sample 3 generations through the full reconstruction pipeline.  We also evaluate Fizzbuzz through 50 samples of the full reconstruction pipeline. See Appendix~\S\ref{sec:expts_app} for more details. \TODO{not sure about any of this}
+>
+> Results in \TODO{} show that \TODO{}
+>
+> In \TODO{}, we observe that, by adjusting the character budget, we adjust reconstruction success rates. A higher description length maximum, up to \TODO{}, results in increased reconstruction success.
+>
+>
+> % \subsection{Manual "Optimization"}\label{sec:expts_tuning}
+> % We now aim to improve performance by applying 3 modifications to the prompts: being explicit, listing potential issues, and adding a structured checklist.  \ml{Q for D: which prompt does this correspond to?}
+> % Stretch goal involves experimenting with multistep CoT or multi-shot experiments. \textbf{Even very problem specific manual tuning doesn't resolve the issue, as seen in XYZ remaining failure modes}.
+>
+> \subsection{Generalization} \label{sec:gen_results}
+>
+> \paragraph{Tasks} To study whether optimal prompts found in \S\ref{sec:results} generalize, without further tuning, to additional tasks not seen during optimization, we evaluate on \TODO{how many} additional function families in our synthetically generated dataset (Appendix~\S\ref{sec:data_app}). Results in \TODO{} demonstrate task generalization.
+>
+> \paragraph{Models} To study whether the optimal prompts found in \S\ref{sec:results} generalize, without further tuning, to additional black box encoder and decoder LLMs not seen during optimization, we evaluate with the models denoted in \TODO{}. Results in \TODO{} demonstrate model generalization.
+>
+> \paragraph{Coding Languages} To study whether the optimal prompts found in \S\ref{sec:results} generalize, without further tuning, to additional coding languages not seen during optimization, we evaluate with synthetic data, but with Java and Rust \TODO{make sure this is right} as the source code language. Results in \TODO{} demonstrate generalization to other coding languages.
+> ```
+
+Routed to [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+§4 (writing-sprint chunk-5 entry: the per-section provenance analysis against the
+submitted PDF — abstract mostly hers, Background & Methods and Experiments
+assistant-skeleton with her edits, Related Works closest to assistant text with three
+contrast sentences shipping near-verbatim; the pinpointed exit of the pitch formalism
+from the paper; the two artifacts preserved in the old section's comments — the
+orphaned variance sweep and the drafted-but-unrun encoder×decoder transfer-matrix
+figure). No new identifiers.

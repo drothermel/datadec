@@ -2645,3 +2645,49 @@ layer, with the intended rewrite happening at notes→paper — which is exactly
 her intake note says she can't remember completing everywhere. The transcript
 preserves the document with explicit placeholders for the re-embedded chunk-3
 material (byte-identical text already in the same file), noted inline.
+
+### 2026-08-23 — The writing-sprint conversation, chunk 5 (the section rewrites — and the provenance answer; 2026-02-16)
+
+The rewrite-from-scratch plan collapsed under time ("there's no way I can rewrite from
+scratch fast enough. I'm going to ask you to take the section we have and give me a
+better one and then I'm going to edit that down") — and this chunk substantially
+answers the provenance question from her intake note. Comparing the drafts here
+against the submitted PDF:
+
+- **Abstract — mixed provenance, mostly hers.** Lineage: assistant long draft → her
+  compact rewrite in her own words ("will this approx work?") → assistant polish →
+  submitted abstract ≈ the polish of *her* text. The base voice is hers.
+- **Background & Methods — assistant rewrite, edited.** Her old §2 was the *pitch
+  formalism* (θ = (θ_E, θ_D) harness configurations, the Feas waterfall with the
+  budget term, Succ, J(θ)); she asked for it to be "completely rewritten," and the
+  replacement swapped the harness-configuration formalism for the arm/frontier
+  formalism. **This exchange is the pinpointable moment the system-fitting framing
+  left the paper** — the deleted formalism is precisely what this project doc's
+  current §1/§3 restored and extended in July–August. The submitted §2 follows the
+  replacement's structure with her edits; "per-spec envelope" became "per-function
+  solvability indicator," picked from the alternatives list she requested.
+- **Related Works — shipped closest to the draft.** Base text hers; the three
+  assistant contrast sentences appear in the submitted paper nearly verbatim ("In
+  contrast, we study a fully black-box LLM encoder–decoder and evaluate
+  reconstructions by unit-test behavioral equivalence under an explicit compression
+  cost"; "Our work differs in focusing on behavioral reconstruction…"; "We complement
+  this line of work…"). For any resubmission this is the first section to rewrite —
+  doubly so since R3's GEPA objection means it needs restructuring anyway.
+- **Experiments — assistant full rewrite; the submitted §3 follows its skeleton**
+  (benchmarks / system / two-regime structure / metrics / generalization), with her
+  numbers and edits. The old section's commented-out fragments preserved two
+  artifacts worth noting: the variance-experiment text (FizzBuzz ×100, 10×10
+  sampling) that never fit the compression paper — the orphaned sweep of chunk 3 of
+  the main conversation — and a commented-out figure sketch ("off-diagonal failures
+  highlight that seemingly well formed compressions actually encode model-specific
+  contracts instead of portable semantics") that is the encoder×decoder transfer-
+  matrix idea, drafted in February and still unrun.
+- The "truth checks" pattern continued (uniform vs. adaptive spec sampling; does the
+  LLM optimizer pick from A or propose new prompts) — the assistant's
+  don't-accidentally-lie discipline, which the honest final paper reflects.
+
+**Net provenance answer (for her records):** the submitted paper is a mix — abstract
+mostly hers, methods/experiments assistant-skeleton with her edits, related works
+closest to assistant text, with the three contrast sentences shipping near-verbatim.
+Her stated bar ("nothing copied verbatim") was met in some sections and not in others;
+her planned substantial rewrite for any resubmission stands, with Related Works first.
