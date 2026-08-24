@@ -219,3 +219,16 @@ many more recipes remain the separate resource-paper decision this doc describes
   WSD-opt-4). Paper list in `docs/topics/reference/schedules-and-annealing-literature.md`.
 - The cancellation question this suite settles: "testing when [the annealing confound]
   cancels vs. doesn't is exactly what your WSD branches would settle."
+## 5. Related work and positioning
+
+*Purpose: the paper-facing synthesis — the prior-art landscape, this project's
+position in it, and what each closest neighbor lacks. Unlike §4 (a dated intake
+log, which grows by appending new entries **above this section**), §5 is a
+current-state statement: rewrite it as understanding changes. Positioning claims
+are Danielle's to make; agent-supplied literature claims anywhere in this document
+are unverified leads, not established facts.*
+
+**Status: not yet drafted.** Raw material: the dated entries in §4, the theme
+accumulators under `../topics/reference/` (index: `../topics/README.md`), and
+`../litreview/citation-verification-ledger.md` (citation provenance; nothing there
+is verified).

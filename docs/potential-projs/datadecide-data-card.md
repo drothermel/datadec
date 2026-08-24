@@ -246,3 +246,16 @@ narrative into the data-card outline now, while the search trail is reconstructi
 Coverage fact settled the same day: OLMES detail tables are processed and published
 (private HF dataset) for all 25 recipes.
 
+## 5. Related work and positioning
+
+*Purpose: the paper-facing synthesis — the prior-art landscape, this project's
+position in it, and what each closest neighbor lacks. Unlike §4 (a dated intake
+log, which grows by appending new entries **above this section**), §5 is a
+current-state statement: rewrite it as understanding changes. Positioning claims
+are Danielle's to make; agent-supplied literature claims anywhere in this document
+are unverified leads, not established facts.*
+
+**Status: not yet drafted.** Raw material: the dated entries in §4, the theme
+accumulators under `../topics/reference/` (index: `../topics/README.md`), and
+`../litreview/citation-verification-ledger.md` (citation provenance; nothing there
+is verified).

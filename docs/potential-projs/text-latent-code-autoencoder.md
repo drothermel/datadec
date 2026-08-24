@@ -3152,3 +3152,53 @@ as "all four components jointly" and searched each component's literature separa
   indexed) dates the underlying search to the Dec-2025 window, consistent with the
   page's Date field. Downstream Note ("Claude Lit Review Summary Table") not yet
   pulled.
+## 5. Related work and positioning
+
+*Purpose: the paper-facing synthesis — the prior-art landscape, this project's
+position in it, and what each closest neighbor lacks. Unlike §4 (a dated intake
+log, which grows by appending new entries **above this section**), §5 is a
+current-state statement: rewrite it as understanding changes. Positioning claims
+are Danielle's to make; agent-supplied literature claims anywhere in this document
+are unverified leads, not established facts.*
+
+**Status: raw material assembled; positioning not yet written** — Danielle's next
+work item after the Notion lit-review ingestion (2026-08-24).
+
+**Where the raw material lives:**
+
+- `../topics/reference/nl-bottleneck-prior-art.md` — the primary prior-art record:
+  all novelty-check verdicts (Dec-2025 SciSpace; the 2026-02-03/04
+  ChatGPT/Consensus/Claude trio), closest matches, the measurement thread.
+- `../topics/reference/prompt-optimization-landscape.md`,
+  `../topics/reference/code-compression-literature.md`, and
+  `../topics/reference/evaluation-methodology-literature.md` — the optimizer,
+  compression, and evaluation flanks.
+- `../litreview/tlc-litreview-plan.md` — the reading plan, rows A–F by concern,
+  with must-reads (Miao & Blunsom and GenDLN at gate 1).
+- `../litreview/citation-verification-ledger.md` — provenance of every identifier;
+  nothing verified yet.
+
+**Starting inventory for the synthesis** (assembled at intake 2026-08-24; detail in
+the dated §4 entries):
+
+- **The novelty-check corpus:** three Feb-2026 checks with divergent verdicts —
+  ChatGPT "published in parts," Consensus "novel, 90–95%," Claude "novel, 85–90%
+  by combination." Danielle's read: the verdicts track how each review interpreted
+  the prompt, and hence which literature it considered. The Claude check's
+  component-feasibility matrix (each of the four components exists; the combination
+  does not) is the closest existing artifact to a positioning statement, and its
+  citation strategy is recognizably the submitted paper's related-work skeleton.
+- **The anchor set:** Gilbert et al. 2304.12512 (closest prior art — pipeline
+  feasibility, three fixed prompts, no optimization loop); Miao & Blunsom
+  1609.07317 (formal ancestor — trained-prior counterpart of the frozen-prior
+  constraint); NL-Debugging 2505.15356 and PlanSearch 2409.03733 (the two
+  independent mechanism-neighbors); RTC 2402.08699 (round-trip as evaluation, not
+  learning); the prompt/context-compression flank (SelfCP 2405.17052, LLMLingua
+  2310.05736, ICAE 2307.06945, gist tokens 2304.08467); Latent Programmer
+  2012.00377 and de Bruin 2108.07129 (trained-latent autoencoding); Proto-tokens
+  2502.13063 (reconstruction capacity without an NL latent — the capacity
+  counterpoint the NL-necessity falsifiers must engage).
+- **Known obligations for any resubmission:** rewrite Related Works first (the
+  submitted version's closest-to-draft section; three near-verbatim contrast
+  sentences); close R3's GEPA gap (GEPA as baseline, not citation); write the
+  positioning to survive the union of the three novelty-check readings.

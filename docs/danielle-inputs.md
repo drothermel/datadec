@@ -5168,3 +5168,17 @@ the advisor recommended it), and
 [topics/reference/prompt-optimization-landscape.md](topics/reference/prompt-optimization-landscape.md)
 (the Feb record already held OPRO/EvoPrompt/PromptBreeder); seven ledger rows. No
 new identifiers.
+
+### 2026-08-24 — §5 "Related work and positioning" added to every project doc
+
+> ok, do we have a clear section for each project that is "related work" already?
+
+> yes, lets do the "Related work and positioning" because thats what I'll be working on next after we finish ingestion.  can you please make that change across all of the proposed projects?
+
+All 22 docs in [potential-projs/](potential-projs/) gained a `## 5. Related work
+and positioning` section at the end (scaffold: purpose note + raw-material
+pointers; §4 stays the dated log, new entries insert before the §5 header).
+[potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+additionally carries a starting inventory (novelty-check corpus + anchor set +
+resubmission obligations). Convention documented in the README. This is Danielle's
+next work surface after ingestion.

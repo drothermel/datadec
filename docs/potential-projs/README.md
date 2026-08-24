@@ -78,6 +78,14 @@ attributions) are unverified: the responding agents did not run literature searc
 reliable knowledge of the current landscape. Treat them as leads to check, not facts. The ideas
 stand on their own. This applies equally to every §4 section.
 
+**§5 "Related work and positioning" (convention added 2026-08-24).** Every project
+document ends with a §5 holding the paper-facing synthesis: the prior-art
+landscape, the project's position in it, and what each closest neighbor lacks. §4
+remains the dated intake log — new §4 entries are appended *before* the §5 header.
+§5 is a current-state statement, rewritten rather than appended, and its
+positioning claims are Danielle's. As of 2026-08-24 all are scaffolds except
+`text-latent-code-autoencoder.md`, which carries a starting inventory.
+
 ### 2026-08-22 — conformal prediction as a cross-project tool (Danielle's flag)
 
 From a conversation on estimating per-(model, docstring) code-generation performance at a

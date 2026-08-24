@@ -237,3 +237,16 @@ models share a basin?
   contrast. Layer-wise LMC (arXiv 2307.06966) predicts interface resets are
   near-barrier-free. PolyPythias as substrate. Primary home: `embedding-reset-dynamics.md`
   RESET-opt-1.
+## 5. Related work and positioning
+
+*Purpose: the paper-facing synthesis — the prior-art landscape, this project's
+position in it, and what each closest neighbor lacks. Unlike §4 (a dated intake
+log, which grows by appending new entries **above this section**), §5 is a
+current-state statement: rewrite it as understanding changes. Positioning claims
+are Danielle's to make; agent-supplied literature claims anywhere in this document
+are unverified leads, not established facts.*
+
+**Status: not yet drafted.** Raw material: the dated entries in §4, the theme
+accumulators under `../topics/reference/` (index: `../topics/README.md`), and
+`../litreview/citation-verification-ledger.md` (citation provenance; nothing there
+is verified).

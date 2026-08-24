@@ -446,3 +446,16 @@ the list**… it's the paper the previous nine were quietly building toward."
   quantization" (Kim et al., arXiv 2503.06921) — branch endpoints could be saved as
   quantized deltas from the branch point.
 - Full entries in `docs/topics/reference/task-vectors.md`.
+## 5. Related work and positioning
+
+*Purpose: the paper-facing synthesis — the prior-art landscape, this project's
+position in it, and what each closest neighbor lacks. Unlike §4 (a dated intake
+log, which grows by appending new entries **above this section**), §5 is a
+current-state statement: rewrite it as understanding changes. Positioning claims
+are Danielle's to make; agent-supplied literature claims anywhere in this document
+are unverified leads, not established facts.*
+
+**Status: not yet drafted.** Raw material: the dated entries in §4, the theme
+accumulators under `../topics/reference/` (index: `../topics/README.md`), and
+`../litreview/citation-verification-ledger.md` (citation provenance; nothing there
+is verified).
