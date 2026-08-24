@@ -447,4 +447,10 @@ rows — fourth schema: domain × latent-type × optimization × frozen-decoder,
 component matrix as a table; drops LINT/Zip2Zip/ReFIne from its source);
 Perplexity (4 rows only — adds Architecture Name + Source-link columns; its
 OverLang row is labeled "(blog)" by Agents4Agents, and its Gilbert row repeats the
-2406.01989 link and conflates the architecture cell with TBM).
+2406.01989 link and conflates the architecture cell with TBM); "Undermind" (8 rows
+— **content mismatch:** despite its name/Source Note it is NOT an Undermind-review
+distillation but the **Dec-2025 SciSpace six-component rubric's scored
+partial-match list** (Nano-Capsulator 4/6, EPiC 3.5/6, RLPrompt 3/6, four 2/6
+rows), i.e. the scored-rubric table this record's Dec-2025 entry describes,
+rendered as a table — the most §5-useful single schema: score + components-present
++ critical-gaps columns).

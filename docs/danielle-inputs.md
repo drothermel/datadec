@@ -5289,3 +5289,13 @@ Table-layer entry extended. No ledger rows.
 Agents4Agents blog PDF (row note updated); Gilbert row repeats the 2406.01989 ID
 conflict and conflates with TBM (evidence added to the existing flag). No ledger
 rows.
+
+### 2026-08-24 — summary-table intake, "Undermind" table (content mismatch)
+
+> https://app.notion.com/p/Undermind-Lit-Review-Summary-Table-2fdde135cd1f809e8006d712c35e325e?v=2fcde135cd1f8087ae97000c181d4a2e
+
+8 rows; preserved as `summary-tables/undermind-summary-table.md`. Flagged: content
+is the Dec-2025 SciSpace six-component rubric's scored list (Nano-Capsulator 4/6,
+EPiC 3.5/6, ...), not a distillation of the Undermind prompt-compression review its
+Source Note points at. All papers already tracked; no ledger rows. Schema (score +
+components + gaps) noted as the most §5-useful single table.
