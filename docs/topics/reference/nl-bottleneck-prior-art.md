@@ -423,3 +423,16 @@ cousin of behavioral reconstruction. Contrast pair for positioning: Undermind's
 "poised for extension" vs. Perplexity's "minor variation of LBM" — the two deep
 checks agree on the ingredients and disagree on whether the extension is a
 contribution.
+
+## 2026-08-24 — the NBLM summary-table layer (per-review distillations; intake begins)
+
+Each Feb-2026 novelty check has a NotebookLM-generated summary table in Danielle's
+Notion (uniform six-column schema: Paper | Year | Intermediate Representation Type |
+Optimization Method | Decoder Type | Key Innovation), stored under
+`~/drotherm/data/convo-artifacts/2026/2026-08-24-notion-lit-reviews/summary-tables/`
+as they are pulled. The tables add no papers beyond their source reviews; their
+value is the schema — a ready-made related-work comparison-table template for the
+§5 positioning work, with useful column discipline (Frozen vs. Frozen-prompted vs.
+Fine-tuned decoder distinctions; "Not in source" for unstated methods). The tables'
+own downstream note is an **"NL Latents Lit Review Aggregate Summary"** (not yet
+pulled) — the cross-review aggregate. Pulled so far: ChatGPT (8 rows).

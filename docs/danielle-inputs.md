@@ -5237,3 +5237,17 @@ foundational/adjacent). Routed: dated entries in
 (verdict + the Undermind-vs-Perplexity contrast pair); TLC §4 entry + §5 corpus
 update (six checks); three ledger rows. The ~60 per-paper Notion pages (shared
 paper database) were not pulled. No new identifiers.
+
+### 2026-08-24 — summary-table intake begins (ChatGPT table)
+
+> ok great! now lets start pulling in the tables.
+>
+> https://app.notion.com/p/ChatGPT-Lit-Review-Summary-Table-2fcde135cd1f8064bc7ce06ccae10988
+
+NBLM (NotebookLM) table layer identified: per-review six-column distillations, each
+with a Source Note back to its review and a shared downstream "NL Latents Lit
+Review Aggregate Summary". ChatGPT table (8 rows, no new papers) preserved in the
+bundle's `summary-tables/`; table layer introduced in
+[topics/reference/nl-bottleneck-prior-art.md](topics/reference/nl-bottleneck-prior-art.md)
+and TLC §4; §5 raw-material list gained the tables pointer. No ledger rows (no new
+identifiers).

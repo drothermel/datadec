@@ -3252,6 +3252,16 @@ routed to the prompt-compression accumulator.
 - Downstream Note not pulled; the ~60 per-paper Notion pages referenced by the
   review were not pulled (the shared paper database, not sub-pages).
 
+### 2026-08-24 — the NBLM summary-table layer (intake begins)
+
+Each Feb-2026 novelty check has a NotebookLM-distilled summary table (uniform
+six-column schema: Paper | Year | IR Type | Optimization Method | Decoder Type |
+Key Innovation) — pulled into the bundle's `summary-tables/` directory as they
+arrive; per-table detail in the bundle INDEX. No new papers; the schema is a
+ready-made template for the §5 comparison table. The tables' downstream note is an
+"NL Latents Lit Review Aggregate Summary" (cross-review aggregate, not yet
+pulled). First pulled: the ChatGPT table (8 rows).
+
 ## 5. Related work and positioning
 
 *Purpose: the paper-facing synthesis — the prior-art landscape, this project's
@@ -3277,6 +3287,9 @@ work item after the Notion lit-review ingestion (2026-08-24).
   with must-reads (Miao & Blunsom and GenDLN at gate 1).
 - `../litreview/citation-verification-ledger.md` — provenance of every identifier;
   nothing verified yet.
+- The bundle's `summary-tables/` directory — NBLM-distilled per-review comparison
+  tables (six-column schema usable as the §5 positioning-table template) and,
+  once pulled, the cross-review "NL Latents Lit Review Aggregate Summary".
 
 **Starting inventory for the synthesis** (assembled at intake 2026-08-24; detail in
 the dated §4 entries):
