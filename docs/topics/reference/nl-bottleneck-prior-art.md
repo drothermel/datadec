@@ -89,6 +89,13 @@ code/artifacts listed in `REPRODUCIBLE_PAPERS_WITH_CODE.md`.
 
 ## 2026-08-22 — second novelty check (different agent, prompt not kept): "equivalent method already published"
 
+*Identity resolved 2026-08-24: this check is the **Perplexity**-generated Notion
+"Lit Review" page created **2026-02-04 02:26** — part of the five-check Feb-2026
+set; verbatim source copy now in the 2026-08-24 bundle
+(`lit-review-perplexity-novelty-check.md`), including the Sources section this
+entry lacked. See the 2026-08-24 Perplexity entry below for what the full source
+adds.*
+
 Danielle passed only the answer. The response plays her prompt back as: code →
 natural-language latent → frozen LLM decoder, optimized by RL/search; it refers to the
 idea as "CodeVLAE" (not a term on file here). Verdict: **"Equivalent Method Already
@@ -99,8 +106,8 @@ below is verified; the response cites by link, not by bibliography.
 
 | Item | Response's characterization | Status in this record |
 |---|---|---|
-| **Language Bottleneck Models** — Berthon & van der Schaar, arXiv 2506.16982 (June 2025) | Optimizable encoder LLM/prompt → short NL summary → *frozen* LLM decoder; encoder trained by group-relative policy optimization to maximize frozen-decoder performance; domain knowledge tracing, offered as a general framework for "inverse problems" with frozen LLMs | **New.** Not in any SciSpace pass. Needs Danielle's read (gate item alongside GenDLN). Weight-trained encoder, one side optimized, no code, prediction rather than reconstruction — on the Dec-2025 rubric that is roughly 3–4/6, but it is the *named* framework. **2026-08-24 update:** also the "definitive architectural precedent" (~90% overlap claim) of Danielle's 2026-02-04 Gemini novelty check — a two-independent-check headline match, still unread |
-| **OverLang** — "Teaching LLMs to Speak in Pseudocode for Efficient Compression", `agents4agents.ai/media/OverLang.pdf` | RL-trained "pseudo-language" shorthand for code, decodable by other (possibly frozen) models, "semantic compression" | **New; provenance weak.** No arXiv ID or venue given; the host is not a publisher. Lead only until located |
+| **Language Bottleneck Models** — Berthon & van der Schaar, arXiv 2506.16982 (June 2025) | Optimizable encoder LLM/prompt → short NL summary → *frozen* LLM decoder; encoder trained by group-relative policy optimization to maximize frozen-decoder performance; domain knowledge tracing, offered as a general framework for "inverse problems" with frozen LLMs | **New.** Not in any SciSpace pass. Needs Danielle's read (gate item alongside GenDLN). Weight-trained encoder, one side optimized, no code, prediction rather than reconstruction — on the Dec-2025 rubric that is roughly 3–4/6, but it is the *named* framework. **2026-08-24 update:** also the "definitive architectural precedent" (~90% overlap claim) of Danielle's 2026-02-04 Gemini novelty check — a two-independent-check headline match (the other: the 2026-02-04 Perplexity check, identified 2026-08-24; both from the same Feb-4 session), still unread |
+| **OverLang** — "Teaching LLMs to Speak in Pseudocode for Efficient Compression", `agents4agents.ai/media/OverLang.pdf` | RL-trained "pseudo-language" shorthand for code, decodable by other (possibly frozen) models, "semantic compression" | **New; provenance weak.** No arXiv ID or venue given; the host is not a publisher. Lead only until located. **2026-08-24:** source located — the 2026-02-04 Perplexity check; its "Paper:" link conflates OverLang with the Semantic-Compression page, so provenance remains weak |
 | "Semantic Compression With Large Language Models" (academia.edu link) | LLMs compress text/code to short representations preserving functional equivalence; manual prompting, no joint optimization | Already on file (Gilbert et al. 2023, 2304.12512 in `code-compression-literature.md`) |
 | APRIL 2509.25196; Proof2Silicon 2509.06239 | RL optimizes prompts for frozen LLM code/hardware synthesis | New IDs; the response itself classes them as "the decoder half" |
 | Concept Bottleneck LLMs 2412.07992 | Text concepts as bottleneck for classification | New ID; interpretability lineage, not reconstruction |
@@ -364,3 +371,32 @@ ReFIne 2510.09062. Its three-objectives contrast (LBM interpretability/predictio
 CyclePrompt 2402.08756 generation quality; the proposal compression) is a usable
 positioning frame; CyclePrompt is already in the submitted bibliography, likely via
 this review.
+
+## 2026-08-24 — The 2026-02-04 Perplexity novelty check: the "second novelty check" identified, and its sources recovered
+
+Verbatim copy:
+`~/drotherm/data/convo-artifacts/2026/2026-08-24-notion-lit-reviews/lit-review-perplexity-novelty-check.md`.
+The Notion pull identifies the 2026-08-22 "second novelty check" entry above as
+Perplexity-generated, 2026-02-04 — so the Feb-2026 set is **five checks in ~7
+hours with five distinct verdicts** (ChatGPT "published in parts"; Claude "novel
+85–90% by combination"; Consensus "novel 90–95%"; Gemini "partially novel";
+Perplexity "equivalent method already published"). The strongest evidence yet for
+Danielle's prompt-interpretation note: verdict tracks reading, not literature.
+
+What the full source adds over the August answer-only intake:
+
+- **The Sources section** with IDs the August copy lacked: TBM 2310.19660 (Ludan
+  et al. — text bottleneck for interpretable classification) and FAST 2501.09747
+  (Pertsch et al. — VLA action tokenization; the frozen-LLM-interprets-latent
+  example in its component table). Sentence Bottleneck 2109.00055 and CB-LLM
+  2412.07992 confirmed as row-A items.
+- **An ID conflict for verification:** its source row links the
+  Semantic-Compression page to arXiv **2406.01989**, while the ledger's Gilbert =
+  2304.12512 (from the submitted bibliography). One of the two pairings is wrong;
+  flagged in the ledger.
+- **The Novelty Gap concession, now in full:** simultaneous prompt-search
+  optimization of BOTH encoder and decoder prompts is "less common than training a
+  small encoder network or optimizing just one side" — but the review deems it "an
+  implementation detail or a minor variation of the LBM framework." This is the
+  one check that names the pitch's exact configuration and dismisses it; the
+  positioning statement should engage this dismissal head-on.

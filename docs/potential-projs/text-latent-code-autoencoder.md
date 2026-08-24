@@ -3192,6 +3192,32 @@ proposal architecture-first and found the architecture established:
   unclaimed.
 - Downstream Note ("Gemini Lit Review Summary Table") not yet pulled.
 
+### 2026-08-24 — The 2026-02-04 novelty check #5 (Notion "Lit Review" page, Perplexity-generated) — the anonymous "second novelty check" identified
+
+The Notion pull identifies the 2026-08-22-intaken "second novelty check"
+("equivalent method already published"; the "CodeVLAE" playback) as
+**Perplexity-generated, created 2026-02-04 02:26** — 18 minutes after the Gemini
+page. The Feb-2026 novelty-check set is therefore **five checks in ~7 hours with
+five distinct verdicts**, spanning the full range from "novel, 90–95%" to
+"already published." Verbatim copy with recovered sources in the bundle.
+
+- **What the full source adds:** the Sources section (the August intake had links
+  only) — TBM 2310.19660, FAST 2501.09747, Sentence Bottleneck 2109.00055 and
+  CB-LLM 2412.07992 confirmed; and an **ID conflict**: it links the
+  Semantic-Compression page to 2406.01989, against the ledger's Gilbert =
+  2304.12512 (flagged for the verification pass). The OverLang item's provenance
+  weakness is now explained: its "Paper:" link conflates OverLang with the
+  Semantic-Compression page.
+- **The dismissal to engage:** its Novelty Gap paragraph names the pitch's exact
+  configuration — simultaneous prompt-search optimization of both encoder and
+  decoder prompts — concedes it is "less common," and dismisses it as "an
+  implementation detail or a minor variation of the LBM framework." The only check
+  to name the exact configuration is also the one that dismisses it; the §5
+  positioning should answer this head-on rather than only the friendlier
+  readings.
+- LBM attribution corrected in row A and the prior-art record: its two headline
+  matches are the Perplexity and Gemini checks, both from the same Feb-4 session.
+
 ## 5. Related work and positioning
 
 *Purpose: the paper-facing synthesis — the prior-art landscape, this project's
@@ -3221,12 +3247,16 @@ work item after the Notion lit-review ingestion (2026-08-24).
 **Starting inventory for the synthesis** (assembled at intake 2026-08-24; detail in
 the dated §4 entries):
 
-- **The novelty-check corpus:** four Feb-2026 checks with divergent verdicts —
-  ChatGPT "published in parts," Consensus "novel, 90–95%," Claude "novel, 85–90%
-  by combination," Gemini "partially novel" (architecture established in LBM; the
-  code-compression application and MDL-style objective are the novel part; its
-  three-objectives contrast — LBM interpretability/prediction, CyclePrompt
-  generation quality, this proposal compression — is a usable positioning frame).
+- **The novelty-check corpus:** five Feb-2026 checks (one ~7-hour session,
+  2026-02-03/04) with five distinct verdicts — ChatGPT "published in parts,"
+  Claude "novel, 85–90% by combination," Consensus "novel, 90–95%," Gemini
+  "partially novel" (architecture established in LBM; the code-compression
+  application and MDL-style objective are the novel part; its three-objectives
+  contrast — LBM interpretability/prediction, CyclePrompt generation quality,
+  this proposal compression — is a usable positioning frame), Perplexity
+  "equivalent method already published" (the one check naming the exact
+  dual-prompt configuration — and dismissing it as "a minor variation of the LBM
+  framework"; the positioning must answer this dismissal head-on).
   Danielle's read: the verdicts track how each review interpreted
   the prompt, and hence which literature it considered. The Claude check's
   component-feasibility matrix (each of the four components exists; the combination

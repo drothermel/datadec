@@ -5209,3 +5209,16 @@ inventories stay current). Routed: verbatim copy in the batch bundle; TLC §4 en
 LINT/CodeCloak/CyclePrompt/RLPrompt added to the anchor set); nl-bottleneck entry +
 LBM table-row update (two-check headline match); litreview plan row A (LBM
 parenthetical, RLPrompt ID, SPAE); eight ledger rows. No new identifiers.
+
+### 2026-08-24 — Notion lit-review intake, page 5 (Perplexity)
+
+> great, next this one: https://app.notion.com/p/Lit-Review-2fdde135cd1f808eabd7fd9b74efdc11
+
+Identity resolution: this page is the previously anonymous 2026-08-22 "second
+novelty check" — Perplexity-generated, 2026-02-04. Feb-2026 set = five checks,
+five verdicts. Routed: verbatim copy in the bundle; identity addendum on the
+2026-08-22 entry + new dated entry in
+[topics/reference/nl-bottleneck-prior-art.md](topics/reference/nl-bottleneck-prior-art.md);
+OverLang provenance note; LBM attribution corrected (plan row A + table row); TLC
+§4 entry + §5 corpus update (five checks; the dual-prompt dismissal to engage);
+four ledger rows incl. the 2406.01989 ID-conflict flag. No new identifiers.

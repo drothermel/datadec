@@ -230,7 +230,7 @@ Context column = the ~80 characters preceding the ID in the topic, as a memory a
 | 2511.00198 | es, ~50% cost reduction at matched loss), "filling the mutual-information gap" ( | `training-objective-alternatives-literature` | agent-supplied | TOK, dense | |
 | 2512.10545 | ** (2411.14318; weight domains by learning velocity), tDRO (2408.10613), XDoGE ( | `training-objective-alternatives-literature` | agent-supplied | TOK, dense | |
 | 2601.11791 |  mutual-information gap" (2511.00198). **Concept-level objectives** (Iyer et al. | `training-objective-alternatives-literature` | agent-supplied | TOK, dense | |
-| 2506.16982 | Language Bottleneck Models — Berthon & van der Schaar (second novelty check headline) | `nl-bottleneck-prior-art` | agent-supplied | TLC | |
+| 2506.16982 | Language Bottleneck Models — Berthon & van der Schaar (second novelty check headline) | `nl-bottleneck-prior-art` | agent-supplied | TLC | check identified 2026-08-24: Perplexity, 2026-02-04; also Gemini check's headline |
 | 2509.25196 | APRIL — RL prompt optimization for frozen code generators ("decoder half") | `nl-bottleneck-prior-art` | agent-supplied | TLC | |
 | 2509.06239 | Proof2Silicon — RL prompt optimization for frozen LLM synthesis ("decoder half") | `nl-bottleneck-prior-art` | agent-supplied | TLC | |
 | 2412.07992 | Concept Bottleneck LLMs — text concepts as bottleneck for classification | `nl-bottleneck-prior-art` | agent-supplied | TLC | |
@@ -433,3 +433,7 @@ WizardCoder; `chang2024effective` there is 2402.04177 (different paper) and
 | 2509.19228 | Berton et al. 2025 — CompLLM: compression for long-context QA (2026-02-04 Gemini novelty check) | `nl-bottleneck-prior-art` (2026-08-24 Gemini entry) | agent-supplied (Gemini) | TLC | |
 | 2506.01084 | Geng et al. 2025 — Zip2Zip: inference-time adaptive tokenization via online compression (2026-02-04 Gemini novelty check sources) | `nl-bottleneck-prior-art` (2026-08-24 Gemini entry) | agent-supplied (Gemini) | TLC | |
 | 2510.09062 | Sun et al. 2025 — ReFIne: trustworthy large reasoning models (2026-02-04 Gemini novelty check sources) | `nl-bottleneck-prior-art` (2026-08-24 Gemini entry) | agent-supplied (Gemini) | TLC | |
+| 2310.19660 | Ludan et al. 2023 — TBM: text bottleneck models for interpretable classification (2026-02-04 Perplexity check sources, recovered 2026-08-24) | `nl-bottleneck-prior-art` (Perplexity entry) | agent-supplied (Perplexity) | TLC | |
+| 2501.09747 | Pertsch et al. 2025 — FAST: efficient action tokenization for VLA models (2026-02-04 Perplexity check sources, recovered 2026-08-24) | `nl-bottleneck-prior-art` (Perplexity entry) | agent-supplied (Perplexity) | TLC | |
+| 2109.00055 | Montero et al. 2021 — sentence bottleneck autoencoders from transformer LMs, EMNLP (row-A item; ID confirmed by 2026-02-04 Perplexity check sources) | `nl-bottleneck-prior-art`; litreview plan row A | agent-supplied | TLC | |
+| 2406.01989 | UNRESOLVED PAIRING — the 2026-02-04 Perplexity check's sources link this ID to the Semantic-Compression page, conflicting with Gilbert = 2304.12512 (submitted bibliography); resolve which paper 2406.01989 actually is at verification | `nl-bottleneck-prior-art` (Perplexity entry, flag) | agent-supplied (Perplexity) | TLC | ID conflict |
