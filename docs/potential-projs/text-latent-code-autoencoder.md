@@ -2424,7 +2424,7 @@ this framing confusion — intake to follow. The DQE statement (README program-l
 note, 2026-02-25) was her attempt at her own framing; it was not adopted in that
 discussion.
 
-### 2026-08-23 — The writing-sprint conversation, chunk 1 (metric origin; historical, ~2026-02-09/10)
+### 2026-08-23 — The writing-sprint conversation, chunk 1 (metric origin; historical, 2026-02-16)
 
 Second conversation intake (verbatim companion transcript:
 `~/drotherm/data/convo-artifacts/2026/2026-08-23-prompt-opt-reeval-aha/writing-conversation-transcript.md`).
@@ -2478,3 +2478,53 @@ is still open for the follow-up); (c) her "all of the hyperparameters directly i
 which methods you'd expect to be better" is an honest statement that the
 method-comparison claim was under-determined — which the results then confirmed
 (no differentiation in-distribution).
+
+### 2026-08-23 — The writing-sprint conversation, chunk 2 (framing decision and Eq. 1 exact form; 2026-02-16)
+
+(Date corrected at intake: the writing-sprint conversation is from **2026-02-16**;
+source link in the companion transcript header.) Four exchanges:
+
+- **The framing question — and the clearest early statement of the original vision.**
+  Danielle (near-verbatim): "Initially, I had a very different framing for this
+  project, and in that framing, I was pretty confident that the LLM as optimizer would
+  perform better. Now, the paper's framing has changed so much that it's no longer
+  clear…" Her novelty claim, from her own substantial lit review: the *combination* —
+  black-box LLM encoder–decoder code compression + behavioral-equivalence
+  reconstruction + compression Pareto frontier — did not exist. Her real motivation:
+  "using LLMs as optimizers with systems that have LLM components… to fit them in the
+  same way that you would fit a trained model with weights… you can actually replicate
+  many different types of algorithms and explore a lot of interesting concepts related
+  to representation learning, identifiability, continual learning… I wanted to put out
+  a paper that included each of these pieces to stake a claim." (This is the DQE
+  research statement of 2026-02-25, nine days earlier and near-verbatim; "framing C"
+  below is its packaging.) The dilemma: the LLM optimizer might only win in settings
+  "clearly skewed towards it."
+- **The three framings.** A: problem + evaluation protocol + baseline suite (robust to
+  mixed results); B: regime characterization with a-priori-defined regimes ("re-label
+  skewed as the intended deployment regime" — large space / low budget is realistic,
+  not skewed); C: the platform paper ("training-by-querying LLM systems") — her true
+  interest. Decision rule taken: **A + one paragraph of B**, which is precisely the
+  submitted paper's shape; C was deferred (and resurfaced as the DQE statement).
+  Workshop-safe vocabulary list (introduce/characterize/competitive; never
+  SOTA/consistently-outperforms/optimal) — the paper follows it, and R1's "does not
+  overclaim… honest conclusions" praise is the direct payoff.
+- **Metric details.** AUC-vs-evaluations chosen as primary sample-efficiency summary
+  (robust, no threshold; C_max by e.g. 95th-percentile cost) with min-cost@target as
+  optional secondary under pre-registered targets. Her proposed Figure-1 definition,
+  corrected from "best success achievable" to per-spec-then-average with "best
+  *observed* success": S_{m,s}(c;N) = max y_i over attempts on spec s with cost ≤ c;
+  S_m(c;N) = mean over specs — **the exact Eq. 1 and near-verbatim Figure-1 caption of
+  the submitted paper originate here.**
+- **The coverage-vs-probability decision under time pressure.** Her question: can the
+  binary ever-succeeded envelope stand in for the pass-probability version, given
+  repeated spec sampling — "I'm not necessarily optimizing for this to get accepted.
+  I just want to submit something plausible." Answer: yes, if described as *coverage*
+  ("at least one passing reconstruction… differs from estimating the per-attempt
+  success probability"), and if N counts total decode+test attempts, not pools. The
+  submitted paper adopted the coverage wording ("finds at least one passing
+  reconstruction"). **(Claude-added:)** R2's later critique ("relies solely on
+  unit-test pass rates… stronger statistical rigor, more seeds") presses on exactly
+  the probability-vs-coverage seam accepted here; the pass-probability frontier
+  (the deferred "optional enhancement") is a known upgrade for any revival, and the
+  per-test outcome-vector machinery recorded in the TLC-0 candidate metrics is its
+  natural implementation.
