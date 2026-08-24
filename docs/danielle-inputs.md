@@ -4993,3 +4993,56 @@ with the 2026-02-06 property-indexed framing; the coining-ethics exchange produc
 the submitted abstract's opening phrase; the abstract's final provenance revised to
 her 9am rewrite plus minimal fixes; the open question of how the not-convinced
 position became a same-day submission). No new identifiers.
+
+### Writing-sprint conversation, chunk 12 (eleven prompts; 2026-02-16 — the ownership pass reaches Methods), with her retrospective verdict
+
+Her intake message opening this chunk (verbatim):
+
+> I actually am really glad I did submit, because up until this point I thought I was
+> incapable of writing a workshop paper, and after submitting (and now, looking back)
+> I think I did an absolutely spectacular job considering the dramatic time
+> constraints and the complexity of the required infra + the confusion of trying to
+> move from one framing to another on no sleep...  so I think future me would ideally
+> come into the deadline push more prepared but I think submitting isn't a bad choice
+> as long as you believe your results are true (if not good).  thoughts?
+
+> next, at a high level I think I'm going to collapse these three into one paragraph that introduces the task, enc-dec and eval all together, with a simple mention of correctness + compression definitions. replacing:
+>
+> [her then-current Methods paragraphs, quoted in full in her message: Tasks; Black-Box LLM Encoder--Decoder; Evaluation Budget]
+>
+> Then I think we  talk about prompt search and optimization algorithms first, with a quick mention of the task coverage curve and a reference to the appendix for details.  Then we introduce the AUC in the experimental section when we discuss plotting it and our findings  which replaces:
+>
+> [her then-current Compression-Correctness Frontier / Sample Efficiency via AUC / Prompt Search / Optimization algorithms / Train-Time Objective paragraphs, quoted in full]
+>
+> And I think thats all we need in methods unless we want to pull related work to the front and merge it with background to provide some form of framing.  butI don't think its specific enough to our claims in the paper to do that yet, so that might not be my current goal.
+
+> hmm, I think the intro should actually start with a "why is code compression potentially useful" statement
+
+> ok, so I"ve been speaking in the encoder-decoder autoencoder space, but the whole cost/something tradeoff curve for compression has its own standard language doesn't it?
+
+> ok, but then , do you talk about the lowest rate for an acceptable distortion?  how do you write the equivalent of "we aim to encode f_i into the most compressed  representation that can be succesfully decoded into a behaviorally equivalent function" in information theory speak?
+
+> ok, the notation using "i" is a bit off, but what about this:
+>
+> "Given a coding dataset of functions and their associated test suites $\{f, T_{f}\}_{i}$, we aim to produce the shortest intermediate representation of $f_{i}$ that still decodes into a function $f'_{i}$ where $T_{f}(f') =1$ . "
+
+> so what feel strange about this notation is that T is of f, so making it T_i feels like its burying the lead
+
+> good? Given a coding dataset of functions and their associated test suites $\{(f_{i}, T_{f_{i}})\}_{i=1}^{n}$, we aim to produce the shortest intermediate representation of $f_{i}$ that still decodes into a function $f'_{i}$ which passes the test suite $T_{f_{i}}$ .
+
+> so I think that using "dataset of functions" is confusing, because I think math functions before code funcitons
+
+> ok, if I say programs, does that make the use of "f" strange to represent the ~functions~ I mean programs?
+
+> sigh, probability makes that confusing, I'm happy with f, ok, let me continue
+
+> if the first time I use the abbreviation LLM is here in the abstract I need to spell it out first right?  "We instantiate this as a black-box LLM encoder–decoder with frozen pretrained models, and treat encoder prompt selection as black-box search over a finite prompt space. "
+
+Routed to [potential-projs/text-latent-code-autoencoder.md](potential-projs/text-latent-code-autoencoder.md)
+§4 (writing-sprint chunk-12 entry: the Methods restructure and its landing as the
+submitted §2; the why-useful intro instinct → the submitted opener; rate–distortion-
+style language → the submitted discussion, with the constrained min-rate form; the
+T_{f_i} notation negotiation producing the submitted Task sentence essentially
+verbatim hers; the provenance ledger flip for the paper's front matter; her
+retrospective glad-I-submitted verdict resolving the chunk-11 open question). No new
+identifiers.

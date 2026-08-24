@@ -2888,3 +2888,43 @@ What the ownership pass produced:
 not-convinced-we-should-submit, aim for a different deadline; the paper was
 nevertheless submitted to LLA that day. How the position changed between 09:09 and
 submission is not recorded in this conversation.
+
+### 2026-08-23 — The writing-sprint conversation, chunk 12 (the ownership pass reaches Methods; 2026-02-16) — and her retrospective verdict
+
+**Her retrospective verdict (at intake, 2026-08-23 — resolving the chunk-11 open
+question):** "I actually am really glad I did submit, because up until this point I
+thought I was incapable of writing a workshop paper, and after submitting (and now,
+looking back) I think I did an absolutely spectacular job considering the dramatic
+time constraints and the complexity of the required infra + the confusion of trying
+to move from one framing to another on no sleep... so I think future me would ideally
+come into the deadline push more prepared but I think submitting isn't a bad choice
+as long as you believe your results are true (if not good)."
+
+**Chunk-12 content — the ownership pass extending into Methods, with traced
+landings:** her restructure plan (collapse Tasks + Enc-Dec + Budget into one setup
+paragraph; prompt search and algorithms next; keep the coverage curve compact; AUC
+deferred to Experiments) is the submitted §2's structure. Her "why is code
+compression potentially useful" instinct became the submitted intro's opening
+(agent-assisted development / repeatedly conditioning models on large codebases —
+the LLM-cost use case from the offered options, in edited form). The rate–distortion
+question — "the whole cost/something tradeoff curve for compression has its own
+standard language doesn't it?" — landed as the submitted discussion's
+"rate–distortion-style tradeoff" (the recommended borrowing-without-overcommitting
+phrasing), with the constrained form (min rate s.t. distortion ≤ ε; ε = 0 = pass all
+tests) as the underlying objective statement. And the notation micro-negotiation —
+her "T is of f, so making it T_i feels like its burying the lead," functions-vs-
+programs ambiguity, p_i rejected for probability collision, f kept with a
+parenthetical — produced the **submitted §2's opening Task sentence, which is her
+sentence essentially verbatim** ({(f_i, T_{f_i})}; "a short intermediate
+representation of f_i that still decodes into a function f'_i which passes the test
+suite T_{f_i}"). Micro-conventions settled: LLM spelled out at first use; T_{f_i}
+subscripting throughout the submitted paper.
+
+**(Claude-added:)** with chunks 11–12 the provenance ledger flips for the paper's
+front matter: abstract, intro opener, and the §2 problem statement are hers (9am+
+ownership rewrites with copyediting), while the mid-paper machinery (metrics
+prose, experiments skeleton) remains assistant-scaffolded with her edits, and Related
+Works remains the closest-to-draft section. Her rate–distortion instinct here is also
+the seed R1's review later asked to be grown ("is this formally analogous to a
+rate–distortion curve?") — the borrowed-style phrasing was the honest deadline
+choice, and the formalization remains the open follow-up.
